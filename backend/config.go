@@ -17,7 +17,7 @@ type Config struct {
 
 func LoadConfig() *Config {
 	return &Config{
-		ServerAddr:    getEnv("SERVER_ADDR", ":8080"),
+		ServerAddr:    getEnv("SERVER_ADDR", ":80"),
 		ZLMBaseURL:    getEnv("ZLM_BASE_URL", "http://47.97.153.51"),
 		ZLMSecret:     getEnv("ZLM_SECRET", "AQzyGOxCEtDHpCRVSh40UJWvNVLtqjU4"),
 		AdminPassword: getEnv("ADMIN_PASSWORD", "114514"),

@@ -214,15 +214,21 @@
             if (body) opts.body = JSON.stringify(body);
             return fetch(url, opts).then(function(r) {
                 if (r.status === 401) {
-                    // Token expired
                     authToken = '';
                     currentUser = null;
                     sessionStorage.removeItem('authToken');
                     sessionStorage.removeItem('currentUser');
                     updateTopBar();
-                    if (!$('authOverlay')) return r.json();
+                    if (streamPollTimer) { clearInterval(streamPollTimer); streamPollTimer = null; }
+                    if (flvPlayer) {
+                        flvPlayer.pause(); flvPlayer.unload(); flvPlayer.detachMediaElement();
+                        flvPlayer.destroy(); flvPlayer = null;
+                    }
+                    currentPlayingStream = '';
                     $('hallContainer').classList.remove('visible');
                     $('authOverlay').style.display = 'flex';
+                    $('passwordInput').value = '';
+                    $('authError').textContent = '登录已过期，请重新验证';
                 }
                 return r.json();
             });
@@ -332,6 +338,7 @@
         }
 
         // === 口令验证（门禁密码） ===
+        // 门禁口令不持久化：刷新页面需重新输入
         function doVerify(password) {
             fetch('/api/verify', {
                 method: 'POST',
@@ -341,8 +348,6 @@
                 if (data.success) {
                     authToken = data.token;
                     currentUser = { username: '', role: 'door', user_id: 0 };
-                    sessionStorage.setItem('authToken', authToken);
-                    sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
                     $('authOverlay').style.display = 'none';
                     $('hallContainer').classList.add('visible');
                     updateTopBar();
@@ -363,49 +368,48 @@
             if (e.key === 'Enter') doVerify($('passwordInput').value);
         });
 
-        // === 初始化：检查是否有缓存 token ===
+        // === 初始化：仅恢复已登录用户/admin的token，门禁口令不持久化 ===
         function initAuth() {
             var savedToken = sessionStorage.getItem('authToken');
             var savedUser = sessionStorage.getItem('currentUser');
-            if (savedToken && savedUser) {
-                authToken = savedToken;
-                try { currentUser = JSON.parse(savedUser); } catch(e) { currentUser = null; }
+            if (!savedToken || !savedUser) return;
 
-                // 验证 token 是否仍然有效
-                fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + authToken } })
-                    .then(function(r) {
-                        if (r.ok) return r.json();
-                        throw new Error('invalid');
-                    })
-                    .then(function(data) {
-                        // Token valid, update currentUser
-                        currentUser = data;
-                        sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
-                        updateTopBar();
-
-                        if (currentUser.role === 'user' || currentUser.role === 'admin') {
-                            // 已登录用户，跳过口令验证
-                            $('authOverlay').style.display = 'none';
-                            $('hallContainer').classList.add('visible');
-                            fetchLiveStreams();
-                            startStreamPolling();
-                        } else {
-                            // door token，显示口令页面（但实际上不需要重新验证）
-                            $('authOverlay').style.display = 'none';
-                            $('hallContainer').classList.add('visible');
-                            fetchLiveStreams();
-                            startStreamPolling();
-                        }
-                    })
-                    .catch(function() {
-                        // Token 过期或无效
-                        authToken = '';
-                        currentUser = null;
-                        sessionStorage.removeItem('authToken');
-                        sessionStorage.removeItem('currentUser');
-                        updateTopBar();
-                    });
+            authToken = savedToken;
+            try { currentUser = JSON.parse(savedUser); } catch(e) { currentUser = null; }
+            // 仅恢复已注册用户，door token 不持久化
+            if (!currentUser || currentUser.role === 'door') {
+                authToken = '';
+                currentUser = null;
+                sessionStorage.removeItem('authToken');
+                sessionStorage.removeItem('currentUser');
+                return;
             }
+
+            fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + authToken } })
+                .then(function(r) {
+                    if (r.ok) return r.json();
+                    throw new Error('invalid');
+                })
+                .then(function(data) {
+                    if (data.role !== 'user' && data.role !== 'admin') throw new Error('invalid');
+                    currentUser = data;
+                    sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateTopBar();
+                    $('authOverlay').style.display = 'none';
+                    $('hallContainer').classList.add('visible');
+                    fetchLiveStreams();
+                    startStreamPolling();
+                })
+                .catch(function() {
+                    authToken = '';
+                    currentUser = null;
+                    sessionStorage.removeItem('authToken');
+                    sessionStorage.removeItem('currentUser');
+                    if (streamPollTimer) { clearInterval(streamPollTimer); streamPollTimer = null; }
+                    $('hallContainer').classList.remove('visible');
+                    $('authOverlay').style.display = 'flex';
+                    updateTopBar();
+                });
         }
 
         // === 播放视频 ===
@@ -447,19 +451,23 @@
         // === 获取直播列表 ===
         function fetchLiveStreams() {
             if (!authToken) return;
-            fetch('/api/streams', {
-                headers: { 'Authorization': 'Bearer ' + authToken }
-            }).then(function(r) { return r.json(); }).then(function(resJson) {
+            api('/api/streams', 'GET').then(function(resJson) {
                 if (resJson.code === 0 && resJson.streams) {
                     lastData = resJson.streams;
                     renderList(resJson.streams);
                 } else {
                     lastData = [];
-                    renderList([]);
+                    var errMsg = (resJson.error) || '未知错误';
+                    renderError('获取列表失败: ' + errMsg);
                 }
             }).catch(function(e) {
-                console.error('获取列表失败:', e);
+                lastData = [];
+                renderError('连接服务器失败: ' + e.message);
             });
+        }
+
+        function renderError(msg) {
+            $('listContent').innerHTML = '<p style="text-align:center; color:#f44336; font-size:13px; padding:20px;">' + msg + '</p>';
         }
 
         var streamPollTimer = null;

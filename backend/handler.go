@@ -171,7 +171,8 @@ func (h *Handler) HandleStreams(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("[STREAMS] error: %v", err)
 		writeJSON(w, http.StatusBadGateway, map[string]interface{}{
-			"error": "获取直播列表失败",
+			"code":  -1,
+				"error": "获取直播列表失败: " + err.Error(),
 		})
 		return
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
 
 type ZLMClient struct {
@@ -35,7 +36,9 @@ func NewZLMClient(baseURL, secret string) *ZLMClient {
 	return &ZLMClient{
 		BaseURL: baseURL,
 		Secret:  secret,
-		client:  &http.Client{},
+		client: &http.Client{
+			Timeout: 15 * time.Second,
+		},
 	}
 }
 
@@ -43,22 +46,27 @@ func (z *ZLMClient) GetMediaList() ([]ZLMStream, error) {
 	url := fmt.Sprintf("%s/index/api/getMediaList?secret=%s", z.BaseURL, z.Secret)
 	resp, err := z.client.Get(url)
 	if err != nil {
-		return nil, fmt.Errorf("ZLM request failed: %w", err)
+		return nil, fmt.Errorf("ZLM连接失败(%s): %w", z.BaseURL, err)
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("ZLM返回错误状态 %d: %s", resp.StatusCode, string(body))
+	}
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("read ZLM response failed: %w", err)
+		return nil, fmt.Errorf("读取ZLM响应失败: %w", err)
 	}
 
 	var result ZLMResponse
 	if err := json.Unmarshal(body, &result); err != nil {
-		return nil, fmt.Errorf("parse ZLM response failed: %w", err)
+		return nil, fmt.Errorf("解析ZLM响应失败: %w", err)
 	}
 
 	if result.Code != 0 {
-		return nil, fmt.Errorf("ZLM API error: code=%d, msg=%s", result.Code, result.Msg)
+		return nil, fmt.Errorf("ZLM API异常: code=%d, msg=%s", result.Code, result.Msg)
 	}
 
 	return result.Data, nil
