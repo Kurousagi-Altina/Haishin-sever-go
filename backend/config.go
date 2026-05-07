@@ -23,7 +23,7 @@ func LoadConfig() *Config {
 		AdminPassword: getEnv("ADMIN_PASSWORD", "114514"),
 		DBPath:        getEnv("DB_PATH", "./data.db"),
 		StaticDir:     getEnv("STATIC_DIR", "./www"),
-		TokenExpiry:   getEnvDuration("TOKEN_EXPIRY", 24*time.Hour),
+		TokenExpiry:   getEnvDuration("TOKEN_EXPIRY", 72*time.Hour),
 	}
 }
 

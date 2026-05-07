@@ -20,7 +20,7 @@
                               │
                               ▼
 ┌──────────────────────────────────────────────────────────────────┐
-│                     Go 后端 (Backend :8080)                        │
+│                     Go 后端 (Backend :80)                        │
 │                                                                   │
 │  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌───────────┐  │
 │  │ 公开 API    │  │ 受保护 API  │  │ 管理员 API  │  │ 静态文件   │  │
@@ -89,7 +89,7 @@
 ## 项目结构
 
 ```
-E:\网站\
+E:\Livenetwork\
 ├── backend/                  # Go 后端程序
 │   ├── main.go               # 入口：路由注册、服务启动
 │   ├── config.go             # 配置管理（环境变量）
@@ -356,7 +356,7 @@ Header: `Authorization: Bearer <token>`
 - **注册弹窗**: 用户名 + 密码 + 确认密码，提交后等待管理员审核
 - **登录弹窗**: 用户名 + 密码，成功后直接进入直播大厅
 - **直播大厅**: 左侧频道列表（每 5 秒刷新），右侧 FLV 播放器
-- **Token 缓存**: 登录/口令 Token 存储于 sessionStorage，关闭浏览器后失效
+- **Token 缓存**: 用户/管理员登录 Token 存储于 localStorage（关闭浏览器不清除，3天内有效）；门禁口令不持久化，刷新页面需重新验证
 
 ### 管理后台 (`/admin.html`)
 
@@ -378,12 +378,12 @@ Header: `Authorization: Bearer <token>`
 
 | 环境变量 | 默认值 | 说明 |
 |----------|--------|------|
-| `SERVER_ADDR` | `:8080` | Go 后端监听地址 |
+| `SERVER_ADDR` | `:80` | Go 后端监听地址 |
 | `ZLM_BASE_URL` | `http://47.97.153.51` | ZLMediaKit 服务器地址 |
 | `ZLM_SECRET` | `AQzyGOxCEtDHpCRVSh40UJWvNVLtqjU4` | ZLM API 密钥 |
 | `ADMIN_PASSWORD` | `114514` | 门禁共享口令 |
 | `DB_PATH` | `./data.db` | SQLite 数据库文件路径 |
-| `TOKEN_EXPIRY` | `24h` | 登录/口令 Token 有效期 |
+| `TOKEN_EXPIRY` | `72h` | 登录/口令 Token 有效期 |
 
 > 管理员账号 `admin` / `krusgaltn` 在首次启动时写入数据库，后续启动不会重复创建。如需重置，删除 `data.db` 后重启即可。
 
@@ -415,8 +415,8 @@ SERVER_ADDR=:9090 ADMIN_PASSWORD=mypassword go run .
 ```
 
 启动后：
-- 主页: `http://localhost:8080`
-- 管理后台: `http://localhost:8080/admin.html`
+- 主页: `http://localhost:80`
+- 管理后台: `http://localhost:80/admin.html`
 
 ### 生产部署
 

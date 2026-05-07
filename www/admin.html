@@ -211,7 +211,7 @@
             return fetch(url, opts).then(function(r) {
                 if (r.status === 401 || r.status === 403) {
                     adminToken = '';
-                    sessionStorage.removeItem('adminToken');
+                    localStorage.removeItem('adminToken');
                     $('dashboard').classList.remove('visible');
                     $('loginPage').style.display = 'flex';
                     return Promise.reject('unauthorized');
@@ -235,7 +235,7 @@
             }).then(function(r) { return r.json(); }).then(function(data) {
                 if (data.success && data.role === 'admin') {
                     adminToken = data.token;
-                    sessionStorage.setItem('adminToken', adminToken);
+                    localStorage.setItem('adminToken', adminToken);
                     $('adminName').textContent = data.username;
                     $('loginPage').style.display = 'none';
                     $('dashboard').classList.add('visible');
@@ -254,7 +254,7 @@
 
         function adminLogout() {
             adminToken = '';
-            sessionStorage.removeItem('adminToken');
+            localStorage.removeItem('adminToken');
             $('dashboard').classList.remove('visible');
             $('loginPage').style.display = 'flex';
             $('adminUsername').value = '';
@@ -263,7 +263,7 @@
 
         // 检查缓存 token
         (function() {
-            var saved = sessionStorage.getItem('adminToken');
+            var saved = localStorage.getItem('adminToken');
             if (saved) {
                 adminToken = saved;
                 fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + adminToken } })
@@ -276,12 +276,12 @@
                             loadOverview();
                         } else {
                             adminToken = '';
-                            sessionStorage.removeItem('adminToken');
+                            localStorage.removeItem('adminToken');
                         }
                     })
                     .catch(function() {
                         adminToken = '';
-                        sessionStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminToken');
                     });
             }
         })();

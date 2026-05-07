@@ -216,8 +216,8 @@
                 if (r.status === 401) {
                     authToken = '';
                     currentUser = null;
-                    sessionStorage.removeItem('authToken');
-                    sessionStorage.removeItem('currentUser');
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('currentUser');
                     updateTopBar();
                     if (streamPollTimer) { clearInterval(streamPollTimer); streamPollTimer = null; }
                     if (flvPlayer) {
@@ -254,8 +254,8 @@
         function doLogout() {
             authToken = '';
             currentUser = null;
-            sessionStorage.removeItem('authToken');
-            sessionStorage.removeItem('currentUser');
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
             updateTopBar();
             $('hallContainer').classList.remove('visible');
             $('authOverlay').style.display = 'flex';
@@ -321,8 +321,8 @@
                 if (data.success) {
                     authToken = data.token;
                     currentUser = { username: data.username, role: data.role, user_id: data.user_id };
-                    sessionStorage.setItem('authToken', authToken);
-                    sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    localStorage.setItem('authToken', authToken);
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     hideLoginModal();
                     updateTopBar();
                     $('authOverlay').style.display = 'none';
@@ -370,8 +370,8 @@
 
         // === 初始化：仅恢复已登录用户/admin的token，门禁口令不持久化 ===
         function initAuth() {
-            var savedToken = sessionStorage.getItem('authToken');
-            var savedUser = sessionStorage.getItem('currentUser');
+            var savedToken = localStorage.getItem('authToken');
+            var savedUser = localStorage.getItem('currentUser');
             if (!savedToken || !savedUser) return;
 
             authToken = savedToken;
@@ -380,8 +380,8 @@
             if (!currentUser || currentUser.role === 'door') {
                 authToken = '';
                 currentUser = null;
-                sessionStorage.removeItem('authToken');
-                sessionStorage.removeItem('currentUser');
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('currentUser');
                 return;
             }
 
@@ -393,7 +393,7 @@
                 .then(function(data) {
                     if (data.role !== 'user' && data.role !== 'admin') throw new Error('invalid');
                     currentUser = data;
-                    sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     updateTopBar();
                     $('authOverlay').style.display = 'none';
                     $('hallContainer').classList.add('visible');
@@ -403,8 +403,8 @@
                 .catch(function() {
                     authToken = '';
                     currentUser = null;
-                    sessionStorage.removeItem('authToken');
-                    sessionStorage.removeItem('currentUser');
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('currentUser');
                     if (streamPollTimer) { clearInterval(streamPollTimer); streamPollTimer = null; }
                     $('hallContainer').classList.remove('visible');
                     $('authOverlay').style.display = 'flex';

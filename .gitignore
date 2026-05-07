@@ -18,3 +18,4 @@ backend/data.db-shm
 # OS
 .DS_Store
 Thumbs.db
+liveserver.service

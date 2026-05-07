@@ -127,14 +127,12 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Update auth attempt to success
-	// (we use a separate dedicated insert for login success on verify path)
-
 	userID := user["id"].(int64)
 	username := user["username"].(string)
 	role := user["role"].(string)
 
 	token := h.tm.GenerateUser(userID, username, role)
+	h.db.RecordAuthAttempt(ip, req.Username, true)
 	log.Printf("[LOGIN] user %s (%s) logged in from %s", username, role, ip)
 
 	writeJSON(w, http.StatusOK, map[string]interface{}{
