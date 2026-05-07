@@ -1,0 +1,20 @@
+# IDE / Editor
+.claude/
+
+# Binaries
+backend/server.exe
+backend/server
+backend/liveserver
+*.exe
+
+# Database
+backend/data.db
+backend/data.db-wal
+backend/data.db-shm
+*.db
+*.db-wal
+*.db-shm
+
+# OS
+.DS_Store
+Thumbs.db

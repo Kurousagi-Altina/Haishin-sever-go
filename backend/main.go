@@ -1,0 +1,72 @@
+package main
+
+import (
+	"log"
+	"net/http"
+)
+
+func main() {
+	cfg := LoadConfig()
+
+	db, err := NewDB(cfg.DBPath)
+	if err != nil {
+		log.Fatalf("Failed to open database: %v", err)
+	}
+	defer db.Close()
+	log.Printf("[DB] SQLite connected: %s", cfg.DBPath)
+
+	zlm := NewZLMClient(cfg.ZLMBaseURL, cfg.ZLMSecret)
+	tm := NewTokenManager(cfg.TokenExpiry)
+
+	handler := NewHandler(cfg, db, zlm, tm)
+
+	mux := http.NewServeMux()
+
+	// Public routes
+	mux.HandleFunc("/api/verify", handler.HandleVerify)
+	mux.HandleFunc("/api/register", handler.HandleRegister)
+	mux.HandleFunc("/api/login", handler.HandleLogin)
+
+	// Protected routes (any valid token)
+	protected := http.NewServeMux()
+	protected.HandleFunc("/api/me", handler.HandleMe)
+	protected.HandleFunc("/api/streams", handler.HandleStreams)
+	protected.HandleFunc("/api/stream-url", handler.HandleStreamURL)
+
+	mux.Handle("/api/me", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/streams", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/stream-url", AuthMiddleware(tm)(protected))
+
+	// Admin routes (admin token required)
+	admin := http.NewServeMux()
+	admin.HandleFunc("/api/admin/stats", handler.HandleAdminStats)
+	admin.HandleFunc("/api/admin/visitors", handler.HandleAdminVisitors)
+	admin.HandleFunc("/api/admin/auth-attempts", handler.HandleAdminAuthAttempts)
+	admin.HandleFunc("/api/admin/stream-views", handler.HandleAdminStreamViews)
+	admin.HandleFunc("/api/admin/users", handler.HandleAdminUsers)
+	admin.HandleFunc("/api/admin/pending-users", handler.HandleAdminPendingUsers)
+	admin.HandleFunc("/api/admin/approve-user", handler.HandleAdminApproveUser)
+	admin.HandleFunc("/api/admin/reject-user", handler.HandleAdminRejectUser)
+	admin.HandleFunc("/api/admin/users/", handler.HandleAdminDeleteUser)
+	admin.HandleFunc("/api/admin/change-password", handler.HandleAdminChangePassword)
+
+	// admin = AuthMiddleware + AdminMiddleware
+	adminStack := AuthMiddleware(tm)(AdminMiddleware(admin))
+	mux.Handle("/api/admin/", adminStack)
+
+	// Static files (frontend)
+	fs := http.FileServer(http.Dir(cfg.StaticDir))
+	mux.Handle("/", fs)
+
+	// Apply global middleware
+	var app http.Handler = mux
+	app = enableCORS(app)
+	app = loggingMiddleware(app)
+	app = visitorMiddleware(db)(app)
+
+	log.Printf("[SERVER] starting on %s", cfg.ServerAddr)
+	log.Printf("[SERVER] ZLM upstream: %s", cfg.ZLMBaseURL)
+	if err := http.ListenAndServe(cfg.ServerAddr, app); err != nil {
+		log.Fatalf("Server failed: %v", err)
+	}
+}

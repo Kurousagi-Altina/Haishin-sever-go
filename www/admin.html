@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>管理后台 - Live Broadcast Admin</title>
+    <link rel="icon" href="./icon.png" type="image/png">
+    <style>
+        body, html {
+            margin: 0; padding: 0; width: 100%; min-height: 100%;
+            background: #1a1a2e; color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* 登录页 */
+        .login-page {
+            display: flex; justify-content: center; align-items: center; height: 100vh;
+        }
+        .login-card {
+            background: #16213e; padding: 40px; border-radius: 12px;
+            width: 340px; text-align: center;
+            border: 1px solid #0f3460; box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+        }
+        .login-card h2 { margin-top: 0; color: #e94560; }
+        .login-card input {
+            display: block; width: 100%; box-sizing: border-box; margin-bottom: 12px;
+            padding: 10px 15px; font-size: 14px; border-radius: 6px;
+            border: 1px solid #0f3460; background: #1a1a2e; color: #e0e0e0; outline: none;
+        }
+        .login-card button {
+            width: 100%; padding: 10px; font-size: 15px; border-radius: 6px;
+            border: none; background: #e94560; color: white; cursor: pointer;
+        }
+        .login-card button:hover { background: #d63851; }
+        .login-card .error { color: #e94560; margin-top: 10px; font-size: 13px; }
+
+        /* 主面板 */
+        .dashboard { display: none; padding: 0 20px 20px; max-width: 1300px; margin: 0 auto; }
+        .dashboard.visible { display: block; }
+
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 0; border-bottom: 1px solid #0f3460; margin-bottom: 20px;
+        }
+        .header h1 { color: #e94560; margin: 0; font-size: 22px; }
+        .header .user-area { display: flex; align-items: center; gap: 15px; }
+        .header button {
+            padding: 6px 16px; border-radius: 6px; border: 1px solid #0f3460;
+            background: #16213e; color: #e0e0e0; cursor: pointer; font-size: 13px;
+        }
+        .header button:hover { background: #0f3460; }
+
+        .tabs {
+            display: flex; gap: 5px; margin-bottom: 20px; flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 8px 18px; border-radius: 8px 8px 0 0; border: none;
+            background: #16213e; color: #aaa; cursor: pointer; font-size: 14px;
+        }
+        .tab-btn.active { background: #e94560; color: white; }
+        .tab-btn:hover:not(.active) { background: #0f3460; color: #e0e0e0; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* 卡片 */
+        .stat-cards { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
+        .stat-card {
+            background: #16213e; border-radius: 10px; padding: 20px;
+            border: 1px solid #0f3460; flex: 1; min-width: 140px; text-align: center;
+        }
+        .stat-card .num { font-size: 32px; font-weight: bold; color: #e94560; }
+        .stat-card .label { color: #aaa; font-size: 13px; margin-top: 5px; }
+
+        /* 表格 */
+        .table-wrap {
+            background: #16213e; border-radius: 10px; border: 1px solid #0f3460;
+            overflow-x: auto; padding: 10px;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #0f3460; }
+        th { color: #e94560; font-weight: 600; background: rgba(233,69,96,0.05); }
+        tr:hover { background: rgba(255,255,255,0.03); }
+        .badge {
+            display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px;
+        }
+        .badge-success { background: #1b5e20; color: #81c784; }
+        .badge-danger { background: #b71c1c; color: #ef9a9a; }
+        .badge-warning { background: #e65100; color: #ffcc80; }
+        .badge-info { background: #0d47a1; color: #90caf9; }
+
+        button.small {
+            padding: 4px 12px; font-size: 12px; border-radius: 4px; border: none;
+            cursor: pointer; margin: 0 3px;
+        }
+        .btn-approve { background: #2e7d32; color: white; }
+        .btn-approve:hover { background: #1b5e20; }
+        .btn-reject { background: #c62828; color: white; }
+        .btn-reject:hover { background: #b71c1c; }
+        .btn-delete { background: #555; color: white; }
+        .btn-delete:hover { background: #333; }
+
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 15px; }
+        .pagination button {
+            padding: 6px 14px; border-radius: 6px; border: 1px solid #0f3460;
+            background: #16213e; color: #e0e0e0; cursor: pointer; font-size: 13px;
+        }
+        .pagination button:hover { background: #0f3460; }
+        .pagination button.current { background: #e94560; border-color: #e94560; }
+
+        .empty-msg { text-align: center; color: #666; padding: 40px; font-size: 14px; }
+
+        a.back-link { color: #4CAF50; text-decoration: none; font-size: 13px; }
+        a.back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <!-- 登录页 -->
+    <div class="login-page" id="loginPage">
+        <div class="login-card">
+            <h2>管理后台</h2>
+            <input type="text" id="adminUsername" placeholder="管理员账号" autocomplete="off">
+            <input type="password" id="adminPassword" placeholder="管理员密码">
+            <button onclick="adminLogin()">登录</button>
+            <div class="error" id="adminLoginError"></div>
+            <p style="margin-top:15px;font-size:13px;"><a class="back-link" href="./index.html">← 返回首页</a></p>
+        </div>
+    </div>
+
+    <!-- 管理面板 -->
+    <div class="dashboard" id="dashboard">
+        <div class="header">
+            <h1>管理后台</h1>
+            <div class="user-area">
+                <span id="adminName"></span>
+                <button onclick="showChangePassword()">修改密码</button>
+                <button onclick="adminLogout()">退出</button>
+                <a class="back-link" href="./index.html">← 返回首页</a>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('overview')">概览</button>
+            <button class="tab-btn" onclick="switchTab('visitors')">访客记录</button>
+            <button class="tab-btn" onclick="switchTab('auth')">鉴权记录</button>
+            <button class="tab-btn" onclick="switchTab('streams')">观看记录</button>
+            <button class="tab-btn" onclick="switchTab('users')">用户管理</button>
+        </div>
+
+        <!-- 概览 -->
+        <div class="tab-content active" id="tab-overview">
+            <div class="stat-cards" id="statCards"></div>
+        </div>
+
+        <!-- 访客记录 -->
+        <div class="tab-content" id="tab-visitors">
+            <div class="table-wrap"><table><thead><tr>
+                <th>IP</th><th>User-Agent</th><th>路径</th><th>时间</th>
+            </tr></thead><tbody id="visitorsTable"></tbody></table></div>
+            <div class="pagination" id="visitorsPager"></div>
+        </div>
+
+        <!-- 鉴权记录 -->
+        <div class="tab-content" id="tab-auth">
+            <div class="table-wrap"><table><thead><tr>
+                <th>IP</th><th>尝试口令/账号</th><th>结果</th><th>时间</th>
+            </tr></thead><tbody id="authTable"></tbody></table></div>
+            <div class="pagination" id="authPager"></div>
+        </div>
+
+        <!-- 观看记录 -->
+        <div class="tab-content" id="tab-streams">
+            <div class="table-wrap"><table><thead><tr>
+                <th>IP</th><th>App</th><th>Stream</th><th>时间</th>
+            </tr></thead><tbody id="streamsTable"></tbody></table></div>
+            <div class="pagination" id="streamsPager"></div>
+        </div>
+
+        <!-- 用户管理 -->
+        <div class="tab-content" id="tab-users">
+            <h3 style="color:#e94560;">待审核注册</h3>
+            <div id="pendingUsers" class="table-wrap"></div>
+            <h3 style="color:#e94560; margin-top:25px;">所有用户</h3>
+            <div id="allUsers" class="table-wrap"></div>
+        </div>
+
+        <!-- 修改密码弹窗 -->
+        <div class="modal-overlay" id="changePwdModal" style="display:none; position:fixed; top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:9999;justify-content:center;align-items:center;">
+            <div class="login-card">
+                <h2>修改密码</h2>
+                <input type="password" id="newPwd" placeholder="新密码（至少6个字符）">
+                <button onclick="doChangePassword()">确认修改</button>
+                <button style="background:#555;margin-top:8px;" onclick="document.getElementById('changePwdModal').style.display='none'">取消</button>
+                <div class="error" id="changePwdError"></div>
+                <div class="success" id="changePwdSuccess" style="color:#4CAF50;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var adminToken = '';
+        var currentPage = { visitors: 1, auth: 1, streams: 1 };
+
+        function $(id) { return document.getElementById(id); }
+
+        function adminApi(url, method, body) {
+            var headers = { 'Content-Type': 'application/json' };
+            if (adminToken) headers['Authorization'] = 'Bearer ' + adminToken;
+            var opts = { method: method, headers: headers };
+            if (body) opts.body = JSON.stringify(body);
+            return fetch(url, opts).then(function(r) {
+                if (r.status === 401 || r.status === 403) {
+                    adminToken = '';
+                    sessionStorage.removeItem('adminToken');
+                    $('dashboard').classList.remove('visible');
+                    $('loginPage').style.display = 'flex';
+                    return Promise.reject('unauthorized');
+                }
+                return r.json();
+            });
+        }
+
+        // === 登录 ===
+        function adminLogin() {
+            var u = $('adminUsername').value.trim();
+            var p = $('adminPassword').value;
+            $('adminLoginError').textContent = '';
+
+            if (!u || !p) { $('adminLoginError').textContent = '请填写账号和密码'; return; }
+
+            fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: u, password: p })
+            }).then(function(r) { return r.json(); }).then(function(data) {
+                if (data.success && data.role === 'admin') {
+                    adminToken = data.token;
+                    sessionStorage.setItem('adminToken', adminToken);
+                    $('adminName').textContent = data.username;
+                    $('loginPage').style.display = 'none';
+                    $('dashboard').classList.add('visible');
+                    loadOverview();
+                } else {
+                    $('adminLoginError').textContent = '管理员账号密码错误';
+                }
+            }).catch(function() {
+                $('adminLoginError').textContent = '网络错误，请稍后重试';
+            });
+        }
+
+        $('adminPassword').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') adminLogin();
+        });
+
+        function adminLogout() {
+            adminToken = '';
+            sessionStorage.removeItem('adminToken');
+            $('dashboard').classList.remove('visible');
+            $('loginPage').style.display = 'flex';
+            $('adminUsername').value = '';
+            $('adminPassword').value = '';
+        }
+
+        // 检查缓存 token
+        (function() {
+            var saved = sessionStorage.getItem('adminToken');
+            if (saved) {
+                adminToken = saved;
+                fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + adminToken } })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        if (data.role === 'admin') {
+                            $('adminName').textContent = data.username;
+                            $('loginPage').style.display = 'none';
+                            $('dashboard').classList.add('visible');
+                            loadOverview();
+                        } else {
+                            adminToken = '';
+                            sessionStorage.removeItem('adminToken');
+                        }
+                    })
+                    .catch(function() {
+                        adminToken = '';
+                        sessionStorage.removeItem('adminToken');
+                    });
+            }
+        })();
+
+        // === 切换 Tab ===
+        function switchTab(name) {
+            var tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(function(t, i) { t.classList.remove('active'); });
+            var contents = document.querySelectorAll('.tab-content');
+            contents.forEach(function(c) { c.classList.remove('active'); });
+
+            event.target.classList.add('active');
+            $('tab-' + name).classList.add('active');
+
+            if (name === 'overview') loadOverview();
+            else if (name === 'visitors') loadVisitors(1);
+            else if (name === 'auth') loadAuthAttempts(1);
+            else if (name === 'streams') loadStreamViews(1);
+            else if (name === 'users') loadUsers();
+        }
+
+        // === 概览 ===
+        function loadOverview() {
+            adminApi('/api/admin/stats', 'GET').then(function(data) {
+                $('statCards').innerHTML =
+                    '<div class="stat-card"><div class="num">' + data.total_visits + '</div><div class="label">总访问量</div></div>' +
+                    '<div class="stat-card"><div class="num">' + data.unique_visitors + '</div><div class="label">独立访客</div></div>' +
+                    '<div class="stat-card"><div class="num">' + data.auth_attempts + '</div><div class="label">鉴权尝试</div></div>' +
+                    '<div class="stat-card"><div class="num">' + data.auth_success + '</div><div class="label">鉴权成功</div></div>' +
+                    '<div class="stat-card"><div class="num">' + data.stream_views + '</div><div class="label">直播观看</div></div>';
+            }).catch(function() {});
+        }
+
+        // === 访客记录 ===
+        function loadVisitors(page) {
+            currentPage.visitors = page;
+            adminApi('/api/admin/visitors?page=' + page, 'GET').then(function(data) {
+                var rows = '';
+                if (data.data && data.data.length > 0) {
+                    data.data.forEach(function(v) {
+                        var ua = v.user_agent.length > 60 ? v.user_agent.substring(0, 60) + '...' : v.user_agent;
+                        rows += '<tr><td>' + v.ip + '</td><td title="' + v.user_agent + '">' + ua + '</td><td>' + v.path + '</td><td>' + v.visit_time + '</td></tr>';
+                    });
+                } else {
+                    rows = '<tr><td colspan="4" class="empty-msg">暂无记录</td></tr>';
+                }
+                $('visitorsTable').innerHTML = rows;
+                renderPager('visitors', data.page, data.total, 50, loadVisitors);
+            }).catch(function() {});
+        }
+
+        // === 鉴权记录 ===
+        function loadAuthAttempts(page) {
+            currentPage.auth = page;
+            adminApi('/api/admin/auth-attempts?page=' + page, 'GET').then(function(data) {
+                var rows = '';
+                if (data.data && data.data.length > 0) {
+                    data.data.forEach(function(a) {
+                        var badge = a.success ? '<span class="badge badge-success">成功</span>' : '<span class="badge badge-danger">失败</span>';
+                        rows += '<tr><td>' + a.ip + '</td><td>' + a.password + '</td><td>' + badge + '</td><td>' + a.attempt_time + '</td></tr>';
+                    });
+                } else {
+                    rows = '<tr><td colspan="4" class="empty-msg">暂无记录</td></tr>';
+                }
+                $('authTable').innerHTML = rows;
+                renderPager('auth', data.page, data.total, 50, loadAuthAttempts);
+            }).catch(function() {});
+        }
+
+        // === 观看记录 ===
+        function loadStreamViews(page) {
+            currentPage.streams = page;
+            adminApi('/api/admin/stream-views?page=' + page, 'GET').then(function(data) {
+                var rows = '';
+                if (data.data && data.data.length > 0) {
+                    data.data.forEach(function(s) {
+                        rows += '<tr><td>' + s.ip + '</td><td>' + s.app + '</td><td>' + s.stream + '</td><td>' + s.view_time + '</td></tr>';
+                    });
+                } else {
+                    rows = '<tr><td colspan="4" class="empty-msg">暂无记录</td></tr>';
+                }
+                $('streamsTable').innerHTML = rows;
+                renderPager('streams', data.page, data.total, 50, loadStreamViews);
+            }).catch(function() {});
+        }
+
+        // === 用户管理 ===
+        function loadUsers() {
+            // 待审核用户
+            adminApi('/api/admin/pending-users', 'GET').then(function(data) {
+                var rows = '';
+                if (data.users && data.users.length > 0) {
+                    data.users.forEach(function(u) {
+                        rows += '<tr><td>' + u.username + '</td><td><span class="badge badge-warning">待审核</span></td>' +
+                            '<td>' + u.created_at + '</td>' +
+                            '<td><button class="small btn-approve" onclick="approveUser(' + u.id + ')">通过</button>' +
+                            '<button class="small btn-reject" onclick="rejectUser(' + u.id + ')">拒绝</button></td></tr>';
+                    });
+                } else {
+                    rows = '<tr><td colspan="4" class="empty-msg">暂无待审核用户</td></tr>';
+                }
+                $('pendingUsers').innerHTML = '<table><thead><tr><th>用户名</th><th>状态</th><th>注册时间</th><th>操作</th></tr></thead><tbody>' + rows + '</tbody></table>';
+            }).catch(function() {});
+
+            // 所有用户
+            adminApi('/api/admin/users', 'GET').then(function(data) {
+                var rows = '';
+                if (data.users && data.users.length > 0) {
+                    data.users.forEach(function(u) {
+                        var badge = '';
+                        if (u.status === 'active') badge = '<span class="badge badge-success">已激活</span>';
+                        else if (u.status === 'pending') badge = '<span class="badge badge-warning">待审核</span>';
+                        var roleBadge = u.role === 'admin' ? '<span class="badge badge-info">管理员</span>' : '<span class="badge">普通用户</span>';
+                        var actions = '';
+                        if (u.role !== 'admin') {
+                            actions = '<button class="small btn-delete" onclick="deleteUser(' + u.id + ')">删除</button>';
+                        }
+                        rows += '<tr><td>' + u.username + '</td><td>' + roleBadge + '</td><td>' + badge + '</td><td>' + u.created_at + '</td><td>' + actions + '</td></tr>';
+                    });
+                } else {
+                    rows = '<tr><td colspan="5" class="empty-msg">暂无用户</td></tr>';
+                }
+                $('allUsers').innerHTML = '<table><thead><tr><th>用户名</th><th>角色</th><th>状态</th><th>注册时间</th><th>操作</th></tr></thead><tbody>' + rows + '</tbody></table>';
+            }).catch(function() {});
+        }
+
+        function approveUser(id) {
+            if (!confirm('确认通过该注册申请？')) return;
+            adminApi('/api/admin/approve-user', 'POST', { user_id: id }).then(function(data) {
+                if (data.success) loadUsers();
+            }).catch(function() {});
+        }
+
+        function rejectUser(id) {
+            if (!confirm('确认拒绝该注册申请？此操作不可撤销。')) return;
+            adminApi('/api/admin/reject-user', 'POST', { user_id: id }).then(function(data) {
+                if (data.success) loadUsers();
+            }).catch(function() {});
+        }
+
+        function deleteUser(id) {
+            if (!confirm('确认删除该用户？此操作不可撤销。')) return;
+            adminApi('/api/admin/users/' + id, 'DELETE').then(function(data) {
+                if (data.success) loadUsers();
+            }).catch(function() {});
+        }
+
+        // === 修改密码 ===
+        function showChangePassword() {
+            $('changePwdModal').style.display = 'flex';
+            $('changePwdError').textContent = '';
+            $('changePwdSuccess').textContent = '';
+            $('newPwd').value = '';
+        }
+
+        function doChangePassword() {
+            var pwd = $('newPwd').value;
+            if (pwd.length < 6) { $('changePwdError').textContent = '密码至少6个字符'; return; }
+            adminApi('/api/admin/change-password', 'POST', { new_password: pwd }).then(function(data) {
+                if (data.success) {
+                    $('changePwdSuccess').textContent = '密码修改成功';
+                } else {
+                    $('changePwdError').textContent = data.error || '修改失败';
+                }
+            }).catch(function() {});
+        }
+
+        // === 分页 ===
+        function renderPager(prefix, page, total, pageSize, loadFn) {
+            var totalPages = Math.ceil(total / pageSize);
+            if (totalPages <= 1) { $(prefix + 'Pager').innerHTML = ''; return; }
+            var html = '';
+            html += '<button ' + (page <= 1 ? 'disabled' : '') + ' onclick="' + loadFn.name + '(' + (page - 1) + ')">上一页</button>';
+            html += '<span style="padding:6px 10px;font-size:13px;">' + page + ' / ' + totalPages + '</span>';
+            html += '<button ' + (page >= totalPages ? 'disabled' : '') + ' onclick="' + loadFn.name + '(' + (page + 1) + ')">下一页</button>';
+            $(prefix + 'Pager').innerHTML = html;
+        }
+    </script>
+</body>
+</html>
