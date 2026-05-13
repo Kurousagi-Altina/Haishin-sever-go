@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -20,6 +21,11 @@ func main() {
 
 	handler := NewHandler(cfg, db, zlm, tm)
 
+	// Ensure download directory exists
+	if err := os.MkdirAll(cfg.DownloadDir, 0755); err != nil {
+		log.Fatalf("Failed to create download directory %s: %v", cfg.DownloadDir, err)
+	}
+
 	mux := http.NewServeMux()
 
 	// Public routes
@@ -32,10 +38,24 @@ func main() {
 	protected.HandleFunc("/api/me", handler.HandleMe)
 	protected.HandleFunc("/api/streams", handler.HandleStreams)
 	protected.HandleFunc("/api/stream-url", handler.HandleStreamURL)
+	protected.HandleFunc("/api/cloud/list", handler.HandleCloudList)
+	protected.HandleFunc("/api/cloud/download", handler.HandleCloudDownload)
+	protected.HandleFunc("/api/cloud/upload", handler.HandleCloudUpload)
+	protected.HandleFunc("/api/cloud/mkdir", handler.HandleCloudMkdir)
+	protected.HandleFunc("/api/cloud/delete", handler.HandleCloudDelete)
+	protected.HandleFunc("/api/cloud/move", handler.HandleCloudMove)
+	protected.HandleFunc("/api/cloud/space", handler.HandleCloudSpace)
 
 	mux.Handle("/api/me", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/streams", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/stream-url", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/cloud/list", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/cloud/download", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/cloud/upload", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/cloud/mkdir", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/cloud/delete", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/cloud/move", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/cloud/space", AuthMiddleware(tm)(protected))
 
 	// Admin routes (admin token required)
 	admin := http.NewServeMux()

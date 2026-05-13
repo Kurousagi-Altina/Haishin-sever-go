@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>云盘 - 神秘网站</title>
+    <link rel="icon" href="./icon.png" type="image/png">
+    <style>
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            background-image: url('./bg.png');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white;
+        }
+
+        /* 顶部导航栏 */
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 40px;
+            display: flex; align-items: center; justify-content: space-between; gap: 10px;
+            padding: 0 20px; background: rgba(0,0,0,0.6); z-index: 1000;
+            font-size: 14px;
+        }
+        .top-bar .left { display: flex; align-items: center; gap: 10px; }
+        .top-bar .right { display: flex; align-items: center; gap: 10px; }
+        .top-bar button, .top-bar a {
+            padding: 5px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.15); color: white; cursor: pointer;
+            font-size: 13px; text-decoration: none;
+        }
+        .top-bar button:hover, .top-bar a:hover { background: rgba(255,255,255,0.3); }
+        .top-bar .user-info { color: #ddd; margin-right: 5px; }
+
+        /* 鉴权遮罩 */
+        .auth-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex; justify-content: center; align-items: center; z-index: 9998;
+        }
+        .auth-box {
+            background: rgba(30, 30, 30, 0.95); padding: 35px 40px; border-radius: 15px;
+            text-align: center; min-width: 340px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        .auth-box h2 { margin-top: 0; margin-bottom: 8px; font-size: 20px; }
+        .auth-box .subtitle { color: #aaa; font-size: 13px; margin-bottom: 20px; }
+        .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #444; }
+        .auth-tab {
+            flex: 1; padding: 8px; cursor: pointer; font-size: 14px;
+            color: #aaa; border-bottom: 2px solid transparent; transition: 0.2s;
+        }
+        .auth-tab.active { color: #4CAF50; border-bottom-color: #4CAF50; }
+        .auth-panel { display: none; }
+        .auth-panel.active { display: block; }
+        .auth-box input {
+            display: block; width: 100%; box-sizing: border-box; margin-bottom: 12px;
+            padding: 10px 15px; font-size: 15px; border-radius: 8px;
+            border: 1px solid #555; background: #222; color: white; outline: none;
+        }
+        .auth-box button {
+            padding: 10px 30px; font-size: 15px; border-radius: 8px;
+            border: none; cursor: pointer; margin: 5px;
+        }
+        .auth-box .btn-primary { background: #4CAF50; color: white; }
+        .auth-box .btn-primary:hover { background: #45a049; }
+        .auth-box .error { color: #f44336; margin-top: 8px; font-size: 13px; }
+        .auth-box .success { color: #4CAF50; margin-top: 8px; font-size: 13px; }
+
+        /* 主面板 */
+        .main-panel {
+            display: none; flex-direction: column; gap: 20px;
+            width: 90%; max-width: 900px; margin-top: 30px;
+        }
+        .main-panel.visible { display: flex; }
+
+        .panel-card {
+            padding: 25px 30px; border-radius: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        .panel-card h3 { margin-top: 0; margin-bottom: 15px; font-size: 18px; border-bottom: 1px solid #555; padding-bottom: 10px; }
+
+        /* 上传区域 */
+        .upload-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .upload-row input[type="file"] { display: none; }
+        .upload-row .file-label {
+            flex: 1; min-width: 200px; padding: 8px 12px; border-radius: 6px;
+            background: #222; border: 1px solid #555; color: #aaa; font-size: 14px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .upload-row .file-label.has-file { color: #fff; }
+        .btn-upload { background: #2196F3; color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+        .btn-upload:hover { background: #1976D2; }
+        .btn-choose { background: #555; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+        .btn-choose:hover { background: #666; }
+        .upload-status { width: 100%; margin-top: 8px; font-size: 13px; }
+        .upload-status.error { color: #f44336; }
+        .upload-status.success { color: #4CAF50; }
+
+        /* 文件列表 */
+        .file-table { width: 100%; border-collapse: collapse; }
+        .file-table th, .file-table td { padding: 10px 12px; text-align: left; font-size: 14px; }
+        .file-table th { border-bottom: 1px solid #555; color: #aaa; font-weight: normal; }
+        .file-table td { border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .file-table tr:hover td { background: rgba(255,255,255,0.05); }
+        .file-table .col-name { width: auto; }
+        .file-table .col-size { width: 100px; text-align: right; }
+        .file-table .col-time { width: 160px; text-align: center; }
+        .file-table .col-action { width: 80px; text-align: center; }
+        .btn-download {
+            background: #4CAF50; color: white; border: none; padding: 4px 12px;
+            border-radius: 4px; cursor: pointer; font-size: 13px;
+        }
+        .btn-download:hover { background: #45a049; }
+        .empty-hint { text-align: center; color: #aaa; padding: 30px 0; font-size: 14px; }
+
+        /* 管理按钮 */
+        .btn-admin { background: #ff9800; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-left: 4px; }
+        .btn-admin:hover { background: #f57c00; }
+        .btn-danger { background: #f44336; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-left: 4px; }
+        .btn-danger:hover { background: #d32f2f; }
+        .col-action-wide { width: 160px; text-align: center; }
+
+        /* 管理员操作栏 */
+        .admin-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .admin-row input {
+            padding: 6px 10px; border-radius: 6px; border: 1px solid #555;
+            background: #222; color: white; font-size: 13px; outline: none; width: 180px;
+        }
+        .admin-row input::placeholder { color: #888; }
+
+        /* 空间显示 */
+        .space-info { font-size: 14px; color: #ccc; }
+        .space-bar-wrap { width: 100%; height: 8px; background: #333; border-radius: 4px; margin-top: 8px; overflow: hidden; }
+        .space-bar-inner { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #4CAF50, #8BC34A); transition: width 0.4s; }
+        .folder-icon { color: #ffc107; margin-right: 6px; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+    <!-- 顶部导航 -->
+    <div class="top-bar" id="topBar" style="display:none;">
+        <div class="left">
+            <a href="index.html">← 返回主页</a>
+        </div>
+        <div class="right">
+            <span class="user-info" id="topBarUsername"></span>
+            <button onclick="doLogout()">退出</button>
+        </div>
+    </div>
+
+    <!-- 鉴权遮罩 -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-box">
+            <h2>云盘访问验证</h2>
+            <p class="subtitle">请验证身份后访问云盘文件</p>
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="door" onclick="switchAuthTab('door')">门禁口令</div>
+                <div class="auth-tab" data-tab="login" onclick="switchAuthTab('login')">用户登录</div>
+            </div>
+
+            <!-- 门禁口令面板 -->
+            <div class="auth-panel active" id="panelDoor">
+                <input type="password" id="doorPassword" placeholder="请输入口令..." autofocus>
+                <button class="btn-primary" onclick="doDoorVerify()">验证</button>
+                <div class="error" id="doorError"></div>
+            </div>
+
+            <!-- 用户登录面板 -->
+            <div class="auth-panel" id="panelLogin">
+                <input type="text" id="loginUsername" placeholder="用户名" autocomplete="off">
+                <input type="password" id="loginPassword" placeholder="密码">
+                <button class="btn-primary" onclick="doCloudLogin()">登录</button>
+                <div class="error" id="loginError"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主面板 -->
+    <div class="main-panel" id="mainPanel">
+        <!-- 空间显示 -->
+        <div class="panel-card">
+            <h3>💾 存储空间</h3>
+            <div class="space-info" id="spaceInfo">加载中...</div>
+            <div class="space-bar-wrap"><div class="space-bar-inner" id="spaceBar" style="width:0%;"></div></div>
+        </div>
+
+        <!-- 上传区域 -->
+        <div class="panel-card" id="uploadCard">
+            <h3>📤 上传文件</h3>
+            <div class="upload-row">
+                <input type="file" id="fileInput" onchange="onFileSelected()">
+                <span class="file-label" id="fileLabel">未选择文件</span>
+                <button class="btn-choose" onclick="$('fileInput').click()">选择文件</button>
+                <button class="btn-upload" onclick="doUpload()">上传</button>
+            </div>
+            <div class="upload-status" id="uploadStatus"></div>
+        </div>
+
+        <!-- 管理操作（仅管理员可见） -->
+        <div class="panel-card" id="adminCard" style="display:none;">
+            <h3>🔧 管理操作</h3>
+            <div class="admin-row">
+                <input type="text" id="mkdirName" placeholder="新文件夹名...">
+                <button class="btn-upload" onclick="doMkdir()">新建文件夹</button>
+            </div>
+            <div class="upload-status" id="adminStatus"></div>
+        </div>
+
+        <!-- 文件列表 -->
+        <div class="panel-card">
+            <h3>📁 文件列表 <button class="btn-choose" style="float:right;font-size:12px;" onclick="loadFileList()">刷新</button></h3>
+            <table class="file-table">
+                <thead>
+                    <tr>
+                        <th class="col-name">文件名</th>
+                        <th class="col-size">大小</th>
+                        <th class="col-time">修改时间</th>
+                        <th class="col-action">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="fileTableBody">
+                    <tr><td colspan="4" class="empty-hint">加载中...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        var authToken = '';
+        var currentUser = null;
+
+        function $(id) { return document.getElementById(id); }
+
+        function api(url, method, body) {
+            var headers = {};
+            if (body && !(body instanceof FormData)) {
+                headers['Content-Type'] = 'application/json';
+            }
+            if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
+            var opts = { method: method, headers: headers };
+            if (body) {
+                opts.body = body instanceof FormData ? body : JSON.stringify(body);
+            }
+            return fetch(url, opts).then(function(r) {
+                if (r.status === 401 && !url.endsWith('/api/me')) {
+                    handleAuthExpired();
+                    return Promise.reject('unauthorized');
+                }
+                return r;
+            });
+        }
+
+        function handleAuthExpired() {
+            authToken = '';
+            currentUser = null;
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            $('mainPanel').classList.remove('visible');
+            $('authOverlay').style.display = 'flex';
+            $('topBar').style.display = 'none';
+        }
+
+        // === 鉴权切换 ===
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(function(t) { t.classList.remove('active'); });
+            document.querySelectorAll('.auth-panel').forEach(function(p) { p.classList.remove('active'); });
+            document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+            $('panel' + (tab === 'door' ? 'Door' : 'Login')).classList.add('active');
+            $('doorError').textContent = '';
+            $('loginError').textContent = '';
+        }
+
+        // === 门禁口令 ===
+        function doDoorVerify() {
+            var pw = $('doorPassword').value;
+            $('doorError').textContent = '';
+            if (!pw) { $('doorError').textContent = '请输入口令'; return; }
+
+            fetch('/api/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: pw })
+            }).then(function(r) { return r.json(); }).then(function(data) {
+                if (data.success) {
+                    authToken = data.token;
+                    currentUser = { username: '', role: 'door', user_id: 0 };
+                    onAuthSuccess();
+                } else {
+                    $('doorError').textContent = data.error || '口令错误';
+                }
+            }).catch(function() {
+                $('doorError').textContent = '连接服务器失败';
+            });
+        }
+
+        // === 用户登录 ===
+        function doCloudLogin() {
+            var u = $('loginUsername').value.trim();
+            var p = $('loginPassword').value;
+            $('loginError').textContent = '';
+            if (!u || !p) { $('loginError').textContent = '请填写用户名和密码'; return; }
+
+            fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: u, password: p })
+            }).then(function(r) { return r.json(); }).then(function(data) {
+                if (data.success) {
+                    authToken = data.token;
+                    currentUser = { username: data.username, role: data.role, user_id: data.user_id };
+                    localStorage.setItem('authToken', authToken);
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    onAuthSuccess();
+                } else {
+                    $('loginError').textContent = data.error || '登录失败';
+                }
+            }).catch(function() {
+                $('loginError').textContent = '网络错误';
+            });
+        }
+
+        function onAuthSuccess() {
+            $('authOverlay').style.display = 'none';
+            $('mainPanel').classList.add('visible');
+            $('topBar').style.display = 'flex';
+            $('topBarUsername').textContent = currentUser.role !== 'door' ? currentUser.username : '访客';
+
+            var isGuest = currentUser.role === 'door';
+            var isAdmin = currentUser.role === 'admin';
+
+            $('uploadCard').style.display = isGuest ? 'none' : '';
+            $('adminCard').style.display = isAdmin ? '' : 'none';
+
+            loadFileList();
+            loadSpace();
+        }
+
+        function doLogout() {
+            authToken = '';
+            currentUser = null;
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            $('mainPanel').classList.remove('visible');
+            $('authOverlay').style.display = 'flex';
+            $('topBar').style.display = 'none';
+            $('doorPassword').value = '';
+            $('doorError').textContent = '';
+            $('loginError').textContent = '';
+        }
+
+        // === 文件列表 ===
+        function loadFileList() {
+            api('/api/cloud/list', 'GET').then(function(r) { return r.json(); }).then(function(data) {
+                var tbody = $('fileTableBody');
+                var isAdmin = currentUser && currentUser.role === 'admin';
+                var colSpan = isAdmin ? 5 : 4;
+
+                if (!data.files || data.files.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="' + colSpan + '" class="empty-hint">暂无文件</td></tr>';
+                    updateTableHeader(isAdmin);
+                    return;
+                }
+                var html = '';
+                data.files.forEach(function(f) {
+                    var icon = f.isDir ? '<span class="folder-icon">📁</span>' : '<span style="color:#888;margin-right:6px;">📄</span>';
+                    var sizeStr = f.isDir ? '-' : formatSize(f.size);
+                    var actionHtml = '<button class="btn-download" onclick="downloadFile(\'' + escapeAttr(f.name) + '\')">下载</button>';
+                    if (isAdmin) {
+                        actionHtml += '<button class="btn-admin" onclick="doRename(\'' + escapeAttr(f.name) + '\')">重命名</button>';
+                        actionHtml += '<button class="btn-danger" onclick="doDelete(\'' + escapeAttr(f.name) + '\')">删除</button>';
+                    }
+                    html += '<tr>'
+                        + '<td class="col-name">' + icon + escapeHtml(f.name) + '</td>'
+                        + '<td class="col-size">' + sizeStr + '</td>'
+                        + '<td class="col-time">' + f.modTime + '</td>'
+                        + '<td class="' + (isAdmin ? 'col-action-wide' : 'col-action') + '">' + actionHtml + '</td>'
+                        + '</tr>';
+                });
+                tbody.innerHTML = html;
+                updateTableHeader(isAdmin);
+            }).catch(function(e) {
+                if (e !== 'unauthorized') {
+                    $('fileTableBody').innerHTML = '<tr><td colspan="4" class="empty-hint" style="color:#f44336;">加载失败，请刷新重试</td></tr>';
+                }
+            });
+        }
+
+        function updateTableHeader(isAdmin) {
+            var thead = document.querySelector('.file-table thead tr');
+            thead.innerHTML = '<th class="col-name">文件名</th>'
+                + '<th class="col-size">大小</th>'
+                + '<th class="col-time">修改时间</th>'
+                + '<th class="' + (isAdmin ? 'col-action-wide' : 'col-action') + '">操作</th>';
+        }
+
+        function downloadFile(filename) {
+            var url = '/api/cloud/download?file=' + encodeURIComponent(filename);
+            var link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            // Add auth header via fetch then create blob URL
+            fetch(url, { headers: { 'Authorization': 'Bearer ' + authToken } })
+                .then(function(r) {
+                    if (!r.ok) throw new Error('download failed');
+                    return r.blob();
+                })
+                .then(function(blob) {
+                    var blobUrl = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(blobUrl);
+                })
+                .catch(function() {});
+        }
+
+        // === 文件上传 ===
+        function onFileSelected() {
+            var input = $('fileInput');
+            var label = $('fileLabel');
+            $('uploadStatus').textContent = '';
+            $('uploadStatus').className = 'upload-status';
+            if (input.files.length > 0) {
+                label.textContent = input.files[0].name;
+                label.classList.add('has-file');
+            } else {
+                label.textContent = '未选择文件';
+                label.classList.remove('has-file');
+            }
+        }
+
+        function doUpload() {
+            var input = $('fileInput');
+            var status = $('uploadStatus');
+            status.textContent = '';
+            status.className = 'upload-status';
+
+            if (input.files.length === 0) {
+                status.textContent = '请先选择文件';
+                status.className = 'upload-status error';
+                return;
+            }
+
+            var file = input.files[0];
+            var formData = new FormData();
+            formData.append('file', file);
+
+            status.textContent = '上传中...';
+
+            fetch('/api/cloud/upload', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + authToken },
+                body: formData
+            }).then(function(r) {
+                if (r.status === 401) { handleAuthExpired(); throw new Error('unauthorized'); }
+                return r.json();
+            }).then(function(data) {
+                if (data.success) {
+                    status.textContent = '上传成功: ' + data.filename;
+                    status.className = 'upload-status success';
+                    input.value = '';
+                    onFileSelected();
+                    loadFileList();
+                } else {
+                    status.textContent = data.error || '上传失败';
+                    status.className = 'upload-status error';
+                }
+            }).catch(function(e) {
+                if (e.message !== 'unauthorized') {
+                    status.textContent = '上传失败，请重试';
+                    status.className = 'upload-status error';
+                }
+            });
+        }
+
+        // === 存储空间 ===
+        function loadSpace() {
+            api('/api/cloud/space', 'GET').then(function(r) { return r.json(); }).then(function(data) {
+                if (data.error) {
+                    $('spaceInfo').textContent = '空间信息获取失败';
+                    return;
+                }
+                var avail = data.available || 0;
+                var free = data.free || 0;
+                if (free === 0) {
+                    $('spaceInfo').textContent = '空间信息不可用';
+                    return;
+                }
+                $('spaceInfo').textContent = '可用空间: ' + formatSize(avail) + '（已预留 4 GB 系统空间）';
+                var pct = free > 0 ? Math.max(0, (avail / free) * 100) : 0;
+                $('spaceBar').style.width = Math.min(pct, 100) + '%';
+                if (avail < 1024*1024*1024) {
+                    $('spaceBar').style.background = 'linear-gradient(90deg, #f44336, #ff9800)';
+                }
+            }).catch(function() {});
+        }
+
+        // === 管理员操作 ===
+        function doMkdir() {
+            var input = $('mkdirName');
+            var name = input.value.trim();
+            var status = $('adminStatus');
+            status.textContent = '';
+            status.className = 'upload-status';
+
+            if (!name) {
+                status.textContent = '请输入文件夹名';
+                status.className = 'upload-status error';
+                return;
+            }
+
+            api('/api/cloud/mkdir', 'POST', { name: name }).then(function(r) { return r.json(); }).then(function(data) {
+                if (data.success) {
+                    status.textContent = '文件夹已创建: ' + name;
+                    status.className = 'upload-status success';
+                    input.value = '';
+                    loadFileList();
+                } else {
+                    status.textContent = data.error || '创建失败';
+                    status.className = 'upload-status error';
+                }
+            }).catch(function() {
+                status.textContent = '请求失败';
+                status.className = 'upload-status error';
+            });
+        }
+
+        function doDelete(name) {
+            if (!confirm('确定要删除 "' + name + '" 吗？此操作不可恢复。')) return;
+
+            api('/api/cloud/delete?name=' + encodeURIComponent(name), 'DELETE').then(function(r) { return r.json(); }).then(function(data) {
+                if (data.success) {
+                    loadFileList();
+                    loadSpace();
+                } else {
+                    alert('删除失败: ' + (data.error || '未知错误'));
+                }
+            }).catch(function() {
+                alert('请求失败');
+            });
+        }
+
+        function doRename(oldName) {
+            var newName = prompt('重命名 "' + oldName + '" 为:', oldName);
+            if (!newName || newName === oldName) return;
+
+            api('/api/cloud/move', 'POST', { from: oldName, to: newName }).then(function(r) { return r.json(); }).then(function(data) {
+                if (data.success) {
+                    loadFileList();
+                } else {
+                    alert('重命名失败: ' + (data.error || '未知错误'));
+                }
+            }).catch(function() {
+                alert('请求失败');
+            });
+        }
+
+        // === 工具函数 ===
+        function formatSize(bytes) {
+            if (bytes === 0) return '0 B';
+            var units = ['B', 'KB', 'MB', 'GB', 'TB'];
+            var i = Math.floor(Math.log(bytes) / Math.log(1024));
+            i = Math.min(i, units.length - 1);
+            return (bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1) + ' ' + units[i];
+        }
+
+        function escapeHtml(str) {
+            var div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function escapeAttr(str) {
+            return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+        }
+
+        // === 键盘事件 ===
+        $('doorPassword').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') doDoorVerify();
+        });
+        $('loginPassword').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') doCloudLogin();
+        });
+
+        // === 初始化：检查是否有已保存的登录态 ===
+        function initAuth() {
+            var savedToken = localStorage.getItem('authToken');
+            var savedUser = localStorage.getItem('currentUser');
+            if (!savedToken || !savedUser) return;
+
+            authToken = savedToken;
+            try { currentUser = JSON.parse(savedUser); } catch(e) { currentUser = null; }
+            if (!currentUser || currentUser.role === 'door') {
+                authToken = '';
+                currentUser = null;
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('currentUser');
+                return;
+            }
+
+            fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + authToken } })
+                .then(function(r) {
+                    if (r.ok) return r.json();
+                    throw new Error('invalid');
+                })
+                .then(function(data) {
+                    if (data.role !== 'user' && data.role !== 'admin') throw new Error('invalid');
+                    currentUser = data;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    onAuthSuccess();
+                })
+                .catch(function() {
+                    authToken = '';
+                    currentUser = null;
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('currentUser');
+                });
+        }
+
+        initAuth();
+    </script>
+</body>
+</html>
