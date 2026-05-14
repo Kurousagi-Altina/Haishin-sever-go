@@ -70,6 +70,12 @@ func (db *DB) migrate() error {
 	CREATE INDEX IF NOT EXISTS idx_auth_time ON auth_attempts(attempt_time);
 	CREATE INDEX IF NOT EXISTS idx_stream_views_time ON stream_views(view_time);
 	CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
+
+	CREATE TABLE IF NOT EXISTS cloud_files (
+		filepath TEXT PRIMARY KEY,
+		uploader TEXT NOT NULL,
+		updated_at DATETIME NOT NULL DEFAULT (datetime('now', 'localtime'))
+	);
 	`
 	_, err := db.conn.Exec(schema)
 	return err
@@ -367,6 +373,42 @@ func (db *DB) VisitorStats() (map[string]interface{}, error) {
 		"auth_success":    authSuccess,
 		"stream_views":    totalStreamViews,
 	}, nil
+}
+
+// === Cloud file uploader tracking ===
+
+func (db *DB) SetFileUploader(filepath, uploader string) error {
+	_, err := db.conn.Exec(
+		"INSERT INTO cloud_files (filepath, uploader, updated_at) VALUES (?, ?, datetime('now','localtime')) ON CONFLICT(filepath) DO UPDATE SET uploader=excluded.uploader, updated_at=datetime('now','localtime')",
+		filepath, uploader,
+	)
+	return err
+}
+
+func (db *DB) UpdateFilePath(oldPath, newPath, uploader string) error {
+	_, err := db.conn.Exec("DELETE FROM cloud_files WHERE filepath=?", oldPath)
+	if err != nil {
+		return err
+	}
+	_, err = db.conn.Exec(
+		"INSERT INTO cloud_files (filepath, uploader, updated_at) VALUES (?, ?, datetime('now','localtime'))",
+		newPath, uploader,
+	)
+	return err
+}
+
+func (db *DB) BatchGetUploaders(paths []string) map[string]string {
+	result := make(map[string]string)
+	for _, p := range paths {
+		var uploader string
+		err := db.conn.QueryRow("SELECT uploader FROM cloud_files WHERE filepath=?", p).Scan(&uploader)
+		if err != nil {
+			result[p] = "admin"
+		} else {
+			result[p] = uploader
+		}
+	}
+	return result
 }
 
 func (db *DB) Close() error {

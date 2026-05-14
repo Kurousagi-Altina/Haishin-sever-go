@@ -1,4 +1,4 @@
-# 直播平台 - Live Broadcast Platform
+﻿# 直播平台 - Live Broadcast Platform
 
 基于 Go 后端 + 纯前端的前后端分离直播平台，集成 ZLMediaKit 流媒体服务，支持双通道鉴权（门禁口令 + 用户账号）、用户注册与管理、直播间列表浏览、FLV 直播流播放、云盘文件上传/下载，以及完整的访客行为记录与管理后台。
 
@@ -20,7 +20,7 @@
                               │
                               ▼
 ┌──────────────────────────────────────────────────────────────────┐
-│                     Go 后端 (Backend :80)                        │
+│                     Go 后端 (Backend :80)                      │
 │                                                                   │
 │  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌───────────┐  │
 │  │ 公开 API    │  │ 受保护 API  │  │ 管理员 API  │  │ 静态文件   │  │
@@ -36,7 +36,8 @@
 │  │ 密码哈希   │   │ Proxy     │   │ visitors        │             │
 │  │ Token     │   │           │   │ auth_attempts   │             │
 │  │ Manager   │   │           │   │ stream_views    │             │
-│  └───────────┘   └─────┬─────┘   │ users           │             │
+│  │           │   │           │   │ users           │             │
+│  └───────────┘   └─────┬─────┘   │ cloud_files     │             │
 │                         │         └─────────────────┘             │
 └─────────────────────────┼────────────────────────────────────────┘
                           │
@@ -86,7 +87,7 @@
 4. **视频播放流程**: 前端获取流地址后，直接从 ZLM 服务器拉取 FLV 流播放（不经过 Go 后端）
 5. **访客记录**: 每次页面访问、鉴权尝试、流观看操作均自动记录到 SQLite
 6. **管理员审核**: 管理员登录后台 → 查看待审核用户 → 通过/拒绝注册申请
-7. **云盘文件**: 前端携带 Token 请求 → 后端列出/上传/下载/管理 `/userdata/download/` 目录中的文件；游客仅可下载，注册用户可上传，管理员可新建文件夹/删除/移动文件；页面展示剩余可用空间（已扣减 4GB 预留）
+7. **云盘文件**: 前端携带 Token 请求 → 后端列出/上传/下载/管理 `/userdata/download/` 目录中的文件，支持子目录导航（`?path=` 参数）；游客仅可下载，注册用户可上传，管理员可新建文件夹/删除/移动文件；页面展示已用/总共空间及进度条（静默扣减 4GB 预留）；文件列表回显上传者名称，上传记录持久化到 `cloud_files` 表，管理员操作文件后上传者更新为管理员
 
 ## 项目结构
 
@@ -103,6 +104,7 @@ E:\Livenetwork\
 │   ├── zlm.go                # ZLMediaKit API 客户端
 │   ├── disk_unix.go          # Linux/Unix 磁盘空间查询（syscall.Statfs）
 │   ├── disk_windows.go       # Windows 磁盘空间查询（stub）
+│   ├── Makefile              # 构建脚本（make → build/liveserver）
 │   ├── go.mod                # Go 模块定义
 │   └── go.sum                # 依赖校验
 ├── www/                      # 前端静态资源（由 Go 后端直接托管）
@@ -164,6 +166,17 @@ E:\Livenetwork\
 | created_at | DATETIME | 注册时间（本地时间） |
 
 **种子数据**: 首次启动时自动创建管理员账号 `admin` / `krusgaltn`（密码使用 bcrypt 哈希存储）。
+
+### cloud_files - 云盘文件上传者记录
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| filepath | TEXT | 文件相对路径（主键） |
+| uploader | TEXT | 上传者用户名 |
+| updated_at | DATETIME | 最后更新时间（本地时间） |
+
+文件无记录时前端回显为 `admin`。管理员对文件执行移动/重命名操作时，上传者更新为管理员用户名。
+
 
 ## API 接口文档
 
@@ -308,9 +321,11 @@ Header: `Authorization: Bearer <token>`
 }
 ```
 
-#### GET /api/cloud/list — 获取云盘文件列表
+#### GET /api/cloud/list?path=xxx — 获取云盘文件列表
 
-返回目录内所有文件和文件夹。
+返回指定目录内的所有文件和文件夹。
+
+参数: `?path=subdir/nested`（可选，不传则列出根目录）
 
 响应 (200):
 ```json
@@ -320,29 +335,39 @@ Header: `Authorization: Bearer <token>`
       "name": "document.pdf",
       "size": 1048576,
       "isDir": false,
-      "modTime": "2026-05-13 10:30:00"
+      "modTime": "2026-05-13 10:30:00",
+      "uploader": "myuser"
     },
     {
       "name": "我的文件夹",
       "size": 4096,
       "isDir": true,
-      "modTime": "2026-05-13 09:15:00"
+      "modTime": "2026-05-13 09:15:00",
+      "uploader": "admin"
     }
-  ]
+  ],
+  "path": ""
 }
 ```
 
-#### GET /api/cloud/download?file=xxx — 下载文件
+#### GET /api/cloud/download?file=xxx&path=xxx&token=xxx — 下载文件
 
-参数: `?file=document.pdf`
+此接口不走 AuthMiddleware，改为自行校验 Token，支持两种鉴权方式：
+
+- Query 参数: `?token=xxx`（推荐，前端直接 `window.location` 跳转，浏览器流式下载不占内存）
+- Authorization Header: `Bearer xxx`（备用）
+
+参数: `?file=document.pdf&path=subdir&token=xxx`（`path` 可选，指定文件所在子目录）
 
 返回文件二进制内容，响应头包含 `Content-Disposition: attachment`。
 
 > 文件名经过路径穿越防护，仅允许下载 `/userdata/download/` 目录内的文件。
 
-#### POST /api/cloud/upload — 上传文件
+#### POST /api/cloud/upload?path=xxx — 上传文件
 
 **权限**: 注册用户及以上（游客 `door` 角色返回 403）。
+
+参数: `?path=subdir`（可选，上传到指定子目录）
 
 请求: `multipart/form-data`，字段名 `file`。
 
@@ -363,22 +388,22 @@ Header: `Authorization: Bearer <token>`
 }
 ```
 
-#### GET /api/cloud/space — 获取剩余空间
+#### GET /api/cloud/space — 获取磁盘空间
 
-返回存储目录所在分区的磁盘空间信息，已扣减 4GB 系统预留。
+返回存储目录所在分区的磁盘空间信息，后端已静默扣减 4GB 系统预留。
 
 响应 (200):
 ```json
 {
-  "total": 0,
-  "free": 41231686041,
-  "available": 36936718736
+  "total": 107374182400,
+  "used": 5368709120,
+  "free": 98000000000
 }
 ```
 
-> `total` 暂未实现（返回 0），`free` 为分区全部可用字节，`available` 为扣除 4GB 预留后的可用字节。
+> `total` 为分区总空间，`used` 为云盘目录实际占用大小（递归计算），`free` 为扣除 4GB 预留后的剩余可用字节。
 
-#### POST /api/cloud/mkdir — 新建文件夹（admin）
+#### POST /api/cloud/mkdir?path=xxx — 新建文件夹（admin）
 
 请求:
 ```json
@@ -392,16 +417,16 @@ Header: `Authorization: Bearer <token>`
 { "success": true }
 ```
 
-#### DELETE /api/cloud/delete?name=xxx — 删除文件/文件夹（admin）
+#### DELETE /api/cloud/delete?name=xxx&path=xxx — 删除文件/文件夹（admin）
 
-参数: `?name=新文件夹`（支持文件和文件夹删除，文件夹会递归删除）。
+参数: `?name=新文件夹&path=subdir`（`path` 可选，指定目标所在子目录；支持文件和文件夹删除，文件夹会递归删除）。
 
 成功响应 (200):
 ```json
 { "success": true }
 ```
 
-#### POST /api/cloud/move — 移动/重命名文件或文件夹（admin）
+#### POST /api/cloud/move?path=xxx — 移动/重命名文件或文件夹（admin）
 
 请求:
 ```json
@@ -499,10 +524,12 @@ Header: `Authorization: Bearer <token>`
 
 功能包括：
 
-- **存储空间**: 页面顶部展示剩余可用空间（已扣减 4GB 系统预留），含可视化进度条，空间不足 1GB 时进度条变红
-- **文件列表**: 表格展示文件名（文件夹/文件图标区分）、大小（文件夹显示 `-`）、修改时间，支持刷新
-- **文件下载**: 点击下载按钮，通过 fetch + Blob 方式带 Token 下载文件
-- **文件上传**: 注册用户及以上可用，选择本地文件后上传至 `/userdata/download/` 目录，单文件最大 100MB
+- **存储空间**: 页面顶部展示「已用 X / 总共 Y」+ 进度条 + 右侧「剩余 Z」，后端静默扣减 4GB 系统预留
+- **面包屑导航**: 文件列表上方显示路径层级，点击可快速跳转到任意父级目录
+- **文件夹双击进入**: 文件夹行支持双击进入子目录，带有光标悬停效果和「进入」按钮
+- **文件列表**: 表格展示文件名（文件夹/文件图标区分）、上传者、大小（文件夹显示 `-`）、修改时间，支持刷新。无记录的文件回显为 `admin`
+- **文件下载**: 直接将带 Token 的下载 URL 交给浏览器处理，流式写入磁盘，不受文件大小限制
+- **文件上传**: 注册用户及以上可用，选择本地文件后上传至当前目录，单文件最大 100MB
 - **管理员操作**: 新建文件夹（输入名称即可）、重命名（弹窗输入新名称，调用 move API）、删除（确认弹窗后删除，支持文件和文件夹）
 - **鉴权门禁**: 未登录用户可通过门禁口令或用户登录两个标签页进行身份验证
 
@@ -556,9 +583,12 @@ SERVER_ADDR=:9090 ADMIN_PASSWORD=mypassword go run .
 ### 生产部署
 
 ```bash
-# 编译二进制
+# 编译 Linux amd64 精简二进制（输出到 build/liveserver）
 cd backend
-go build -o live-server .
+make
+
+# 或手动编译
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o build/liveserver .
 
 # 设置生产环境变量
 export SERVER_ADDR=":80"
@@ -566,7 +596,7 @@ export ADMIN_PASSWORD="生产环境强口令"
 export TOKEN_EXPIRY="2h"
 
 # 运行
-./live-server
+./build/liveserver
 ```
 
 建议配合 systemd (Linux) 或 NSSM (Windows) 将程序注册为系统服务。
@@ -583,7 +613,7 @@ export TOKEN_EXPIRY="2h"
 | 视频播放 | 前端 flv.js 直连 ZLM | 不变，前端仍直连 ZLM 拉流 |
 | 访客记录 | 无 | SQLite 全量记录访问、鉴权、观看行为 |
 | 管理后台 | 无 | `/admin.html` 管理员面板，完整数据查询与用户管理 |
-| 云盘文件 | 无 | `/cloud.html` 鉴权页面，权限分级（游客仅下载、用户可上传、管理员可管理），后端 `/api/cloud/*` 含上传/下载/列表/空间/新建文件夹/删除/移动 |
+| 云盘文件 | 无 | `/cloud.html` 鉴权页面，权限分级（游客仅下载、用户可上传、管理员可管理），支持上传者追踪（`cloud_files` 表），大文件流式下载，后端 `/api/cloud/*` 含上传/下载/列表/空间/新建文件夹/删除/移动 |
 
 ## 技术栈
 

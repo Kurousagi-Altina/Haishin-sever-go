@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"net/http"
@@ -252,7 +253,14 @@ func (h *Handler) HandleCloudList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	entries, err := os.ReadDir(h.cfg.DownloadDir)
+	subPath := r.URL.Query().Get("path")
+	targetDir, err := safeResolvePath(h.cfg.DownloadDir, subPath)
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "路径无效"})
+		return
+	}
+
+	entries, err := os.ReadDir(targetDir)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]interface{}{
 			"error": "读取目录失败",
@@ -260,29 +268,65 @@ func (h *Handler) HandleCloudList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files := make([]map[string]interface{}, 0)
+	fileNames := make([]string, 0, len(entries))
+	fileInfos := make([]os.FileInfo, 0, len(entries))
 	for _, entry := range entries {
 		info, err := entry.Info()
 		if err != nil {
 			continue
 		}
+		fileNames = append(fileNames, entry.Name())
+		fileInfos = append(fileInfos, info)
+	}
+
+	filePaths := make([]string, len(fileNames))
+	for i, name := range fileNames {
+		if subPath == "" {
+			filePaths[i] = name
+		} else {
+			filePaths[i] = subPath + "/" + name
+		}
+	}
+	uploaders := h.db.BatchGetUploaders(filePaths)
+
+	files := make([]map[string]interface{}, 0, len(fileNames))
+	for i, name := range fileNames {
+		info := fileInfos[i]
 		files = append(files, map[string]interface{}{
-			"name":    entry.Name(),
-			"size":    info.Size(),
-			"isDir":   entry.IsDir(),
-			"modTime": info.ModTime().Format("2006-01-02 15:04:05"),
+			"name":     name,
+			"size":     info.Size(),
+			"isDir":    info.IsDir(),
+			"modTime":  info.ModTime().Format("2006-01-02 15:04:05"),
+			"uploader": uploaders[filePaths[i]],
 		})
 	}
 
 	writeJSON(w, http.StatusOK, map[string]interface{}{
 		"files": files,
+		"path":  subPath,
 	})
 }
 
-// GET /api/cloud/download?file=xxx
+// GET /api/cloud/download?file=xxx&path=xxx&token=xxx
 func (h *Handler) HandleCloudDownload(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, `{"error":"method not allowed"}`, http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Validate auth: check query param token first, then Authorization header
+	tokenStr := r.URL.Query().Get("token")
+	if tokenStr == "" {
+		if authHeader := r.Header.Get("Authorization"); authHeader != "" {
+			var ok bool
+			tokenStr, ok = strings.CutPrefix(authHeader, "Bearer ")
+			if !ok {
+				tokenStr = ""
+			}
+		}
+	}
+	if _, valid := h.tm.Validate(tokenStr); !valid {
+		http.Error(w, `{"error":"invalid or expired token"}`, http.StatusUnauthorized)
 		return
 	}
 
@@ -298,7 +342,14 @@ func (h *Handler) HandleCloudDownload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filePath := filepath.Join(h.cfg.DownloadDir, safeName)
+	subPath := r.URL.Query().Get("path")
+	targetDir, err := safeResolvePath(h.cfg.DownloadDir, subPath)
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "路径无效"})
+		return
+	}
+
+	filePath := filepath.Join(targetDir, safeName)
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		writeJSON(w, http.StatusNotFound, map[string]interface{}{"error": "file not found"})
 		return
@@ -308,7 +359,7 @@ func (h *Handler) HandleCloudDownload(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, filePath)
 }
 
-// POST /api/cloud/upload
+// POST /api/cloud/upload?path=xxx
 func (h *Handler) HandleCloudUpload(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, `{"error":"method not allowed"}`, http.StatusMethodNotAllowed)
@@ -339,7 +390,14 @@ func (h *Handler) HandleCloudUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dstPath := filepath.Join(h.cfg.DownloadDir, safeName)
+	subPath := r.URL.Query().Get("path")
+	targetDir, err := safeResolvePath(h.cfg.DownloadDir, subPath)
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "路径无效"})
+		return
+	}
+
+	dstPath := filepath.Join(targetDir, safeName)
 	dst, err := os.Create(dstPath)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]interface{}{"error": "创建文件失败"})
@@ -352,6 +410,12 @@ func (h *Handler) HandleCloudUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fileKey := safeName
+	if subPath != "" {
+		fileKey = subPath + "/" + safeName
+	}
+	h.db.SetFileUploader(fileKey, info.Username)
+
 	log.Printf("[CLOUD] user %s (id=%d) uploaded file: %s", info.Username, info.UserID, safeName)
 
 	writeJSON(w, http.StatusOK, map[string]interface{}{
@@ -360,7 +424,7 @@ func (h *Handler) HandleCloudUpload(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// POST /api/cloud/mkdir — admin only
+// POST /api/cloud/mkdir?path=xxx — admin only
 func (h *Handler) HandleCloudMkdir(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, `{"error":"method not allowed"}`, http.StatusMethodNotAllowed)
@@ -387,17 +451,31 @@ func (h *Handler) HandleCloudMkdir(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dirPath := filepath.Join(h.cfg.DownloadDir, safeName)
+	subPath := r.URL.Query().Get("path")
+	targetDir, err := safeResolvePath(h.cfg.DownloadDir, subPath)
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "路径无效"})
+		return
+	}
+
+	dirPath := filepath.Join(targetDir, safeName)
 	if err := os.Mkdir(dirPath, 0755); err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]interface{}{"error": "创建文件夹失败: " + err.Error()})
 		return
 	}
 
 	log.Printf("[CLOUD] admin %s created directory: %s", info.Username, safeName)
+
+	dirKey := safeName
+	if subPath != "" {
+		dirKey = subPath + "/" + safeName
+	}
+	h.db.SetFileUploader(dirKey, info.Username)
+
 	writeJSON(w, http.StatusOK, map[string]interface{}{"success": true})
 }
 
-// DELETE /api/cloud/delete — admin only
+// DELETE /api/cloud/delete?name=xxx&path=xxx — admin only
 func (h *Handler) HandleCloudDelete(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodDelete {
 		http.Error(w, `{"error":"method not allowed"}`, http.StatusMethodNotAllowed)
@@ -417,7 +495,14 @@ func (h *Handler) HandleCloudDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	targetPath := filepath.Join(h.cfg.DownloadDir, safeName)
+	subPath := r.URL.Query().Get("path")
+	targetDir, err := safeResolvePath(h.cfg.DownloadDir, subPath)
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "路径无效"})
+		return
+	}
+
+	targetPath := filepath.Join(targetDir, safeName)
 	info_, err := os.Stat(targetPath)
 	if os.IsNotExist(err) {
 		writeJSON(w, http.StatusNotFound, map[string]interface{}{"error": "文件或文件夹不存在"})
@@ -440,7 +525,7 @@ func (h *Handler) HandleCloudDelete(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]interface{}{"success": true})
 }
 
-// POST /api/cloud/move — admin only
+// POST /api/cloud/move?path=xxx — admin only
 func (h *Handler) HandleCloudMove(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, `{"error":"method not allowed"}`, http.StatusMethodNotAllowed)
@@ -473,8 +558,15 @@ func (h *Handler) HandleCloudMove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fromPath := filepath.Join(h.cfg.DownloadDir, safeFrom)
-	toPath := filepath.Join(h.cfg.DownloadDir, safeTo)
+	subPath := r.URL.Query().Get("path")
+	targetDir, err := safeResolvePath(h.cfg.DownloadDir, subPath)
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "路径无效"})
+		return
+	}
+
+	fromPath := filepath.Join(targetDir, safeFrom)
+	toPath := filepath.Join(targetDir, safeTo)
 
 	if _, err := os.Stat(fromPath); os.IsNotExist(err) {
 		writeJSON(w, http.StatusNotFound, map[string]interface{}{"error": "源文件不存在"})
@@ -490,6 +582,14 @@ func (h *Handler) HandleCloudMove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fromKey := safeFrom
+	toKey := safeTo
+	if subPath != "" {
+		fromKey = subPath + "/" + safeFrom
+		toKey = subPath + "/" + safeTo
+	}
+	h.db.UpdateFilePath(fromKey, toKey, info.Username)
+
 	log.Printf("[CLOUD] admin %s moved %s -> %s", info.Username, safeFrom, safeTo)
 	writeJSON(w, http.StatusOK, map[string]interface{}{"success": true})
 }
@@ -501,26 +601,54 @@ func (h *Handler) HandleCloudSpace(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	free, err := getDiskFreeSpace(h.cfg.DownloadDir)
+	total, free, err := getDiskSpace(h.cfg.DownloadDir)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]interface{}{"error": "获取空间信息失败"})
 		return
 	}
 
-	// 预留 4GB
+	// 预留 4GB 系统空间
 	const reserved int64 = 4 * 1024 * 1024 * 1024
-	available := int64(free)
-	if available > reserved {
-		available -= reserved
+	if free > uint64(reserved) {
+		free -= uint64(reserved)
 	} else {
-		available = 0
+		free = 0
 	}
 
+	used, _ := dirSize(h.cfg.DownloadDir)
+
 	writeJSON(w, http.StatusOK, map[string]interface{}{
-		"total":     int64(0), // unknown
-		"free":      free,
-		"available": available,
+		"total": total,
+		"used":  used,
+		"free":  free,
 	})
+}
+
+func safeResolvePath(base, sub string) (string, error) {
+	base = filepath.Clean(base)
+	if sub == "" {
+		return base, nil
+	}
+	resolved := filepath.Clean(filepath.Join(base, sub))
+	sep := string(filepath.Separator)
+	if !strings.HasPrefix(resolved, base+sep) && resolved != base {
+		return "", errors.New("path traversal detected")
+	}
+	return resolved, nil
+}
+
+func dirSize(path string) (int64, error) {
+	var size int64
+	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			size += info.Size()
+		}
+		return nil
+	})
+	return size, err
 }
 
 func writeJSON(w http.ResponseWriter, status int, data interface{}) {
