@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>管理后台 - Live Broadcast Admin</title>
     <link rel="icon" href="./icon.png" type="image/png">
+    <script src="js/utils.js"></script>
     <style>
         body, html {
             margin: 0; padding: 0; width: 100%; min-height: 100%;
@@ -141,7 +142,7 @@
 
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('overview')">概览</button>
-            <button class="tab-btn" onclick="switchTab('visitors')">访客记录</button>
+            <button class="tab-btn" onclick="switchTab('visitors')">操作记录</button>
             <button class="tab-btn" onclick="switchTab('auth')">鉴权记录</button>
             <button class="tab-btn" onclick="switchTab('streams')">观看记录</button>
             <button class="tab-btn" onclick="switchTab('users')">用户管理</button>
@@ -152,10 +153,10 @@
             <div class="stat-cards" id="statCards"></div>
         </div>
 
-        <!-- 访客记录 -->
+        <!-- 操作记录 -->
         <div class="tab-content" id="tab-visitors">
             <div class="table-wrap"><table><thead><tr>
-                <th>IP</th><th>User-Agent</th><th>路径</th><th>时间</th>
+                <th>IP</th><th>用户</th><th>操作</th><th>详情</th><th>时间</th>
             </tr></thead><tbody id="visitorsTable"></tbody></table></div>
             <div class="pagination" id="visitorsPager"></div>
         </div>
@@ -200,8 +201,6 @@
     <script>
         var adminToken = '';
         var currentPage = { visitors: 1, auth: 1, streams: 1 };
-
-        function $(id) { return document.getElementById(id); }
 
         function adminApi(url, method, body) {
             var headers = { 'Content-Type': 'application/json' };
@@ -307,26 +306,25 @@
         function loadOverview() {
             adminApi('/api/admin/stats', 'GET').then(function(data) {
                 $('statCards').innerHTML =
-                    '<div class="stat-card"><div class="num">' + data.total_visits + '</div><div class="label">总访问量</div></div>' +
-                    '<div class="stat-card"><div class="num">' + data.unique_visitors + '</div><div class="label">独立访客</div></div>' +
+                    '<div class="stat-card"><div class="num">' + data.total_visits + '</div><div class="label">总操作数</div></div>' +
+                    '<div class="stat-card"><div class="num">' + data.unique_visitors + '</div><div class="label">独立IP</div></div>' +
                     '<div class="stat-card"><div class="num">' + data.auth_attempts + '</div><div class="label">鉴权尝试</div></div>' +
                     '<div class="stat-card"><div class="num">' + data.auth_success + '</div><div class="label">鉴权成功</div></div>' +
                     '<div class="stat-card"><div class="num">' + data.stream_views + '</div><div class="label">直播观看</div></div>';
             }).catch(function() {});
         }
 
-        // === 访客记录 ===
+        // === 操作记录 ===
         function loadVisitors(page) {
             currentPage.visitors = page;
             adminApi('/api/admin/visitors?page=' + page, 'GET').then(function(data) {
                 var rows = '';
                 if (data.data && data.data.length > 0) {
                     data.data.forEach(function(v) {
-                        var ua = v.user_agent.length > 60 ? v.user_agent.substring(0, 60) + '...' : v.user_agent;
-                        rows += '<tr><td>' + v.ip + '</td><td title="' + v.user_agent + '">' + ua + '</td><td>' + v.path + '</td><td>' + v.visit_time + '</td></tr>';
+                        rows += '<tr><td>' + escapeHtml(v.ip) + '</td><td>' + escapeHtml(v.username) + '</td><td>' + escapeHtml(v.action) + '</td><td>' + escapeHtml(v.detail) + '</td><td>' + escapeHtml(v.created_at) + '</td></tr>';
                     });
                 } else {
-                    rows = '<tr><td colspan="4" class="empty-msg">暂无记录</td></tr>';
+                    rows = '<tr><td colspan="5" class="empty-msg">暂无记录</td></tr>';
                 }
                 $('visitorsTable').innerHTML = rows;
                 renderPager('visitors', data.page, data.total, 50, loadVisitors);
@@ -341,7 +339,7 @@
                 if (data.data && data.data.length > 0) {
                     data.data.forEach(function(a) {
                         var badge = a.success ? '<span class="badge badge-success">成功</span>' : '<span class="badge badge-danger">失败</span>';
-                        rows += '<tr><td>' + a.ip + '</td><td>' + a.password + '</td><td>' + badge + '</td><td>' + a.attempt_time + '</td></tr>';
+                        rows += '<tr><td>' + escapeHtml(a.ip) + '</td><td>' + escapeHtml(a.password) + '</td><td>' + badge + '</td><td>' + escapeHtml(a.attempt_time) + '</td></tr>';
                     });
                 } else {
                     rows = '<tr><td colspan="4" class="empty-msg">暂无记录</td></tr>';
@@ -358,7 +356,7 @@
                 var rows = '';
                 if (data.data && data.data.length > 0) {
                     data.data.forEach(function(s) {
-                        rows += '<tr><td>' + s.ip + '</td><td>' + s.app + '</td><td>' + s.stream + '</td><td>' + s.view_time + '</td></tr>';
+                        rows += '<tr><td>' + escapeHtml(s.ip) + '</td><td>' + escapeHtml(s.app) + '</td><td>' + escapeHtml(s.stream) + '</td><td>' + escapeHtml(s.view_time) + '</td></tr>';
                     });
                 } else {
                     rows = '<tr><td colspan="4" class="empty-msg">暂无记录</td></tr>';
@@ -375,8 +373,8 @@
                 var rows = '';
                 if (data.users && data.users.length > 0) {
                     data.users.forEach(function(u) {
-                        rows += '<tr><td>' + u.username + '</td><td><span class="badge badge-warning">待审核</span></td>' +
-                            '<td>' + u.created_at + '</td>' +
+                        rows += '<tr><td>' + escapeHtml(u.username) + '</td><td><span class="badge badge-warning">待审核</span></td>' +
+                            '<td>' + escapeHtml(u.created_at) + '</td>' +
                             '<td><button class="small btn-approve" onclick="approveUser(' + u.id + ')">通过</button>' +
                             '<button class="small btn-reject" onclick="rejectUser(' + u.id + ')">拒绝</button></td></tr>';
                     });
@@ -399,7 +397,7 @@
                         if (u.role !== 'admin') {
                             actions = '<button class="small btn-delete" onclick="deleteUser(' + u.id + ')">删除</button>';
                         }
-                        rows += '<tr><td>' + u.username + '</td><td>' + roleBadge + '</td><td>' + badge + '</td><td>' + u.created_at + '</td><td>' + actions + '</td></tr>';
+                        rows += '<tr><td>' + escapeHtml(u.username) + '</td><td>' + roleBadge + '</td><td>' + badge + '</td><td>' + escapeHtml(u.created_at) + '</td><td>' + actions + '</td></tr>';
                     });
                 } else {
                     rows = '<tr><td colspan="5" class="empty-msg">暂无用户</td></tr>';

@@ -72,14 +72,23 @@ func getClientIP(r *http.Request) string {
 func visitorMiddleware(db *DB) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if !strings.HasPrefix(r.URL.Path, "/api/streams") {
+			// 只记录页面访问，跳过静态资源和 API 轮询
+			path := r.URL.Path
+			if !strings.HasPrefix(path, "/api/") && isPageRequest(path) {
 				ip := getClientIP(r)
 				ua := r.Header.Get("User-Agent")
-				db.RecordVisit(ip, ua, r.URL.Path)
+				go db.RecordVisit(ip, ua, path)
 			}
 			next.ServeHTTP(w, r)
 		})
 	}
+}
+
+func isPageRequest(path string) bool {
+	if path == "/" || path == "" {
+		return true
+	}
+	return strings.HasSuffix(path, ".html")
 }
 
 func enableCORS(next http.Handler) http.Handler {

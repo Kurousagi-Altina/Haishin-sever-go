@@ -33,50 +33,60 @@ func NewDB(path string) (*DB, error) {
 
 func (db *DB) migrate() error {
 	schema := `
-	CREATE TABLE IF NOT EXISTS visitors (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		ip TEXT NOT NULL,
-		user_agent TEXT NOT NULL DEFAULT '',
-		path TEXT NOT NULL DEFAULT '/',
-		visit_time DATETIME NOT NULL DEFAULT (datetime('now', 'localtime'))
-	);
+		CREATE TABLE IF NOT EXISTS visitors (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			ip TEXT NOT NULL,
+			user_agent TEXT NOT NULL DEFAULT '',
+			path TEXT NOT NULL DEFAULT '/',
+			visit_time DATETIME NOT NULL DEFAULT (datetime('now', 'localtime'))
+		);
 
-	CREATE TABLE IF NOT EXISTS auth_attempts (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		ip TEXT NOT NULL,
-		password TEXT NOT NULL,
-		success INTEGER NOT NULL DEFAULT 0,
-		attempt_time DATETIME NOT NULL DEFAULT (datetime('now', 'localtime'))
-	);
+		CREATE TABLE IF NOT EXISTS auth_attempts (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			ip TEXT NOT NULL,
+			password TEXT NOT NULL,
+			success INTEGER NOT NULL DEFAULT 0,
+			attempt_time DATETIME NOT NULL DEFAULT (datetime('now', 'localtime'))
+		);
 
-	CREATE TABLE IF NOT EXISTS stream_views (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		ip TEXT NOT NULL,
-		app TEXT NOT NULL,
-		stream TEXT NOT NULL,
-		view_time DATETIME NOT NULL DEFAULT (datetime('now', 'localtime'))
-	);
+		CREATE TABLE IF NOT EXISTS stream_views (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			ip TEXT NOT NULL,
+			app TEXT NOT NULL,
+			stream TEXT NOT NULL,
+			view_time DATETIME NOT NULL DEFAULT (datetime('now', 'localtime'))
+		);
 
-	CREATE TABLE IF NOT EXISTS users (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		username TEXT NOT NULL UNIQUE,
-		password_hash TEXT NOT NULL,
-		role TEXT NOT NULL DEFAULT 'user',
-		status TEXT NOT NULL DEFAULT 'pending',
-		created_at DATETIME NOT NULL DEFAULT (datetime('now', 'localtime'))
-	);
+		CREATE TABLE IF NOT EXISTS users (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			username TEXT NOT NULL UNIQUE,
+			password_hash TEXT NOT NULL,
+			role TEXT NOT NULL DEFAULT 'user',
+			status TEXT NOT NULL DEFAULT 'pending',
+			created_at DATETIME NOT NULL DEFAULT (datetime('now', 'localtime'))
+		);
 
-	CREATE INDEX IF NOT EXISTS idx_visitors_time ON visitors(visit_time);
-	CREATE INDEX IF NOT EXISTS idx_auth_time ON auth_attempts(attempt_time);
-	CREATE INDEX IF NOT EXISTS idx_stream_views_time ON stream_views(view_time);
-	CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
+		CREATE INDEX IF NOT EXISTS idx_visitors_time ON visitors(visit_time);
+		CREATE INDEX IF NOT EXISTS idx_auth_time ON auth_attempts(attempt_time);
+		CREATE INDEX IF NOT EXISTS idx_stream_views_time ON stream_views(view_time);
+		CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
 
-	CREATE TABLE IF NOT EXISTS cloud_files (
-		filepath TEXT PRIMARY KEY,
-		uploader TEXT NOT NULL,
-		updated_at DATETIME NOT NULL DEFAULT (datetime('now', 'localtime'))
-	);
-	`
+		CREATE TABLE IF NOT EXISTS cloud_files (
+			filepath TEXT PRIMARY KEY,
+			uploader TEXT NOT NULL,
+			updated_at DATETIME NOT NULL DEFAULT (datetime('now', 'localtime'))
+		);
+
+		CREATE TABLE IF NOT EXISTS action_logs (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			ip TEXT NOT NULL,
+			username TEXT NOT NULL DEFAULT '',
+			action TEXT NOT NULL,
+			detail TEXT NOT NULL DEFAULT '',
+			created_at DATETIME NOT NULL DEFAULT (datetime('now', 'localtime'))
+		);
+		CREATE INDEX IF NOT EXISTS idx_action_logs_time ON action_logs(created_at);
+		`
 	_, err := db.conn.Exec(schema)
 	return err
 }
@@ -215,7 +225,19 @@ func scanUsers(rows *sql.Rows) ([]map[string]interface{}, error) {
 	return results, nil
 }
 
-// === Existing record functions ===
+// === Action logging (replaces per-request visitor recording) ===
+
+func (db *DB) RecordAction(ip, username, action, detail string) {
+	_, err := db.conn.Exec(
+		"INSERT INTO action_logs (ip, username, action, detail) VALUES (?, ?, ?, ?)",
+		ip, username, action, detail,
+	)
+	if err != nil {
+		log.Printf("[DB] record action error: %v", err)
+	}
+}
+
+// === Existing record functions (kept for dedicated audit trails) ===
 
 func (db *DB) RecordVisit(ip, userAgent, path string) {
 	_, err := db.conn.Exec(
@@ -252,6 +274,39 @@ func (db *DB) RecordStreamView(ip, app, stream string) {
 }
 
 // === Admin query methods ===
+
+func (db *DB) RecentActions(limit, offset int) ([]map[string]interface{}, error) {
+	rows, err := db.conn.Query(
+		"SELECT ip, username, action, detail, created_at FROM action_logs ORDER BY created_at DESC LIMIT ? OFFSET ?",
+		limit, offset,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []map[string]interface{}
+	for rows.Next() {
+		var ip, username, action, detail, createdAt string
+		if err := rows.Scan(&ip, &username, &action, &detail, &createdAt); err != nil {
+			continue
+		}
+		results = append(results, map[string]interface{}{
+			"ip":         ip,
+			"username":   username,
+			"action":     action,
+			"detail":     detail,
+			"created_at": createdAt,
+		})
+	}
+	return results, nil
+}
+
+func (db *DB) CountActions() int {
+	var n int
+	db.conn.QueryRow("SELECT COUNT(*) FROM action_logs").Scan(&n)
+	return n
+}
 
 func (db *DB) RecentVisitors(limit, offset int) ([]map[string]interface{}, error) {
 	rows, err := db.conn.Query(
@@ -354,9 +409,9 @@ func (db *DB) CountStreamViews() int {
 }
 
 func (db *DB) VisitorStats() (map[string]interface{}, error) {
-	var totalVisits, totalAuthAttempts, totalStreamViews int
+	var totalActions, totalAuthAttempts, totalStreamViews int
 
-	db.conn.QueryRow("SELECT COUNT(*) FROM visitors").Scan(&totalVisits)
+	db.conn.QueryRow("SELECT COUNT(*) FROM action_logs").Scan(&totalActions)
 	db.conn.QueryRow("SELECT COUNT(*) FROM auth_attempts").Scan(&totalAuthAttempts)
 	db.conn.QueryRow("SELECT COUNT(*) FROM stream_views").Scan(&totalStreamViews)
 
@@ -364,10 +419,10 @@ func (db *DB) VisitorStats() (map[string]interface{}, error) {
 	db.conn.QueryRow("SELECT COUNT(*) FROM auth_attempts WHERE success=1").Scan(&authSuccess)
 
 	var uniqueIPs int
-	db.conn.QueryRow("SELECT COUNT(DISTINCT ip) FROM visitors").Scan(&uniqueIPs)
+	db.conn.QueryRow("SELECT COUNT(DISTINCT ip) FROM action_logs").Scan(&uniqueIPs)
 
 	return map[string]interface{}{
-		"total_visits":    totalVisits,
+		"total_visits":    totalActions,
 		"unique_visitors": uniqueIPs,
 		"auth_attempts":   totalAuthAttempts,
 		"auth_success":    authSuccess,

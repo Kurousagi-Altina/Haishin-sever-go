@@ -37,7 +37,7 @@ func NewZLMClient(baseURL, secret string) *ZLMClient {
 		BaseURL: baseURL,
 		Secret:  secret,
 		client: &http.Client{
-			Timeout: 15 * time.Second,
+			Timeout: 5 * time.Second,
 		},
 	}
 }

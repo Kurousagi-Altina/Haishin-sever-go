@@ -1,0 +1,99 @@
+/* 共享基础样式 - 毛玻璃主题 */
+body, html {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    display: flex; justify-content: center; align-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white;
+}
+
+body::before {
+    content: '';
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url('../bg.webp');
+    background-size: cover; background-position: center;
+    z-index: -1;
+}
+
+/* 顶部导航栏 */
+.top-bar {
+    position: fixed; top: 0; left: 0; right: 0; height: 40px;
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 20px; background: rgba(0,0,0,0.6); z-index: 1000;
+    font-size: 14px;
+}
+.top-bar button, .top-bar a {
+    padding: 5px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.15); color: white; cursor: pointer;
+    font-size: 13px; text-decoration: none;
+}
+.top-bar button:hover, .top-bar a:hover { background: rgba(255,255,255,0.3); }
+.top-bar .user-info { color: #ddd; margin-right: 5px; }
+
+/* 鉴权遮罩 */
+.auth-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex; justify-content: center; align-items: center; z-index: 9998;
+}
+.auth-box {
+    background: rgba(30, 30, 30, 0.95); padding: 35px 40px; border-radius: 15px;
+    text-align: center; min-width: 300px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+.auth-box h2 { margin-top: 0; margin-bottom: 20px; font-size: 20px; }
+.auth-box input {
+    padding: 10px 15px; font-size: 15px; border-radius: 8px;
+    border: 1px solid #555; background: #222; color: white; outline: none;
+}
+.auth-box button {
+    padding: 10px 30px; font-size: 15px; border-radius: 8px;
+    border: none; cursor: pointer; margin: 5px;
+}
+.auth-box .btn-primary { background: #4CAF50; color: white; }
+.auth-box .btn-primary:hover { background: #45a049; }
+.auth-box .error { color: #f44336; margin-top: 8px; font-size: 13px; }
+.auth-box .success { color: #4CAF50; margin-top: 8px; font-size: 13px; }
+
+/* 弹窗通用 */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    display: none; justify-content: center; align-items: center; z-index: 9999;
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+    background: rgba(30, 30, 30, 0.95); padding: 35px 40px; border-radius: 15px;
+    text-align: center; min-width: 320px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+.modal-box h2 { margin-top: 0; margin-bottom: 20px; font-size: 20px; }
+.modal-box input {
+    display: block; width: 100%; box-sizing: border-box; margin-bottom: 12px;
+    padding: 10px 15px; font-size: 15px; border-radius: 8px;
+    border: 1px solid #555; background: #222; color: white; outline: none;
+}
+.modal-box button {
+    padding: 10px 30px; font-size: 15px; border-radius: 8px;
+    border: none; cursor: pointer; margin: 5px;
+}
+.modal-box .btn-primary { background: #4CAF50; color: white; }
+.modal-box .btn-primary:hover { background: #45a049; }
+.modal-box .btn-cancel { background: #555; color: white; }
+.modal-box .error { color: #f44336; margin-top: 8px; font-size: 13px; }
+.modal-box .success { color: #4CAF50; margin-top: 8px; font-size: 13px; }
+.modal-box .switch-link { color: #4CAF50; cursor: pointer; font-size: 13px; margin-top: 10px; }
+.modal-box .switch-link:hover { text-decoration: underline; }
+
+/* 毛玻璃卡片 */
+.panel-card {
+    padding: 25px 30px; border-radius: 15px;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* 滚动条 */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }

@@ -81,7 +81,6 @@ func main() {
 	var app http.Handler = mux
 	app = enableCORS(app)
 	app = loggingMiddleware(app)
-	app = visitorMiddleware(db)(app)
 
 	log.Printf("[SERVER] starting on %s", cfg.ServerAddr)
 	log.Printf("[SERVER] ZLM upstream: %s", cfg.ZLMBaseURL)

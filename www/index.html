@@ -4,90 +4,17 @@
     <meta charset="UTF-8">
     <title>神秘网站·secret web</title>
     <link rel="icon" href="./icon.png" type="image/png">
-    <script src="https://cdn.bootcdn.net/ajax/libs/flv.js/1.6.2/flv.min.js"></script>
+    <link rel="stylesheet" href="css/common.css">
+    <script src="https://cdn.bootcdn.net/ajax/libs/flv.js/1.6.2/flv.min.js" defer></script>
+    <script src="js/utils.js"></script>
     <style>
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            display: flex; justify-content: center; align-items: center;
-            background-image: url('./bg.png');
-            background-size: cover; background-position: center; background-attachment: fixed;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white;
-        }
-
-        /* 顶部导航栏 */
-        .top-bar {
-            position: fixed; top: 0; left: 0; right: 0; height: 40px;
-            display: flex; align-items: center; justify-content: flex-end; gap: 10px;
-            padding: 0 20px; background: rgba(0,0,0,0.6); z-index: 1000;
-            font-size: 14px;
-        }
-        .top-bar button, .top-bar a {
-            padding: 5px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3);
-            background: rgba(255,255,255,0.15); color: white; cursor: pointer;
-            font-size: 13px; text-decoration: none;
-        }
-        .top-bar button:hover, .top-bar a:hover { background: rgba(255,255,255,0.3); }
-        .top-bar .user-info { color: #ddd; margin-right: 5px; }
+        .top-bar { justify-content: flex-end; }
         .top-bar .admin-link { border-color: #4CAF50; color: #4CAF50; }
         .top-bar .cloud-link { border-color: #2196F3; color: #90CAF9; }
 
-        /* 弹窗通用 */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            display: none; justify-content: center; align-items: center; z-index: 9999;
-        }
-        .modal-overlay.show { display: flex; }
-        .modal-box {
-            background: rgba(30, 30, 30, 0.95); padding: 35px 40px; border-radius: 15px;
-            text-align: center; min-width: 320px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-        }
-        .modal-box h2 { margin-top: 0; margin-bottom: 20px; font-size: 20px; }
-        .modal-box input {
-            display: block; width: 100%; box-sizing: border-box; margin-bottom: 12px;
-            padding: 10px 15px; font-size: 15px; border-radius: 8px;
-            border: 1px solid #555; background: #222; color: white; outline: none;
-        }
-        .modal-box button {
-            padding: 10px 30px; font-size: 15px; border-radius: 8px;
-            border: none; cursor: pointer; margin: 5px;
-        }
-        .modal-box .btn-primary { background: #4CAF50; color: white; }
-        .modal-box .btn-primary:hover { background: #45a049; }
-        .modal-box .btn-cancel { background: #555; color: white; }
-        .modal-box .error { color: #f44336; margin-top: 8px; font-size: 13px; }
-        .modal-box .success { color: #4CAF50; margin-top: 8px; font-size: 13px; }
-        .modal-box .switch-link { color: #4CAF50; cursor: pointer; font-size: 13px; margin-top: 10px; }
-        .modal-box .switch-link:hover { text-decoration: underline; }
+        .auth-box input { width: 250px; font-size: 16px; margin-bottom: 10px; }
+        .auth-box .error { font-size: 14px; }
 
-        /* 口令弹窗 (door password) */
-        .auth-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            display: flex; justify-content: center; align-items: center; z-index: 9998;
-        }
-        .auth-box {
-            background: rgba(30, 30, 30, 0.95); padding: 40px; border-radius: 15px;
-            text-align: center; min-width: 300px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-        }
-        .auth-box h2 { margin-top: 0; }
-        .auth-box input {
-            padding: 10px 15px; font-size: 16px; border-radius: 8px;
-            border: 1px solid #555; background: #222; color: white;
-            width: 250px; outline: none; margin-bottom: 10px;
-        }
-        .auth-box button {
-            padding: 10px 30px; font-size: 16px; border-radius: 8px;
-            border: none; background: #4CAF50; color: white; cursor: pointer;
-        }
-        .auth-box button:hover { background: #45a049; }
-        .auth-box .error { color: #f44336; margin-top: 10px; font-size: 14px; }
-
-        /* 大厅 */
         .hall-container {
             display: none; gap: 20px;
             width: 90%; max-width: 1200px; height: 550px;
@@ -121,9 +48,6 @@
         }
         .player-title { margin-top: 0; margin-bottom: 10px; }
         video { width: 100%; height: 100%; border-radius: 8px; background-color: #000; object-fit: contain; }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
     </style>
 </head>
 <body>
@@ -179,7 +103,8 @@
     <div class="auth-overlay" id="authOverlay">
         <div class="auth-box">
             <h2>请输入神秘密钥</h2>
-            <input type="password" id="passwordInput" placeholder="请输入口令..." autofocus>
+            <input type="text" style="display:none;" autocomplete="username">
+            <input type="password" id="passwordInput" placeholder="请输入口令..." autocomplete="new-password" autofocus>
             <br>
             <button id="submitBtn">验证</button>
             <div class="error" id="authError"></div>
@@ -207,9 +132,7 @@
         var currentPlayingStream = '';
         var lastData = [];
 
-        // === 工具函数 ===
-        function $(id) { return document.getElementById(id); }
-
+        // === API 辅助 ===
         function api(url, method, body) {
             var headers = { 'Content-Type': 'application/json' };
             if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
@@ -491,10 +414,10 @@
             streams.forEach(function(stream) {
                 var streamId = stream.app + '/' + stream.stream;
                 var isActive = currentPlayingStream === streamId ? 'active' : '';
-                html += '<div class="stream-item ' + isActive + '" onclick="playStream(\'' + stream.app + '\', \'' + stream.stream + '\')">'
-                    + '<div style="font-size: 16px; font-weight: bold;">' + stream.stream + '</div>'
-                    + '<div style="font-size: 12px; color: #ddd;">分类: ' + stream.app + '</div>'
-                    + '<div style="font-size: 12px; color: #bbb; margin-top: 5px;">👀 观看人数: ' + stream.totalReaderCount + '</div>'
+                html += '<div class="stream-item ' + isActive + '" onclick="playStream(\'' + escapeAttr(stream.app) + '\', \'' + escapeAttr(stream.stream) + '\')">'
+                    + '<div style="font-size: 16px; font-weight: bold;">' + escapeHtml(stream.stream) + '</div>'
+                    + '<div style="font-size: 12px; color: #ddd;">分类: ' + escapeHtml(stream.app) + '</div>'
+                    + '<div style="font-size: 12px; color: #bbb; margin-top: 5px;">👀 观看人数: ' + escapeHtml(String(stream.totalReaderCount)) + '</div>'
                     + '</div>';
             });
             listContent.innerHTML = html;

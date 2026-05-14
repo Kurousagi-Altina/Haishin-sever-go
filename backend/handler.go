@@ -43,6 +43,7 @@ func (h *Handler) HandleVerify(w http.ResponseWriter, r *http.Request) {
 	ip := getClientIP(r)
 	success := req.Password == h.cfg.AdminPassword
 	h.db.RecordAuthAttempt(ip, req.Password, success)
+	h.db.RecordAction(ip, "", "verify", "door password " + map[bool]string{true: "success", false: "failed"}[success])
 
 	if !success {
 		log.Printf("[AUTH] failed door attempt from %s", ip)
@@ -91,10 +92,12 @@ func (h *Handler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 
 	id, err := h.db.CreateUser(req.Username, req.Password)
 	if err != nil {
-		writeJSON(w, http.StatusConflict, map[string]interface{}{"error": "用户名已存在"})
+		writeJSON(w, http.StatusOK, map[string]interface{}{"success": false, "error": "用户名已存在"})
 		return
 	}
 
+	ip := getClientIP(r)
+	h.db.RecordAction(ip, req.Username, "register", "user registered, pending approval")
 	log.Printf("[REGISTER] new user: %s (id=%d), pending approval", req.Username, id)
 	writeJSON(w, http.StatusOK, map[string]interface{}{
 		"success": true,
@@ -124,8 +127,10 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	user, err := h.db.VerifyUserPassword(req.Username, req.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
+			h.db.RecordAction(ip, req.Username, "login", "failed: account pending or wrong credentials")
 			writeJSON(w, http.StatusUnauthorized, map[string]interface{}{"success": false, "error": "账号未审核通过或用户名密码错误"})
 		} else {
+			h.db.RecordAction(ip, req.Username, "login", "failed: wrong password")
 			writeJSON(w, http.StatusUnauthorized, map[string]interface{}{"success": false, "error": "用户名或密码错误"})
 		}
 		return
@@ -137,6 +142,7 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	token := h.tm.GenerateUser(userID, username, role)
 	h.db.RecordAuthAttempt(ip, req.Username, true)
+	h.db.RecordAction(ip, username, "login", "user logged in")
 	log.Printf("[LOGIN] user %s (%s) logged in from %s", username, role, ip)
 
 	writeJSON(w, http.StatusOK, map[string]interface{}{
@@ -220,7 +226,9 @@ func (h *Handler) HandleStreamURL(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ip := getClientIP(r)
+	info := getTokenInfo(r)
 	h.db.RecordStreamView(ip, app, stream)
+	h.db.RecordAction(ip, info.Username, "watch_stream", app+"/"+stream)
 
 	url := h.cfg.ZLMBaseURL + "/" + app + "/" + stream + ".live.flv"
 	writeJSON(w, http.StatusOK, map[string]interface{}{
@@ -325,7 +333,8 @@ func (h *Handler) HandleCloudDownload(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	if _, valid := h.tm.Validate(tokenStr); !valid {
+	tokenInfo, valid := h.tm.Validate(tokenStr)
+	if !valid {
 		http.Error(w, `{"error":"invalid or expired token"}`, http.StatusUnauthorized)
 		return
 	}
@@ -355,6 +364,9 @@ func (h *Handler) HandleCloudDownload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ip := getClientIP(r)
+	h.db.RecordAction(ip, tokenInfo.Username, "download", safeName)
+
 	w.Header().Set("Content-Disposition", `attachment; filename="`+safeName+`"`)
 	http.ServeFile(w, r, filePath)
 }
@@ -371,6 +383,8 @@ func (h *Handler) HandleCloudUpload(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusForbidden, map[string]interface{}{"error": "游客无上传权限，请登录后操作"})
 		return
 	}
+
+	ip := getClientIP(r)
 
 	if err := r.ParseMultipartForm(100 << 20); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "文件过大或请求无效"})
@@ -415,6 +429,7 @@ func (h *Handler) HandleCloudUpload(w http.ResponseWriter, r *http.Request) {
 		fileKey = subPath + "/" + safeName
 	}
 	h.db.SetFileUploader(fileKey, info.Username)
+	h.db.RecordAction(ip, info.Username, "upload", safeName)
 
 	log.Printf("[CLOUD] user %s (id=%d) uploaded file: %s", info.Username, info.UserID, safeName)
 

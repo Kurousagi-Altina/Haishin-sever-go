@@ -18,7 +18,7 @@ func (h *Handler) HandleAdminStats(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, stats)
 }
 
-// GET /api/admin/visitors — paginated visitor log
+// GET /api/admin/visitors — paginated action log (key actions)
 func (h *Handler) HandleAdminVisitors(w http.ResponseWriter, r *http.Request) {
 	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
 	if page < 1 {
@@ -27,15 +27,15 @@ func (h *Handler) HandleAdminVisitors(w http.ResponseWriter, r *http.Request) {
 	limit := 50
 	offset := (page - 1) * limit
 
-	visitors, err := h.db.RecentVisitors(limit, offset)
+	actions, err := h.db.RecentActions(limit, offset)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]interface{}{"error": "查询失败"})
 		return
 	}
-	total := h.db.CountVisitors()
+	total := h.db.CountActions()
 
 	writeJSON(w, http.StatusOK, map[string]interface{}{
-		"data":  visitors,
+		"data":  actions,
 		"total": total,
 		"page":  page,
 	})

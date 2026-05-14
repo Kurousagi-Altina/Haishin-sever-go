@@ -4,33 +4,13 @@
     <meta charset="UTF-8">
     <title>云盘 - 神秘网站</title>
     <link rel="icon" href="./icon.png" type="image/png">
+    <link rel="stylesheet" href="css/common.css">
+    <script src="js/utils.js"></script>
     <style>
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            display: flex; justify-content: center; align-items: center;
-            background-image: url('./bg.png');
-            background-size: cover; background-position: center; background-attachment: fixed;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white;
-        }
-
-        /* 顶部导航栏 */
-        .top-bar {
-            position: fixed; top: 0; left: 0; right: 0; height: 40px;
-            display: flex; align-items: center; justify-content: space-between; gap: 10px;
-            padding: 0 20px; background: rgba(0,0,0,0.6); z-index: 1000;
-            font-size: 14px;
-        }
+        .top-bar { justify-content: space-between; }
         .top-bar .left { display: flex; align-items: center; gap: 10px; }
         .top-bar .right { display: flex; align-items: center; gap: 10px; }
-        .top-bar button, .top-bar a {
-            padding: 5px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3);
-            background: rgba(255,255,255,0.15); color: white; cursor: pointer;
-            font-size: 13px; text-decoration: none;
-        }
-        .top-bar button:hover, .top-bar a:hover { background: rgba(255,255,255,0.3); }
-        .top-bar .user-info { color: #ddd; margin-right: 5px; }
 
-        /* 违规警告 */
         .warn-badge {
             position: fixed; top: 44px; right: 16px; z-index: 999;
             background: rgba(0,0,0,0.65); border: 1px solid rgba(244,67,54,0.4);
@@ -39,20 +19,9 @@
             pointer-events: none; white-space: nowrap;
         }
 
-        /* 鉴权遮罩 */
-        .auth-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex; justify-content: center; align-items: center; z-index: 9998;
-        }
-        .auth-box {
-            background: rgba(30, 30, 30, 0.95); padding: 35px 40px; border-radius: 15px;
-            text-align: center; min-width: 340px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-        }
-        .auth-box h2 { margin-top: 0; margin-bottom: 8px; font-size: 20px; }
+        .auth-box { min-width: 340px; }
         .auth-box .subtitle { color: #aaa; font-size: 13px; margin-bottom: 20px; }
+        .auth-box input { display: block; width: 100%; box-sizing: border-box; margin-bottom: 12px; }
         .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #444; }
         .auth-tab {
             flex: 1; padding: 8px; cursor: pointer; font-size: 14px;
@@ -61,37 +30,15 @@
         .auth-tab.active { color: #4CAF50; border-bottom-color: #4CAF50; }
         .auth-panel { display: none; }
         .auth-panel.active { display: block; }
-        .auth-box input {
-            display: block; width: 100%; box-sizing: border-box; margin-bottom: 12px;
-            padding: 10px 15px; font-size: 15px; border-radius: 8px;
-            border: 1px solid #555; background: #222; color: white; outline: none;
-        }
-        .auth-box button {
-            padding: 10px 30px; font-size: 15px; border-radius: 8px;
-            border: none; cursor: pointer; margin: 5px;
-        }
-        .auth-box .btn-primary { background: #4CAF50; color: white; }
-        .auth-box .btn-primary:hover { background: #45a049; }
-        .auth-box .error { color: #f44336; margin-top: 8px; font-size: 13px; }
-        .auth-box .success { color: #4CAF50; margin-top: 8px; font-size: 13px; }
 
-        /* 主面板 */
         .main-panel {
             display: none; flex-direction: column; gap: 20px;
             width: 90%; max-width: 900px; margin-top: 30px;
         }
         .main-panel.visible { display: flex; }
 
-        .panel-card {
-            padding: 25px 30px; border-radius: 15px;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-        }
         .panel-card h3 { margin-top: 0; margin-bottom: 15px; font-size: 18px; border-bottom: 1px solid #555; padding-bottom: 10px; }
 
-        /* 上传区域 */
         .upload-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .upload-row input[type="file"] { display: none; }
         .upload-row .file-label {
@@ -110,7 +57,6 @@
         .upload-status.error { color: #f44336; }
         .upload-status.success { color: #4CAF50; }
 
-        /* 文件列表 */
         .file-table { width: 100%; border-collapse: collapse; }
         .file-table th, .file-table td { padding: 10px 12px; text-align: left; font-size: 14px; }
         .file-table th { border-bottom: 1px solid #555; color: #aaa; font-weight: normal; }
@@ -128,14 +74,12 @@
         .btn-download:hover { background: #45a049; }
         .empty-hint { text-align: center; color: #aaa; padding: 30px 0; font-size: 14px; }
 
-        /* 管理按钮 */
         .btn-admin { background: #ff9800; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-left: 4px; }
         .btn-admin:hover { background: #f57c00; }
         .btn-danger { background: #f44336; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-left: 4px; }
         .btn-danger:hover { background: #d32f2f; }
         .col-action-wide { width: 160px; text-align: center; }
 
-        /* 管理员操作栏 */
         .admin-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .admin-row input {
             padding: 6px 10px; border-radius: 6px; border: 1px solid #555;
@@ -143,7 +87,6 @@
         }
         .admin-row input::placeholder { color: #888; }
 
-        /* 空间显示 */
         .space-info { font-size: 14px; color: #ccc; }
         .space-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
         .space-left { white-space: nowrap; }
@@ -156,14 +99,10 @@
         .folder-name { color: #ffc107; }
         .folder-name:hover { text-decoration: underline; }
 
-        /* 面包屑 */
         .breadcrumb { display: flex; align-items: center; gap: 4px; font-size: 14px; flex-wrap: wrap; }
         .breadcrumb a { color: #8BC34A; text-decoration: none; cursor: pointer; }
         .breadcrumb a:hover { text-decoration: underline; }
         .breadcrumb .sep { color: #888; }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
     </style>
 </head>
 <body>
@@ -194,7 +133,8 @@
 
             <!-- 门禁口令面板 -->
             <div class="auth-panel active" id="panelDoor">
-                <input type="password" id="doorPassword" placeholder="请输入口令..." autofocus>
+                <input type="text" style="display:none;" autocomplete="username">
+                <input type="password" id="doorPassword" placeholder="请输入口令..." autocomplete="new-password" autofocus>
                 <button class="btn-primary" onclick="doDoorVerify()">验证</button>
                 <div class="error" id="doorError"></div>
             </div>
@@ -269,8 +209,6 @@
         var authToken = '';
         var currentUser = null;
         var currentPath = '';
-
-        function $(id) { return document.getElementById(id); }
 
         function buildQuery(path) {
             return path ? '?path=' + encodeURIComponent(path) : '';
@@ -649,25 +587,6 @@
             }).catch(function() {
                 alert('请求失败');
             });
-        }
-
-        // === 工具函数 ===
-        function formatSize(bytes) {
-            if (bytes === 0) return '0 B';
-            var units = ['B', 'KB', 'MB', 'GB', 'TB'];
-            var i = Math.floor(Math.log(bytes) / Math.log(1024));
-            i = Math.min(i, units.length - 1);
-            return (bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1) + ' ' + units[i];
-        }
-
-        function escapeHtml(str) {
-            var div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        }
-
-        function escapeAttr(str) {
-            return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
         }
 
         // === 键盘事件 ===
