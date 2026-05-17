@@ -375,7 +375,7 @@
                     var displayName = f.isDir ? '<span class="folder-name">' + escapeHtml(f.name) + '</span>' : escapeHtml(f.name);
                     var sizeStr = f.isDir ? '-' : formatSize(f.size);
                     var rowClass = f.isDir ? ' class="folder-row"' : '';
-                    var dblclick = f.isDir ? ' ondblclick="navigateTo(\'' + escapeAttr(currentPath ? currentPath + '/' + f.name : f.name) + '\')"' : '';
+                    var click = f.isDir ? ' onclick="if(event.target.tagName!==\'BUTTON\')navigateTo(\'' + escapeAttr(currentPath ? currentPath + '/' + f.name : f.name) + '\')"' : '';
                     var actionHtml;
                     if (f.isDir) {
                         actionHtml = '<button class="btn-download" onclick="navigateTo(\'' + escapeAttr(currentPath ? currentPath + '/' + f.name : f.name) + '\')">进入</button>';
@@ -386,7 +386,7 @@
                         actionHtml += '<button class="btn-admin" onclick="doRename(\'' + escapeAttr(f.name) + '\')">重命名</button>';
                         actionHtml += '<button class="btn-danger" onclick="doDelete(\'' + escapeAttr(f.name) + '\')">删除</button>';
                     }
-                    html += '<tr' + rowClass + dblclick + '>'
+                    html += '<tr' + rowClass + click + '>'
                         + '<td class="col-name">' + icon + displayName + '</td>'
                         + '<td class="col-uploader">' + escapeHtml(f.uploader || 'admin') + '</td>'
                         + '<td class="col-size">' + sizeStr + '</td>'

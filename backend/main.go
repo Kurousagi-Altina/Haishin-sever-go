@@ -73,6 +73,12 @@ func main() {
 	adminStack := AuthMiddleware(tm)(AdminMiddleware(admin))
 	mux.Handle("/api/admin/", adminStack)
 
+	// Game (WASM) — COOP/COEP headers scoped to this sub-route only
+	// Games are organized as subdirectories under GameDir (e.g. game/doom/, game/quake/).
+	// Access via /game/<name>/ — adding a new game just means creating its subdirectory.
+	gameFS := http.FileServer(http.Dir(cfg.GameDir))
+	mux.Handle("/game/", http.StripPrefix("/game/", gameHeaders(gameFS)))
+
 	// Static files (frontend)
 	fs := http.FileServer(http.Dir(cfg.StaticDir))
 	mux.Handle("/", fs)
