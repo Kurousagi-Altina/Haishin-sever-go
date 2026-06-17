@@ -1,0 +1,12 @@
+{
+  "server_addr":    ":80",
+  "zlm_base_url":   "http://47.96.99.181:8080",
+  "zlm_secret":     "035c73f7-bb6b-4889-a715-d9eb2d1925cc",
+  "admin_password": "114514",
+  "db_path":        "./data.db",
+  "static_dir":     "../www",
+  "token_expiry":   "72h",
+  "download_dir":   "../userdata/download",
+  "game_dir":       "../game",
+  "video_dir":      "../userdata/videos"
+}

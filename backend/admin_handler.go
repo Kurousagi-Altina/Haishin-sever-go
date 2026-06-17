@@ -122,6 +122,10 @@ func (h *Handler) HandleAdminApproveUser(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	if req.UserID <= 0 {
+		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "invalid user id"})
+		return
+	}
 	if err := h.db.ApproveUser(req.UserID); err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]interface{}{"error": "审核失败"})
 		return
@@ -145,6 +149,10 @@ func (h *Handler) HandleAdminRejectUser(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	if req.UserID <= 0 {
+		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "invalid user id"})
+		return
+	}
 	if err := h.db.RejectUser(req.UserID); err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]interface{}{"error": "操作失败"})
 		return
@@ -162,7 +170,7 @@ func (h *Handler) HandleAdminDeleteUser(w http.ResponseWriter, r *http.Request) 
 
 	userIDStr := strings.TrimPrefix(r.URL.Path, "/api/admin/users/")
 	userID, err := strconv.ParseInt(userIDStr, 10, 64)
-	if err != nil {
+	if err != nil || userID <= 0 {
 		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "invalid user id"})
 		return
 	}

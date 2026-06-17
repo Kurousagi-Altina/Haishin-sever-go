@@ -17,13 +17,18 @@ func main() {
 	log.Printf("[DB] SQLite connected: %s", cfg.DBPath)
 
 	zlm := NewZLMClient(cfg.ZLMBaseURL, cfg.ZLMSecret)
-	tm := NewTokenManager(cfg.TokenExpiry)
+	tm := NewTokenManager(cfg.TokenExpiryDuration())
 
 	handler := NewHandler(cfg, db, zlm, tm)
 
 	// Ensure download directory exists
 	if err := os.MkdirAll(cfg.DownloadDir, 0755); err != nil {
 		log.Fatalf("Failed to create download directory %s: %v", cfg.DownloadDir, err)
+	}
+
+	// Ensure video directory exists
+	if err := os.MkdirAll(cfg.VideoDir, 0755); err != nil {
+		log.Fatalf("Failed to create video directory %s: %v", cfg.VideoDir, err)
 	}
 
 	mux := http.NewServeMux()
@@ -44,6 +49,8 @@ func main() {
 	protected.HandleFunc("/api/cloud/delete", handler.HandleCloudDelete)
 	protected.HandleFunc("/api/cloud/move", handler.HandleCloudMove)
 	protected.HandleFunc("/api/cloud/space", handler.HandleCloudSpace)
+	protected.HandleFunc("/api/vod/list", handler.HandleVodList)
+	protected.HandleFunc("/api/vod/play", handler.HandleVodPlay)
 
 	mux.Handle("/api/me", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/streams", AuthMiddleware(tm)(protected))
@@ -55,6 +62,8 @@ func main() {
 	mux.Handle("/api/cloud/delete", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/cloud/move", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/cloud/space", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/vod/list", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/vod/play", AuthMiddleware(tm)(protected))
 
 	// Admin routes (admin token required)
 	admin := http.NewServeMux()
@@ -78,6 +87,10 @@ func main() {
 	// Access via /game/<name>/ — adding a new game just means creating its subdirectory.
 	gameFS := http.FileServer(http.Dir(cfg.GameDir))
 	mux.Handle("/game/", http.StripPrefix("/game/", gameHeaders(gameFS)))
+
+	// Static video files (direct MP4 serving)
+	videoFS := http.FileServer(http.Dir(cfg.VideoDir))
+	mux.Handle("/videos/", http.StripPrefix("/videos/", videoFS))
 
 	// Static files (frontend)
 	fs := http.FileServer(http.Dir(cfg.StaticDir))

@@ -5,7 +5,12 @@
 backend/server.exe
 backend/server
 backend/liveserver
+backend/build/
+backend/tmp/
 *.exe
+
+# Config (copy config.example.json to config.json to customize)
+backend/config.json
 
 # Database
 backend/data.db
@@ -19,3 +24,4 @@ backend/data.db-shm
 .DS_Store
 Thumbs.db
 liveserver.service
+backend/game

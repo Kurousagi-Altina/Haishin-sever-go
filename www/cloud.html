@@ -103,6 +103,28 @@
         .breadcrumb a { color: #8BC34A; text-decoration: none; cursor: pointer; }
         .breadcrumb a:hover { text-decoration: underline; }
         .breadcrumb .sep { color: #888; }
+
+        .preview-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92); z-index: 9999;
+            align-items: center; justify-content: center;
+        }
+        .preview-overlay.active { display: flex; }
+        .preview-close {
+            position: absolute; top: 20px; right: 30px;
+            color: white; font-size: 32px; cursor: pointer; z-index: 1;
+            opacity: 0.7; transition: 0.2s; line-height: 1;
+            background: none; border: none; outline: none;
+        }
+        .preview-close:hover { opacity: 1; }
+        .preview-content { max-width: 95vw; max-height: 95vh; }
+        .preview-content img { max-width: 95vw; max-height: 95vh; object-fit: contain; }
+        .preview-content video { max-width: 95vw; max-height: 95vh; }
+        .btn-preview {
+            background: #9C27B0; color: white; border: none; padding: 4px 10px;
+            border-radius: 4px; cursor: pointer; font-size: 12px; margin-left: 4px;
+        }
+        .btn-preview:hover { background: #7B1FA2; }
     </style>
 </head>
 <body>
@@ -203,6 +225,12 @@
                 </tbody>
             </table>
         </div>
+    </div>
+
+    <!-- 预览弹窗 -->
+    <div class="preview-overlay" id="previewOverlay" onclick="closePreview()">
+        <button class="preview-close" onclick="closePreview()" title="关闭">&times;</button>
+        <div class="preview-content" id="previewContent" onclick="event.stopPropagation()"></div>
     </div>
 
     <script>
@@ -381,6 +409,9 @@
                         actionHtml = '<button class="btn-download" onclick="navigateTo(\'' + escapeAttr(currentPath ? currentPath + '/' + f.name : f.name) + '\')">进入</button>';
                     } else {
                         actionHtml = '<button class="btn-download" onclick="downloadFile(\'' + escapeAttr(f.name) + '\')">下载</button>';
+                        if (isPreviewable(f.name)) {
+                            actionHtml += '<button class="btn-preview" onclick="event.stopPropagation();previewFile(\'' + escapeAttr(f.name) + '\')">预览</button>';
+                        }
                     }
                     if (isAdmin) {
                         actionHtml += '<button class="btn-admin" onclick="doRename(\'' + escapeAttr(f.name) + '\')">重命名</button>';
@@ -417,6 +448,57 @@
                 + '&token=' + encodeURIComponent(authToken);
             if (currentPath) url += '&path=' + encodeURIComponent(currentPath);
             window.location.href = url;
+        }
+
+        // === 预览 ===
+        var previewExts = {
+            image: ['jpg','jpeg','png','gif','webp','bmp','svg'],
+            video: ['mp4','webm','mkv','mov','avi','m4v','flv']
+        };
+
+        function getPreviewType(filename) {
+            var ext = filename.split('.').pop().toLowerCase();
+            if (previewExts.image.indexOf(ext) !== -1) return 'image';
+            if (previewExts.video.indexOf(ext) !== -1) return 'video';
+            return null;
+        }
+
+        function isPreviewable(filename) {
+            return getPreviewType(filename) !== null;
+        }
+
+        function previewFile(filename) {
+            var type = getPreviewType(filename);
+            if (!type) return downloadFile(filename);
+
+            var url = '/api/cloud/download?file=' + encodeURIComponent(filename)
+                + '&preview=1&token=' + encodeURIComponent(authToken);
+            if (currentPath) url += '&path=' + encodeURIComponent(currentPath);
+
+            var container = $('previewContent');
+            container.innerHTML = '';
+
+            if (type === 'image') {
+                var img = document.createElement('img');
+                img.src = url;
+                img.alt = filename;
+                container.appendChild(img);
+            } else if (type === 'video') {
+                var video = document.createElement('video');
+                video.src = url;
+                video.controls = true;
+                video.autoplay = true;
+                video.setAttribute('playsinline', '');
+                container.appendChild(video);
+            }
+
+            $('previewOverlay').classList.add('active');
+        }
+
+        function closePreview() {
+            $('previewOverlay').classList.remove('active');
+            var container = $('previewContent');
+            container.innerHTML = '';
         }
 
         // === 文件上传 ===
@@ -595,6 +677,11 @@
         });
         $('loginPassword').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') doCloudLogin();
+        });
+
+        // === 键盘事件 ===
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closePreview();
         });
 
         // === 初始化：检查是否有已保存的登录态 ===

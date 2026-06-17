@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>视频点播 - 神秘网站</title>
+    <link rel="icon" href="./icon.png" type="image/png">
+    <link rel="stylesheet" href="css/common.css">
+    <script src="js/utils.js"></script>
+    <style>
+        .top-bar { justify-content: space-between; }
+        .top-bar .left { display: flex; align-items: center; gap: 10px; }
+        .top-bar .right { display: flex; align-items: center; gap: 10px; }
+
+        .auth-box { min-width: 340px; }
+        .auth-box .subtitle { color: #aaa; font-size: 13px; margin-bottom: 20px; }
+        .auth-box input { display: block; width: 100%; box-sizing: border-box; margin-bottom: 12px; }
+        .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #444; }
+        .auth-tab {
+            flex: 1; padding: 8px; cursor: pointer; font-size: 14px;
+            color: #aaa; border-bottom: 2px solid transparent; transition: 0.2s;
+        }
+        .auth-tab.active { color: #9C27B0; border-bottom-color: #9C27B0; }
+        .auth-panel { display: none; }
+        .auth-panel.active { display: block; }
+
+        .main-panel {
+            display: none; gap: 20px;
+            width: 90%; max-width: 1200px; height: 550px;
+            margin-top: 30px;
+        }
+        .main-panel.visible { display: flex; }
+
+        .video-list {
+            flex: 0 0 280px; padding: 20px; border-radius: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            overflow-y: auto; display: flex; flex-direction: column;
+        }
+        .video-list h3 { margin-top: 0; text-align: center; border-bottom: 1px solid #555; padding-bottom: 10px; }
+        .video-item {
+            padding: 10px; margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.1); border-radius: 8px;
+            cursor: pointer; transition: 0.3s;
+        }
+        .video-item:hover { background: rgba(255, 255, 255, 0.25); transform: scale(1.02); }
+        .video-item.active { background: #9C27B0; }
+        .video-item .vname { font-size: 14px; word-break: break-all; }
+        .video-item .vsize { font-size: 12px; color: #aaa; margin-top: 4px; }
+        .video-item.active .vsize { color: rgba(255,255,255,0.8); }
+        .empty-hint { text-align: center; color: #aaa; padding: 30px 0; font-size: 14px; }
+
+        .player-container {
+            flex: 1; padding: 20px; border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            display: flex; flex-direction: column;
+        }
+        .player-title { margin-top: 0; margin-bottom: 10px; font-size: 16px; }
+        video { flex: 1; min-height: 0; width: 100%; border-radius: 8px; background-color: #000; object-fit: contain; }
+    </style>
+</head>
+<body>
+
+    <!-- 顶部导航 -->
+    <div class="top-bar" id="topBar" style="display:none;">
+        <div class="left">
+            <a href="index.html">← 返回主页</a>
+        </div>
+        <div class="right">
+            <span class="user-info" id="topBarUsername"></span>
+            <button onclick="doLogout()">退出</button>
+        </div>
+    </div>
+
+    <!-- 鉴权遮罩 -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-box">
+            <h2>视频点播验证</h2>
+            <p class="subtitle">请验证身份后观看视频</p>
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="door" onclick="switchAuthTab('door')">门禁口令</div>
+                <div class="auth-tab" data-tab="login" onclick="switchAuthTab('login')">用户登录</div>
+            </div>
+
+            <!-- 门禁口令面板 -->
+            <div class="auth-panel active" id="panelDoor">
+                <input type="text" style="display:none;" autocomplete="username">
+                <input type="password" id="doorPassword" placeholder="请输入口令..." autocomplete="new-password" autofocus>
+                <button class="btn-primary" onclick="doDoorVerify()">验证</button>
+                <div class="error" id="doorError"></div>
+            </div>
+
+            <!-- 用户登录面板 -->
+            <div class="auth-panel" id="panelLogin">
+                <input type="text" id="loginUsername" placeholder="用户名" autocomplete="off">
+                <input type="password" id="loginPassword" placeholder="密码">
+                <button class="btn-primary" onclick="doVodLogin()">登录</button>
+                <div class="error" id="loginError"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主面板 -->
+    <div class="main-panel" id="mainPanel">
+        <div class="video-list">
+            <h3>🎬 视频列表</h3>
+            <div id="listContent">
+                <p class="empty-hint">加载中...</p>
+            </div>
+        </div>
+        <div class="player-container">
+            <h3 class="player-title" id="currentPlayerTitle">请在左侧选择视频</h3>
+            <video id="videoElement" controls playsinline></video>
+        </div>
+    </div>
+
+    <script>
+        var authToken = '';
+        var currentUser = null;
+        var currentPlaying = '';
+
+        // === API 辅助 ===
+        function api(url, method, body) {
+            var headers = {};
+            if (body && !(body instanceof FormData)) {
+                headers['Content-Type'] = 'application/json';
+            }
+            if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
+            var opts = { method: method, headers: headers };
+            if (body) {
+                opts.body = body instanceof FormData ? body : JSON.stringify(body);
+            }
+            return fetch(url, opts).then(function(r) {
+                if (r.status === 401) {
+                    handleAuthExpired();
+                    return Promise.reject('unauthorized');
+                }
+                return r;
+            });
+        }
+
+        function handleAuthExpired() {
+            authToken = '';
+            currentUser = null;
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            currentPlaying = '';
+            $('mainPanel').classList.remove('visible');
+            $('authOverlay').style.display = 'flex';
+            $('topBar').style.display = 'none';
+        }
+
+        // === 鉴权切换 ===
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(function(t) { t.classList.remove('active'); });
+            document.querySelectorAll('.auth-panel').forEach(function(p) { p.classList.remove('active'); });
+            document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+            $('panel' + (tab === 'door' ? 'Door' : 'Login')).classList.add('active');
+            $('doorError').textContent = '';
+            $('loginError').textContent = '';
+        }
+
+        // === 门禁口令 ===
+        function doDoorVerify() {
+            var pw = $('doorPassword').value;
+            $('doorError').textContent = '';
+            if (!pw) { $('doorError').textContent = '请输入口令'; return; }
+
+            fetch('/api/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: pw })
+            }).then(function(r) { return r.json(); }).then(function(data) {
+                if (data.success) {
+                    authToken = data.token;
+                    currentUser = { username: '', role: 'door', user_id: 0 };
+                    onAuthSuccess();
+                } else {
+                    $('doorError').textContent = data.error || '口令错误';
+                }
+            }).catch(function() {
+                $('doorError').textContent = '连接服务器失败';
+            });
+        }
+
+        // === 用户登录 ===
+        function doVodLogin() {
+            var u = $('loginUsername').value.trim();
+            var p = $('loginPassword').value;
+            $('loginError').textContent = '';
+            if (!u || !p) { $('loginError').textContent = '请填写用户名和密码'; return; }
+
+            fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: u, password: p })
+            }).then(function(r) { return r.json(); }).then(function(data) {
+                if (data.success) {
+                    authToken = data.token;
+                    currentUser = { username: data.username, role: data.role, user_id: data.user_id };
+                    localStorage.setItem('authToken', authToken);
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    onAuthSuccess();
+                } else {
+                    $('loginError').textContent = data.error || '登录失败';
+                }
+            }).catch(function() {
+                $('loginError').textContent = '网络错误，请稍后重试';
+            });
+        }
+
+        function onAuthSuccess() {
+            $('authOverlay').style.display = 'none';
+            $('topBar').style.display = 'flex';
+            $('topBarUsername').textContent = currentUser.role === 'door' ? '访客' : currentUser.username;
+            $('mainPanel').classList.add('visible');
+            loadVideoList();
+        }
+
+        // === 退出 ===
+        function doLogout() {
+            authToken = '';
+            currentUser = null;
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            currentPlaying = '';
+            $('mainPanel').classList.remove('visible');
+            $('authOverlay').style.display = 'flex';
+            $('topBar').style.display = 'none';
+            $('doorPassword').value = '';
+            $('listContent').innerHTML = '<p class="empty-hint">加载中...</p>';
+            $('currentPlayerTitle').textContent = '请在左侧选择视频';
+        }
+
+        // === 视频列表 ===
+        function loadVideoList() {
+            api('/api/vod/list', 'GET').then(function(r) { return r.json(); }).then(function(data) {
+                var container = $('listContent');
+                if (!data.files || data.files.length === 0) {
+                    container.innerHTML = '<p class="empty-hint">暂无视频</p>';
+                    return;
+                }
+                var html = '';
+                data.files.forEach(function(f) {
+                    html += '<div class="video-item" data-name="' + escapeAttr(f.name) + '" onclick="playVideo(\'' + escapeAttr(f.name) + '\')">';
+                    html += '<div class="vname">' + escapeHtml(f.name) + '</div>';
+                    html += '<div class="vsize">' + formatSize(f.size) + '</div>';
+                    html += '</div>';
+                });
+                container.innerHTML = html;
+            }).catch(function() {});
+        }
+
+        // === 播放 ===
+        function playVideo(name) {
+            api('/api/vod/play?file=' + encodeURIComponent(name), 'GET').then(function(r) { return r.json(); }).then(function(data) {
+                if (data.url) {
+                    startPlayback(data.url, data.name);
+                }
+            }).catch(function() {});
+        }
+
+        function startPlayback(url, name) {
+            // 高亮选中项
+            document.querySelectorAll('.video-item').forEach(function(el) {
+                el.classList.toggle('active', el.getAttribute('data-name') === name);
+            });
+            currentPlaying = name;
+
+            var video = $('videoElement');
+            $('currentPlayerTitle').textContent = '▶ ' + name;
+
+            video.src = url;
+            video.play().catch(function() {});
+        }
+
+        // === 初始化 ===
+        (function init() {
+            // 尝试恢复登录态
+            var savedToken = localStorage.getItem('authToken');
+            var savedUser = localStorage.getItem('currentUser');
+            if (savedToken && savedUser) {
+                authToken = savedToken;
+                try { currentUser = JSON.parse(savedUser); } catch(e) { currentUser = null; }
+                if (currentUser && currentUser.role !== 'door') {
+                    // 验证 token 有效性
+                    api('/api/me', 'GET').then(function(r) { return r.json(); }).then(function(data) {
+                        if (data.username) {
+                            onAuthSuccess();
+                        } else {
+                            handleAuthExpired();
+                        }
+                    }).catch(function() {
+                        handleAuthExpired();
+                    });
+                    return;
+                }
+            }
+            // 未登录，显示鉴权遮罩
+            $('authOverlay').style.display = 'flex';
+        })();
+    </script>
+</body>
+</html>

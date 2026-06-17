@@ -2,12 +2,16 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"log"
+	"strings"
 	"time"
 
 	_ "modernc.org/sqlite"
 	"golang.org/x/crypto/bcrypt"
 )
+
+var ErrUserExists = errors.New("username already exists")
 
 type DB struct {
 	conn *sql.DB
@@ -125,6 +129,9 @@ func (db *DB) CreateUser(username, password string) (int64, error) {
 		username, string(hash),
 	)
 	if err != nil {
+		if strings.Contains(err.Error(), "UNIQUE constraint") {
+			return 0, ErrUserExists
+		}
 		return 0, err
 	}
 	return result.LastInsertId()
@@ -188,13 +195,30 @@ func (db *DB) ApproveUser(userID int64) error {
 }
 
 func (db *DB) RejectUser(userID int64) error {
-	_, err := db.conn.Exec("DELETE FROM users WHERE id=? AND status='pending'", userID)
-	return err
+	result, err := db.conn.Exec("DELETE FROM users WHERE id=? AND status='pending'", userID)
+	if err != nil {
+		return err
+	}
+	n, _ := result.RowsAffected()
+	if n == 0 {
+		return errors.New("user not found or not pending")
+	}
+	if n > 1 {
+		log.Printf("[DB] WARNING: RejectUser id=%d affected %d rows", userID, n)
+	}
+	return nil
 }
 
 func (db *DB) DeleteUser(userID int64) error {
-	_, err := db.conn.Exec("DELETE FROM users WHERE id=? AND role!='admin'", userID)
-	return err
+	result, err := db.conn.Exec("DELETE FROM users WHERE id=? AND role!='admin'", userID)
+	if err != nil {
+		return err
+	}
+	n, _ := result.RowsAffected()
+	if n == 0 {
+		return errors.New("user not found or is admin")
+	}
+	return nil
 }
 
 func (db *DB) ChangePassword(userID int64, newPassword string) error {

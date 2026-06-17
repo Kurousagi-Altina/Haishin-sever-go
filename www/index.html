@@ -11,6 +11,7 @@
         .top-bar { justify-content: flex-end; }
         .top-bar .admin-link { border-color: #4CAF50; color: #4CAF50; }
         .top-bar .cloud-link { border-color: #2196F3; color: #90CAF9; }
+        .top-bar .vod-link { border-color: #9C27B0; color: #CE93D8; }
         .top-bar .game-link { border-color: #FF9800; color: #FFB74D; }
 
         .auth-box input { width: 250px; font-size: 16px; margin-bottom: 10px; }
@@ -56,6 +57,7 @@
     <!-- 顶部导航 -->
     <div class="top-bar" id="topBar">
         <span id="topBarGuest" style="display:inline;">
+            <a href="vod.html" class="vod-link">点播</a>
             <a href="/game/" class="game-link" target="_blank">游戏</a>
             <a href="cloud.html" class="cloud-link">云盘</a>
             <button onclick="showRegisterModal()">注册</button>
@@ -63,6 +65,7 @@
         </span>
         <span id="topBarUser" style="display:none;">
             <span class="user-info" id="topBarUsername"></span>
+            <a href="vod.html" class="vod-link">点播</a>
             <a href="/game/" class="game-link" target="_blank">游戏</a>
             <a href="cloud.html" class="cloud-link">云盘</a>
             <a class="admin-link" id="topBarAdminLink" href="admin.html" style="display:none;">管理后台</a>

@@ -92,7 +92,12 @@ func (h *Handler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 
 	id, err := h.db.CreateUser(req.Username, req.Password)
 	if err != nil {
-		writeJSON(w, http.StatusOK, map[string]interface{}{"success": false, "error": "用户名已存在"})
+		if errors.Is(err, ErrUserExists) {
+			writeJSON(w, http.StatusOK, map[string]interface{}{"success": false, "error": "用户名已存在"})
+		} else {
+			log.Printf("[REGISTER] error creating user %s: %v", req.Username, err)
+			writeJSON(w, http.StatusInternalServerError, map[string]interface{}{"error": "注册失败，请稍后重试"})
+		}
 		return
 	}
 
@@ -367,7 +372,9 @@ func (h *Handler) HandleCloudDownload(w http.ResponseWriter, r *http.Request) {
 	ip := getClientIP(r)
 	h.db.RecordAction(ip, tokenInfo.Username, "download", safeName)
 
-	w.Header().Set("Content-Disposition", `attachment; filename="`+safeName+`"`)
+	if r.URL.Query().Get("preview") != "1" {
+		w.Header().Set("Content-Disposition", `attachment; filename="`+safeName+`"`)
+	}
 	http.ServeFile(w, r, filePath)
 }
 
@@ -636,6 +643,67 @@ func (h *Handler) HandleCloudSpace(w http.ResponseWriter, r *http.Request) {
 		"total": total,
 		"used":  used,
 		"free":  free,
+	})
+}
+
+// GET /api/vod/list
+func (h *Handler) HandleVodList(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, `{"error":"method not allowed"}`, http.StatusMethodNotAllowed)
+		return
+	}
+
+	entries, err := os.ReadDir(h.cfg.VideoDir)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]interface{}{"error": "读取视频目录失败"})
+		return
+	}
+
+	type vodFile struct {
+		Name string `json:"name"`
+		Size int64  `json:"size"`
+	}
+	files := make([]vodFile, 0)
+	for _, e := range entries {
+		if e.IsDir() {
+			continue
+		}
+		ext := strings.ToLower(filepath.Ext(e.Name()))
+		if ext == ".mp4" || ext == ".mkv" || ext == ".avi" || ext == ".mov" || ext == ".webm" {
+			info, err := e.Info()
+			if err != nil {
+				continue
+			}
+			files = append(files, vodFile{Name: e.Name(), Size: info.Size()})
+		}
+	}
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{"files": files})
+}
+
+// GET /api/vod/play
+func (h *Handler) HandleVodPlay(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, `{"error":"method not allowed"}`, http.StatusMethodNotAllowed)
+		return
+	}
+
+	fileName := filepath.Base(r.URL.Query().Get("file"))
+	if fileName == "" || fileName == "." || fileName == ".." {
+		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "文件参数无效"})
+		return
+	}
+
+	filePath := filepath.Join(h.cfg.VideoDir, fileName)
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		writeJSON(w, http.StatusNotFound, map[string]interface{}{"error": "视频文件不存在"})
+		return
+	}
+
+	mp4URL := "/videos/" + fileName
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"url":  mp4URL,
+		"name": fileName,
 	})
 }
 
