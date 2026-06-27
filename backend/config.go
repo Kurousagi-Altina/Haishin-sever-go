@@ -17,8 +17,9 @@ type Config struct {
 	StaticDir     string `json:"static_dir"`
 	TokenExpiry   string `json:"token_expiry"` // stored as string for JSON friendliness
 	DownloadDir   string `json:"download_dir"`
-	GameDir       string `json:"game_dir"`
-	VideoDir      string `json:"video_dir"`
+	GameDir             string `json:"game_dir"`
+	VideoDir            string `json:"video_dir"`
+	CloudUploadMinRole  string `json:"cloud_upload_min_role"` // "admin", "user", or "door"
 }
 
 func (c *Config) TokenExpiryDuration() time.Duration {
@@ -44,7 +45,8 @@ func LoadConfig() *Config {
 		TokenExpiry:   "72h",
 		DownloadDir:   "../userdata/download",
 		GameDir:       "../game",
-		VideoDir:      "../userdata/videos",
+		VideoDir:            "../userdata/videos",
+		CloudUploadMinRole:  "user",
 	}
 
 	// 1. Load from config.json, or create it on first run
@@ -98,6 +100,9 @@ func LoadConfig() *Config {
 	}
 	if v := os.Getenv("VIDEO_DIR"); v != "" {
 		cfg.VideoDir = v
+	}
+	if v := os.Getenv("CLOUD_UPLOAD_MIN_ROLE"); v != "" {
+		cfg.CloudUploadMinRole = v
 	}
 
 	return cfg

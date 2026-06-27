@@ -8,5 +8,6 @@
   "token_expiry":   "72h",
   "download_dir":   "../userdata/download",
   "game_dir":       "../game",
-  "video_dir":      "../userdata/videos"
+  "video_dir":      "../userdata/videos",
+  "cloud_upload_min_role": "user"
 }

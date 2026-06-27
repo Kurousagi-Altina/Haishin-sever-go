@@ -386,8 +386,8 @@ func (h *Handler) HandleCloudUpload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	info := getTokenInfo(r)
-	if info.Role == "door" {
-		writeJSON(w, http.StatusForbidden, map[string]interface{}{"error": "游客无上传权限，请登录后操作"})
+	if !roleAtLeast(info.Role, h.cfg.CloudUploadMinRole) {
+		writeJSON(w, http.StatusForbidden, map[string]interface{}{"error": "无上传权限"})
 		return
 	}
 
@@ -435,10 +435,14 @@ func (h *Handler) HandleCloudUpload(w http.ResponseWriter, r *http.Request) {
 	if subPath != "" {
 		fileKey = subPath + "/" + safeName
 	}
-	h.db.SetFileUploader(fileKey, info.Username)
+	uploader := info.Username
+	if info.Role == "door" || uploader == "" {
+		uploader = "访客(" + ip + ")"
+	}
+	h.db.SetFileUploader(fileKey, uploader)
 	h.db.RecordAction(ip, info.Username, "upload", safeName)
 
-	log.Printf("[CLOUD] user %s (id=%d) uploaded file: %s", info.Username, info.UserID, safeName)
+	log.Printf("[CLOUD] uploader=%s uploaded file: %s", uploader, safeName)
 
 	writeJSON(w, http.StatusOK, map[string]interface{}{
 		"success":  true,
@@ -623,26 +627,28 @@ func (h *Handler) HandleCloudSpace(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	total, free, err := getDiskSpace(h.cfg.DownloadDir)
+	_, avail, err := getDiskSpace(h.cfg.DownloadDir)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]interface{}{"error": "获取空间信息失败"})
 		return
 	}
 
-	// 预留 4GB 系统空间
-	const reserved int64 = 4 * 1024 * 1024 * 1024
-	if free > uint64(reserved) {
-		free -= uint64(reserved)
-	} else {
-		free = 0
+	// 预留 4GB 系统空间，计算可用空间
+	const reserved uint64 = 4 * 1024 * 1024 * 1024
+	var free uint64
+	if avail > reserved {
+		free = avail - reserved
 	}
 
 	used, _ := dirSize(h.cfg.DownloadDir)
 
+	// total = 实际占用 + 实际可用（云盘可用空间，非磁盘总大小）
+	total := used + int64(free)
+
 	writeJSON(w, http.StatusOK, map[string]interface{}{
 		"total": total,
 		"used":  used,
-		"free":  free,
+		"free":  int64(free),
 	})
 }
 
@@ -669,7 +675,7 @@ func (h *Handler) HandleVodList(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		ext := strings.ToLower(filepath.Ext(e.Name()))
-		if ext == ".mp4" || ext == ".mkv" || ext == ".avi" || ext == ".mov" || ext == ".webm" {
+		if ext == ".mp4" || ext == ".m4v" || ext == ".mp4v" || ext == ".f4v" || ext == ".3gp" || ext == ".3g2" || ext == ".mkv" || ext == ".avi" || ext == ".mov" || ext == ".webm" {
 			info, err := e.Info()
 			if err != nil {
 				continue
@@ -705,6 +711,12 @@ func (h *Handler) HandleVodPlay(w http.ResponseWriter, r *http.Request) {
 		"url":  mp4URL,
 		"name": fileName,
 	})
+}
+
+var roleLevel = map[string]int{"door": 0, "user": 1, "admin": 2}
+
+func roleAtLeast(role, minRole string) bool {
+	return roleLevel[role] >= roleLevel[minRole]
 }
 
 func safeResolvePath(base, sub string) (string, error) {

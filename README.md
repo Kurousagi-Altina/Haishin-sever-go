@@ -556,17 +556,25 @@ Header: `Authorization: Bearer <token>`
 
 ## 配置说明
 
-通过环境变量配置，均在 `config.go` 中定义：
+程序启动时按优先级加载配置：**`config.json` > 环境变量 > 默认值**。首次启动若目录下无 `config.json`，会自动创建含默认值的配置文件。
 
-| 环境变量 | 默认值 | 说明 |
-|----------|--------|------|
-| `SERVER_ADDR` | `:80` | Go 后端监听地址 |
-| `ZLM_BASE_URL` | `http://47.97.153.51` | ZLMediaKit 服务器地址 |
-| `ZLM_SECRET` | `AQzyGOxCEtDHpCRVSh40UJWvNVLtqjU4` | ZLM API 密钥 |
-| `ADMIN_PASSWORD` | `114514` | 门禁共享口令 |
-| `DB_PATH` | `./data.db` | SQLite 数据库文件路径 |
-| `TOKEN_EXPIRY` | `72h` | 登录/口令 Token 有效期 |
-| `DOWNLOAD_DIR` | `./userdata/download` | 云盘文件存储目录 |
+参照 `backend/config.example.json` 编辑 `config.json`：
+
+| 配置项 | 默认值 | 说明 |
+|--------|--------|------|
+| `server_addr` | `:80` | Go 后端监听地址 |
+| `zlm_base_url` | `http://47.96.99.181:8080` | ZLMediaKit 服务器地址 |
+| `zlm_secret` | `035c73f7-...` | ZLM API 密钥 |
+| `admin_password` | `114514` | 门禁共享口令 |
+| `db_path` | `./data.db` | SQLite 数据库文件路径 |
+| `static_dir` | `../www` | 前端静态资源目录 |
+| `token_expiry` | `72h` | Token 有效期，支持 Go duration 格式（`72h`、`2h30m`）或纯秒数（`259200`） |
+| `download_dir` | `../userdata/download` | 云盘文件存储目录 |
+| `game_dir` | `../game` | 游戏文件目录 |
+| `video_dir` | `../userdata/videos` | VOD 视频文件目录 |
+| `cloud_upload_min_role` | `user` | 云盘上传最低角色：`admin`（仅管理员）、`user`（注册用户及以上）、`door`（所有人含游客） |
+
+环境变量名称为配置项的蛇形大写形式（如 `SERVER_ADDR`、`CLOUD_UPLOAD_MIN_ROLE`），可覆盖配置文件中的值。
 
 > 管理员账号 `admin` / `krusgaltn` 在首次启动时写入数据库，后续启动不会重复创建。如需重置，删除 `data.db` 后重启即可。
 
@@ -593,8 +601,8 @@ go run .
 # 编译
 go build -o server.exe .
 
-# 自定义配置运行
-SERVER_ADDR=:9090 ADMIN_PASSWORD=mypassword go run .
+# 自定义配置运行（环境变量覆盖 config.json）
+SERVER_ADDR=:9090 go run .
 ```
 
 启动后：
@@ -611,10 +619,9 @@ make
 # 或手动编译
 CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o build/liveserver .
 
-# 设置生产环境变量
-export SERVER_ADDR=":80"
-export ADMIN_PASSWORD="生产环境强口令"
-export TOKEN_EXPIRY="2h"
+# 复制配置模板并编辑
+cp config.example.json config.json
+vim config.json
 
 # 运行
 ./build/liveserver
