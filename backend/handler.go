@@ -284,6 +284,9 @@ func (h *Handler) HandleCloudList(w http.ResponseWriter, r *http.Request) {
 	fileNames := make([]string, 0, len(entries))
 	fileInfos := make([]os.FileInfo, 0, len(entries))
 	for _, entry := range entries {
+		if strings.HasSuffix(entry.Name(), ".part") {
+			continue
+		}
 		info, err := entry.Info()
 		if err != nil {
 			continue
@@ -418,16 +421,28 @@ func (h *Handler) HandleCloudUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dstPath := filepath.Join(targetDir, safeName)
-	dst, err := os.Create(dstPath)
+	// 先写 .part 临时文件，成功后原子改名，避免中断上传留下伪装成正式文件的残片
+	tmpPath := filepath.Join(targetDir, "."+safeName+".part")
+	dst, err := os.Create(tmpPath)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]interface{}{"error": "创建文件失败"})
 		return
 	}
-	defer dst.Close()
 
-	if _, err := io.Copy(dst, file); err != nil {
+	_, copyErr := io.Copy(dst, file)
+	if closeErr := dst.Close(); copyErr == nil {
+		copyErr = closeErr
+	}
+	if copyErr != nil {
+		os.Remove(tmpPath)
 		writeJSON(w, http.StatusInternalServerError, map[string]interface{}{"error": "写入文件失败"})
+		return
+	}
+
+	dstPath := filepath.Join(targetDir, safeName)
+	if err := os.Rename(tmpPath, dstPath); err != nil {
+		os.Remove(tmpPath)
+		writeJSON(w, http.StatusInternalServerError, map[string]interface{}{"error": "保存文件失败"})
 		return
 	}
 
@@ -744,6 +759,24 @@ func dirSize(path string) (int64, error) {
 		return nil
 	})
 	return size, err
+}
+
+// cleanupPartialUploads removes leftover .part files from interrupted uploads.
+func cleanupPartialUploads(dir string) {
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return nil
+		}
+		if !info.IsDir() && strings.HasSuffix(info.Name(), ".part") {
+			if rmErr := os.Remove(path); rmErr == nil {
+				log.Printf("[CLOUD] cleaned stale partial upload: %s", path)
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		log.Printf("[CLOUD] cleanupPartialUploads: %v", err)
+	}
 }
 
 func writeJSON(w http.ResponseWriter, status int, data interface{}) {

@@ -26,6 +26,9 @@ func main() {
 		log.Fatalf("Failed to create download directory %s: %v", cfg.DownloadDir, err)
 	}
 
+	// Remove stale .part files left by interrupted uploads
+	cleanupPartialUploads(cfg.DownloadDir)
+
 	// Ensure video directory exists
 	if err := os.MkdirAll(cfg.VideoDir, 0755); err != nil {
 		log.Fatalf("Failed to create video directory %s: %v", cfg.VideoDir, err)
