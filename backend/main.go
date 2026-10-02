@@ -54,6 +54,11 @@ func main() {
 	protected.HandleFunc("/api/cloud/space", handler.HandleCloudSpace)
 	protected.HandleFunc("/api/vod/list", handler.HandleVodList)
 	protected.HandleFunc("/api/vod/play", handler.HandleVodPlay)
+	protected.HandleFunc("/api/dice/roll", handler.HandleDiceRoll)
+	protected.HandleFunc("/api/dice/rolls", handler.HandleDiceRolls)
+	protected.HandleFunc("/api/dice/clear", handler.HandleDiceClear)
+	protected.HandleFunc("/api/dice/rooms", handler.HandleDiceRooms)
+	protected.HandleFunc("/api/dice/presets", handler.HandleDicePresets)
 
 	mux.Handle("/api/me", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/streams", AuthMiddleware(tm)(protected))
@@ -67,6 +72,7 @@ func main() {
 	mux.Handle("/api/cloud/space", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/vod/list", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/vod/play", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/dice/", AuthMiddleware(tm)(protected))
 
 	// Admin routes (admin token required)
 	admin := http.NewServeMux()

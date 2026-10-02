@@ -13,6 +13,19 @@
         .top-bar .cloud-link { border-color: #2196F3; color: #90CAF9; }
         .top-bar .vod-link { border-color: #9C27B0; color: #CE93D8; }
         .top-bar .game-link { border-color: #FF9800; color: #FFB74D; }
+        .top-bar .dice-link { border-color: #E91E63; color: #F48FB1; }
+
+        /* OJ 对战快捷方式：右上角浮动橙子图标（顶栏下方） */
+        .oj-float {
+            position: fixed; top: 50px; right: 16px; z-index: 999;
+            width: 46px; height: 46px; border-radius: 50%;
+            background: rgba(0, 0, 0, 0.45); border: 2px solid rgba(255, 160, 40, 0.7);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .oj-float img { width: 36px; height: 36px; border-radius: 50%; display: block; }
+        .oj-float:hover { transform: scale(1.1) rotate(6deg); box-shadow: 0 6px 20px rgba(255, 140, 20, 0.45); }
 
         .auth-box input { width: 250px; font-size: 16px; margin-bottom: 10px; }
         .auth-box .error { font-size: 14px; }
@@ -60,6 +73,7 @@
             <a href="vod.html" class="vod-link">点播</a>
             <a href="/game/" class="game-link" target="_blank">游戏</a>
             <a href="cloud.html" class="cloud-link">云盘</a>
+            <a href="dice.html" class="dice-link">跑团骰子</a>
             <button onclick="showRegisterModal()">注册</button>
             <button onclick="showLoginModal()">登录</button>
         </span>
@@ -68,10 +82,16 @@
             <a href="vod.html" class="vod-link">点播</a>
             <a href="/game/" class="game-link" target="_blank">游戏</a>
             <a href="cloud.html" class="cloud-link">云盘</a>
+            <a href="dice.html" class="dice-link">跑团骰子</a>
             <a class="admin-link" id="topBarAdminLink" href="admin.html" style="display:none;">管理后台</a>
             <button onclick="doLogout()">退出</button>
         </span>
     </div>
+
+    <!-- OJ 对战快捷方式：右上角橙子图标（顶栏下方） -->
+    <a id="ojFloat" class="oj-float" target="_blank" title="OJ 对战 · 100% Orange Juice 网页复刻">
+        <img src="oj_icon.png" alt="OJ 对战">
+    </a>
 
     <!-- 注册弹窗 -->
     <div class="modal-overlay" id="registerModal">
@@ -150,6 +170,7 @@
                     currentUser = null;
                     localStorage.removeItem('authToken');
                     localStorage.removeItem('currentUser');
+                    document.cookie = 'oj_token=; max-age=0; path=/';
                     updateTopBar();
                     if (streamPollTimer) { clearInterval(streamPollTimer); streamPollTimer = null; }
                     if (flvPlayer) {
@@ -167,6 +188,11 @@
         }
 
         // === 顶部栏 ===
+        // OJ game link points at the game server on the same host, port 8787
+        (function () {
+            var ojBase = 'http://' + location.hostname + ':8787/';
+            var o = document.getElementById('ojFloat'); if (o) o.href = ojBase;
+        })();
         function updateTopBar() {
             if (currentUser && currentUser.role !== 'door') {
                 $('topBarGuest').style.display = 'none';
@@ -188,6 +214,7 @@
             currentUser = null;
             localStorage.removeItem('authToken');
             localStorage.removeItem('currentUser');
+            document.cookie = 'oj_token=; max-age=0; path=/';
             updateTopBar();
             $('hallContainer').classList.remove('visible');
             $('authOverlay').style.display = 'flex';
@@ -255,6 +282,10 @@
                     currentUser = { username: data.username, role: data.role, user_id: data.user_id };
                     localStorage.setItem('authToken', authToken);
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    // share the session with the OJ game server (same host,
+                    // different port): a host-scoped cookie is readable there
+                    document.cookie = 'oj_token=' + encodeURIComponent(data.token) + '; max-age=259200; path=/';
+                    document.cookie = 'oj_user=' + encodeURIComponent(data.username) + '; max-age=259200; path=/';
                     hideLoginModal();
                     updateTopBar();
                     $('authOverlay').style.display = 'none';

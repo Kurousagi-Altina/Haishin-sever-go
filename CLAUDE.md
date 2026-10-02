@@ -24,7 +24,7 @@ Three-tier `http.ServeMux` sub-mux pattern:
 | Tier | Pattern | Middleware | Purpose |
 |------|---------|-----------|---------|
 | Public | `/api/verify`, `/api/register`, `/api/login` | none | Auth endpoints |
-| Protected | `/api/me`, `/api/streams`, `/api/cloud/*`, `/api/vod/*` | `AuthMiddleware` | Any valid token (door/user/admin) |
+| Protected | `/api/me`, `/api/streams`, `/api/cloud/*`, `/api/vod/*`, `/api/dice/*` | `AuthMiddleware` | Any valid token (door/user/admin) |
 | Admin | `/api/admin/*` | `AuthMiddleware` + `AdminMiddleware` | role="admin" only |
 | Files | `/videos/`, `/game/`, `/` | varies | Static file serving |
 
@@ -55,6 +55,17 @@ First run auto-creates `config.json` with defaults. `TokenExpiry` is a string ("
 
 Minimal — only `GetMediaList()` calling `/index/api/getMediaList?secret=...`. Stream playback is direct from ZLM to browser (FLV), not proxied.
 
+### Dice module (dice.go / dice_db.go / dice_handler.go)
+
+D&D-style dice roller; every roll is persisted and visible to everyone in the same room.
+
+- Grammar: `NdM` with keep/drop (`kh`/`kl`/`dh`/`dl`), explode (`!`), flat `±N`, multi-term (`2d6+1d4-1`). Limits: 100 dice/term, 200 dice/roll, 1000 sides, 200 chars.
+- 优势/劣势 is a **client-side** mode, not a server concept: `applyRollMode()` in `dice.html` expands the *first* dice term before POSTing (`1d20+5` + 优势 → `2d20kh1+5`), so the user never types `2d` themselves. Only the first dice term is expanded — damage dice in `1d20+5+3d6` are untouched. The server stays a plain expression evaluator, and the log records exactly what was rolled. Presets save the expanded form so they replay identically.
+- `RollDice()` returns `RollResult{Terms[], Total, Crit}`. `Crit` ("success"/"fumble") is set only when exactly one kept d20 decides the result — so `2d20kh1` (advantage) still counts, `2d20` does not.
+- Delivery is polling, not push: `GET /api/dice/rolls?room=&since=<id>` returns rows newer than `since` plus `latest_id`. The client resets its cursor when `latest_id < since` (room cleared elsewhere). Client polls every 2s, pauses on `visibilitychange`.
+- Rooms (`默认` by default) isolate tables. Presets are per-account — door guests get 403 and the UI hides the save box.
+- `www/dice.html` has its own JS preview parser that mirrors the Go grammar; **keep `previewExpression()` in sync with `parseExpression()`** or the preview will accept expressions the server rejects. `applyRollMode()` must likewise stay consistent with the Go grammar — every expansion it produces has to be a valid expression.
+
 ## Frontend Pages
 
 | Page | File | Player | Notes |
@@ -62,6 +73,7 @@ Minimal — only `GetMediaList()` calling `/index/api/getMediaList?secret=...`. 
 | Live | `www/index.html` | flv.js 1.6.2 | Gate password + user login, 5s stream polling |
 | VOD | `www/vod.html` | native `<video>` | Direct MP4 via `/videos/` route, no hls.js |
 | Cloud | `www/cloud.html` | native `<video>`/`<img>` | Preview modal for images/videos, `?preview=1` on download endpoint |
+| Dice | `www/dice.html` | — | D&D dice roller, 2s poll on `/api/dice/rolls?since=`, per-room shared log |
 | Admin | `www/admin.html` | — | Separate login, tabbed dashboard, paginated logs |
 
 Shared: `www/css/common.css` (frosted-glass theme), `www/js/utils.js` (`$()`, `escapeHtml()`, `escapeAttr()`, `formatSize()`).

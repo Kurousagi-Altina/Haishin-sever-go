@@ -90,6 +90,31 @@ func (db *DB) migrate() error {
 			created_at DATETIME NOT NULL DEFAULT (datetime('now', 'localtime'))
 		);
 		CREATE INDEX IF NOT EXISTS idx_action_logs_time ON action_logs(created_at);
+
+		CREATE TABLE IF NOT EXISTS dice_rolls (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			room TEXT NOT NULL DEFAULT '默认',
+			user_id INTEGER NOT NULL DEFAULT 0,
+			username TEXT NOT NULL DEFAULT '',
+			character_name TEXT NOT NULL DEFAULT '',
+			roll_name TEXT NOT NULL DEFAULT '',
+			expression TEXT NOT NULL,
+			detail TEXT NOT NULL DEFAULT '',
+			total INTEGER NOT NULL DEFAULT 0,
+			crit TEXT NOT NULL DEFAULT '',
+			created_at DATETIME NOT NULL DEFAULT (datetime('now', 'localtime'))
+		);
+		CREATE INDEX IF NOT EXISTS idx_dice_rolls_room ON dice_rolls(room, id);
+
+		CREATE TABLE IF NOT EXISTS dice_presets (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			user_id INTEGER NOT NULL,
+			username TEXT NOT NULL DEFAULT '',
+			name TEXT NOT NULL,
+			expression TEXT NOT NULL,
+			created_at DATETIME NOT NULL DEFAULT (datetime('now', 'localtime'))
+		);
+		CREATE UNIQUE INDEX IF NOT EXISTS idx_dice_presets_user_name ON dice_presets(user_id, name);
 		`
 	_, err := db.conn.Exec(schema)
 	return err
@@ -209,8 +234,16 @@ func (db *DB) RejectUser(userID int64) error {
 	return nil
 }
 
+// DeleteUser 删除用户，并连带清掉只属于该账号的骰子预设。
+// 掷骰记录是房间共享的历史（角色名已冗余存储），不属于个人数据，保留不动。
 func (db *DB) DeleteUser(userID int64) error {
-	result, err := db.conn.Exec("DELETE FROM users WHERE id=? AND role!='admin'", userID)
+	tx, err := db.conn.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	result, err := tx.Exec("DELETE FROM users WHERE id=? AND role!='admin'", userID)
 	if err != nil {
 		return err
 	}
@@ -218,7 +251,12 @@ func (db *DB) DeleteUser(userID int64) error {
 	if n == 0 {
 		return errors.New("user not found or is admin")
 	}
-	return nil
+
+	if _, err := tx.Exec("DELETE FROM dice_presets WHERE user_id=?", userID); err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func (db *DB) ChangePassword(userID int64, newPassword string) error {

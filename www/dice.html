@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跑团骰子 - 神秘网站</title>
+    <link rel="icon" href="./icon.png" type="image/png">
+    <link rel="stylesheet" href="css/common.css">
+    <script src="js/utils.js"></script>
+    <style>
+        .top-bar { justify-content: space-between; }
+        .top-bar .left, .top-bar .right { display: flex; align-items: center; gap: 10px; }
+        .top-bar .dice-link { border-color: #E91E63; color: #F48FB1; }
+        .top-bar .room-input {
+            width: 120px; padding: 4px 10px; font-size: 13px; border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.12);
+            color: white; outline: none;
+        }
+        .top-bar .room-input::placeholder { color: #bbb; }
+
+        .auth-box { min-width: 340px; }
+        .auth-box .subtitle { color: #aaa; font-size: 13px; margin-bottom: 20px; }
+        .auth-box input { display: block; width: 100%; box-sizing: border-box; margin-bottom: 12px; }
+        .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #444; }
+        .auth-tab {
+            flex: 1; padding: 8px; cursor: pointer; font-size: 14px;
+            color: #aaa; border-bottom: 2px solid transparent; transition: 0.2s;
+        }
+        .auth-tab.active { color: #E91E63; border-bottom-color: #E91E63; }
+        .auth-panel { display: none; }
+        .auth-panel.active { display: block; }
+
+        .main-panel {
+            display: none; gap: 20px;
+            width: 94%; max-width: 1280px;
+            height: calc(100vh - 100px); margin-top: 50px;
+        }
+        .main-panel.visible { display: flex; }
+
+        .panel {
+            border-radius: 15px; background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            display: flex; flex-direction: column; min-height: 0;
+        }
+
+        /* === 左侧：投掷台 === */
+        .console { flex: 0 0 400px; padding: 18px 20px; overflow-y: auto; }
+        .console h3 {
+            margin: 0 0 14px; font-size: 16px; text-align: center;
+            border-bottom: 1px solid #555; padding-bottom: 10px;
+        }
+        .field { margin-bottom: 14px; }
+        .field > label {
+            display: block; font-size: 12px; color: #bbb; margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+        .field input[type=text], .field input[type=number] {
+            width: 100%; box-sizing: border-box; padding: 9px 12px; font-size: 14px;
+            border-radius: 8px; border: 1px solid #555; background: #222; color: white; outline: none;
+        }
+        .field input:focus { border-color: #E91E63; }
+        .field input::placeholder { color: #777; }
+
+        .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .chip {
+            padding: 4px 10px; font-size: 12px; border-radius: 12px; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.1);
+            color: #ddd; transition: 0.15s; user-select: none;
+        }
+        .chip:hover { background: rgba(233,30,99,0.35); border-color: #E91E63; color: #fff; }
+        .chip.tpl { border-color: rgba(156,39,176,0.6); }
+        .chip.tpl:hover { background: rgba(156,39,176,0.4); border-color: #CE93D8; }
+        .chip.mode { padding: 6px 18px; font-size: 13px; border-radius: 14px; }
+        .chip.mode.active {
+            background: linear-gradient(135deg, #E91E63, #9C27B0);
+            border-color: #F48FB1; color: #fff; font-weight: bold;
+            box-shadow: 0 0 12px rgba(233,30,99,0.5);
+        }
+        .chip.mode.active:hover { background: linear-gradient(135deg, #E91E63, #9C27B0); }
+
+        .expr-input {
+            font-family: 'Consolas', 'Courier New', monospace !important;
+            font-size: 18px !important; letter-spacing: 1px;
+        }
+        .expr-preview { font-size: 12px; margin-top: 6px; min-height: 16px; color: #8BC34A; }
+        .expr-preview.error { color: #f44336; }
+
+        .dice-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; }
+        .dice-btn {
+            padding: 10px 0; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.12);
+            color: #fff; transition: 0.15s;
+        }
+        .dice-btn:hover { background: rgba(233,30,99,0.45); border-color: #E91E63; transform: translateY(-1px); }
+        .dice-btn:active { transform: translateY(0); }
+
+        .count-row { display: flex; align-items: center; gap: 8px; }
+        .count-row button {
+            width: 34px; height: 34px; font-size: 18px; line-height: 1; border-radius: 8px; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.12); color: white;
+        }
+        .count-row button:hover { background: rgba(255,255,255,0.28); }
+        .count-row input { flex: 1; text-align: center; }
+
+        .roll-btn {
+            width: 100%; padding: 14px; font-size: 18px; font-weight: bold; letter-spacing: 4px;
+            border: none; border-radius: 10px; cursor: pointer; color: white;
+            background: linear-gradient(135deg, #E91E63, #9C27B0);
+            box-shadow: 0 4px 18px rgba(233,30,99,0.4); transition: 0.2s;
+        }
+        .roll-btn:hover { box-shadow: 0 6px 24px rgba(233,30,99,0.7); transform: translateY(-1px); }
+        .roll-btn:active { transform: translateY(0) scale(0.99); }
+        .roll-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .preset-item {
+            display: flex; align-items: center; gap: 8px; padding: 7px 10px; margin-bottom: 6px;
+            background: rgba(255,255,255,0.08); border-radius: 8px; font-size: 13px;
+        }
+        .preset-item .pname { flex: 1; cursor: pointer; word-break: break-all; }
+        .preset-item .pname:hover { color: #F48FB1; }
+        .preset-item .pexpr {
+            font-family: 'Consolas', monospace; font-size: 12px; color: #CE93D8;
+        }
+        .preset-item .pdel {
+            border: none; background: transparent; color: #888; cursor: pointer; font-size: 15px; padding: 0 4px;
+        }
+        .preset-item .pdel:hover { color: #f44336; }
+
+        .hint { font-size: 12px; color: #888; text-align: center; padding: 10px 0; }
+
+        /* === 右侧：公共记录 === */
+        .log-panel { flex: 1; padding: 18px 20px; }
+        .log-head {
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid #555; padding-bottom: 10px; margin-bottom: 12px;
+        }
+        .log-head h3 { margin: 0; font-size: 16px; }
+        .log-head .meta { font-size: 12px; color: #aaa; display: flex; align-items: center; gap: 12px; }
+        .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #4CAF50; margin-right: 5px; }
+        .dot.off { background: #777; }
+        .btn-clear {
+            padding: 4px 12px; font-size: 12px; border-radius: 6px; cursor: pointer;
+            border: 1px solid rgba(244,67,54,0.6); background: rgba(244,67,54,0.15); color: #EF9A9A;
+        }
+        .btn-clear:hover { background: rgba(244,67,54,0.35); }
+
+        .roll-list { flex: 1; overflow-y: auto; padding-right: 4px; }
+
+        .roll {
+            padding: 12px 14px; margin-bottom: 10px; border-radius: 10px;
+            background: rgba(255,255,255,0.08); border-left: 3px solid rgba(255,255,255,0.25);
+            transition: background 0.3s;
+        }
+        .roll.mine { border-left-color: #4CAF50; background: rgba(76,175,80,0.12); }
+        .roll.crit-success { border-left-color: #FFD54F; background: rgba(255,213,79,0.16); box-shadow: 0 0 18px rgba(255,213,79,0.25); }
+        .roll.crit-fumble { border-left-color: #F44336; background: rgba(244,67,54,0.14); }
+        .roll.fresh { animation: pop 0.45s ease-out; }
+        @keyframes pop {
+            0% { opacity: 0; transform: translateY(-10px) scale(0.97); }
+            100% { opacity: 1; transform: none; }
+        }
+
+        .roll-top { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+        .roll-char { font-weight: bold; font-size: 15px; color: #fff; }
+        .roll-name {
+            font-size: 12px; padding: 2px 9px; border-radius: 10px;
+            background: rgba(156,39,176,0.5); color: #E1BEE7;
+        }
+        .roll-account { font-size: 11px; color: #888; }
+        .roll-time { font-size: 11px; color: #888; margin-left: auto; }
+        .roll-crit-tag { font-size: 12px; font-weight: bold; }
+        .roll-crit-tag.success { color: #FFD54F; }
+        .roll-crit-tag.fumble { color: #EF5350; }
+
+        .roll-body { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .dice-strip { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+        .die {
+            min-width: 26px; height: 26px; padding: 0 5px; box-sizing: border-box;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: bold; border-radius: 6px;
+            background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);
+        }
+        .die.dropped { opacity: 0.35; text-decoration: line-through; background: transparent; }
+        .die.exploded { background: rgba(255,152,0,0.45); border-color: #FFB74D; }
+        .die.max { background: rgba(76,175,80,0.55); border-color: #81C784; }
+        .die.min { background: rgba(244,67,54,0.5); border-color: #EF9A9A; }
+        .op { color: #aaa; font-size: 14px; margin: 0 2px; }
+        .mod-chip {
+            min-width: 26px; height: 26px; padding: 0 6px; box-sizing: border-box;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 14px; border-radius: 6px; color: #CE93D8;
+            background: rgba(156,39,176,0.25); border: 1px solid rgba(156,39,176,0.5);
+        }
+        .roll-total {
+            margin-left: auto; font-size: 24px; font-weight: bold; color: #F48FB1;
+            font-family: 'Consolas', monospace;
+        }
+        .roll.crit-success .roll-total { color: #FFD54F; }
+        .roll.crit-fumble .roll-total { color: #EF5350; }
+        .roll-expr {
+            font-family: 'Consolas', monospace; font-size: 11px; color: #777; margin-top: 6px;
+        }
+        .roll-del {
+            border: none; background: transparent; color: #666; cursor: pointer;
+            font-size: 13px; padding: 0 2px; align-self: flex-start;
+        }
+        .roll-del:hover { color: #f44336; }
+
+        @media (max-width: 900px) {
+            .main-panel { flex-direction: column; height: auto; margin-top: 50px; padding-bottom: 20px; }
+            .console { flex: none; }
+            .log-panel { min-height: 400px; }
+            .roll-list { max-height: 60vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 顶部导航 -->
+    <div class="top-bar" id="topBar" style="display:none;">
+        <div class="left">
+            <a href="index.html">← 返回主页</a>
+            <span style="font-size:13px;color:#ddd;">房间</span>
+            <input class="room-input" id="roomInput" placeholder="房间名" list="roomList" maxlength="24">
+            <datalist id="roomList"></datalist>
+        </div>
+        <div class="right">
+            <span class="user-info" id="topBarUsername"></span>
+            <button onclick="doLogout()">退出</button>
+        </div>
+    </div>
+
+    <!-- 鉴权遮罩 -->
+    <div class="auth-overlay" id="authOverlay" style="display:none;">
+        <div class="auth-box">
+            <h2>跑团骰子验证</h2>
+            <p class="subtitle">请验证身份后进入骰子房间</p>
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="door" onclick="switchAuthTab('door')">门禁口令</div>
+                <div class="auth-tab" data-tab="login" onclick="switchAuthTab('login')">用户登录</div>
+            </div>
+
+            <div class="auth-panel active" id="panelDoor">
+                <input type="text" style="display:none;" autocomplete="username">
+                <input type="password" id="doorPassword" placeholder="请输入口令..." autocomplete="new-password" autofocus>
+                <button class="btn-primary" onclick="doDoorVerify()">验证</button>
+                <div class="error" id="doorError"></div>
+            </div>
+
+            <div class="auth-panel" id="panelLogin">
+                <input type="text" id="loginUsername" placeholder="用户名" autocomplete="off">
+                <input type="password" id="loginPassword" placeholder="密码">
+                <button class="btn-primary" onclick="doDiceLogin()">登录</button>
+                <div class="error" id="loginError"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主面板 -->
+    <div class="main-panel" id="mainPanel">
+
+        <!-- 投掷台 -->
+        <div class="panel console">
+            <h3>🎲 投掷台</h3>
+
+            <div class="field">
+                <label>角色名</label>
+                <input type="text" id="characterInput" placeholder="例如：阿尔缇娜" maxlength="32">
+                <div class="hint" id="characterHint" style="text-align:left;padding:6px 0 0;"></div>
+            </div>
+
+            <div class="field">
+                <label>掷骰名称（这次掷骰是为了什么）</label>
+                <input type="text" id="rollNameInput" placeholder="例如：先攻 / 攻击检定" maxlength="32">
+                <div class="chips" id="rollNameChips"></div>
+            </div>
+
+            <div class="field">
+                <label>骰子组合</label>
+                <input type="text" class="expr-input" id="exprInput" placeholder="例如 2d6+3" autocomplete="off">
+                <div class="expr-preview" id="exprPreview"></div>
+            </div>
+
+            <div class="field">
+                <label>骰子颗数</label>
+                <div class="count-row">
+                    <button onclick="stepCount(-1)">−</button>
+                    <input type="number" id="diceCount" value="1" min="1" max="100">
+                    <button onclick="stepCount(1)">+</button>
+                </div>
+                <div class="dice-grid">
+                    <button class="dice-btn" onclick="addDice(4)">d4</button>
+                    <button class="dice-btn" onclick="addDice(6)">d6</button>
+                    <button class="dice-btn" onclick="addDice(8)">d8</button>
+                    <button class="dice-btn" onclick="addDice(10)">d10</button>
+                    <button class="dice-btn" onclick="addDice(12)">d12</button>
+                    <button class="dice-btn" onclick="addDice(20)">d20</button>
+                    <button class="dice-btn" onclick="addDice(100)">d100</button>
+                    <button class="dice-btn" onclick="addDice(2)">d2</button>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>加值 / 减值</label>
+                <div class="chips">
+                    <span class="chip" onclick="appendSigned(1)">+1</span>
+                    <span class="chip" onclick="appendSigned(2)">+2</span>
+                    <span class="chip" onclick="appendSigned(3)">+3</span>
+                    <span class="chip" onclick="appendSigned(5)">+5</span>
+                    <span class="chip" onclick="appendSigned(-1)">-1</span>
+                    <span class="chip" onclick="appendSigned(-2)">-2</span>
+                    <span class="chip" onclick="appendSigned(-3)">-3</span>
+                    <span class="chip" onclick="appendSigned(-5)">-5</span>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>检定方式（自动多掷一颗，不用自己写 2d）</label>
+                <div class="chips" id="modeChips">
+                    <span class="chip mode active" data-mode="" onclick="setMode('')">普通</span>
+                    <span class="chip mode" data-mode="adv" onclick="setMode('adv')">优势</span>
+                    <span class="chip mode" data-mode="dis" onclick="setMode('dis')">劣势</span>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>其他修饰</label>
+                <div class="chips">
+                    <span class="chip" onclick="appendKeepSuffix('dl1')">丢最低 dl1</span>
+                    <span class="chip" onclick="appendKeepSuffix('dh1')">丢最高 dh1</span>
+                    <span class="chip" onclick="appendKeepSuffix('!')">爆炸 !</span>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>常用组合</label>
+                <div class="chips" id="templateChips"></div>
+            </div>
+
+            <div class="field">
+                <div class="chips" style="margin-bottom:10px;">
+                    <span class="chip" onclick="clearExpr()">清空组合</span>
+                    <span class="chip" onclick="appendTerm('1d20')">先攻 d20</span>
+                </div>
+                <button class="roll-btn" id="rollBtn" onclick="doRoll()">掷 骰</button>
+            </div>
+
+            <div class="field">
+                <label>我的预设组合</label>
+                <div class="count-row" id="presetSaveRow" style="margin-bottom:8px;">
+                    <input type="text" id="presetName" placeholder="预设名称" maxlength="32">
+                    <button onclick="savePreset()" title="保存当前组合" style="width:auto;padding:0 14px;">保存</button>
+                </div>
+                <div id="presetList"><div class="hint">暂无预设</div></div>
+            </div>
+        </div>
+
+        <!-- 公共记录 -->
+        <div class="panel log-panel">
+            <div class="log-head">
+                <h3>📜 掷骰记录 · <span id="roomLabel">默认</span></h3>
+                <div class="meta">
+                    <span id="pollState"><span class="dot"></span>实时同步中</span>
+                    <button class="btn-clear" id="clearBtn" style="display:none;" onclick="clearRoom()">清空记录</button>
+                </div>
+            </div>
+            <div class="roll-list" id="rollList">
+                <div class="hint">加载中...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var authToken = '';
+        var currentUser = null;
+        var currentRoom = localStorage.getItem('diceRoom') || '默认';
+        var lastRollId = 0;
+        var pollTimer = null;
+        var seenIds = {};
+        var rollMode = '';   // '' 普通 | 'adv' 优势 | 'dis' 劣势
+
+        var ROLL_NAME_PRESETS = ['先攻', '攻击检定', '伤害', '豁免', '属性检定', '技能检定', '治疗', '潜行', '察觉'];
+        var TEMPLATES = [
+            { name: '先攻', expr: '1d20' },
+            { name: '优势', expr: '1d20', mode: 'adv' },
+            { name: '劣势', expr: '1d20', mode: 'dis' },
+            { name: '属性生成', expr: '4d6dl1' },
+            { name: '普通攻击', expr: '1d20+5' },
+            { name: '长剑伤害', expr: '1d8+3' },
+            { name: '火球术', expr: '8d6' },
+            { name: '治疗药水', expr: '2d4+2' },
+            { name: '百分比', expr: 'd100' }
+        ];
+
+        // === API 辅助 ===
+        function api(url, method, body) {
+            var headers = {};
+            if (body) headers['Content-Type'] = 'application/json';
+            if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
+            var opts = { method: method, headers: headers };
+            if (body) opts.body = JSON.stringify(body);
+            return fetch(url, opts).then(function(r) {
+                if (r.status === 401) {
+                    handleAuthExpired();
+                    return Promise.reject('unauthorized');
+                }
+                return r.json();
+            });
+        }
+
+        function handleAuthExpired() {
+            stopPolling();
+            authToken = '';
+            currentUser = null;
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            $('mainPanel').classList.remove('visible');
+            $('authOverlay').style.display = 'flex';
+            $('topBar').style.display = 'none';
+        }
+
+        // === 鉴权 ===
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(function(t) { t.classList.remove('active'); });
+            document.querySelectorAll('.auth-panel').forEach(function(p) { p.classList.remove('active'); });
+            document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+            $('panel' + (tab === 'door' ? 'Door' : 'Login')).classList.add('active');
+            $('doorError').textContent = '';
+            $('loginError').textContent = '';
+        }
+
+        function doDoorVerify() {
+            var pw = $('doorPassword').value;
+            $('doorError').textContent = '';
+            if (!pw) { $('doorError').textContent = '请输入口令'; return; }
+
+            fetch('/api/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: pw })
+            }).then(function(r) { return r.json(); }).then(function(data) {
+                if (data.success) {
+                    authToken = data.token;
+                    currentUser = { username: '', role: 'door', user_id: 0 };
+                    onAuthSuccess();
+                } else {
+                    $('doorError').textContent = data.error || '口令错误';
+                }
+            }).catch(function() {
+                $('doorError').textContent = '连接服务器失败';
+            });
+        }
+
+        function doDiceLogin() {
+            var u = $('loginUsername').value.trim();
+            var p = $('loginPassword').value;
+            $('loginError').textContent = '';
+            if (!u || !p) { $('loginError').textContent = '请填写用户名和密码'; return; }
+
+            fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: u, password: p })
+            }).then(function(r) { return r.json(); }).then(function(data) {
+                if (data.success) {
+                    authToken = data.token;
+                    currentUser = { username: data.username, role: data.role, user_id: data.user_id };
+                    localStorage.setItem('authToken', authToken);
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    onAuthSuccess();
+                } else {
+                    $('loginError').textContent = data.error || '登录失败';
+                }
+            }).catch(function() {
+                $('loginError').textContent = '网络错误，请稍后重试';
+            });
+        }
+
+        function onAuthSuccess() {
+            $('authOverlay').style.display = 'none';
+            $('topBar').style.display = 'flex';
+            $('topBarUsername').textContent = currentUser.role === 'door' ? '访客' : currentUser.username;
+            $('clearBtn').style.display = currentUser.role === 'admin' ? 'inline-block' : 'none';
+            $('mainPanel').classList.add('visible');
+
+            initCharacter();
+            $('roomInput').value = currentRoom;
+            $('roomLabel').textContent = currentRoom;
+
+            // 预设保存在账号下，门禁访客没有账号
+            var isGuest = !currentUser.user_id;
+            $('presetSaveRow').style.display = isGuest ? 'none' : 'flex';
+            if (isGuest) {
+                $('presetList').innerHTML = '<div class="hint">访客无法保存预设，登录账号后可用</div>';
+            } else {
+                loadPresets();
+            }
+
+            loadRooms();
+            reloadRolls();
+            startPolling();
+        }
+
+        function doLogout() {
+            stopPolling();
+            authToken = '';
+            currentUser = null;
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            lastRollId = 0;
+            seenIds = {};
+            $('rollList').innerHTML = '<div class="hint">加载中...</div>';
+            $('mainPanel').classList.remove('visible');
+            $('authOverlay').style.display = 'flex';
+            $('topBar').style.display = 'none';
+            $('doorPassword').value = '';
+        }
+
+        // === 角色名 ===
+        function initCharacter() {
+            var saved = localStorage.getItem('diceCharacter');
+            if (saved) {
+                $('characterInput').value = saved;
+            } else if (currentUser && currentUser.username) {
+                $('characterInput').value = currentUser.username;
+            }
+            updateCharacterHint();
+            $('characterInput').addEventListener('input', function() {
+                localStorage.setItem('diceCharacter', $('characterInput').value.trim());
+                updateCharacterHint();
+            });
+        }
+
+        function updateCharacterHint() {
+            var v = $('characterInput').value.trim();
+            var fallback = (currentUser && currentUser.username) ? currentUser.username : '访客';
+            $('characterHint').textContent = v ? '' : '留空则记为「' + fallback + '」';
+        }
+
+        // === 掷骰名称快捷词 ===
+        function renderRollNameChips() {
+            $('rollNameChips').innerHTML = ROLL_NAME_PRESETS.map(function(n) {
+                return '<span class="chip" onclick="setRollName(\'' + escapeAttr(n) + '\')">' + escapeHtml(n) + '</span>';
+            }).join('');
+        }
+
+        function setRollName(name) {
+            $('rollNameInput').value = $('rollNameInput').value === name ? '' : name;
+        }
+
+        // === 表达式编辑 ===
+        function currentExpr() {
+            return $('exprInput').value.replace(/\s+/g, '');
+        }
+
+        function setExpr(v) {
+            $('exprInput').value = v;
+            onExprChanged();
+        }
+
+        function appendTerm(text) {
+            var cur = currentExpr();
+            if (cur && !/[+\-]$/.test(cur)) cur += '+';
+            setExpr(cur + text);
+        }
+
+        function appendSigned(n) {
+            var cur = currentExpr().replace(/[+\-]+$/, '');
+            setExpr(cur + (n >= 0 ? '+' : '') + n);
+        }
+
+        function appendKeepSuffix(suffix) {
+            var cur = currentExpr().replace(/(?:kh|kl|dh|dl)\d*!?$/, '');
+            if (!/\d*d\d+$/.test(cur)) {
+                $('exprPreview').textContent = '请先添加骰子，再选择保留/丢弃';
+                $('exprPreview').className = 'expr-preview error';
+                return;
+            }
+            setExpr(cur + suffix);
+        }
+
+        // === 优势 / 劣势 ===
+        // 只给表达式里第一项骰子多加一颗，取高/取低 —— 1d20 优势 = 2d20kh1，1d10 劣势 = 2d10kl1，
+        // 后面跟着的伤害骰等不受影响。所以用户永远不需要自己写 2d。
+        function applyRollMode(expr, mode) {
+            var clean = (expr || '').toLowerCase().replace(/\s+/g, '');
+            if (!mode || !clean) return { ok: true, expression: clean, applied: false };
+
+            var re = /^(\d*)d(\d+)(?:(kh|kl|dh|dl)(\d*))?(!)?$/;
+            var parts = [];
+            var sign = '';
+            var i = 0;
+            while (i < clean.length) {
+                var c = clean.charAt(i);
+                if (c === '+' || c === '-') {
+                    sign = c;
+                    i++;
+                    if (i >= clean.length) return { ok: false, error: '表达式不能以运算符结尾' };
+                    if (/[+\-]/.test(clean.charAt(i))) return { ok: false, error: '运算符重复' };
+                    continue;
+                }
+                var j = i;
+                while (j < clean.length && clean.charAt(j) !== '+' && clean.charAt(j) !== '-') j++;
+                parts.push({ sign: sign, chunk: clean.slice(i, j) });
+                sign = '';
+                i = j;
+            }
+
+            var modeLabel = mode === 'adv' ? '优势' : '劣势';
+            var keep = mode === 'adv' ? 'kh' : 'kl';
+            var applied = false;
+
+            for (var a = 0; a < parts.length; a++) {
+                var m = re.exec(parts[a].chunk);
+                if (!m) continue;
+                if (m[3]) {
+                    return { ok: false, error: '已选' + modeLabel + '，表达式里就不要再写 ' + m[3] + ' 了' };
+                }
+                if (applied) continue;   // 只有第一项骰子吃优势/劣势
+                var count = Math.max(m[1] === '' ? 1 : parseInt(m[1], 10), 1);
+                if (count + 1 > 100) return { ok: false, error: '骰子数量超过上限' };
+                parts[a].chunk = (count + 1) + 'd' + m[2] + keep + count + (m[5] || '');
+                applied = true;
+            }
+
+            if (!applied) return { ok: false, error: '表达式里没有骰子' };
+
+            var out = '';
+            for (var b = 0; b < parts.length; b++) out += parts[b].sign + parts[b].chunk;
+            return { ok: true, expression: out, applied: true };
+        }
+
+        function syncModeChips() {
+            document.querySelectorAll('#modeChips .chip.mode').forEach(function(el) {
+                el.classList.toggle('active', (el.getAttribute('data-mode') || '') === rollMode);
+            });
+        }
+
+        function setMode(mode) {
+            rollMode = mode || '';
+            syncModeChips();
+            onExprChanged();
+        }
+
+        function clearExpr() { setExpr(''); }
+
+        function addDice(sides) {
+            var n = parseInt($('diceCount').value, 10);
+            if (isNaN(n) || n < 1) { n = 1; $('diceCount').value = 1; }
+            if (n > 100) { n = 100; $('diceCount').value = 100; }
+            appendTerm(n + 'd' + sides);
+        }
+
+        function stepCount(delta) {
+            var el = $('diceCount');
+            var n = parseInt(el.value, 10);
+            if (isNaN(n)) n = 1;
+            n = Math.min(100, Math.max(1, n + delta));
+            el.value = n;
+        }
+
+        // 与后端 dice.go 的语法保持一致，仅用于即时预览
+        // Go 侧用 strconv.Atoi 解析整数，超出 int64 会直接报错，这里做同样的判定
+        function overflowsInt64(digits) {
+            var s = digits.replace(/^0+/, '');
+            if (s.length !== 19) return s.length > 19;
+            return s > '9223372036854775807';
+        }
+
+        function previewExpression(expr) {
+            var clean = (expr || '').toLowerCase().replace(/\s+/g, '');
+            if (!clean) return { ok: false, error: '' };
+            if (clean.length > 200) return { ok: false, error: '表达式过长' };
+
+            var re = /^(\d*)d(\d+)(?:(kh|kl|dh|dl)(\d*))?(!)?$/;
+            var keepLabel = { kh: '取高', kl: '取低', dh: '丢高', dl: '丢低' };
+            var parts = [];
+            var totalDice = 0;
+            var sign = 1, i = 0;
+
+            while (i < clean.length) {
+                var c = clean.charAt(i);
+                if (c === '+' || c === '-') {
+                    sign = c === '-' ? -1 : 1;
+                    i++;
+                    if (i >= clean.length) return { ok: false, error: '表达式不能以运算符结尾' };
+                    if (/[+\-]/.test(clean.charAt(i))) return { ok: false, error: '运算符重复' };
+                    continue;
+                }
+                var j = i;
+                while (j < clean.length && clean.charAt(j) !== '+' && clean.charAt(j) !== '-') j++;
+                var chunk = clean.slice(i, j);
+                var m = re.exec(chunk);
+                if (m) {
+                    if (overflowsInt64(m[1] === '' ? '1' : m[1]) || overflowsInt64(m[2])) {
+                        return { ok: false, error: '数值超出范围' };
+                    }
+                    var count = m[1] === '' ? 1 : parseInt(m[1], 10);
+                    var sides = parseInt(m[2], 10);
+                    if (count > 100) return { ok: false, error: '单个骰子项最多 100 颗' };
+                    if (sides < 1 || sides > 1000) return { ok: false, error: '骰子面数需在 1-1000 之间' };
+                    totalDice += count;
+                    var label = count + '颗d' + sides;
+                    if (m[3]) label += keepLabel[m[3]] + (m[4] || 1);
+                    if (m[5]) label += '爆炸';
+                    parts.push((sign < 0 ? '− ' : '') + label);
+                } else {
+                    if (!/^\d+$/.test(chunk)) return { ok: false, error: '无法识别：' + chunk };
+                    if (overflowsInt64(chunk)) return { ok: false, error: '数值超出范围：' + chunk };
+                    parts.push((sign < 0 ? '− ' : '+ ') + parseInt(chunk, 10));
+                }
+                sign = 1;
+                i = j;
+            }
+
+            if (totalDice > 200) return { ok: false, error: '单次最多投掷 200 颗骰子' };
+            if (!parts.length) return { ok: false, error: '' };
+            return { ok: true, text: '将投掷：' + parts.join('  ') };
+        }
+
+        function onExprChanged() {
+            var el = $('exprPreview');
+            var eff = applyRollMode(currentExpr(), rollMode);
+            if (!eff.ok) {
+                el.textContent = eff.error;
+                el.className = 'expr-preview error';
+                return;
+            }
+
+            var r = previewExpression(eff.expression);
+            if (!r.ok) {
+                el.textContent = r.error || '';
+                el.className = 'expr-preview error';
+                return;
+            }
+
+            var label = rollMode === 'adv' ? '优势' : (rollMode === 'dis' ? '劣势' : '');
+            el.textContent = (label ? label + ' → ' : '') + r.text;
+            el.className = 'expr-preview';
+        }
+
+        // === 掷骰 ===
+        function doRoll() {
+            var eff = applyRollMode(currentExpr(), rollMode);
+            if (!eff.ok || !eff.expression) {
+                $('exprPreview').textContent = eff.error || '请先组合骰子';
+                $('exprPreview').className = 'expr-preview error';
+                return;
+            }
+            var expr = eff.expression;
+
+            var btn = $('rollBtn');
+            btn.disabled = true;
+
+            api('/api/dice/roll', 'POST', {
+                expression: expr,
+                character: $('characterInput').value.trim(),
+                roll_name: $('rollNameInput').value.trim(),
+                room: currentRoom
+            }).then(function(data) {
+                btn.disabled = false;
+                if (!data.success) {
+                    $('exprPreview').textContent = data.error || '投掷失败';
+                    $('exprPreview').className = 'expr-preview error';
+                    return;
+                }
+                // 立即显示自己的结果，并把游标推到位，避免轮询重复拉取
+                var roll = data.roll;
+                if (roll.id > lastRollId) lastRollId = roll.id;
+                appendRoll(roll, true);
+                loadRooms();
+            }).catch(function() {
+                btn.disabled = false;
+            });
+        }
+
+        // === 记录渲染 ===
+        function timeOf(s) {
+            var m = /(\d{2}:\d{2}:\d{2})/.exec(s || '');
+            return m ? m[1] : (s || '');
+        }
+
+        function renderRoll(r) {
+            var detail = r.detail || {};
+            var terms = detail.terms || [];
+            var strip = '';
+
+            terms.forEach(function(t, idx) {
+                var neg = (t.expression || '').charAt(0) === '-';
+                if (idx > 0 || neg) {
+                    strip += '<span class="op">' + (neg ? '−' : '+') + '</span>';
+                }
+                if (t.is_modifier) {
+                    strip += '<span class="mod-chip">' + Math.abs(t.modifier) + '</span>';
+                    return;
+                }
+                var sidesMatch = /d(\d+)/.exec(t.expression || '');
+                var sides = sidesMatch ? parseInt(sidesMatch[1], 10) : 0;
+                (t.dice || []).forEach(function(die) {
+                    var cls = 'die';
+                    if (!die.kept) {
+                        cls += ' dropped';
+                    } else if (sides === 20 && die.value === 20) {
+                        cls += ' max';
+                    } else if (sides === 20 && die.value === 1) {
+                        cls += ' min';
+                    } else if (die.explode) {
+                        cls += ' exploded';
+                    }
+                    strip += '<span class="' + cls + '">' + die.value + '</span>';
+                });
+            });
+
+            var critTag = '';
+            if (r.crit === 'success') critTag = '<span class="roll-crit-tag success">★ 大成功</span>';
+            if (r.crit === 'fumble') critTag = '<span class="roll-crit-tag fumble">☠ 大失败</span>';
+
+            var cls = 'roll';
+            if (r.crit === 'success') cls += ' crit-success';
+            if (r.crit === 'fumble') cls += ' crit-fumble';
+            if (currentUser && r.user_id && r.user_id === currentUser.user_id) cls += ' mine';
+
+            var account = (r.username && r.username !== r.character_name)
+                ? '<span class="roll-account">@' + escapeHtml(r.username) + '</span>' : '';
+            var rollName = r.roll_name
+                ? '<span class="roll-name">' + escapeHtml(r.roll_name) + '</span>' : '';
+            var del = canDelete(r)
+                ? '<button class="roll-del" title="删除这条记录" onclick="deleteRoll(' + r.id + ')">✕</button>' : '';
+
+            return '<div class="' + cls + '" data-id="' + r.id + '">'
+                + '<div class="roll-top">'
+                + '<span class="roll-char">' + escapeHtml(r.character_name || '未知') + '</span>'
+                + rollName + account + critTag
+                + '<span class="roll-time">' + escapeHtml(timeOf(r.created_at)) + '</span>'
+                + '</div>'
+                + '<div class="roll-body">'
+                + '<div class="dice-strip">' + strip + '</div>'
+                + '<div class="roll-total">' + r.total + '</div>'
+                + del
+                + '</div>'
+                + '<div class="roll-expr">' + escapeHtml(r.expression) + '</div>'
+                + '</div>';
+        }
+
+        function canDelete(r) {
+            if (!currentUser) return false;
+            if (currentUser.role === 'admin') return true;
+            return currentUser.user_id > 0 && r.user_id === currentUser.user_id;
+        }
+
+        function appendRoll(r, isFresh) {
+            if (seenIds[r.id]) return;
+            seenIds[r.id] = true;
+
+            var list = $('rollList');
+            var empty = list.querySelector('.hint');
+            if (empty) empty.remove();
+
+            var wrap = document.createElement('div');
+            wrap.innerHTML = renderRoll(r);
+            var node = wrap.firstChild;
+            if (isFresh) {
+                node.classList.add('fresh');
+                setTimeout(function() { node.classList.remove('fresh'); }, 600);
+            }
+            list.insertBefore(node, list.firstChild);
+        }
+
+        function prependRolls(rolls) {
+            // 接口按 id 倒序返回，逐条插入到顶部后即为「新的在上」
+            rolls.slice().reverse().forEach(function(r) { appendRoll(r, true); });
+        }
+
+        function reloadRolls() {
+            lastRollId = 0;
+            seenIds = {};
+            $('rollList').innerHTML = '<div class="hint">加载中...</div>';
+            return fetchRolls(true);
+        }
+
+        function fetchRolls(initial) {
+            var url = '/api/dice/rolls?room=' + encodeURIComponent(currentRoom)
+                + '&limit=50' + (lastRollId > 0 ? '&since=' + lastRollId : '');
+            return api(url, 'GET').then(function(data) {
+                if (!data.rolls) return;
+                // 房间被清空或重置过：本地游标作废，重新拉取
+                if (!initial && typeof data.latest_id === 'number' && data.latest_id < lastRollId) {
+                    reloadRolls();
+                    return;
+                }
+                if (data.rolls.length) {
+                    prependRolls(data.rolls);
+                    var maxId = data.rolls.reduce(function(a, r) { return Math.max(a, r.id); }, lastRollId);
+                    lastRollId = maxId;
+                }
+                if (initial && !data.rolls.length) {
+                    $('rollList').innerHTML = '<div class="hint">还没有人掷骰，来第一发吧</div>';
+                }
+            }).catch(function() {});
+        }
+
+        function deleteRoll(id) {
+            if (!confirm('确定删除这条掷骰记录吗？')) return;
+            api('/api/dice/rolls?id=' + id + '&room=' + encodeURIComponent(currentRoom), 'DELETE')
+                .then(function(data) {
+                    if (!data.success) { alert(data.error || '删除失败'); return; }
+                    var node = document.querySelector('.roll[data-id="' + id + '"]');
+                    if (node) node.remove();
+                    delete seenIds[id];
+                }).catch(function() {});
+        }
+
+        function clearRoom() {
+            if (!confirm('确定清空房间「' + currentRoom + '」的全部掷骰记录吗？此操作不可恢复。')) return;
+            api('/api/dice/clear', 'POST', { room: currentRoom }).then(function(data) {
+                if (!data.success) { alert(data.error || '清空失败'); return; }
+                lastRollId = 0;
+                seenIds = {};
+                $('rollList').innerHTML = '<div class="hint">还没有人掷骰，来第一发吧</div>';
+            }).catch(function() {});
+        }
+
+        // === 轮询 ===
+        function startPolling() {
+            stopPolling();
+            pollTimer = setInterval(function() { fetchRolls(false); }, 2000);
+            setPollState(true);
+        }
+
+        function stopPolling() {
+            if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+        }
+
+        function setPollState(on) {
+            $('pollState').innerHTML = on
+                ? '<span class="dot"></span>实时同步中'
+                : '<span class="dot off"></span>已暂停';
+        }
+
+        document.addEventListener('visibilitychange', function() {
+            if (!authToken) return;
+            if (document.hidden) {
+                stopPolling();
+                setPollState(false);
+            } else {
+                fetchRolls(false);
+                startPolling();
+            }
+        });
+
+        // === 房间 ===
+        function loadRooms() {
+            api('/api/dice/rooms', 'GET').then(function(data) {
+                if (!data.rooms) return;
+                $('roomList').innerHTML = data.rooms.map(function(r) {
+                    return '<option value="' + escapeHtml(r.room) + '">' + r.rolls + ' 条记录</option>';
+                }).join('');
+            }).catch(function() {});
+        }
+
+        function applyRoom() {
+            var v = $('roomInput').value.trim() || '默认';
+            if (v === currentRoom) return;
+            currentRoom = v;
+            localStorage.setItem('diceRoom', currentRoom);
+            $('roomLabel').textContent = currentRoom;
+            reloadRolls();
+        }
+
+        // === 预设 ===
+        function loadPresets() {
+            api('/api/dice/presets', 'GET').then(function(data) {
+                if (!data.presets) return;
+                renderPresets(data.presets);
+            }).catch(function() {});
+        }
+
+        function renderPresets(presets) {
+            if (!presets.length) {
+                $('presetList').innerHTML = '<div class="hint">暂无预设，组合好骰子后点「保存」</div>';
+                return;
+            }
+            $('presetList').innerHTML = presets.map(function(p) {
+                return '<div class="preset-item">'
+                    + '<span class="pname" onclick="applyPreset(\'' + escapeAttr(p.expression) + '\', \'' + escapeAttr(p.name) + '\')" title="点击套用">'
+                    + escapeHtml(p.name) + ' <span class="pexpr">' + escapeHtml(p.expression) + '</span></span>'
+                    + '<button class="pdel" title="删除预设" onclick="deletePreset(' + p.id + ')">✕</button>'
+                    + '</div>';
+            }).join('');
+        }
+
+        function applyPreset(expr, name, mode) {
+            rollMode = mode || '';
+            $('exprInput').value = expr;
+            syncModeChips();
+            if (name) $('rollNameInput').value = name;
+            onExprChanged();
+        }
+
+        function savePreset() {
+            var name = $('presetName').value.trim();
+            // 存实际会投掷的表达式（含优势/劣势展开），套用时就能原样复现
+            var eff = applyRollMode(currentExpr(), rollMode);
+            var expr = eff.ok ? eff.expression : '';
+            if (!name) { alert('请填写预设名称'); return; }
+            if (!expr) { alert(eff.error || '请先组合骰子'); return; }
+
+            api('/api/dice/presets', 'POST', { name: name, expression: expr }).then(function(data) {
+                if (!data.success) { alert(data.error || '保存失败'); return; }
+                $('presetName').value = '';
+                loadPresets();
+            }).catch(function() {});
+        }
+
+        function deletePreset(id) {
+            if (!confirm('确定删除这个预设吗？')) return;
+            api('/api/dice/presets?id=' + id, 'DELETE').then(function(data) {
+                if (!data.success) { alert(data.error || '删除失败'); return; }
+                loadPresets();
+            }).catch(function() {});
+        }
+
+        // === 初始化 ===
+        (function init() {
+            renderRollNameChips();
+            $('templateChips').innerHTML = TEMPLATES.map(function(t) {
+                return '<span class="chip tpl" onclick="applyPreset(\'' + escapeAttr(t.expr) + '\', \'' + escapeAttr(t.name) + '\', \'' + escapeAttr(t.mode || '') + '\')">'
+                    + escapeHtml(t.name) + '</span>';
+            }).join('');
+
+            $('exprInput').addEventListener('input', onExprChanged);
+            $('exprInput').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') { e.preventDefault(); doRoll(); }
+            });
+            $('rollNameInput').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') { e.preventDefault(); doRoll(); }
+            });
+            $('roomInput').addEventListener('change', applyRoom);
+            $('roomInput').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') { e.preventDefault(); $('roomInput').blur(); applyRoom(); }
+            });
+            onExprChanged();
+
+            var savedToken = localStorage.getItem('authToken');
+            var savedUser = localStorage.getItem('currentUser');
+            if (savedToken && savedUser) {
+                authToken = savedToken;
+                try { currentUser = JSON.parse(savedUser); } catch (e) { currentUser = null; }
+                if (currentUser && currentUser.role !== 'door') {
+                    api('/api/me', 'GET').then(function(data) {
+                        if (data.username) {
+                            // 以服务端为准补全身份，旧版本存的 localStorage 可能没有 user_id
+                            currentUser.user_id = data.user_id;
+                            currentUser.username = data.username;
+                            currentUser.role = data.role;
+                            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                            onAuthSuccess();
+                        } else {
+                            handleAuthExpired();
+                        }
+                    }).catch(function() { handleAuthExpired(); });
+                    return;
+                }
+            }
+            $('authOverlay').style.display = 'flex';
+        })();
+    </script>
+</body>
+</html>

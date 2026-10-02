@@ -153,6 +153,7 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]interface{}{
 		"success":  true,
 		"token":    token,
+		"user_id":  userID,
 		"username": username,
 		"role":     role,
 	})
