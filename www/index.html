@@ -84,6 +84,7 @@
             <a href="cloud.html" class="cloud-link">云盘</a>
             <a href="dice.html" class="dice-link">跑团骰子</a>
             <a class="admin-link" id="topBarAdminLink" href="admin.html" style="display:none;">管理后台</a>
+            <button onclick="showChangePasswordModal()">修改密码</button>
             <button onclick="doLogout()">退出</button>
         </span>
     </div>
@@ -122,6 +123,22 @@
             </div>
             <div class="error" id="loginError"></div>
             <div class="switch-link" onclick="hideLoginModal();showRegisterModal();">没有账号？点此注册</div>
+        </div>
+    </div>
+
+    <!-- 修改密码弹窗 -->
+    <div class="modal-overlay" id="changePwdModal">
+        <div class="modal-box">
+            <h2>修改密码</h2>
+            <input type="password" id="oldPassword" placeholder="当前密码" autocomplete="current-password">
+            <input type="password" id="newPassword" placeholder="新密码 (至少6个字符)" autocomplete="new-password">
+            <input type="password" id="newPassword2" placeholder="确认新密码" autocomplete="new-password">
+            <div>
+                <button class="btn-primary" onclick="doChangePassword()">确认修改</button>
+                <button class="btn-cancel" onclick="hideChangePasswordModal()">取消</button>
+            </div>
+            <div class="error" id="changePwdError"></div>
+            <div class="success" id="changePwdSuccess"></div>
         </div>
     </div>
 
@@ -226,6 +243,45 @@
             }
             currentPlayingStream = '';
             lastData = [];
+        }
+
+        // === 修改密码 ===
+        function showChangePasswordModal() {
+            $('oldPassword').value = '';
+            $('newPassword').value = '';
+            $('newPassword2').value = '';
+            $('changePwdError').textContent = '';
+            $('changePwdSuccess').textContent = '';
+            $('changePwdModal').classList.add('show');
+        }
+
+        function hideChangePasswordModal() { $('changePwdModal').classList.remove('show'); }
+
+        function doChangePassword() {
+            var oldPwd = $('oldPassword').value;
+            var newPwd = $('newPassword').value;
+            var newPwd2 = $('newPassword2').value;
+            $('changePwdError').textContent = '';
+            $('changePwdSuccess').textContent = '';
+
+            if (!oldPwd) { $('changePwdError').textContent = '请输入当前密码'; return; }
+            if (newPwd.length < 6) { $('changePwdError').textContent = '新密码至少需要6个字符'; return; }
+            if (newPwd !== newPwd2) { $('changePwdError').textContent = '两次输入的新密码不一致'; return; }
+            if (newPwd === oldPwd) { $('changePwdError').textContent = '新密码不能和当前密码相同'; return; }
+
+            api('/api/change-password', 'POST', { old_password: oldPwd, new_password: newPwd })
+                .then(function(data) {
+                    if (!data.success) {
+                        $('changePwdError').textContent = data.error || '修改失败';
+                        return;
+                    }
+                    $('changePwdSuccess').textContent = '密码已修改，下次登录请用新密码';
+                    $('oldPassword').value = '';
+                    $('newPassword').value = '';
+                    $('newPassword2').value = '';
+                }).catch(function() {
+                    $('changePwdError').textContent = '网络错误，请稍后重试';
+                });
         }
 
         // === 注册 ===

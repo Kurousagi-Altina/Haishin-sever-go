@@ -44,6 +44,7 @@ func main() {
 	// Protected routes (any valid token)
 	protected := http.NewServeMux()
 	protected.HandleFunc("/api/me", handler.HandleMe)
+	protected.HandleFunc("/api/change-password", handler.HandleChangePassword)
 	protected.HandleFunc("/api/streams", handler.HandleStreams)
 	protected.HandleFunc("/api/stream-url", handler.HandleStreamURL)
 	protected.HandleFunc("/api/cloud/list", handler.HandleCloudList)
@@ -61,6 +62,7 @@ func main() {
 	protected.HandleFunc("/api/dice/presets", handler.HandleDicePresets)
 
 	mux.Handle("/api/me", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/change-password", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/streams", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/stream-url", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/cloud/list", AuthMiddleware(tm)(protected))

@@ -259,6 +259,15 @@ func (db *DB) DeleteUser(userID int64) error {
 	return tx.Commit()
 }
 
+// VerifyUserPasswordByID 校验指定用户的当前密码，用于自助改密。
+func (db *DB) VerifyUserPasswordByID(userID int64, password string) error {
+	var hash string
+	if err := db.conn.QueryRow("SELECT password_hash FROM users WHERE id=?", userID).Scan(&hash); err != nil {
+		return err
+	}
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+}
+
 func (db *DB) ChangePassword(userID int64, newPassword string) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
 	if err != nil {

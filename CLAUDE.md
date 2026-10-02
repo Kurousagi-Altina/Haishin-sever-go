@@ -37,6 +37,8 @@ Three-tier `http.ServeMux` sub-mux pattern:
 - Three roles: `door` (gate password), `user` (registered), `admin`.
 - `getTokenInfo(r)` extracts it in handlers; `getClientIP(r)` handles X-Forwarded-For.
 - Passwords are **bcrypt-hashed** (`bcrypt.GenerateFromPassword`) — the plaintext is never stored and cannot be recovered. So "找回密码" is an admin-issued *reset* (`POST /api/admin/reset-password` sets a new password for a given `user_id`), never a password display. Don't add plaintext/reversible storage to make passwords viewable.
+- Two ways a password changes: `POST /api/change-password` (self-service, any token with `user_id != 0`, requires the current password) and `POST /api/admin/reset-password` (admin, no current password needed). The self-service one returns **403** on a wrong current password, not 401 — the frontend `api()` helper treats 401 as "session expired" and would log the user out mid-typo.
+- `/api/admin/change-password` still exists for the admin page's own 修改密码 modal and does *not* require the current password. It's redundant with `/api/change-password`; prefer the latter for new UI.
 - Changing a password does **not** invalidate already-issued tokens — the token store is in-memory and keyed only by the token string, so an active session survives a reset. Relevant if a reset is meant to kick someone out.
 - `/api/verify` records the attempted door password verbatim into `auth_attempts.password` (the `/api/login` path stores the username in that column instead). The admin 鉴权记录 tab renders it, so the door password is sitting in the DB in cleartext.
 
