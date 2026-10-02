@@ -57,6 +57,10 @@ func (h *Handler) HandleDiceRoll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 逐条掷骰不写操作日志——一次团下来几十上百条，会把管理后台的操作记录刷爆。
+	// 房间是隐式创建的，所以只在房间第一次出现时记一条「新建房间」。
+	isNewRoom := !h.db.DiceRoomExists(room)
+
 	roll, err := h.db.InsertDiceRoll(room, info.UserID, info.Username, character, rollName, result.Expression, string(detail), result.Total, result.Crit)
 	if err != nil {
 		log.Printf("[DICE] insert error: %v", err)
@@ -64,12 +68,10 @@ func (h *Handler) HandleDiceRoll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ip := getClientIP(r)
-	summary := result.Expression + " = " + strconv.Itoa(result.Total)
-	if rollName != "" {
-		summary = rollName + " " + summary
+	if isNewRoom {
+		h.db.RecordAction(getClientIP(r), info.Username, "dice_room_create", "新建跑团房间「"+room+"」")
+		log.Printf("[DICE] 新房间 %q，由 %s 创建", room, character)
 	}
-	h.db.RecordAction(ip, info.Username, "dice_roll", character+" @"+room+" "+summary)
 
 	writeJSON(w, http.StatusOK, map[string]interface{}{
 		"success": true,
@@ -114,7 +116,7 @@ func (h *Handler) HandleDiceRolls(w http.ResponseWriter, r *http.Request) {
 			writeJSON(w, http.StatusForbidden, map[string]interface{}{"error": err.Error()})
 			return
 		}
-		h.db.RecordAction(getClientIP(r), info.Username, "dice_delete", "roll #"+strconv.FormatInt(id, 10)+" @"+room)
+		// 删单条也不记操作日志，只有清空整个房间才记（见 HandleDiceClear）
 		writeJSON(w, http.StatusOK, map[string]interface{}{"success": true})
 
 	default:
@@ -151,7 +153,7 @@ func (h *Handler) HandleDiceClear(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.db.RecordAction(getClientIP(r), info.Username, "dice_clear", room+" 清空 "+strconv.FormatInt(deleted, 10)+" 条")
+	h.db.RecordAction(getClientIP(r), info.Username, "dice_clear", "清空跑团房间「"+room+"」的 "+strconv.FormatInt(deleted, 10)+" 条记录")
 	log.Printf("[DICE] admin %s cleared room %q (%d rolls)", info.Username, room, deleted)
 	writeJSON(w, http.StatusOK, map[string]interface{}{"success": true, "deleted": deleted})
 }

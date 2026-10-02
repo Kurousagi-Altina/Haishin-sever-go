@@ -69,6 +69,7 @@ D&D-style dice roller; every roll is persisted and visible to everyone in the sa
 - `RollDice()` returns `RollResult{Terms[], Total, Crit}`. `Crit` ("success"/"fumble") is set only when exactly one kept d20 decides the result — so `2d20kh1` (advantage) still counts, `2d20` does not.
 - Delivery is polling, not push: `GET /api/dice/rolls?room=&since=<id>` returns rows newer than `since` plus `latest_id`. The client resets its cursor when `latest_id < since` (room cleared elsewhere). Client polls every 2s, pauses on `visibilitychange`.
 - Rooms (`默认` by default) isolate tables. Presets are per-account — door guests get 403 and the UI hides the save box.
+- **Dice activity is deliberately kept out of `action_logs`** — a session produces hundreds of rolls and would drown the admin 操作记录 tab. Only two things are recorded: `dice_room_create` (a roll landing in a room name that has no rows yet — rooms are implicit, so that *is* room creation) and `dice_clear`. Per-roll and per-delete logging was removed on purpose; don't add it back.
 - `www/dice.html` has its own JS preview parser that mirrors the Go grammar; **keep `previewExpression()` in sync with `parseExpression()`** or the preview will accept expressions the server rejects. `applyRollMode()` must likewise stay consistent with the Go grammar — every expansion it produces has to be a valid expression.
 
 ### Registration notifications (notify.go)

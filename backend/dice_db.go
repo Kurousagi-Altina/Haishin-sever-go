@@ -114,6 +114,14 @@ func (db *DB) DeleteDiceRoll(id, userID int64, isAdmin bool) error {
 	return nil
 }
 
+// DiceRoomExists 判断房间是否已经有记录。房间是隐式创建的（第一次掷骰时诞生），
+// 所以"这个房间还不存在"就等于"这次掷骰会新建一个房间"。
+func (db *DB) DiceRoomExists(room string) bool {
+	var n int
+	db.conn.QueryRow("SELECT COUNT(*) FROM dice_rolls WHERE room=?", room).Scan(&n)
+	return n > 0
+}
+
 // ClearDiceRoom 清空一个房间的全部记录，返回删除条数。
 func (db *DB) ClearDiceRoom(room string) (int64, error) {
 	result, err := db.conn.Exec("DELETE FROM dice_rolls WHERE room=?", room)
