@@ -17,6 +17,21 @@
             color: white; outline: none;
         }
         .top-bar .room-input::placeholder { color: #bbb; }
+        .top-bar .room-enter {
+            padding: 4px 14px; font-size: 13px; border-radius: 6px; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.15); color: #fff;
+        }
+        .top-bar .room-enter:hover { background: rgba(255,255,255,0.3); }
+        /* 输入框里的房间名还没「进入」时把按钮点亮，提示还差一步 */
+        .top-bar .room-enter.pending {
+            border-color: #E91E63; color: #fff; font-weight: bold;
+            background: rgba(233,30,99,0.45);
+            animation: roomPulse 1.4s ease-in-out infinite;
+        }
+        @keyframes roomPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(233,30,99,0.6); }
+            50%      { box-shadow: 0 0 0 7px rgba(233,30,99,0); }
+        }
 
         .auth-box { min-width: 340px; }
         .auth-box .subtitle { color: #aaa; font-size: 13px; margin-bottom: 20px; }
@@ -224,6 +239,7 @@
             <a href="index.html">← 返回主页</a>
             <span style="font-size:13px;color:#ddd;">房间</span>
             <input class="room-input" id="roomInput" placeholder="房间名" list="roomList" maxlength="24">
+            <button class="room-enter" id="enterRoomBtn" onclick="applyRoom()">进入</button>
             <datalist id="roomList"></datalist>
         </div>
         <div class="right">
@@ -488,6 +504,7 @@
             initCharacter();
             $('roomInput').value = currentRoom;
             $('roomLabel').textContent = currentRoom;
+            syncRoomButton();
 
             // 预设保存在账号下，门禁访客没有账号
             var isGuest = !currentUser.user_id;
@@ -743,6 +760,14 @@
 
         // === 掷骰 ===
         function doRoll() {
+            // 输入框里还留着没「进入」的房间名时先别掷，免得掷进上一个房间
+            if (($('roomInput').value.trim() || '默认') !== currentRoom) {
+                $('exprPreview').textContent = '房间名还没进入，先点顶栏的「进入」';
+                $('exprPreview').className = 'expr-preview error';
+                $('enterRoomBtn').classList.add('pending');
+                return;
+            }
+
             var eff = applyRollMode(currentExpr(), rollMode);
             if (!eff.ok || !eff.expression) {
                 $('exprPreview').textContent = eff.error || '请先组合骰子';
@@ -960,12 +985,21 @@
             }).catch(function() {});
         }
 
+        // 输入框里的房间名和当前房间不一致时点亮「进入」按钮
+        function syncRoomButton() {
+            var typed = $('roomInput').value.trim() || '默认';
+            $('enterRoomBtn').classList.toggle('pending', typed !== currentRoom);
+        }
+
         function applyRoom() {
             var v = $('roomInput').value.trim() || '默认';
-            if (v === currentRoom) return;
+            $('roomInput').value = v;   // 回显归一化后的房间名
+            if (v === currentRoom) { syncRoomButton(); return; }
+
             currentRoom = v;
             localStorage.setItem('diceRoom', currentRoom);
             $('roomLabel').textContent = currentRoom;
+            syncRoomButton();
             reloadRolls();
         }
 
@@ -1037,9 +1071,9 @@
             $('rollNameInput').addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') { e.preventDefault(); doRoll(); }
             });
-            $('roomInput').addEventListener('change', applyRoom);
+            $('roomInput').addEventListener('input', syncRoomButton);
             $('roomInput').addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') { e.preventDefault(); $('roomInput').blur(); applyRoom(); }
+                if (e.key === 'Enter') { e.preventDefault(); applyRoom(); }
             });
             onExprChanged();
 
