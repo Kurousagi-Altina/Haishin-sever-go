@@ -86,6 +86,7 @@ func main() {
 	admin.HandleFunc("/api/admin/reject-user", handler.HandleAdminRejectUser)
 	admin.HandleFunc("/api/admin/users/", handler.HandleAdminDeleteUser)
 	admin.HandleFunc("/api/admin/change-password", handler.HandleAdminChangePassword)
+	admin.HandleFunc("/api/admin/reset-password", handler.HandleAdminResetPassword)
 
 	// admin = AuthMiddleware + AdminMiddleware
 	adminStack := AuthMiddleware(tm)(AdminMiddleware(admin))

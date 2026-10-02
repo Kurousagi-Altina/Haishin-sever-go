@@ -264,8 +264,15 @@ func (db *DB) ChangePassword(userID int64, newPassword string) error {
 	if err != nil {
 		return err
 	}
-	_, err = db.conn.Exec("UPDATE users SET password_hash=? WHERE id=?", string(hash), userID)
-	return err
+	result, err := db.conn.Exec("UPDATE users SET password_hash=? WHERE id=?", string(hash), userID)
+	if err != nil {
+		return err
+	}
+	n, _ := result.RowsAffected()
+	if n == 0 {
+		return errors.New("user not found")
+	}
+	return nil
 }
 
 func scanUsers(rows *sql.Rows) ([]map[string]interface{}, error) {

@@ -36,6 +36,9 @@ Three-tier `http.ServeMux` sub-mux pattern:
 - `TokenInfo{UserID, Username, Role}` stored in request context under `tokenInfoKey`.
 - Three roles: `door` (gate password), `user` (registered), `admin`.
 - `getTokenInfo(r)` extracts it in handlers; `getClientIP(r)` handles X-Forwarded-For.
+- Passwords are **bcrypt-hashed** (`bcrypt.GenerateFromPassword`) — the plaintext is never stored and cannot be recovered. So "找回密码" is an admin-issued *reset* (`POST /api/admin/reset-password` sets a new password for a given `user_id`), never a password display. Don't add plaintext/reversible storage to make passwords viewable.
+- Changing a password does **not** invalidate already-issued tokens — the token store is in-memory and keyed only by the token string, so an active session survives a reset. Relevant if a reset is meant to kick someone out.
+- `/api/verify` records the attempted door password verbatim into `auth_attempts.password` (the `/api/login` path stores the username in that column instead). The admin 鉴权记录 tab renders it, so the door password is sitting in the DB in cleartext.
 
 ### Database (db.go)
 
