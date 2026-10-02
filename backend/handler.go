@@ -13,14 +13,21 @@ import (
 )
 
 type Handler struct {
-	cfg *Config
-	db  *DB
-	zlm *ZLMClient
-	tm  *TokenManager
+	cfg      *Config
+	db       *DB
+	zlm      *ZLMClient
+	tm       *TokenManager
+	notifier *Notifier
 }
 
 func NewHandler(cfg *Config, db *DB, zlm *ZLMClient, tm *TokenManager) *Handler {
-	return &Handler{cfg: cfg, db: db, zlm: zlm, tm: tm}
+	return &Handler{
+		cfg:      cfg,
+		db:       db,
+		zlm:      zlm,
+		tm:       tm,
+		notifier: NewNotifier(cfg.NotifySendKey),
+	}
 }
 
 // POST /api/verify — door password verification
@@ -103,6 +110,7 @@ func (h *Handler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 
 	ip := getClientIP(r)
 	h.db.RecordAction(ip, req.Username, "register", "user registered, pending approval")
+	h.notifier.NotifyRegistration(req.Username, ip)
 	log.Printf("[REGISTER] new user: %s (id=%d), pending approval", req.Username, id)
 	writeJSON(w, http.StatusOK, map[string]interface{}{
 		"success": true,

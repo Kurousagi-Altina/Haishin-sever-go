@@ -66,6 +66,15 @@ D&D-style dice roller; every roll is persisted and visible to everyone in the sa
 - Rooms (`默认` by default) isolate tables. Presets are per-account — door guests get 403 and the UI hides the save box.
 - `www/dice.html` has its own JS preview parser that mirrors the Go grammar; **keep `previewExpression()` in sync with `parseExpression()`** or the preview will accept expressions the server rejects. `applyRollMode()` must likewise stay consistent with the Go grammar — every expansion it produces has to be a valid expression.
 
+### Registration notifications (notify.go)
+
+Pushes a Server酱 Turbo message to the admin whenever someone registers.
+
+- Off by default. Set `notify_sendkey` in `config.json` (or `NOTIFY_SENDKEY`) to enable; an empty key is a silent no-op.
+- `NotifyRegistration()` does only in-memory checks synchronously — the HTTP POST runs in a goroutine with a 10s timeout, so a dead push provider can never slow down or fail a registration.
+- **`/api/register` is public and unauthenticated with no rate limiting**, so anyone who finds the host can spam registrations. Two throttles protect the push quota: 5 min per source IP, 30 s globally. Suppressed registrations are counted and reported in the next notification ("另有 N 次注册被合并"). If you need a durable fix, gate registration behind the door password.
+- Server酱 returns HTTP 200 even on business errors — `send()` parses `code`/`data.error` from the body and logs rejections (e.g. exhausted quota) instead of assuming success.
+
 ## Frontend Pages
 
 | Page | File | Player | Notes |

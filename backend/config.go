@@ -20,6 +20,7 @@ type Config struct {
 	GameDir             string `json:"game_dir"`
 	VideoDir            string `json:"video_dir"`
 	CloudUploadMinRole  string `json:"cloud_upload_min_role"` // "admin", "user", or "door"
+	NotifySendKey       string `json:"notify_sendkey"`        // Server酱 Turbo 的 SendKey，留空则关闭注册通知
 }
 
 func (c *Config) TokenExpiryDuration() time.Duration {
@@ -103,6 +104,9 @@ func LoadConfig() *Config {
 	}
 	if v := os.Getenv("CLOUD_UPLOAD_MIN_ROLE"); v != "" {
 		cfg.CloudUploadMinRole = v
+	}
+	if v := os.Getenv("NOTIFY_SENDKEY"); v != "" {
+		cfg.NotifySendKey = v
 	}
 
 	return cfg
