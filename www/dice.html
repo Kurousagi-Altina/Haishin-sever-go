@@ -102,6 +102,19 @@
         .expr-preview { font-size: 12px; margin-top: 6px; min-height: 16px; color: #8BC34A; }
         .expr-preview.error { color: #f44336; }
 
+        /* 骰子组合输入框 + 右侧清空按钮 */
+        .expr-row { display: flex; gap: 8px; align-items: stretch; }
+        .expr-row .expr-input { flex: 1; min-width: 0; }
+        .expr-clear {
+            flex: 0 0 auto; padding: 0 18px; font-size: 14px; font-weight: bold;
+            border-radius: 8px; cursor: pointer; white-space: nowrap;
+            border: 1px solid rgba(244,67,54,0.65); background: rgba(244,67,54,0.18); color: #EF9A9A;
+            transition: 0.15s;
+        }
+        .expr-clear:hover:not(:disabled) { background: #F44336; border-color: #F44336; color: #fff; }
+        .expr-clear:active:not(:disabled) { transform: scale(0.97); }
+        .expr-clear:disabled { opacity: 0.3; cursor: not-allowed; }
+
         .dice-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; }
         .dice-btn {
             padding: 10px 0; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer;
@@ -295,7 +308,10 @@
 
             <div class="field">
                 <label>骰子组合</label>
-                <input type="text" class="expr-input" id="exprInput" placeholder="例如 2d6+3" autocomplete="off">
+                <div class="expr-row">
+                    <input type="text" class="expr-input" id="exprInput" placeholder="例如 2d6+3" autocomplete="off">
+                    <button class="expr-clear" id="exprClearBtn" onclick="clearExpr()" title="清空骰子组合">清空</button>
+                </div>
                 <div class="expr-preview" id="exprPreview"></div>
             </div>
 
@@ -357,7 +373,6 @@
 
             <div class="field">
                 <div class="chips" style="margin-bottom:10px;">
-                    <span class="chip" onclick="clearExpr()">清空组合</span>
                     <span class="chip" onclick="appendTerm('1d20')">先攻 d20</span>
                 </div>
                 <button class="roll-btn" id="rollBtn" onclick="doRoll()">掷 骰</button>
@@ -739,7 +754,10 @@
 
         function onExprChanged() {
             var el = $('exprPreview');
-            var eff = applyRollMode(currentExpr(), rollMode);
+            var raw = currentExpr();
+            $('exprClearBtn').disabled = !raw;   // 空表达式时清空按钮没意义
+
+            var eff = applyRollMode(raw, rollMode);
             if (!eff.ok) {
                 el.textContent = eff.error;
                 el.className = 'expr-preview error';
