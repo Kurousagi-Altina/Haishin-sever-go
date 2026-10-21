@@ -55,6 +55,19 @@ First run auto-creates `config.json` with defaults. `TokenExpiry` is a string ("
 
 Minimal — only `GetMediaList()` calling `/index/api/getMediaList?secret=...`. Stream playback is direct from ZLM to browser (FLV), not proxied.
 
+### Tabletop (tabletop.go + dice.go)
+
+- Rooms live in memory, saved every 2s (dirty flag) to `TabletopDir/rooms/<id>.json`; images in `TabletopDir/assets/` named by sha256 (`ttAssetRe`).
+- Sync: `GET /api/tabletop/events` (SSE, `?token=` auth) pushes a full `state` snapshot on connect, then deltas (`items`/`del`/`props`/`room`/`log`/`users`/`fx`). Clients send `POST /api/tabletop/op` with `{op, ...}`; all permission checks are in `TTRoom.apply`.
+- GM = room owner or admin. Players may create `token`/`draw` items (owner forced to them), fully edit their own items, and only move (x/y) unlocked tokens. Hidden items are never sent to non-GMs (sent as `del`); hidden rolls are masked by `logEntryFor`.
+- Door users have no identity: they join with a nickname, shown as `访客·<nick>`, and cannot create/import rooms.
+- Items and scene props are free-form `map[string]interface{}` — the client defines the shape; the server only reads `id/kind/hidden/locked/owner/asset`.
+- Dice are rolled server-side (`RollDice`): `NdM`, `d%`, `kh/kl/dh/dl/k`, `!`, `+/-` constants.
+- Walls are items with `kind:"wall"` (`wtype` wall/window/door, `open`); GM-only to create. Players may only toggle `open` on unlocked doors. Line-of-sight / dynamic vision and move-blocking are computed client-side (`computeVision` in tabletop.js) — walls are sent to everyone.
+- Sheets (`room.Sheets`, op `sheet` / `sheet.delete`) are free-form maps with `kind` pc/monster/item. Players may only create `pc` sheets (owner forced) and edit their own; non-GMs see pc, `shared`, or own sheets (`sheetVisible`). Tokens link via `item["sheet"]`.
+- charsheet.go parses the "DND 5E2024 人物卡" .xlsx (sheet 主要, fixed cell layout, cached values) with archive/zip + encoding/xml. The embedded `obr-suite-card` JSON cell is often stale — don't rely on it.
+- bestiary.go proxies DND5e 不全书 (fixed hosts only: page paths must be `topics/…htm(l)`); HTML is parsed in www/js/tabletop-sheets.js (2024 `.stat-block`, 2014 text split on 护甲等级, items split on H6 / red `<font>` headings).
+
 ## Frontend Pages
 
 | Page | File | Player | Notes |
@@ -63,6 +76,7 @@ Minimal — only `GetMediaList()` calling `/index/api/getMediaList?secret=...`. 
 | VOD | `www/vod.html` | native `<video>` | Direct MP4 via `/videos/` route, no hls.js |
 | Cloud | `www/cloud.html` | native `<video>`/`<img>` | Preview modal for images/videos, `?preview=1` on download endpoint |
 | Admin | `www/admin.html` | — | Separate login, tabbed dashboard, paginated logs |
+| Tabletop | `www/tabletop.html` + `js/tabletop.js` + `js/tabletop-sheets.js` + `css/tabletop.css` | `<canvas>` | Virtual tabletop (maps, tokens, fog, walls/vision, sheets, dice), live via SSE |
 
 Shared: `www/css/common.css` (frosted-glass theme), `www/js/utils.js` (`$()`, `escapeHtml()`, `escapeAttr()`, `formatSize()`).
 

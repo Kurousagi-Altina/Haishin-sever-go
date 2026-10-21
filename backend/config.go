@@ -20,6 +20,7 @@ type Config struct {
 	GameDir             string `json:"game_dir"`
 	VideoDir            string `json:"video_dir"`
 	CloudUploadMinRole  string `json:"cloud_upload_min_role"` // "admin", "user", or "door"
+	TabletopDir         string `json:"tabletop_dir"`
 }
 
 func (c *Config) TokenExpiryDuration() time.Duration {
@@ -47,6 +48,7 @@ func LoadConfig() *Config {
 		GameDir:       "../game",
 		VideoDir:            "../userdata/videos",
 		CloudUploadMinRole:  "user",
+		TabletopDir:         "../userdata/tabletop",
 	}
 
 	// 1. Load from config.json, or create it on first run
@@ -103,6 +105,9 @@ func LoadConfig() *Config {
 	}
 	if v := os.Getenv("CLOUD_UPLOAD_MIN_ROLE"); v != "" {
 		cfg.CloudUploadMinRole = v
+	}
+	if v := os.Getenv("TABLETOP_DIR"); v != "" {
+		cfg.TabletopDir = v
 	}
 
 	return cfg
