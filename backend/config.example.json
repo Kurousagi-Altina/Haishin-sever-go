@@ -9,5 +9,6 @@
   "download_dir":   "../userdata/download",
   "game_dir":       "../game",
   "video_dir":      "../userdata/videos",
-  "cloud_upload_min_role": "user"
+  "cloud_upload_min_role": "user",
+  "tabletop_dir":   "../userdata/tabletop"
 }

@@ -34,6 +34,11 @@ func main() {
 		log.Fatalf("Failed to create video directory %s: %v", cfg.VideoDir, err)
 	}
 
+	tabletop, err := NewTabletop(cfg.TabletopDir, db, tm)
+	if err != nil {
+		log.Fatalf("Failed to init tabletop directory %s: %v", cfg.TabletopDir, err)
+	}
+
 	mux := http.NewServeMux()
 
 	// Public routes
@@ -54,6 +59,13 @@ func main() {
 	protected.HandleFunc("/api/cloud/space", handler.HandleCloudSpace)
 	protected.HandleFunc("/api/vod/list", handler.HandleVodList)
 	protected.HandleFunc("/api/vod/play", handler.HandleVodPlay)
+	protected.HandleFunc("/api/tabletop/rooms", tabletop.HandleRooms)
+	protected.HandleFunc("/api/tabletop/op", tabletop.HandleOp)
+	protected.HandleFunc("/api/tabletop/upload", tabletop.HandleUpload)
+	protected.HandleFunc("/api/tabletop/import", tabletop.HandleImport)
+	protected.HandleFunc("/api/tabletop/charsheet", tabletop.HandleCharSheet)
+	protected.HandleFunc("/api/tabletop/5e/search", tabletop.Handle5eSearch)
+	protected.HandleFunc("/api/tabletop/5e/page", tabletop.Handle5ePage)
 
 	mux.Handle("/api/me", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/streams", AuthMiddleware(tm)(protected))
@@ -67,6 +79,16 @@ func main() {
 	mux.Handle("/api/cloud/space", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/vod/list", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/vod/play", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/tabletop/rooms", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/tabletop/op", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/tabletop/upload", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/tabletop/import", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/tabletop/charsheet", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/tabletop/5e/", AuthMiddleware(tm)(protected))
+	// SSE / export / images can't set headers — they validate ?token= themselves
+	mux.HandleFunc("/api/tabletop/events", tabletop.HandleEvents)
+	mux.HandleFunc("/api/tabletop/export", tabletop.HandleExport)
+	mux.HandleFunc("/tabletop-assets/", tabletop.HandleAsset)
 
 	// Admin routes (admin token required)
 	admin := http.NewServeMux()

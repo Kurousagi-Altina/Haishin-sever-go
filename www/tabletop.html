@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跑团桌面</title>
+    <link rel="icon" href="./icon.png" type="image/png">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/tabletop.css">
+</head>
+<body class="tt-body">
+
+    <div class="tt-notice" id="notice"></div>
+
+    <!-- 鉴权遮罩 -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-box" style="min-width:340px;">
+            <h2>跑团桌面</h2>
+            <p style="color:#aaa;font-size:13px;margin-bottom:20px;">请验证身份后进入</p>
+            <div class="auth-tabs" style="display:flex;margin-bottom:20px;border-bottom:1px solid #444;">
+                <div class="auth-tab active" data-tab="door" onclick="switchAuthTab('door')" style="flex:1;padding:8px;cursor:pointer;">门禁口令</div>
+                <div class="auth-tab" data-tab="login" onclick="switchAuthTab('login')" style="flex:1;padding:8px;cursor:pointer;">用户登录</div>
+            </div>
+            <div class="auth-panel" id="panelDoor">
+                <input type="text" style="display:none;" autocomplete="username">
+                <input type="password" id="doorPassword" placeholder="请输入口令..." autocomplete="new-password" style="display:block;width:100%;box-sizing:border-box;margin-bottom:12px;">
+                <button class="btn-primary" onclick="doDoorVerify()">验证</button>
+                <div class="error" id="doorError"></div>
+            </div>
+            <div class="auth-panel" id="panelLogin" style="display:none;">
+                <input type="text" id="loginUsername" placeholder="用户名" autocomplete="off" style="display:block;width:100%;box-sizing:border-box;margin-bottom:12px;">
+                <input type="password" id="loginPassword" placeholder="密码" style="display:block;width:100%;box-sizing:border-box;margin-bottom:12px;">
+                <button class="btn-primary" onclick="doLogin()">登录</button>
+                <div class="error" id="loginError"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 大厅 -->
+    <div class="tt-lobby" id="lobby" style="display:none;">
+        <div class="top-bar">
+            <div class="left"><a href="index.html">← 返回主页</a></div>
+            <div class="right">
+                <span class="user-info" id="topBarUsername"></span>
+                <button onclick="doLogout()">退出</button>
+            </div>
+        </div>
+        <div class="panel-card">
+            <h2>🎲 跑团桌面</h2>
+            <div class="subtitle">导入地图、摆放棋子、迷雾、测距、掷骰 —— 房主即 GM，可邀请队友通过房间链接加入。</div>
+
+            <div class="lobby-row" id="nickRow" style="display:none;">
+                <span>访客昵称</span>
+                <input class="tt-input" id="nickInput" maxlength="16" placeholder="在桌面上显示的名字">
+            </div>
+            <div class="lobby-row" id="createRow">
+                <input class="tt-input" id="newRoomName" maxlength="40" placeholder="新房间名，例如：龙枪编年史 第三章">
+                <button class="tt-btn primary" onclick="createRoom()">创建房间</button>
+                <button class="tt-btn" onclick="$('importZip').click()">导入房间 (.zip)</button>
+                <input type="file" id="importZip" accept=".zip" style="display:none;" onchange="importRoom(this)">
+            </div>
+
+            <table class="room-table">
+                <thead><tr><th>房间</th><th>GM</th><th>在线</th><th>最后更新</th><th></th></tr></thead>
+                <tbody id="roomList"><tr><td colspan="5" class="tt-hint">加载中...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 桌面 -->
+    <div class="tt-table" id="table" style="display:none;">
+        <div class="tt-header">
+            <button class="tt-btn small" onclick="leaveRoom()">← 房间列表</button>
+            <span class="conn-dot" id="connDot" title="连接状态"></span>
+            <span class="room-name" id="roomName"></span>
+            <span class="scene-name" id="sceneName"></span>
+            <span class="spacer"></span>
+            <div class="tt-users" id="userList"></div>
+            <button class="tt-btn small" onclick="copyRoomLink()">复制邀请链接</button>
+            <button class="tt-btn small" onclick="toggleSide()">侧栏</button>
+        </div>
+
+        <div class="tt-main">
+            <div class="tt-tools" id="toolbar">
+                <button class="tool-btn active" data-tool="select" title="选择 / 移动 (V)">↖</button>
+                <button class="tool-btn" data-tool="pan" title="平移 (H，或按住空格 / 右键拖动)">✋</button>
+                <button class="tool-btn" data-tool="draw" title="绘制与法术范围 (D)">✏️</button>
+                <button class="tool-btn" data-tool="ruler" title="测距 (M)">📏</button>
+                <button class="tool-btn" data-tool="pointer" title="指示 / 标记位置 (L)">👆</button>
+                <button class="tool-btn gm-only" data-tool="fog" title="迷雾 (F)">☁</button>
+                <button class="tool-btn gm-only" data-tool="wall" title="墙体 / 门窗 (W)">🧱</button>
+                <div class="tool-sep"></div>
+                <button class="tool-btn" onclick="fitView()" title="适配视图 (0)">⛶</button>
+            </div>
+
+            <div class="tt-stage" id="stage">
+                <canvas id="board"></canvas>
+
+                <!-- 绘制选项 -->
+                <div class="tool-opts" id="optsDraw">
+                    <button class="tt-btn small" data-shape="pen" title="自由画笔">画笔</button>
+                    <button class="tt-btn small" data-shape="line" title="直线 / 射线">直线</button>
+                    <button class="tt-btn small" data-shape="rect" title="矩形 / 立方体">矩形</button>
+                    <button class="tt-btn small" data-shape="circle" title="圆形 / 球形范围（显示半径）">圆形</button>
+                    <button class="tt-btn small" data-shape="cone" title="锥形（5e 规则：宽度 = 长度）">锥形</button>
+                    <span class="sep"></span>
+                    <span id="swatches"></span>
+                    <input type="color" class="tt-input" id="drawColor" value="#e53935" title="自定义颜色">
+                    <select class="tt-select" id="drawWidth" title="线宽">
+                        <option value="2">细</option><option value="4" selected>中</option><option value="8">粗</option><option value="16">特粗</option>
+                    </select>
+                    <label style="font-size:12px;"><input type="checkbox" id="drawFill"> 填充</label>
+                    <span class="sep"></span>
+                    <button class="tt-btn small" onclick="clearDrawings()" title="删除你画的内容（GM 删除全部）">清除绘制</button>
+                </div>
+
+                <!-- 迷雾选项 -->
+                <div class="tool-opts" id="optsFog">
+                    <button class="tt-btn small" data-fogmode="cover">遮盖</button>
+                    <button class="tt-btn small" data-fogmode="reveal">揭示</button>
+                    <span class="sep"></span>
+                    <button class="tt-btn small" data-fogshape="rect">矩形</button>
+                    <button class="tt-btn small" data-fogshape="poly" title="逐点单击，双击或点击起点闭合，Esc 取消">多边形</button>
+                    <button class="tt-btn small" data-fogshape="brush">笔刷</button>
+                    <button class="tt-btn small" data-fogshape="select" title="选择、移动、删除迷雾块">选择</button>
+                    <select class="tt-select" id="fogBrush" title="笔刷大小（格）">
+                        <option value="0.5">0.5 格</option><option value="1" selected>1 格</option><option value="2">2 格</option><option value="4">4 格</option>
+                    </select>
+                    <span class="sep"></span>
+                    <button class="tt-btn small" onclick="fogCoverAll()">全图覆盖</button>
+                    <button class="tt-btn small danger" onclick="fogClearAll()">清除迷雾</button>
+                    <label style="font-size:12px;"><input type="checkbox" id="fogPreview" onchange="requestRender()"> 玩家视角</label>
+                </div>
+
+                <!-- 墙体选项 -->
+                <div class="tool-opts" id="optsWall">
+                    <button class="tt-btn small" data-walltype="wall" title="挡视线、挡移动">墙</button>
+                    <button class="tt-btn small" data-walltype="window" title="不挡视线、挡移动">窗</button>
+                    <button class="tt-btn small" data-walltype="door" title="两次点击画一扇门；玩家可点击开关">门</button>
+                    <button class="tt-btn small" data-wallmode="select" title="选择、移动、删除墙体">选择</button>
+                    <span class="sep"></span>
+                    <span class="tt-hint">单击逐点画墙（吸附半格，Alt 自由），双击 / 右键 / Enter 结束</span>
+                    <button class="tt-btn small danger" onclick="clearWalls()">清除墙体</button>
+                </div>
+
+                <!-- 属性面板 -->
+                <div class="tt-float" id="selPanel"></div>
+
+                <div class="roll-toasts" id="rollToasts"></div>
+
+                <div class="zoom-ctrl">
+                    <button class="tt-btn small" onclick="zoomBy(1/1.25)">－</button>
+                    <span id="zoomLabel">100%</span>
+                    <button class="tt-btn small" onclick="zoomBy(1.25)">＋</button>
+                </div>
+            </div>
+
+            <aside class="tt-side" id="side">
+                <div class="side-tabs">
+                    <div class="side-tab active" data-pane="dice">🎲 骰子</div>
+                    <div class="side-tab" data-pane="sheets">📜 角色</div>
+                    <div class="side-tab" data-pane="assets">🖼 资产</div>
+                    <div class="side-tab gm-only" data-pane="scenes">🗺 场景</div>
+                    <div class="side-tab gm-only" data-pane="settings">⚙ 设置</div>
+                </div>
+
+                <!-- 骰子 & 记录 -->
+                <div class="side-pane active" id="pane-dice">
+                    <div class="dice-tray">
+                        <div class="dice-btns" id="diceBtns"></div>
+                        <div class="dice-row">
+                            <input class="tt-input" id="diceExpr" placeholder="1d20+5、4d6dl1、2d20kh1、3d6!" autocomplete="off">
+                            <button class="tt-btn primary" onclick="rollFromTray()">投掷</button>
+                        </div>
+                        <div class="dice-row">
+                            <label>修正 <input class="tt-input" id="diceMod" type="number" value="0" style="width:56px;flex:none;"></label>
+                            <button class="tt-btn small" id="btnAdv" onclick="toggleAdv('adv')" title="2d20 取高">优势</button>
+                            <button class="tt-btn small" id="btnDis" onclick="toggleAdv('dis')" title="2d20 取低">劣势</button>
+                            <label title="只有你和 GM 能看到结果"><input type="checkbox" id="diceHidden"> 暗骰</label>
+                            <button class="tt-btn small" onclick="clearTray()">清空</button>
+                        </div>
+                        <div class="dice-row">
+                            <input class="tt-input" id="diceLabel" maxlength="40" placeholder="说明（可选），如：敏捷豁免">
+                        </div>
+                        <div class="dice-macros" id="macroList"></div>
+                    </div>
+                    <div class="log-list" id="logList"></div>
+                    <div class="chat-row">
+                        <input class="tt-input" id="chatInput" maxlength="500" placeholder="聊天；/r 1d20+3 掷骰，/gr 暗骰" autocomplete="off">
+                        <button class="tt-btn" onclick="sendChat()">发送</button>
+                    </div>
+                </div>
+
+                <!-- 角色卡 / 怪物 / 物品 -->
+                <div class="side-pane" id="pane-sheets">
+                    <div class="side-scroll" id="sheetPane"></div>
+                    <input type="file" id="xlsxFile" accept=".xlsx" style="display:none;" onchange="importXlsx(this)">
+                </div>
+
+                <!-- 资产 -->
+                <div class="side-pane" id="pane-assets">
+                    <div class="side-scroll">
+                        <div class="lobby-row" style="gap:6px;">
+                            <button class="tt-btn primary" onclick="$('tokenFile').click()">上传棋子</button>
+                            <button class="tt-btn gm-only" onclick="$('mapFile').click()">导入地图</button>
+                            <button class="tt-btn" onclick="addMarker()" title="不需要图片的彩色标记">添加标记</button>
+                            <input type="file" id="tokenFile" accept="image/*" multiple style="display:none;" onchange="uploadTokens(this)">
+                        </div>
+                        <div class="filter-row" id="assetFilter">
+                            <button class="tt-btn small active" data-filter="all">全部</button>
+                            <button class="tt-btn small" data-filter="token">棋子</button>
+                            <button class="tt-btn small" data-filter="map">地图</button>
+                        </div>
+                        <div class="asset-grid" id="assetGrid"></div>
+                        <p class="tt-hint">把缩略图拖到地图上即可放置棋子，也可以直接把电脑里的图片拖进地图。支持 PNG / JPG / GIF / WebP，单个不超过 25MB。</p>
+                    </div>
+                </div>
+
+                <!-- 场景（GM） -->
+                <div class="side-pane" id="pane-scenes">
+                    <div class="side-scroll">
+                        <div class="lobby-row" style="gap:6px;">
+                            <input class="tt-input" id="newSceneName" maxlength="40" placeholder="新场景名">
+                            <button class="tt-btn primary" onclick="addScene()">新建</button>
+                        </div>
+                        <ul class="scene-list" id="sceneList"></ul>
+                        <p class="tt-hint">玩家只能看到当前激活的场景。可以提前准备好多个场景，跑团时一键切换。</p>
+                    </div>
+                </div>
+
+                <!-- 设置（GM） -->
+                <div class="side-pane" id="pane-settings">
+                    <div class="side-scroll">
+                        <div class="side-section">
+                            <h5>地图</h5>
+                            <div class="lobby-row" style="gap:6px;">
+                                <button class="tt-btn primary" onclick="$('mapFile').click()">导入地图</button>
+                                <button class="tt-btn" onclick="removeMap()">移除地图</button>
+                                <input type="file" id="mapFile" accept="image/*,.dd2vtt,.uvtt,.df2vtt,.json" style="display:none;" onchange="importMap(this)">
+                            </div>
+                            <div class="tt-hint" id="mapInfo" style="margin-bottom:8px;"></div>
+                            <div class="set-row"><label>横向格数</label><input class="tt-input" id="setCells" type="number" min="1" step="1" placeholder="按地图宽度自动算格子大小"></div>
+                            <div class="tt-hint">支持普通图片，以及 Dungeondraft / DungeonFog 等导出的 Universal VTT 文件（.dd2vtt / .uvtt / .df2vtt，自动读取网格）。</div>
+                        </div>
+                        <div class="side-section">
+                            <h5>网格</h5>
+                            <div class="set-row"><label>显示网格</label><input type="checkbox" id="setGridShow"></div>
+                            <div class="set-row"><label>格子大小(px)</label><input class="tt-input" id="setGridSize" type="number" min="8" step="0.5"></div>
+                            <div class="set-row"><label>偏移 X / Y</label><input class="tt-input" id="setGridOffX" type="number" step="0.5"><input class="tt-input" id="setGridOffY" type="number" step="0.5"></div>
+                            <div class="set-row"><label>颜色</label><input class="tt-input" id="setGridColor" type="color"><input type="range" id="setGridAlpha" min="0" max="1" step="0.05"></div>
+                            <div class="set-row"><label>每格距离</label><input class="tt-input" id="setGridScale" type="number" min="0" step="0.5"><input class="tt-input" id="setGridUnit" maxlength="8" style="width:60px;flex:none;"></div>
+                            <div class="set-row"><label>测距规则</label>
+                                <select class="tt-select" id="setMeasure">
+                                    <option value="chebyshev">5e 默认（斜向 = 1 格）</option>
+                                    <option value="alternating">5-10-5（斜向交替）</option>
+                                    <option value="euclidean">直线距离</option>
+                                </select>
+                            </div>
+                            <div class="set-row"><label>背景色</label><input class="tt-input" id="setBg" type="color"></div>
+                        </div>
+                        <div class="side-section">
+                            <h5>视野</h5>
+                            <div class="set-row"><label>动态视野</label><input type="checkbox" id="setVision"></div>
+                            <div class="tt-hint">开启后玩家只能看到自己棋子视线所及的区域（被墙和关着的门遮挡，窗户不挡），看过的地方保持半暗。玩家的视野来自「控制者」是自己的棋子；在棋子属性里可设视野距离（如 60 尺黑暗视觉）。GM 勾选迷雾栏的「玩家视角」并选中棋子即可预览。</div>
+                        </div>
+                        <div class="side-section">
+                            <h5>房间</h5>
+                            <div class="set-row"><label>房间名</label><input class="tt-input" id="setRoomName" maxlength="40"></div>
+                            <div class="lobby-row" style="gap:6px;">
+                                <button class="tt-btn" onclick="exportRoom()">导出房间 (.zip)</button>
+                                <button class="tt-btn danger" onclick="clearLog()">清空记录</button>
+                            </div>
+                            <div class="tt-hint">导出包含全部场景、棋子与图片，可在任意部署了本站的服务器上「导入房间」恢复，作为备份。</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/tabletop-sheets.js"></script>
+    <script src="js/tabletop.js"></script>
+</body>
+</html>
