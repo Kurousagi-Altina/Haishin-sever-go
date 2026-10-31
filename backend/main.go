@@ -49,6 +49,7 @@ func main() {
 	// Protected routes (any valid token)
 	protected := http.NewServeMux()
 	protected.HandleFunc("/api/me", handler.HandleMe)
+	protected.HandleFunc("/api/change-password", handler.HandleChangePassword)
 	protected.HandleFunc("/api/streams", handler.HandleStreams)
 	protected.HandleFunc("/api/stream-url", handler.HandleStreamURL)
 	protected.HandleFunc("/api/cloud/list", handler.HandleCloudList)
@@ -66,8 +67,14 @@ func main() {
 	protected.HandleFunc("/api/tabletop/charsheet", tabletop.HandleCharSheet)
 	protected.HandleFunc("/api/tabletop/5e/search", tabletop.Handle5eSearch)
 	protected.HandleFunc("/api/tabletop/5e/page", tabletop.Handle5ePage)
+	protected.HandleFunc("/api/dice/roll", handler.HandleDiceRoll)
+	protected.HandleFunc("/api/dice/rolls", handler.HandleDiceRolls)
+	protected.HandleFunc("/api/dice/clear", handler.HandleDiceClear)
+	protected.HandleFunc("/api/dice/rooms", handler.HandleDiceRooms)
+	protected.HandleFunc("/api/dice/presets", handler.HandleDicePresets)
 
 	mux.Handle("/api/me", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/change-password", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/streams", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/stream-url", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/cloud/list", AuthMiddleware(tm)(protected))
@@ -89,6 +96,7 @@ func main() {
 	mux.HandleFunc("/api/tabletop/events", tabletop.HandleEvents)
 	mux.HandleFunc("/api/tabletop/export", tabletop.HandleExport)
 	mux.HandleFunc("/tabletop-assets/", tabletop.HandleAsset)
+	mux.Handle("/api/dice/", AuthMiddleware(tm)(protected))
 
 	// Admin routes (admin token required)
 	admin := http.NewServeMux()
@@ -102,6 +110,7 @@ func main() {
 	admin.HandleFunc("/api/admin/reject-user", handler.HandleAdminRejectUser)
 	admin.HandleFunc("/api/admin/users/", handler.HandleAdminDeleteUser)
 	admin.HandleFunc("/api/admin/change-password", handler.HandleAdminChangePassword)
+	admin.HandleFunc("/api/admin/reset-password", handler.HandleAdminResetPassword)
 
 	// admin = AuthMiddleware + AdminMiddleware
 	adminStack := AuthMiddleware(tm)(AdminMiddleware(admin))

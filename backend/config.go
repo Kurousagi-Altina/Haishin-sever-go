@@ -9,18 +9,19 @@ import (
 )
 
 type Config struct {
-	ServerAddr    string `json:"server_addr"`
-	ZLMBaseURL    string `json:"zlm_base_url"`
-	ZLMSecret     string `json:"zlm_secret"`
-	AdminPassword string `json:"admin_password"`
-	DBPath        string `json:"db_path"`
-	StaticDir     string `json:"static_dir"`
-	TokenExpiry   string `json:"token_expiry"` // stored as string for JSON friendliness
-	DownloadDir   string `json:"download_dir"`
-	GameDir             string `json:"game_dir"`
-	VideoDir            string `json:"video_dir"`
-	CloudUploadMinRole  string `json:"cloud_upload_min_role"` // "admin", "user", or "door"
-	TabletopDir         string `json:"tabletop_dir"`
+	ServerAddr         string `json:"server_addr"`
+	ZLMBaseURL         string `json:"zlm_base_url"`
+	ZLMSecret          string `json:"zlm_secret"`
+	AdminPassword      string `json:"admin_password"`
+	DBPath             string `json:"db_path"`
+	StaticDir          string `json:"static_dir"`
+	TokenExpiry        string `json:"token_expiry"` // stored as string for JSON friendliness
+	DownloadDir        string `json:"download_dir"`
+	GameDir            string `json:"game_dir"`
+	VideoDir           string `json:"video_dir"`
+	CloudUploadMinRole string `json:"cloud_upload_min_role"` // "admin", "user", or "door"
+	TabletopDir        string `json:"tabletop_dir"`
+	NotifySendKey      string `json:"notify_sendkey"` // Server酱 Turbo 的 SendKey，留空则关闭注册通知
 }
 
 func (c *Config) TokenExpiryDuration() time.Duration {
@@ -37,18 +38,18 @@ func (c *Config) TokenExpiryDuration() time.Duration {
 
 func LoadConfig() *Config {
 	cfg := &Config{
-		ServerAddr:    ":80",
-		ZLMBaseURL:    "http://47.96.99.181:8080",
-		ZLMSecret:     "035c73f7-bb6b-4889-a715-d9eb2d1925cc",
-		AdminPassword: "114514",
-		DBPath:        "./data.db",
-		StaticDir:     "../www",
-		TokenExpiry:   "72h",
-		DownloadDir:   "../userdata/download",
-		GameDir:       "../game",
-		VideoDir:            "../userdata/videos",
-		CloudUploadMinRole:  "user",
-		TabletopDir:         "../userdata/tabletop",
+		ServerAddr:         ":80",
+		ZLMBaseURL:         "http://47.96.99.181:8080",
+		ZLMSecret:          "035c73f7-bb6b-4889-a715-d9eb2d1925cc",
+		AdminPassword:      "114514",
+		DBPath:             "./data.db",
+		StaticDir:          "../www",
+		TokenExpiry:        "72h",
+		DownloadDir:        "../userdata/download",
+		GameDir:            "../game",
+		VideoDir:           "../userdata/videos",
+		CloudUploadMinRole: "user",
+		TabletopDir:        "../userdata/tabletop",
 	}
 
 	// 1. Load from config.json, or create it on first run
@@ -108,6 +109,9 @@ func LoadConfig() *Config {
 	}
 	if v := os.Getenv("TABLETOP_DIR"); v != "" {
 		cfg.TabletopDir = v
+	}
+	if v := os.Getenv("NOTIFY_SENDKEY"); v != "" {
+		cfg.NotifySendKey = v
 	}
 
 	return cfg

@@ -99,6 +99,8 @@
         .btn-reject:hover { background: #b71c1c; }
         .btn-delete { background: #555; color: white; }
         .btn-delete:hover { background: #333; }
+        .btn-reset { background: #0d47a1; color: white; }
+        .btn-reset:hover { background: #1565c0; }
 
         .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 15px; }
         .pagination button {
@@ -194,6 +196,20 @@
                 <button style="background:#555;margin-top:8px;" onclick="document.getElementById('changePwdModal').style.display='none'">取消</button>
                 <div class="error" id="changePwdError"></div>
                 <div class="success" id="changePwdSuccess" style="color:#4CAF50;"></div>
+            </div>
+        </div>
+
+        <!-- 重置用户密码弹窗 -->
+        <div class="modal-overlay" id="resetPwdModal" style="display:none; position:fixed; top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:9999;justify-content:center;align-items:center;">
+            <div class="login-card">
+                <h2>重置密码</h2>
+                <p style="color:#aaa;font-size:13px;margin:0 0 12px;">为用户 <b id="resetPwdUser" style="color:#e94560;"></b> 设置一个新密码</p>
+                <input type="text" id="resetPwdValue" placeholder="新密码（至少6个字符）" autocomplete="off" style="font-family:Consolas,monospace;letter-spacing:1px;">
+                <button onclick="regeneratePassword()" style="background:#0f3460;">换一个随机密码</button>
+                <button onclick="doResetPassword()" style="margin-top:8px;">确认重置</button>
+                <button style="background:#555;margin-top:8px;" onclick="closeResetPassword()">取消</button>
+                <div class="error" id="resetPwdError"></div>
+                <div class="success" id="resetPwdSuccess" style="color:#4CAF50;word-break:break-all;"></div>
             </div>
         </div>
     </div>
@@ -393,9 +409,9 @@
                         if (u.status === 'active') badge = '<span class="badge badge-success">已激活</span>';
                         else if (u.status === 'pending') badge = '<span class="badge badge-warning">待审核</span>';
                         var roleBadge = u.role === 'admin' ? '<span class="badge badge-info">管理员</span>' : '<span class="badge">普通用户</span>';
-                        var actions = '';
+                        var actions = '<button class="small btn-reset" onclick="showResetPassword(' + u.id + ', \'' + escapeAttr(u.username) + '\')">重置密码</button>';
                         if (u.role !== 'admin') {
-                            actions = '<button class="small btn-delete" onclick="deleteUser(' + u.id + ')">删除</button>';
+                            actions += ' <button class="small btn-delete" onclick="deleteUser(' + u.id + ')">删除</button>';
                         }
                         rows += '<tr><td>' + escapeHtml(u.username) + '</td><td>' + roleBadge + '</td><td>' + badge + '</td><td>' + escapeHtml(u.created_at) + '</td><td>' + actions + '</td></tr>';
                     });
@@ -425,6 +441,84 @@
             adminApi('/api/admin/users/' + id, 'DELETE').then(function(data) {
                 if (data.success) loadUsers();
             }).catch(function() {});
+        }
+
+        // === 重置用户密码 ===
+        // 密码是 bcrypt 单向哈希，读不回原文，所以"找回"只能是发一个新密码。
+        var resetPwdUserId = 0;
+
+        // 生成随机临时密码；去掉了容易看错的 0/O/1/l/I
+        function genPassword(len) {
+            var chars = 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            var out = '';
+            while (out.length < len) {
+                var buf = new Uint8Array(len * 2);
+                crypto.getRandomValues(buf);
+                for (var i = 0; i < buf.length && out.length < len; i++) {
+                    // 拒绝采样，避免取模偏置
+                    if (buf[i] < 256 - (256 % chars.length)) out += chars.charAt(buf[i] % chars.length);
+                }
+            }
+            return out;
+        }
+
+        function regeneratePassword() {
+            $('resetPwdValue').value = genPassword(12);
+        }
+
+        function showResetPassword(id, username) {
+            resetPwdUserId = id;
+            $('resetPwdUser').textContent = username;
+            $('resetPwdError').textContent = '';
+            $('resetPwdSuccess').textContent = '';
+            regeneratePassword();
+            $('resetPwdModal').style.display = 'flex';
+        }
+
+        function closeResetPassword() {
+            $('resetPwdModal').style.display = 'none';
+            $('resetPwdValue').value = '';
+        }
+
+        function doResetPassword() {
+            var pwd = $('resetPwdValue').value;
+            $('resetPwdError').textContent = '';
+            $('resetPwdSuccess').textContent = '';
+            if (pwd.length < 6) { $('resetPwdError').textContent = '密码至少6个字符'; return; }
+
+            adminApi('/api/admin/reset-password', 'POST', { user_id: resetPwdUserId, new_password: pwd })
+                .then(function(data) {
+                    if (!data.success) { $('resetPwdError').textContent = data.error || '重置失败'; return; }
+                    $('resetPwdSuccess').innerHTML = '已重置，把这个密码发给对方：<br>'
+                        + '<b id="resetPwdShown" style="font-family:Consolas,monospace;font-size:16px;user-select:all;">'
+                        + escapeHtml(pwd) + '</b> '
+                        + '<button class="small btn-reset" style="width:auto;padding:4px 14px;font-size:12px;margin-left:6px;vertical-align:middle;" onclick="copyResetPassword()">复制</button>';
+                }).catch(function() {
+                    $('resetPwdError').textContent = '请求失败';
+                });
+        }
+
+        // 站点是 HTTP，navigator.clipboard 在非安全上下文下不可用，退回选中文本
+        function copyResetPassword() {
+            var el = $('resetPwdShown');
+            if (!el) return;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(el.textContent).then(function() {
+                    $('resetPwdSuccess').innerHTML = '已复制到剪贴板：<b style="font-family:Consolas,monospace;font-size:16px;user-select:all;">' + escapeHtml(el.textContent) + '</b>';
+                }).catch(selectNode);
+            } else {
+                selectNode();
+            }
+        }
+
+        function selectNode() {
+            var el = $('resetPwdShown');
+            if (!el) return;
+            var range = document.createRange();
+            range.selectNodeContents(el);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
         }
 
         // === 修改密码 ===
