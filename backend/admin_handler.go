@@ -183,6 +183,46 @@ func (h *Handler) HandleAdminDeleteUser(w http.ResponseWriter, r *http.Request) 
 	writeJSON(w, http.StatusOK, map[string]interface{}{"success": true})
 }
 
+// POST /api/admin/reset-password — admin resets another user's password.
+// Passwords are bcrypt-hashed and cannot be read back, so "找回密码" means
+// issuing a new one; the admin passes it to the user out of band.
+func (h *Handler) HandleAdminResetPassword(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, `{"error":"method not allowed"}`, http.StatusMethodNotAllowed)
+		return
+	}
+
+	info := getTokenInfo(r)
+
+	var req struct {
+		UserID      int64  `json:"user_id"`
+		NewPassword string `json:"new_password"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "invalid request"})
+		return
+	}
+	if req.UserID <= 0 {
+		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "invalid user id"})
+		return
+	}
+	if len(req.NewPassword) < 6 {
+		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "密码至少需要6个字符"})
+		return
+	}
+
+	if err := h.db.ChangePassword(req.UserID, req.NewPassword); err != nil {
+		writeJSON(w, http.StatusNotFound, map[string]interface{}{"error": "用户不存在"})
+		return
+	}
+
+	ip := getClientIP(r)
+	h.db.RecordAction(ip, info.Username, "admin_reset_password", "重置了用户 #"+strconv.FormatInt(req.UserID, 10)+" 的密码")
+	log.Printf("[ADMIN] %s reset password for user id=%d", info.Username, req.UserID)
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{"success": true})
+}
+
 // POST /api/admin/change-password — admin changes own password
 func (h *Handler) HandleAdminChangePassword(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {

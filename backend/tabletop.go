@@ -49,14 +49,14 @@ var (
 )
 
 type TTLogEntry struct {
-	ID     string      `json:"id"`
-	Time   string      `json:"t"`
-	Kind   string      `json:"kind"` // roll / chat / sys
-	Who    string      `json:"who"`
-	Text   string      `json:"text,omitempty"`
-	Label  string      `json:"label,omitempty"`
-	Roll   *DiceResult `json:"roll,omitempty"`
-	Hidden bool        `json:"hidden,omitempty"`
+	ID     string        `json:"id"`
+	Time   string        `json:"t"`
+	Kind   string        `json:"kind"` // roll / chat / sys
+	Who    string        `json:"who"`
+	Text   string        `json:"text,omitempty"`
+	Label  string        `json:"label,omitempty"`
+	Roll   *TTDiceResult `json:"roll,omitempty"`
+	Hidden bool          `json:"hidden,omitempty"`
 }
 
 type TTAsset struct {
@@ -888,7 +888,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		room.broadcastAll(ttMsg(map[string]interface{}{"type": "sheetdel", "ids": deleted}))
 
 	case "roll":
-		res, err := RollDice(req.Expr)
+		res, err := RollTabletopDice(req.Expr)
 		if err != nil {
 			return http.StatusBadRequest, err.Error()
 		}

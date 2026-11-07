@@ -13,14 +13,21 @@ import (
 )
 
 type Handler struct {
-	cfg *Config
-	db  *DB
-	zlm *ZLMClient
-	tm  *TokenManager
+	cfg      *Config
+	db       *DB
+	zlm      *ZLMClient
+	tm       *TokenManager
+	notifier *Notifier
 }
 
 func NewHandler(cfg *Config, db *DB, zlm *ZLMClient, tm *TokenManager) *Handler {
-	return &Handler{cfg: cfg, db: db, zlm: zlm, tm: tm}
+	return &Handler{
+		cfg:      cfg,
+		db:       db,
+		zlm:      zlm,
+		tm:       tm,
+		notifier: NewNotifier(cfg.NotifySendKey),
+	}
 }
 
 // POST /api/verify — door password verification
@@ -103,6 +110,7 @@ func (h *Handler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 
 	ip := getClientIP(r)
 	h.db.RecordAction(ip, req.Username, "register", "user registered, pending approval")
+	h.notifier.NotifyRegistration(req.Username, ip)
 	log.Printf("[REGISTER] new user: %s (id=%d), pending approval", req.Username, id)
 	writeJSON(w, http.StatusOK, map[string]interface{}{
 		"success": true,
@@ -153,9 +161,61 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]interface{}{
 		"success":  true,
 		"token":    token,
+		"user_id":  userID,
 		"username": username,
 		"role":     role,
 	})
+}
+
+// POST /api/change-password — 登录用户修改自己的密码
+func (h *Handler) HandleChangePassword(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, `{"error":"method not allowed"}`, http.StatusMethodNotAllowed)
+		return
+	}
+
+	info := getTokenInfo(r)
+	if info.UserID == 0 {
+		writeJSON(w, http.StatusForbidden, map[string]interface{}{"error": "访客没有账号，无法修改密码"})
+		return
+	}
+
+	var req struct {
+		OldPassword string `json:"old_password"`
+		NewPassword string `json:"new_password"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "invalid request body"})
+		return
+	}
+
+	if len(req.NewPassword) < 6 {
+		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "新密码至少需要6个字符"})
+		return
+	}
+	if req.NewPassword == req.OldPassword {
+		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "新密码不能和当前密码相同"})
+		return
+	}
+
+	// 当前密码错误返回 403 而不是 401：前端的 api() 把 401 当成登录过期，
+	// 会直接清掉登录态，这里只是密码填错了，不该把人踢出去。
+	if err := h.db.VerifyUserPasswordByID(info.UserID, req.OldPassword); err != nil {
+		writeJSON(w, http.StatusForbidden, map[string]interface{}{"error": "当前密码不正确"})
+		return
+	}
+
+	if err := h.db.ChangePassword(info.UserID, req.NewPassword); err != nil {
+		log.Printf("[PASSWORD] change failed for %s: %v", info.Username, err)
+		writeJSON(w, http.StatusInternalServerError, map[string]interface{}{"error": "修改失败，请稍后重试"})
+		return
+	}
+
+	ip := getClientIP(r)
+	h.db.RecordAction(ip, info.Username, "change_password", "用户修改了自己的密码")
+	log.Printf("[PASSWORD] user %s changed own password from %s", info.Username, ip)
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{"success": true})
 }
 
 // GET /api/me — get current user info from token
