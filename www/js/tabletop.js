@@ -1850,6 +1850,7 @@ function onWheel(e) {
 function onKeyDown(e) {
     var tag = (e.target.tagName || '').toLowerCase();
     if (tag === 'input' || tag === 'textarea' || tag === 'select' || $('table').style.display === 'none') return;
+    if ($('rollDialog').style.display !== 'none') return;
     if (e.key === ' ') { if (!spaceDown) { spaceDown = true; updateCursor(); } e.preventDefault(); return; }
     if (e.ctrlKey || e.metaKey) {
         if (e.key === 'd' || e.key === 'D') { e.preventDefault(); duplicateSelected(); }
@@ -2251,45 +2252,83 @@ function clearLog() {
 // ===== 骰子 =====
 var dicePool = {};
 var advMode = '';
+var LABEL_PRESETS = ['先攻', '攻击', '伤害', '豁免', '属性检定', '技能检定', '察觉', '隐匿', '治疗', '专注'];
+var MOD_PRESETS = [-5, -2, -1, 1, 2, 5];
+var DICE_TEMPLATES = [
+    { name: 'd20', expr: '1d20' },
+    { name: '属性生成', expr: '4d6dl1' },
+    { name: '百分比', expr: '1d100' },
+    { name: '生命骰 d8', expr: '1d8', label: '生命骰' },
+    { name: '治疗药水', expr: '2d4+2', label: '治疗药水' },
+    { name: '火球术', expr: '8d6', label: '火球术伤害' }
+];
 
 function renderDiceButtons() {
     $('diceBtns').innerHTML = DICE.map(function(d) {
         return '<button class="die-btn" data-die="' + d + '" title="单击加入，Shift+单击直接投掷">d' + d +
             (dicePool[d] ? '<span class="cnt">' + dicePool[d] + '</span>' : '') + '</button>';
     }).join('');
-    $('btnAdv').classList.toggle('active', advMode === 'adv');
-    $('btnDis').classList.toggle('active', advMode === 'dis');
+    document.querySelectorAll('#modeSeg [data-mode]').forEach(function(b) { b.classList.toggle('active', b.dataset.mode === advMode); });
+    updateTrayPreview();
 }
 
+function renderTrayChips() {
+    $('labelChips').innerHTML = LABEL_PRESETS.map(function(n) {
+        return '<span class="chip" data-label="' + escapeHtml(n) + '">' + escapeHtml(n) + '</span>';
+    }).join('');
+    $('modChips').innerHTML = MOD_PRESETS.map(function(n) {
+        return '<span class="chip" data-mod="' + n + '">' + (n > 0 ? '+' : '') + n + '</span>';
+    }).join('');
+    $('templateChips').innerHTML = DICE_TEMPLATES.map(function(t, i) {
+        return '<span class="chip" data-tpl="' + i + '" title="' + escapeHtml(t.expr) + '">' + escapeHtml(t.name) + '</span>';
+    }).join('');
+}
+
+// 骰子按钮只拼骰子部分；修正值和优势 / 劣势在投掷时再加上
 function buildTrayExpr() {
     var parts = [];
     DICE.slice().reverse().forEach(function(d) {
-        var n = dicePool[d];
-        if (!n) return;
-        if (d === 20 && n === 1 && advMode) parts.push('2d20' + (advMode === 'adv' ? 'kh1' : 'kl1'));
-        else parts.push(n + 'd' + d);
+        if (dicePool[d]) parts.push(dicePool[d] + 'd' + d);
     });
-    var mod = parseInt($('diceMod').value, 10) || 0;
-    var expr = parts.join('+');
-    if (mod) expr += (mod > 0 ? '+' : '') + mod;
-    $('diceExpr').value = expr;
+    $('diceExpr').value = parts.join('+');
+    updateTrayPreview();
+}
+
+function signed(n) { return n > 0 ? '+' + n : n < 0 ? String(n) : ''; }
+
+// 优势 / 劣势：把表达式里第一颗 d20 变成 2d20 取高 / 取低，其余项不变
+function applyMode(expr, mode) {
+    if (!mode) return expr;
+    return expr.replace(/(^|[+\-])1?d20(?![\dkd!])/i, function(m, sign) {
+        return sign + '2d20' + (mode === 'adv' ? 'kh1' : 'kl1');
+    });
+}
+
+function trayExpr() {
+    var expr = $('diceExpr').value.replace(/\s/g, '');
+    if (!expr) return '';
+    return applyMode(expr, advMode) + signed(parseInt($('diceMod').value, 10) || 0);
+}
+
+function updateTrayPreview() {
+    var expr = trayExpr();
+    $('diceExpr').title = expr ? '将投掷 ' + expr : '';
 }
 
 function onDieClick(e) {
     var b = e.target.closest('[data-die]');
     if (!b) return;
     var d = parseInt(b.dataset.die, 10);
-    if (e.shiftKey) { roll('1d' + d, '', $('diceHidden').checked); return; }
+    if (e.shiftKey) { roll('1d' + d, $('diceLabel').value.trim(), $('diceHidden').checked); return; }
     dicePool[d] = (dicePool[d] || 0) + 1;
     renderDiceButtons();
     buildTrayExpr();
 }
 
-function toggleAdv(mode) {
-    advMode = advMode === mode ? '' : mode;
-    if (advMode && !dicePool[20]) dicePool[20] = 1;
+function setTrayMode(mode) {
+    advMode = mode;
+    if (advMode && !$('diceExpr').value.trim()) { dicePool[20] = 1; buildTrayExpr(); }
     renderDiceButtons();
-    buildTrayExpr();
 }
 
 function clearTray() {
@@ -2302,12 +2341,28 @@ function clearTray() {
 }
 
 function rollFromTray() {
-    var expr = $('diceExpr').value.trim();
+    var expr = trayExpr();
     if (!expr) { notice('先选择骰子或输入表达式', true); return; }
     roll(expr, $('diceLabel').value.trim(), $('diceHidden').checked);
     dicePool = {};
-    advMode = '';
+    advMode = ''; // 优势 / 劣势只对这一次掷骰有效
+    $('diceExpr').value = '';
+    $('diceMod').value = 0;
     renderDiceButtons();
+}
+
+function onTrayChipClick(e) {
+    var c = e.target.closest('.chip');
+    if (!c) return;
+    if (c.dataset.label != null) {
+        $('diceLabel').value = $('diceLabel').value === c.dataset.label ? '' : c.dataset.label;
+    } else if (c.dataset.mod != null) {
+        $('diceMod').value = (parseInt($('diceMod').value, 10) || 0) + parseInt(c.dataset.mod, 10);
+        updateTrayPreview();
+    } else if (c.dataset.tpl != null) {
+        var t = DICE_TEMPLATES[parseInt(c.dataset.tpl, 10)];
+        openRollDialog({ label: t.label || t.name, expr: t.expr });
+    }
 }
 
 function roll(expr, label, hidden) {
@@ -2330,26 +2385,186 @@ function renderMacros() {
     var list = loadMacros();
     $('macroList').innerHTML = list.map(function(m, i) {
         return '<span class="macro" title="' + escapeHtml(m.expr) + '"><span data-macro="' + i + '">' + escapeHtml(m.name) + '</span><i data-delmacro="' + i + '">✕</i></span>';
-    }).join('') + '<button class="tt-btn small" id="addMacroBtn" title="把当前表达式保存为快捷骰（只保存在本浏览器）">+ 快捷骰</button>';
+    }).join('') + '<button class="tt-btn small" id="addMacroBtn" title="把当前骰子组合（含修正）和说明保存为快捷骰，只保存在本浏览器">+ 保存当前</button>';
 }
 
 function onMacroClick(e) {
     var list = loadMacros(), t = e.target;
     if (t.id === 'addMacroBtn') {
-        var expr = $('diceExpr').value.trim();
-        if (!expr) { notice('先在上方输入要保存的表达式', true); return; }
+        var expr = $('diceExpr').value.replace(/\s/g, '') + signed(parseInt($('diceMod').value, 10) || 0);
+        if (!$('diceExpr').value.trim()) { notice('先在上方选骰子或输入表达式', true); return; }
         var name = prompt('快捷骰名称（如：长剑攻击）：', $('diceLabel').value.trim() || expr);
         if (!name) return;
         list.push({ name: name.slice(0, 20), expr: expr });
     } else if (t.dataset.macro) {
         var m = list[parseInt(t.dataset.macro, 10)];
-        if (m) roll(m.expr, m.name, $('diceHidden').checked);
+        if (m) {
+            if (e.shiftKey) roll(applyMode(m.expr, advMode), m.name, $('diceHidden').checked);
+            else openRollDialog({ label: m.name, expr: m.expr });
+        }
         return;
     } else if (t.dataset.delmacro) {
         list.splice(parseInt(t.dataset.delmacro, 10), 1);
     } else return;
     localStorage.setItem(macroKey(), JSON.stringify(list));
     renderMacros();
+}
+
+// ===== 我的角色：快捷检定 =====
+function quickCharSheets() {
+    return Object.keys(sheets).map(function(id) { return sheets[id]; }).filter(function(sh) {
+        return sh.kind === 'pc' && canEditSheet(sh);
+    }).sort(function(a, b) { return (a.name || '').localeCompare(b.name || ''); });
+}
+
+function renderCharQuick() {
+    var list = quickCharSheets();
+    $('charQuick').style.display = list.length ? '' : 'none';
+    if (!list.length) return;
+    var key = 'ttQuickChar:' + roomId, saved = '';
+    try { saved = localStorage.getItem(key) || ''; } catch (e) { saved = ''; }
+    var cur = list.filter(function(sh) { return sh.id === saved; })[0] || list[0];
+    $('charQuickSel').innerHTML = list.map(function(sh) {
+        return '<option value="' + escapeHtml(sh.id) + '"' + (sh === cur ? ' selected' : '') + '>' + escapeHtml(sh.name) + '</option>';
+    }).join('');
+    $('charQuickSel').style.display = list.length > 1 ? '' : 'none';
+    var chips = [];
+    var chip = function(text, data) { chips.push('<span class="chip" ' + data + '>' + escapeHtml(text) + '</span>'); };
+    if (cur.init != null && cur.init !== '') chip('先攻 ' + (normBonus(cur.init) || '+0'), 'data-qd20="' + escapeHtml(cur.init) + '" data-qlabel="先攻"');
+    (cur.skills || []).forEach(function(s) {
+        if (s.name === '察觉' || s.name === '隐匿') chip(s.name + ' ' + (normBonus(s.bonus) || '+0'), 'data-qd20="' + escapeHtml(s.bonus) + '" data-qlabel="' + escapeHtml(s.name) + '"');
+    });
+    (cur.attacks || []).forEach(function(a) {
+        if (a.atk) chip(a.name + ' 命中', 'data-qd20="' + escapeHtml(a.atk) + '" data-qlabel="' + escapeHtml(a.name + ' 命中') + '"');
+        if (a.damage) chip(a.name + ' 伤害', 'data-qexpr="' + escapeHtml(a.damage) + '" data-qlabel="' + escapeHtml(a.name + ' 伤害' + (a.type ? '（' + a.type + '）' : '')) + '"');
+    });
+    chips.push('<span class="chip more" data-qopen="' + escapeHtml(cur.id) + '" title="打开完整角色卡">全部…</span>');
+    $('charQuickChips').innerHTML = chips.join('');
+    $('charQuickChips').dataset.sheet = cur.id;
+}
+
+function onCharQuickClick(e) {
+    var c = e.target.closest('.chip');
+    if (!c) return;
+    var sh = sheets[$('charQuickChips').dataset.sheet];
+    if (!sh) return;
+    if (c.dataset.qopen) { openSheet(sh.id, ''); return; }
+    var o = { who: sh.name, label: c.dataset.qlabel };
+    if (c.dataset.qd20 != null) o.bonus = c.dataset.qd20; else o.expr = c.dataset.qexpr;
+    if (e.shiftKey) { quickRoll(o); return; }
+    openRollDialog(o);
+}
+
+// ===== 掷骰确认 =====
+// o: { who, label, bonus }（d20 检定）或 { who, label, expr }（伤害等任意表达式）
+var rd = null;
+
+function doubleDice(expr) {
+    return expr.replace(/(\d*)d(\d+)/gi, function(m, n, s) { return ((parseInt(n, 10) || 1) * 2) + 'd' + s; });
+}
+
+function rollDialogExpr() {
+    var base;
+    if (rd.d20) base = (rd.mode === 'adv' ? '2d20kh1' : rd.mode === 'dis' ? '2d20kl1' : '1d20') + (normBonus(rd.bonus) || '');
+    else base = rd.crit ? doubleDice(rd.expr) : rd.expr;
+    return base + rd.extra + signed(rd.adj);
+}
+
+function quickRoll(o) {
+    rd = normalizeRollReq(o);
+    rd.mode = advMode;
+    if (advMode) { advMode = ''; renderDiceButtons(); }
+    roll(rollDialogExpr(), (rd.who ? rd.who + '·' : '') + rd.label, $('diceHidden').checked);
+    rd = null;
+}
+
+function normalizeRollReq(o) {
+    var r = { who: o.who || '', label: o.label || '', extra: '', adj: 0, crit: false, mode: '' };
+    var m = o.expr != null && String(o.expr).replace(/\s/g, '').match(/^1?d20([+\-]\d+)?$/i);
+    if (o.bonus != null || m) {
+        r.d20 = true;
+        r.bonus = o.bonus != null ? o.bonus : (m[1] || '');
+    } else {
+        r.d20 = false;
+        r.expr = String(o.expr).replace(/\s/g, '');
+    }
+    return r;
+}
+
+function openRollDialog(o) {
+    rd = normalizeRollReq(o);
+    rd.mode = advMode;
+    $('rdWho').textContent = rd.who;
+    $('rdWho').style.display = rd.who ? '' : 'none';
+    $('rdLabel').value = rd.label;
+    $('rdBase').textContent = rd.d20 ? 'd20 ' + (normBonus(rd.bonus) || '+0') : rd.expr;
+    $('rdModeRow').style.display = rd.d20 ? '' : 'none';
+    $('rdDiceRow').style.display = rd.d20 ? '' : 'none';
+    $('rdCritRow').style.display = !rd.d20 && /d\d/i.test(rd.expr) ? '' : 'none';
+    $('rdCrit').checked = false;
+    $('rdAdj').value = 0;
+    $('rdHidden').checked = $('diceHidden').checked;
+    $('rollDialog').style.display = 'flex';
+    syncRollDialog();
+    $('rdGo').focus();
+}
+
+function syncRollDialog() {
+    if (!rd) return;
+    rd.adj = parseInt($('rdAdj').value, 10) || 0;
+    rd.crit = $('rdCrit').checked;
+    document.querySelectorAll('#rdModeSeg [data-mode]').forEach(function(b) { b.classList.toggle('active', b.dataset.mode === rd.mode); });
+    document.querySelectorAll('#rdDiceRow [data-extra]').forEach(function(c) { c.classList.toggle('active', c.dataset.extra === rd.extra); });
+    $('rdPreview').textContent = rollDialogExpr();
+}
+
+function onRollDialogClick(e) {
+    if (e.target === $('rollDialog')) { closeRollDialog(); return; }
+    var t = e.target.closest('[data-mode], [data-adj], [data-extra]');
+    if (!t || !rd) return;
+    if (t.dataset.mode != null) rd.mode = t.dataset.mode;
+    if (t.dataset.adj != null) $('rdAdj').value = (parseInt($('rdAdj').value, 10) || 0) + parseInt(t.dataset.adj, 10);
+    if (t.dataset.extra != null) rd.extra = rd.extra === t.dataset.extra ? '' : t.dataset.extra;
+    syncRollDialog();
+}
+
+function confirmRollDialog() {
+    if (!rd) return;
+    syncRollDialog();
+    var label = $('rdLabel').value.trim();
+    roll(rollDialogExpr(), (rd.who ? rd.who + '·' : '') + label, $('rdHidden').checked);
+    if (advMode) { advMode = ''; renderDiceButtons(); } // 骰子栏里的优势 / 劣势只作用于一次掷骰
+    closeRollDialog();
+}
+
+function closeRollDialog() {
+    rd = null;
+    $('rollDialog').style.display = 'none';
+}
+
+function initDiceTray() {
+    renderTrayChips();
+    renderDiceButtons();
+    document.querySelector('.dice-tray').addEventListener('click', onTrayChipClick);
+    $('modeSeg').addEventListener('click', function(e) {
+        var b = e.target.closest('[data-mode]');
+        if (b) setTrayMode(b.dataset.mode);
+    });
+    $('diceExpr').addEventListener('input', function() { dicePool = {}; renderDiceButtons(); });
+    $('diceMod').addEventListener('input', updateTrayPreview);
+    $('charQuickChips').addEventListener('click', onCharQuickClick);
+    $('charQuickSel').addEventListener('change', function() {
+        try { localStorage.setItem('ttQuickChar:' + roomId, this.value); } catch (e) { /* 无痕模式等 */ }
+        renderCharQuick();
+    });
+    $('rollDialog').addEventListener('click', onRollDialogClick);
+    $('rdAdj').addEventListener('input', syncRollDialog);
+    $('rdCrit').addEventListener('change', syncRollDialog);
+    $('rollDialog').addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') { e.preventDefault(); closeRollDialog(); }
+        if (e.key === 'Enter' && e.target.id !== 'rdGo') { e.preventDefault(); confirmRollDialog(); }
+        e.stopPropagation();
+    });
 }
 
 // ===== 记录 =====
@@ -2516,11 +2731,10 @@ function init() {
     });
 
     $('diceBtns').addEventListener('click', onDieClick);
-    $('diceMod').addEventListener('input', function() { if (Object.keys(dicePool).length) buildTrayExpr(); });
     $('diceExpr').addEventListener('keydown', function(e) { if (e.key === 'Enter') rollFromTray(); });
+    initDiceTray();
     $('chatInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') sendChat(); });
     $('macroList').addEventListener('click', onMacroClick);
-    renderDiceButtons();
 
     $('roomList').addEventListener('click', function(e) {
         var b = e.target.closest('button');

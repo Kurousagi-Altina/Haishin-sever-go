@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026110702">
 </head>
 <body class="tt-body">
 
@@ -167,22 +167,39 @@
                 <!-- 骰子 & 记录 -->
                 <div class="side-pane active" id="pane-dice">
                     <div class="dice-tray">
+                        <div class="dice-row">
+                            <input class="tt-input" id="diceLabel" maxlength="40" placeholder="这次掷骰是为了什么（可选）">
+                        </div>
+                        <div class="quick-chips" id="labelChips"></div>
                         <div class="dice-btns" id="diceBtns"></div>
                         <div class="dice-row">
                             <input class="tt-input" id="diceExpr" placeholder="1d20+5、4d6dl1、2d20kh1、3d6!" autocomplete="off">
+                            <button class="tt-btn danger small" onclick="clearTray()" title="清空骰子、修正和说明">清空</button>
                             <button class="tt-btn primary" onclick="rollFromTray()">投掷</button>
                         </div>
                         <div class="dice-row">
-                            <label>修正 <input class="tt-input" id="diceMod" type="number" value="0" style="width:56px;flex:none;"></label>
-                            <button class="tt-btn small" id="btnAdv" onclick="toggleAdv('adv')" title="2d20 取高">优势</button>
-                            <button class="tt-btn small" id="btnDis" onclick="toggleAdv('dis')" title="2d20 取低">劣势</button>
+                            <span class="seg" id="modeSeg">
+                                <button data-mode="" class="active">普通</button><button data-mode="adv" title="d20 多掷一颗取高">优势</button><button data-mode="dis" title="d20 多掷一颗取低">劣势</button>
+                            </span>
                             <label title="只有你和 GM 能看到结果"><input type="checkbox" id="diceHidden"> 暗骰</label>
-                            <button class="tt-btn small" onclick="clearTray()">清空</button>
                         </div>
                         <div class="dice-row">
-                            <input class="tt-input" id="diceLabel" maxlength="40" placeholder="说明（可选），如：敏捷豁免">
+                            <label>修正 <input class="tt-input" id="diceMod" type="number" value="0" style="width:52px;flex:none;"></label>
+                            <span class="quick-chips inline" id="modChips"></span>
                         </div>
-                        <div class="dice-macros" id="macroList"></div>
+                        <div class="quick-group">
+                            <span class="group-label">常用</span>
+                            <span class="quick-chips inline" id="templateChips"></span>
+                        </div>
+                        <div class="quick-group" id="charQuick" style="display:none;">
+                            <span class="group-label">我的角色</span>
+                            <select class="tt-select" id="charQuickSel"></select>
+                            <span class="quick-chips inline" id="charQuickChips"></span>
+                        </div>
+                        <div class="quick-group">
+                            <span class="group-label">快捷骰</span>
+                            <span class="dice-macros" id="macroList"></span>
+                        </div>
                     </div>
                     <div class="log-list" id="logList"></div>
                     <div class="chat-row">
@@ -278,8 +295,52 @@
         </div>
     </div>
 
+    <!-- 掷骰确认 -->
+    <div class="roll-dialog" id="rollDialog" style="display:none;">
+        <div class="roll-box">
+            <div class="rd-who" id="rdWho"></div>
+            <input class="tt-input rd-label" id="rdLabel" maxlength="40" placeholder="说明">
+            <div class="rd-base">基础：<b id="rdBase"></b></div>
+            <div class="rd-row" id="rdModeRow">
+                <span class="rd-key">检定</span>
+                <span class="seg" id="rdModeSeg">
+                    <button data-mode="">普通</button><button data-mode="adv">优势</button><button data-mode="dis">劣势</button>
+                </span>
+            </div>
+            <div class="rd-row" id="rdCritRow">
+                <span class="rd-key">暴击</span>
+                <label><input type="checkbox" id="rdCrit"> 伤害骰数量翻倍</label>
+            </div>
+            <div class="rd-row">
+                <span class="rd-key">调整</span>
+                <button class="tt-btn small" data-adj="-1">−</button>
+                <input class="tt-input narrow" id="rdAdj" type="number" value="0">
+                <button class="tt-btn small" data-adj="1">+</button>
+                <span class="quick-chips inline">
+                    <span class="chip" data-adj="-5">-5</span><span class="chip" data-adj="-2">-2</span><span class="chip" data-adj="2">+2</span><span class="chip" data-adj="5">+5</span>
+                </span>
+            </div>
+            <div class="rd-row" id="rdDiceRow">
+                <span class="rd-key">额外</span>
+                <span class="quick-chips inline">
+                    <span class="chip" data-extra="+1d4" title="祝福术、神导术等">祝福 +1d4</span><span class="chip" data-extra="-1d4" title="灾祸术等">灾祸 −1d4</span>
+                </span>
+            </div>
+            <div class="rd-row">
+                <span class="rd-key"></span>
+                <label title="只有你和 GM 能看到结果"><input type="checkbox" id="rdHidden"> 暗骰</label>
+            </div>
+            <div class="rd-preview">将投掷 <b id="rdPreview"></b></div>
+            <div class="rd-btns">
+                <span class="tt-hint">Shift+点击可跳过确认</span>
+                <button class="tt-btn" onclick="closeRollDialog()">取消</button>
+                <button class="tt-btn primary" id="rdGo" onclick="confirmRollDialog()">掷骰</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js"></script>
-    <script src="js/tabletop.js"></script>
+    <script src="js/tabletop-sheets.js?v=2026110702"></script>
+    <script src="js/tabletop.js?v=2026110702"></script>
 </body>
 </html>

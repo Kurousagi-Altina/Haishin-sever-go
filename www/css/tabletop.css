@@ -275,3 +275,40 @@ details.feature { background: #23262e; border-radius: 6px; padding: 4px 8px; mar
 details.feature summary { cursor: pointer; font-size: 13px; }
 .stat-chip .temp-hp { color: #4dd0e1; font-size: 12px; }
 .stat-chip.hp .tt-input.narrow { width: 52px; padding: 2px 6px; }
+
+/* 骰子栏：快捷描述 / 修正 / 常用 / 我的角色 */
+.quick-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.quick-chips.inline { display: inline-flex; margin-bottom: 0; }
+.quick-chips .chip {
+    padding: 2px 8px; border-radius: 10px; font-size: 12px; cursor: pointer; user-select: none;
+    background: #262931; border: 1px solid #3a3f4d; color: #ddd; white-space: nowrap;
+}
+.quick-chips .chip:hover { background: #333743; border-color: #64b5f6; }
+.quick-chips .chip.active { background: #1976D2; border-color: #42a5f5; color: #fff; }
+.quick-chips .chip.more { color: #90caf9; }
+.quick-group { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 6px; }
+.quick-group .group-label { font-size: 11px; color: #888; width: 100%; }
+.quick-group .tt-select { padding: 2px 6px; font-size: 12px; }
+.seg { display: inline-flex; border: 1px solid #444; border-radius: 6px; overflow: hidden; }
+.seg button { background: #262931; color: #ccc; border: none; padding: 4px 10px; font-size: 12px; cursor: pointer; }
+.seg button + button { border-left: 1px solid #444; }
+.seg button.active { background: #1976D2; color: #fff; }
+.seg button:hover:not(.active) { background: #333743; }
+
+/* 掷骰确认框 */
+.roll-dialog { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+.roll-box {
+    width: min(380px, calc(100% - 32px)); background: #1f2229; border: 1px solid #3a3f4d; border-radius: 12px;
+    padding: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); font-size: 13px;
+}
+.rd-who { color: #90caf9; font-size: 12px; margin-bottom: 4px; }
+.rd-label { width: 100%; font-size: 15px; font-weight: bold; margin-bottom: 8px; }
+.rd-base { color: #aaa; margin-bottom: 10px; }
+.rd-base b { color: #fff; }
+.rd-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.rd-key { width: 34px; color: #888; flex: none; }
+.rd-row .tt-input.narrow { width: 56px; text-align: center; }
+.rd-preview { margin: 12px 0; padding: 8px 10px; background: #15171b; border-radius: 8px; color: #aaa; }
+.rd-preview b { color: #ffd54f; font-size: 16px; margin-left: 6px; }
+.rd-btns { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+.rd-btns .tt-hint { flex: 1; }

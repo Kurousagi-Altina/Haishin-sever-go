@@ -69,8 +69,17 @@ function onSheetPaneClick(e) {
     var b = e.target.closest('button, [data-act]');
     if (!b) return;
     var sh = currentSheet();
-    if (b.dataset.d20 != null) { sheetRoll(sh, b.dataset.label, d20Expr(b.dataset.d20)); return; }
-    if (b.dataset.roll) { sheetRoll(sh, b.dataset.label, b.dataset.roll); return; }
+    // 先弹出确认框（普通 / 优势 / 劣势、调整值、暴击、暗骰）；Shift+点击直接掷
+    if (b.dataset.d20 != null) {
+        if (e.shiftKey) sheetRoll(sh, b.dataset.label, d20Expr(b.dataset.d20));
+        else openRollDialog({ who: sh && sh.name, label: b.dataset.label, bonus: b.dataset.d20 });
+        return;
+    }
+    if (b.dataset.roll) {
+        if (e.shiftKey) sheetRoll(sh, b.dataset.label, b.dataset.roll);
+        else openRollDialog({ who: sh && sh.name, label: b.dataset.label, expr: b.dataset.roll });
+        return;
+    }
     var id = b.dataset.id;
     switch (b.dataset.act) {
     case 'back': sheetView = sheetView.back || { mode: 'list' }; renderSheets(); break;
@@ -82,7 +91,7 @@ function onSheetPaneClick(e) {
         break;
     case 'xlsx': $('xlsxFile').click(); break;
     case 'lookup': openLookup(''); break;
-    case 'spell': openLookup(b.dataset.name); break;
+    case 'spell': openSpell(b.dataset.name, b.dataset.level); break;
     case 'hp': changeHp(sh, parseInt(b.dataset.delta, 10)); break;
     case 'slot': changeSlot(sh, parseInt(b.dataset.idx, 10), parseInt(b.dataset.delta, 10)); break;
     case 'res': changeResource(sh, parseInt(b.dataset.idx, 10), parseInt(b.dataset.delta, 10)); break;
@@ -173,6 +182,7 @@ function renderSheets() {
     else if (sheetView.mode === 'lookup') pane.innerHTML = lookupHtml();
     else { sheetView.mode = 'list'; pane.innerHTML = listHtml(); scroll = 0; }
     pane.scrollTop = scroll;
+    renderCharQuick();
 }
 
 function listHtml() {
@@ -282,7 +292,7 @@ function sheetHtml(sh, preview) {
         });
         if (sh.spells && sh.spells.length) {
             h += '<div class="spell-chips">' + sh.spells.map(function(s) {
-                return '<button class="tt-btn small" data-act="spell" data-name="' + escapeHtml(s.name) + '" title="在不全书中查看">' +
+                return '<button class="tt-btn small" data-act="spell" data-name="' + escapeHtml(s.name) + '" data-level="' + escapeHtml(String(s.level == null ? '' : s.level).trim()) + '" title="查看法术效果">' +
                     (s.level === '0' || s.level === 0 ? '戏法·' : s.level ? s.level + '环·' : '') + escapeHtml(s.name) + '</button>';
             }).join('') + '</div>';
         }
@@ -444,21 +454,107 @@ function runLookup() {
     lookup.loading = true;
     lookup.page = null;
     renderSheets();
-    api('/api/tabletop/5e/search?q=' + enc(lookup.q), 'GET').then(function(data) {
-        lookup.loading = false;
-        lookup.results = (data.results || []).map(function(r) { return { title: r.title || r.rawTitle, path: r.path }; })
+    var q = lookup.q;
+    api('/api/tabletop/5e/search?q=' + enc(q), 'GET').then(function(data) {
+        var results = (data.results || []).map(function(r) { return { title: r.title || r.rawTitle, path: r.path }; })
             .filter(function(r) { return r.path && /^topics\//.test(r.path); });
+        if (results.length || lookup.q !== q) return results;
+        // 法术没有独立页面（按环阶放在一起），标题搜不到时去法术详述里找
+        return findSpell(q, '').then(function(spell) {
+            if (spell && lookup.q === q) lookup.page = { path: spell.source, title: spell.name, loading: false, entries: [spell] };
+            return results;
+        });
+    }).then(function(results) {
+        lookup.loading = false;
+        lookup.results = results || [];
         renderSheets();
     }).catch(function(e) { lookup.loading = false; renderSheets(); apiError(e); });
+}
+
+// ===== 法术 =====
+// 不全书里法术按环阶整页存放（<H4>疗伤术｜Cure Wounds</H4>），依次查 2024 玩家手册、XGE、TCE、2014 玩家手册
+var SPELL_SOURCES = [
+    function(l) { return 'topics/玩家手册2024/法术详述/' + l + '环.htm'; },
+    function(l) { return 'topics/珊娜萨的万事指南/法术/法术详述/' + (l === 0 ? '戏法' : l + '环') + '.html'; },
+    function(l) { return 'topics/塔莎的万事坩埚/法术/法术详述/' + (l === 0 ? '戏法' : l + '环') + '.html'; },
+    function(l) { return 'topics/玩家手册/魔法/法术详述/' + (l === 0 ? '戏法' : l + '环') + '.html'; }
+];
+var pageEntryCache = {};
+
+function fetch5eHtml(path) {
+    return fetch('/api/tabletop/5e/page?path=' + enc(path), { headers: { 'Authorization': 'Bearer ' + authToken } }).then(function(r) {
+        if (!r.ok) return r.json().then(function(d) { throw d.error || '获取失败'; });
+        return r.text();
+    });
+}
+
+function spellEntries(path) {
+    if (!pageEntryCache[path]) {
+        pageEntryCache[path] = fetch5eHtml(path).then(function(html) {
+            return parseItems(new DOMParser().parseFromString(html, 'text/html'), path);
+        }).catch(function() { delete pageEntryCache[path]; return []; });
+    }
+    return pageEntryCache[path];
+}
+
+function spellKey(s) { return String(s || '').replace(/[\s｜|·・]/g, '').toLowerCase(); }
+
+// 人物卡里的译名常和不全书略有出入（弹射 / 弹射术，塔莎腐蚀酿 / 塔莎酸蚀酿）：
+// 一方包含另一方，或等长且只差一个字，都算近似匹配
+function spellNear(a, b) {
+    if (a.length < 2 || b.length < 2) return false;
+    if (a.indexOf(b) >= 0 || b.indexOf(a) >= 0) return true;
+    if (a.length !== b.length || a.length < 3) return false;
+    var diff = 0;
+    for (var i = 0; i < a.length; i++) if (a.charAt(i) !== b.charAt(i)) diff++;
+    return diff <= 1;
+}
+
+// level 已知时只查对应环阶页（角色卡里有），未知时查 0-9 环；先找完全同名，再找近似名
+function findSpell(name, level) {
+    var key = spellKey(name), lv = parseInt(level, 10);
+    if (!key) return Promise.resolve(null);
+    var levels = lv >= 0 && lv <= 9 ? [lv] : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    var seen = [];
+    var scan = function(test) {
+        for (var i = 0; i < seen.length; i++) if (test(seen[i])) return seen[i];
+        return null;
+    };
+    var exact = function(e) { return spellKey(e.name) === key || spellKey(e.en) === key; };
+    return SPELL_SOURCES.reduce(function(prev, src) {
+        return prev.then(function(found) {
+            if (found) return found;
+            return Promise.all(levels.map(function(l) { return spellEntries(src(l)); })).then(function(pages) {
+                pages.forEach(function(list) { seen = seen.concat(list); });
+                return scan(exact);
+            });
+        });
+    }, Promise.resolve(null)).then(function(found) {
+        return found || scan(function(e) { return spellNear(spellKey(e.name), key); });
+    });
+}
+
+function openSpell(name, level) {
+    var back = { mode: sheetView.mode, id: sheetView.id, tokenId: sheetView.tokenId, back: sheetView.back };
+    sheetView = { mode: 'preview', tmp: { kind: 'item', name: name, meta: '', text: '正在查找法术…' }, back: back };
+    switchPane('sheets');
+    renderSheets();
+    findSpell(name, level).then(function(spell) {
+        if (sheetView.mode !== 'preview' || sheetView.tmp.name !== name) return;
+        if (spell) {
+            sheetView.tmp = spell;
+            renderSheets();
+        } else {
+            notice('不全书法术详述里没找到「' + name + '」，改为全文搜索', true);
+            openLookup(name);
+        }
+    });
 }
 
 function loadLookupPage(path, title) {
     lookup.page = { path: path, title: title, loading: true, entries: [] };
     renderSheets();
-    fetch('/api/tabletop/5e/page?path=' + enc(path), { headers: { 'Authorization': 'Bearer ' + authToken } }).then(function(r) {
-        if (!r.ok) return r.json().then(function(d) { throw d.error || '获取失败'; });
-        return r.text();
-    }).then(function(html) {
+    fetch5eHtml(path).then(function(html) {
         if (!lookup.page || lookup.page.path !== path) return;
         var entries = parse5ePage(html, path);
         var q = lookup.q;
@@ -675,8 +771,9 @@ function parseItems(doc, path) {
         var body = piece.slice(end + 1).replace(/\u0001|\u0002/g, '').trim();
         var lines = body.split('\n');
         var meta = '';
-        if (lines.length && /(普通|珍稀|稀有|传说|神器|同调|多种稀有度|药水|武器|护甲|戒指|法杖|权杖|魔杖|奇物|卷轴)/.test(lines[0]) && lines[0].length < 80) meta = lines.shift();
-        return { kind: 'item', name: cnName(name) || name, en: name.replace(cnName(name), '').trim(), meta: meta, text: lines.join('\n').trim(), source: path };
+        if (lines.length && /(普通|珍稀|稀有|传说|神器|同调|多种稀有度|药水|武器|护甲|戒指|法杖|权杖|魔杖|奇物|卷轴|[一二三四五六七八九]环|戏法)/.test(lines[0]) && lines[0].length < 80) meta = lines.shift();
+        var cn = (cnName(name) || name).replace(/[｜|\s]+$/, '');
+        return { kind: 'item', name: cn, en: name.replace(cnName(name), '').replace(/^[｜|\s]+/, '').trim(), meta: meta, text: lines.join('\n').trim(), source: path };
     }).filter(function(it) { return it.name && it.text; });
 }
 
