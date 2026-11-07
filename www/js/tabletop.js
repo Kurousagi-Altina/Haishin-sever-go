@@ -43,12 +43,12 @@ function num(v, def) { v = parseFloat(v); return isFinite(v) ? v : def; }
 function isDoor() { return currentUser && currentUser.role === 'door'; }
 function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 
-function notice(msg, isError) {
+function notice(msg, isError, ms) {
     var n = $('notice');
     n.textContent = msg;
     n.className = 'tt-notice show' + (isError ? ' error' : '');
     clearTimeout(notice.timer);
-    notice.timer = setTimeout(function() { n.className = 'tt-notice'; }, 3000);
+    notice.timer = setTimeout(function() { n.className = 'tt-notice'; }, ms || 3000);
 }
 
 function api(url, method, body) {
@@ -265,11 +265,24 @@ function importRoom(input) {
     if (!file) return;
     var fd = new FormData();
     fd.append('file', file);
-    notice('正在导入...');
+    var ob2 = /\.ob2$/i.test(file.name);
+    var btn = $('importBtn');
+    btn.disabled = true;
+    // .ob2 导入时服务器要下载 Owlbear 外链图片，可能需要一两分钟
+    notice(ob2 ? '正在导入 Owlbear 文件并下载外链图片，可能需要一两分钟，请勿关闭页面...' : '正在导入...', false, 600000);
     api('/api/tabletop/import', 'POST', fd).then(function(data) {
-        notice('导入成功');
+        btn.disabled = false;
+        var s = data.owlbear;
+        if (s) {
+            var msg = '导入成功：' + s.scenes + ' 个场景、' + s.tokens + ' 个棋子、' + s.walls + ' 段墙、' + s.doors + ' 扇门、' +
+                s.monsters + ' 张怪物卡，' + s.images + ' 张图片（其中 ' + s.downloaded + ' 张从外链下载）';
+            if (s.failed && s.failed.length) msg += '；' + s.failed.length + ' 张图片下载失败，对应地图 / 棋子需要重新上传';
+            notice(msg, !!(s.failed && s.failed.length), 12000);
+        } else {
+            notice('导入成功');
+        }
         enterRoom(data.id);
-    }).catch(apiError);
+    }).catch(function(e) { btn.disabled = false; apiError(e); });
 }
 
 // ===== 进入 / 离开房间 =====
@@ -982,12 +995,18 @@ function drawToken(it) {
 
     var x = it.x || 0, y = it.y || 0;
     if (it.hpMax > 0) {
-        var ratio = Math.max(0, Math.min(1, (it.hp || 0) / it.hpMax));
+        // 临时生命值以青色接在血条后面；有临时生命时血条按 (当前 + 临时) 缩放
+        var cur = Math.max(0, num(it.hp, 0)), temp = Math.max(0, num(it.hpTemp, 0));
+        var total = Math.max(it.hpMax, cur + temp), ratio = Math.min(1, cur / it.hpMax);
         var bh = Math.max(4 / view.s, h * 0.08), by = y - bh - 2 / view.s;
         ctx.fillStyle = 'rgba(0,0,0,0.7)';
         ctx.fillRect(x, by, w, bh);
         ctx.fillStyle = ratio > 0.5 ? '#43a047' : ratio > 0.25 ? '#fb8c00' : '#e53935';
-        ctx.fillRect(x, by, w * ratio, bh);
+        ctx.fillRect(x, by, w * cur / total, bh);
+        if (temp > 0) {
+            ctx.fillStyle = '#4dd0e1';
+            ctx.fillRect(x + w * cur / total, by, w * temp / total, bh);
+        }
     }
     if (it.label) drawLabel(it.label, x + w / 2, y + h, it.hidden ? '#ba68c8' : '#fff', true);
     if (it.hidden) {
@@ -1930,8 +1949,12 @@ function renderSelPanel() {
         h += row('尺寸', '<input class="tt-input narrow" data-prop="size" type="number" min="0.25" step="0.5" value="' + (Math.round((it.w || g) / g * 100) / 100) + '"> 格');
         h += row('HP', '<input class="tt-input narrow" data-prop="hp" type="number" value="' + (it.hp != null ? it.hp : '') + '"> / ' +
             '<input class="tt-input narrow" data-prop="hpMax" type="number" min="0" value="' + (it.hpMax || '') + '">');
+        h += row('临时', '<input class="tt-input narrow" data-prop="hpTemp" type="number" min="0" value="' + (it.hpTemp || '') + '" placeholder="0">' +
+            '<span class="tt-hint">受伤先扣临时生命</span>');
         h += row('', '<button class="tt-btn small" data-hp="-5">-5</button><button class="tt-btn small" data-hp="-1">-1</button>' +
             '<button class="tt-btn small" data-hp="1">+1</button><button class="tt-btn small" data-hp="5">+5</button>');
+        h += row('', '<input class="tt-input narrow" data-amount type="number" min="0" placeholder="数值">' +
+            '<button class="tt-btn small danger" data-act="dmg">伤害</button><button class="tt-btn small" data-act="heal">治疗</button>');
         h += row('颜色', '<input class="tt-input" type="color" data-prop="color" value="' + escapeHtml(it.color || '#607d8b') + '">' +
             '<label><input type="checkbox" data-prop="circle"' + (it.circle ? ' checked' : '') + '> 圆形</label>');
         h += row('旋转', '<input type="range" data-prop="rot" min="0" max="345" step="15" value="' + (it.rot || 0) + '" style="flex:1;">');
@@ -1977,6 +2000,27 @@ function renderSelPanel() {
     function row(label, inner) { return '<div class="prop-row"><label>' + label + '</label>' + inner + '</div>'; }
 }
 
+// 5e 规则：受到伤害先扣临时生命值，生命值不低于 0；治疗不超过上限，也不恢复临时生命值
+function applyHpDelta(hp, max, temp, delta) {
+    max = num(max, 0);
+    hp = num(hp, max);
+    temp = Math.max(0, num(temp, 0));
+    if (delta < 0) {
+        var absorbed = Math.min(temp, -delta);
+        temp -= absorbed;
+        hp = Math.max(0, hp + delta + absorbed);
+    } else {
+        hp += delta;
+        if (max > 0) hp = Math.min(max, hp);
+    }
+    return { hp: hp, temp: temp };
+}
+
+function tokenHpPatch(it, delta) {
+    var r = applyHpDelta(it.hp, it.hpMax, it.hpTemp, delta);
+    return { id: it.id, hp: r.hp, hpTemp: r.temp > 0 ? r.temp : null };
+}
+
 function onSelPanelChange(e) {
     var el = e.target, prop = el.dataset.prop;
     var ids = selectedIds();
@@ -1989,6 +2033,9 @@ function onSelPanelChange(e) {
         var ratio = (it.h || g) / (it.w || g);
         patch.w = cells * g;
         patch.h = cells * g * ratio;
+    } else if (prop === 'hpTemp') {
+        var t = parseFloat(el.value);
+        patch.hpTemp = t > 0 ? t : null;
     } else if (prop === 'hp' || prop === 'hpMax' || prop === 'width' || prop === 'rot' || prop === 'sight') {
         patch[prop] = el.value === '' ? null : parseFloat(el.value);
     } else patch[prop] = el.value === '' ? null : el.value;
@@ -2000,13 +2047,16 @@ function onSelPanelClick(e) {
     var b = e.target.closest('button');
     if (!b) return;
     var ids = selectedIds();
-    if (b.dataset.hp) {
-        var it = scene.items[ids[0]];
-        patchItems([{ id: it.id, hp: (it.hp || 0) + parseInt(b.dataset.hp, 10) }]);
+    var amountEl = $('selPanel').querySelector('[data-amount]');
+    var amount = amountEl ? Math.abs(parseInt(amountEl.value, 10) || 0) : 0;
+    var delta = b.dataset.hp ? parseInt(b.dataset.hp, 10) : b.dataset.act === 'dmg' ? -amount : b.dataset.act === 'heal' ? amount : 0;
+    if (delta) {
+        patchItems([tokenHpPatch(scene.items[ids[0]], delta)]);
         $('selPanel').dataset.ids = '';
         renderSelPanel();
         return;
     }
+    if (b.dataset.act === 'dmg' || b.dataset.act === 'heal') return; // 没填数值
     var flag = function(key, val) { patchItems(ids.map(function(id) { var p = { id: id }; p[key] = val; return p; })); };
     switch (b.dataset.act) {
     case 'close': selectOnly([]); break;

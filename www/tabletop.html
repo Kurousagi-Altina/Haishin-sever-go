@@ -56,8 +56,8 @@
             <div class="lobby-row" id="createRow">
                 <input class="tt-input" id="newRoomName" maxlength="40" placeholder="新房间名，例如：龙枪编年史 第三章">
                 <button class="tt-btn primary" onclick="createRoom()">创建房间</button>
-                <button class="tt-btn" onclick="$('importZip').click()">导入房间 (.zip)</button>
-                <input type="file" id="importZip" accept=".zip" style="display:none;" onchange="importRoom(this)">
+                <button class="tt-btn" id="importBtn" onclick="$('importZip').click()" title="本站导出的 .zip 备份，或 Owlbear Rodeo 导出的 .ob2 文件">导入房间 (.zip / Owlbear .ob2)</button>
+                <input type="file" id="importZip" accept=".zip,.ob2" style="display:none;" onchange="importRoom(this)">
             </div>
 
             <table class="room-table">

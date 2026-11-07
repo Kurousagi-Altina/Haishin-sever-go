@@ -273,3 +273,5 @@ input[type="color"].tt-input { padding: 0 2px; width: 36px; height: 28px; }
 .item-meta { color: #ffb74d; font-style: italic; font-size: 13px; margin-bottom: 8px; }
 details.feature { background: #23262e; border-radius: 6px; padding: 4px 8px; margin-bottom: 4px; }
 details.feature summary { cursor: pointer; font-size: 13px; }
+.stat-chip .temp-hp { color: #4dd0e1; font-size: 12px; }
+.stat-chip.hp .tt-input.narrow { width: 52px; padding: 2px 6px; }

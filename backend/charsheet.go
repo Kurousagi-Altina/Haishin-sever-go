@@ -364,7 +364,7 @@ func parseDnd5eCard(c xlsxCells) (map[string]interface{}, error) {
 		"passive":   c.num("L23"),
 		"speed":     c.str("AR24"),
 		"size":      c.str("AR23"),
-		"hp":        map[string]interface{}{"cur": c.num("R22"), "max": c.num("V22")},
+		"hp":        map[string]interface{}{"cur": c.num("R22"), "max": c.num("V22"), "temp": c.num("T24")}, // T24 = 临时生命
 		"hd":        strings.TrimSpace(c.num("R23") + "/" + c.num("U23") + " " + c.str("W23")),
 		"abilities": abilities,
 		"skills":    skills,

@@ -1,0 +1,766 @@
+package main
+
+import (
+	"archive/zip"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"log"
+	"math"
+	"net/http"
+	"net/url"
+	"path/filepath"
+	"regexp"
+	"sort"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
+)
+
+// Import of Owlbear Rodeo 2 exports (.ob2): a zip with manifest.json (assets incl. SCENE
+// entries) and one JSON doc per scene. Item coordinates are in scene units where one grid
+// cell = scene grid dpi, which we use directly as the tabletop's gridSize.
+// Images are either bundled (assets/images/items/...) or links to Owlbear's / the bestiary
+// extension's CDN; links are downloaded now so the room keeps working when Owlbear is down.
+// Extension data we understand: Smoke & Spectre vision lines (→ walls/doors), obr-suite
+// health bubbles (→ HP), the bestiary extension's 5etools monsters (→ monster sheets) and
+// character-cards bindings (→ linked by name when a PC sheet with that name is imported).
+
+const ob2MaxDownload = 60 << 20
+
+// hosts whose images we fetch while importing — never arbitrary user-supplied URLs
+var ob2ImageHosts = map[string]bool{"images.owlbear.rodeo": true, "5e.kiwee.top": true}
+
+var ob2Client = &http.Client{
+	Timeout: 90 * time.Second,
+	CheckRedirect: func(req *http.Request, via []*http.Request) error {
+		if len(via) >= 5 || req.URL.Scheme != "https" || !ob2ImageHosts[req.URL.Hostname()] {
+			return errors.New("redirect not allowed")
+		}
+		return nil
+	},
+}
+
+type ob2Vec struct {
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
+}
+
+type ob2Item struct {
+	ID       string                     `json:"id"`
+	Type     string                     `json:"type"`
+	Name     string                     `json:"name"`
+	Layer    string                     `json:"layer"`
+	Position ob2Vec                     `json:"position"`
+	Rotation float64                    `json:"rotation"`
+	Scale    ob2Vec                     `json:"scale"`
+	Visible  bool                       `json:"visible"`
+	Locked   bool                       `json:"locked"`
+	ZIndex   float64                    `json:"zIndex"`
+	Metadata map[string]json.RawMessage `json:"metadata"`
+	Image    *struct {
+		Width  float64 `json:"width"`
+		Height float64 `json:"height"`
+		URL    string  `json:"url"`
+	} `json:"image"`
+	Grid *struct {
+		DPI    float64 `json:"dpi"`
+		Offset ob2Vec  `json:"offset"`
+	} `json:"grid"`
+	Text *struct {
+		PlainText string `json:"plainText"`
+	} `json:"text"`
+	Points    []ob2Vec        `json:"points"`
+	Commands  [][]float64     `json:"commands"`
+	Width     float64         `json:"width"`
+	Height    float64         `json:"height"`
+	ShapeType string          `json:"shapeType"`
+	StartPos  *ob2Vec         `json:"startPosition"`
+	EndPos    *ob2Vec         `json:"endPosition"`
+	Style     json.RawMessage `json:"style"`
+}
+
+type ob2Style struct {
+	FillColor     string  `json:"fillColor"`
+	FillOpacity   float64 `json:"fillOpacity"`
+	StrokeColor   string  `json:"strokeColor"`
+	StrokeOpacity float64 `json:"strokeOpacity"`
+	StrokeWidth   float64 `json:"strokeWidth"`
+	Closed        bool    `json:"closed"`
+}
+
+type ob2SceneDoc struct {
+	Items map[string]*ob2Item `json:"items"`
+	Grid  struct {
+		DPI         float64 `json:"dpi"`
+		Scale       string  `json:"scale"`
+		Measurement string  `json:"measurement"`
+		Style       struct {
+			LineColor   string  `json:"lineColor"`
+			LineOpacity float64 `json:"lineOpacity"`
+		} `json:"style"`
+	} `json:"grid"`
+	Fog struct {
+		Filled bool `json:"filled"`
+	} `json:"fog"`
+	Metadata map[string]json.RawMessage `json:"metadata"`
+}
+
+type ob2Manifest struct {
+	Assets map[string]struct {
+		ID       string `json:"id"`
+		Name     string `json:"name"`
+		Type     string `json:"type"`
+		Metadata struct {
+			Doc string `json:"doc"`
+		} `json:"metadata"`
+		CreatedAt string `json:"createdAt"`
+	} `json:"assets"`
+}
+
+// OB2ImportStats is reported back to the importing user.
+type OB2ImportStats struct {
+	Scenes     int      `json:"scenes"`
+	Tokens     int      `json:"tokens"`
+	Walls      int      `json:"walls"`
+	Doors      int      `json:"doors"`
+	Monsters   int      `json:"monsters"`
+	Images     int      `json:"images"`
+	Downloaded int      `json:"downloaded"`
+	Failed     []string `json:"failed,omitempty"`
+}
+
+func isOB2(zr *zip.Reader) bool {
+	hasManifest, hasRoom := false, false
+	for _, f := range zr.File {
+		switch f.Name {
+		case "manifest.json":
+			hasManifest = true
+		case "room.json":
+			hasRoom = true
+		}
+	}
+	return hasManifest && !hasRoom
+}
+
+func readZipFile(zr *zip.Reader, name string, limit int64) ([]byte, error) {
+	for _, f := range zr.File {
+		if f.Name != name {
+			continue
+		}
+		rc, err := f.Open()
+		if err != nil {
+			return nil, err
+		}
+		defer rc.Close()
+		data, err := io.ReadAll(io.LimitReader(rc, limit+1))
+		if err != nil {
+			return nil, err
+		}
+		if int64(len(data)) > limit {
+			return nil, errors.New(name + " 过大")
+		}
+		return data, nil
+	}
+	return nil, errors.New("缺少 " + name)
+}
+
+// ob2Images resolves image URLs (bundled paths or allowed CDN links) to stored asset ids.
+type ob2Images struct {
+	t     *Tabletop
+	zr    *zip.Reader
+	mu    sync.Mutex
+	ids   map[string]string // url → asset id ("" = failed)
+	stats *OB2ImportStats
+}
+
+func (im *ob2Images) collect(urls []string) {
+	var remote []string
+	for _, u := range urls {
+		if _, ok := im.ids[u]; ok {
+			continue
+		}
+		im.ids[u] = ""
+		clean := strings.SplitN(u, "?", 2)[0]
+		if strings.HasPrefix(clean, "assets/") {
+			data, err := readZipFile(im.zr, clean, ob2MaxDownload)
+			if err == nil {
+				if id, err := im.t.storeAsset(data); err == nil {
+					im.ids[u] = id
+					im.stats.Images++
+					continue
+				}
+			}
+			im.stats.Failed = append(im.stats.Failed, clean)
+			continue
+		}
+		remote = append(remote, u)
+	}
+
+	// download links concurrently (a few at a time — be polite to the CDNs)
+	jobs := make(chan string)
+	var wg sync.WaitGroup
+	for w := 0; w < 4; w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for u := range jobs {
+				id, err := im.download(u)
+				im.mu.Lock()
+				if err != nil {
+					log.Printf("[TABLETOP] ob2 image %s: %v", u, err)
+					im.stats.Failed = append(im.stats.Failed, u)
+				} else {
+					im.ids[u] = id
+					im.stats.Images++
+					im.stats.Downloaded++
+				}
+				im.mu.Unlock()
+			}
+		}()
+	}
+	for _, u := range remote {
+		jobs <- u
+	}
+	close(jobs)
+	wg.Wait()
+	sort.Strings(im.stats.Failed)
+}
+
+func (im *ob2Images) download(raw string) (string, error) {
+	u, err := url.Parse(raw)
+	if err != nil || u.Scheme != "https" || !ob2ImageHosts[u.Hostname()] {
+		return "", errors.New("不允许的图片地址")
+	}
+	req, _ := http.NewRequest(http.MethodGet, u.String(), nil)
+	req.Header.Set("User-Agent", "Haishin-Tabletop/1.0 (+self-hosted VTT)")
+	resp, err := ob2Client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("HTTP %d", resp.StatusCode)
+	}
+	data, err := io.ReadAll(io.LimitReader(resp.Body, ob2MaxDownload+1))
+	if err != nil {
+		return "", err
+	}
+	if len(data) > ob2MaxDownload {
+		return "", errors.New("图片过大")
+	}
+	return im.t.storeAsset(data)
+}
+
+func (im *ob2Images) id(u string) string { return im.ids[u] }
+
+// importOB2 converts an Owlbear Rodeo 2 export into a new room.
+func (t *Tabletop) importOB2(zr *zip.Reader, filename, owner string) (*TTRoom, *OB2ImportStats, error) {
+	data, err := readZipFile(zr, "manifest.json", 20<<20)
+	if err != nil {
+		return nil, nil, err
+	}
+	var man ob2Manifest
+	if err := json.Unmarshal(data, &man); err != nil {
+		return nil, nil, errors.New("manifest.json 格式错误")
+	}
+
+	type sceneSrc struct {
+		name, created string
+		doc           *ob2SceneDoc
+	}
+	var srcs []sceneSrc
+	for id, a := range man.Assets {
+		if a.Type != "SCENE" {
+			continue
+		}
+		path := a.Metadata.Doc
+		if path == "" {
+			path = "assets/scenes/docs/" + id + ".json"
+		}
+		raw, err := readZipFile(zr, path, 50<<20)
+		if err != nil {
+			continue
+		}
+		var doc ob2SceneDoc
+		if err := json.Unmarshal(raw, &doc); err != nil || doc.Items == nil {
+			continue
+		}
+		srcs = append(srcs, sceneSrc{name: a.Name, created: a.CreatedAt, doc: &doc})
+	}
+	if len(srcs) == 0 {
+		return nil, nil, errors.New("导出文件中没有场景")
+	}
+	if len(srcs) > 100 {
+		srcs = srcs[:100]
+	}
+	// scenes with content first (they are the ones actually played), then by name
+	sort.SliceStable(srcs, func(i, j int) bool {
+		ni, nj := len(srcs[i].doc.Items), len(srcs[j].doc.Items)
+		if (ni > 1) != (nj > 1) {
+			return ni > 1
+		}
+		return srcs[i].name < srcs[j].name
+	})
+
+	stats := &OB2ImportStats{}
+	images := &ob2Images{t: t, zr: zr, ids: make(map[string]string), stats: stats}
+	var urls []string
+	for _, s := range srcs {
+		for _, it := range s.doc.Items {
+			if it.Type == "IMAGE" && it.Image != nil && it.Image.URL != "" && it.Layer != "ATTACHMENT" {
+				urls = append(urls, it.Image.URL)
+			}
+		}
+	}
+	images.collect(urls)
+
+	room := newTTRoom(ob2RoomName(filename, len(srcs)), owner)
+	room.Scenes = nil
+	assetSeen := make(map[string]bool)
+	addAsset := func(id, name, kind string) {
+		if id == "" || assetSeen[id+kind] {
+			return
+		}
+		assetSeen[id+kind] = true
+		room.Assets = append(room.Assets, TTAsset{ID: id, Name: ttCleanName(name, 60, "未命名"), Kind: kind, By: owner})
+	}
+	monsterSheets := make(map[string]string) // bestiary slug → sheet id
+
+	for _, s := range srcs {
+		sc := convertOB2Scene(s.name, s.doc, images, addAsset, stats)
+		// monster stat blocks stored by the bestiary extension, keyed "SOURCE::Name"
+		var monsters map[string]map[string]interface{}
+		if raw, ok := s.doc.Metadata["com.bestiary/monsters"]; ok {
+			json.Unmarshal(raw, &monsters)
+		}
+		for slug, m := range monsters {
+			if _, done := monsterSheets[slug]; done || len(room.Sheets) >= ttMaxSheets {
+				continue
+			}
+			sh := convert5etoolsMonster(m, slug)
+			sh["id"] = ttRandomID(6)
+			room.Sheets[sh["id"].(string)] = sh
+			monsterSheets[slug] = sh["id"].(string)
+			stats.Monsters++
+		}
+		room.Scenes = append(room.Scenes, sc)
+	}
+	// link monster tokens to their sheets
+	for _, sc := range room.Scenes {
+		for _, it := range sc.Items {
+			if slug, ok := it["bestiary"].(string); ok {
+				if id := monsterSheets[slug]; id != "" {
+					it["sheet"] = id
+				}
+				delete(it, "bestiary")
+			}
+		}
+	}
+	stats.Scenes = len(room.Scenes)
+	room.Active = room.Scenes[0].ID
+	room.normalize()
+	return room, stats, nil
+}
+
+func convertOB2Scene(name string, doc *ob2SceneDoc, images *ob2Images, addAsset func(id, name, kind string), stats *OB2ImportStats) *TTScene {
+	sc := newTTScene(ttCleanName(name, 40, "场景"))
+	g := doc.Grid.DPI
+	if g <= 0 {
+		g = 150
+	}
+	p := sc.Props
+	p["gridSize"] = g
+	if m := regexp.MustCompile(`^([\d.]+)\s*(.*)$`).FindStringSubmatch(strings.TrimSpace(doc.Grid.Scale)); m != nil {
+		if v, err := strconv.ParseFloat(m[1], 64); err == nil {
+			p["gridScale"] = v
+		}
+		if m[2] != "" {
+			p["gridUnit"] = m[2]
+		}
+	}
+	switch doc.Grid.Measurement {
+	case "ALTERNATING":
+		p["measure"] = "alternating"
+	case "EUCLIDEAN", "MANHATTAN":
+		p["measure"] = "euclidean"
+	default:
+		p["measure"] = "chebyshev"
+	}
+	if doc.Grid.Style.LineColor == "DARK" {
+		p["gridColor"] = "#000000"
+	} else {
+		p["gridColor"] = "#ffffff"
+	}
+	if doc.Grid.Style.LineOpacity > 0 {
+		p["gridAlpha"] = doc.Grid.Style.LineOpacity
+	}
+
+	items := make([]*ob2Item, 0, len(doc.Items))
+	for _, it := range doc.Items {
+		items = append(items, it)
+	}
+	sort.Slice(items, func(i, j int) bool { return items[i].ZIndex < items[j].ZIndex })
+
+	// the lowest MAP-layer image becomes the scene map; everything is shifted so it sits at (0,0)
+	var origin ob2Vec
+	for _, it := range items {
+		if it.Layer == "MAP" && it.Type == "IMAGE" && it.Image != nil {
+			x, y, w, h := ob2ImageRect(it, g)
+			origin = ob2Vec{x, y}
+			if id := images.id(it.Image.URL); id != "" {
+				p["mapAsset"] = id
+				p["mapW"] = round2(w)
+				p["mapH"] = round2(h)
+				addAsset(id, it.Name, "map")
+			} else {
+				p["mapW"] = round2(w) // keep the size so tokens / walls still line up
+				p["mapH"] = round2(h)
+			}
+			break
+		}
+	}
+
+	z := 0
+	put := func(m map[string]interface{}) {
+		z++
+		id := ttRandomID(6)
+		m["id"] = id
+		m["z"] = z
+		sc.Items[id] = m
+	}
+	mapDone := false
+	for _, it := range items {
+		sx, sy := it.Scale.X, it.Scale.Y
+		if sx == 0 {
+			sx = 1
+		}
+		if sy == 0 {
+			sy = 1
+		}
+		switch {
+		case it.Type == "IMAGE" && it.Layer == "MAP" && !mapDone && it.Image != nil:
+			mapDone = true
+
+		case it.Type == "IMAGE" && it.Image != nil && it.Layer != "ATTACHMENT":
+			x, y, w, h := ob2ImageRect(it, g)
+			tok := map[string]interface{}{
+				"kind": "token", "x": round2(x - origin.X), "y": round2(y - origin.Y), "w": round2(w), "h": round2(h),
+			}
+			if id := images.id(it.Image.URL); id != "" {
+				tok["asset"] = id
+				kind := "token"
+				if it.Layer == "MAP" {
+					kind = "map"
+				}
+				addAsset(id, ob2Label(it), kind)
+			} else {
+				tok["circle"] = true
+				tok["color"] = "#607d8b"
+			}
+			if label := ob2Label(it); label != "" {
+				tok["label"] = label
+			}
+			if it.Rotation != 0 {
+				tok["rot"] = it.Rotation
+			}
+			if !it.Visible {
+				tok["hidden"] = true
+			}
+			if it.Locked && it.Layer != "CHARACTER" {
+				tok["locked"] = true
+			}
+			var hp struct {
+				Health    *float64 `json:"health"`
+				MaxHealth *float64 `json:"max health"`
+				TempHP    float64  `json:"temporary health"`
+			}
+			if raw, ok := it.Metadata["com.obr-suite/bubbles/data"]; ok && json.Unmarshal(raw, &hp) == nil && hp.MaxHealth != nil && *hp.MaxHealth > 0 {
+				tok["hpMax"] = *hp.MaxHealth
+				if hp.Health != nil {
+					tok["hp"] = *hp.Health
+				} else {
+					tok["hp"] = *hp.MaxHealth
+				}
+				if hp.TempHP > 0 {
+					tok["hpTemp"] = hp.TempHP
+				}
+			}
+			if ob2Bool(it.Metadata["com.battle-system.smoke/hasVision"]) {
+				if r := ob2Number(it.Metadata["com.battle-system.smoke/visionRange"]); r > 0 {
+					tok["sight"] = r
+				}
+			}
+			if slug := ob2String(it.Metadata["com.bestiary/slug"]); slug != "" {
+				tok["bestiary"] = slug
+			}
+			if card := ob2String(it.Metadata["com.character-cards/boundCardId"]); card != "" {
+				if n := ob2CardName(doc, card); n != "" {
+					tok["pcName"] = n
+					if _, ok := tok["label"]; !ok { // Owlbear showed the card name over the token
+						tok["label"] = n
+					}
+				}
+			}
+			put(tok)
+			stats.Tokens++
+
+		case it.Type == "CURVE" && ob2Bool(it.Metadata["com.battle-system.smoke/isVisionLine"]):
+			pts := ob2Points(it, it.Points, sx, sy, origin)
+			var st ob2Style
+			json.Unmarshal(it.Style, &st)
+			if st.Closed && len(pts) > 2 {
+				pts = append(pts, pts[0])
+			}
+			if len(pts) < 2 {
+				continue
+			}
+			wall := ob2Poly(pts)
+			wall["kind"] = "wall"
+			blocking, hasBlocking := it.Metadata["com.battle-system.smoke/blocking"]
+			switch {
+			case ob2Bool(it.Metadata["com.battle-system.smoke/isDoor"]):
+				wall["wtype"] = "door"
+				if ob2Bool(it.Metadata["com.battle-system.smoke/doorOpen"]) {
+					wall["open"] = true
+				}
+				stats.Doors++
+			case hasBlocking && !ob2Bool(blocking): // non-blocking vision line: see through, can't pass
+				wall["wtype"] = "window"
+				stats.Walls++
+			default:
+				wall["wtype"] = "wall"
+				stats.Walls++
+			}
+			put(wall)
+
+		case it.Layer == "DRAWING" && (it.Type == "CURVE" || it.Type == "LINE" || it.Type == "SHAPE"):
+			var st ob2Style
+			json.Unmarshal(it.Style, &st)
+			color := st.StrokeColor
+			if color == "" || st.StrokeOpacity == 0 || (it.Type == "SHAPE" && st.FillOpacity > 0) {
+				color = st.FillColor // filled shapes: the tabletop uses one colour, keep the fill
+			}
+			d := map[string]interface{}{"kind": "draw", "color": ob2Color(color), "width": math.Max(1, st.StrokeWidth)}
+			if !it.Visible {
+				d["hidden"] = true
+			}
+			switch it.Type {
+			case "CURVE":
+				pts := ob2Points(it, it.Points, sx, sy, origin)
+				if len(pts) == 0 {
+					continue
+				}
+				for k, v := range ob2Poly(pts) {
+					d[k] = v
+				}
+				d["shape"] = "pen"
+			case "LINE":
+				if it.StartPos == nil || it.EndPos == nil {
+					continue
+				}
+				pts := ob2Points(it, []ob2Vec{*it.StartPos, *it.EndPos}, sx, sy, origin)
+				for k, v := range ob2Poly(pts) {
+					d[k] = v
+				}
+				d["shape"] = "line"
+			case "SHAPE":
+				w, h := it.Width*sx, it.Height*sy
+				x, y := it.Position.X-origin.X, it.Position.Y-origin.Y
+				switch it.ShapeType {
+				case "CIRCLE":
+					d["shape"], d["x"], d["y"], d["r"] = "circle", round2(x), round2(y), round2(math.Max(w, h)/2)
+				case "RECTANGLE":
+					d["shape"], d["x"], d["y"] = "rect", round2(x), round2(y)
+					d["points"] = [][]float64{{0, 0}, {round2(w), round2(h)}}
+				default:
+					continue
+				}
+				if st.FillOpacity > 0 {
+					d["fill"] = true
+				}
+			}
+			put(d)
+
+		case it.Type == "PATH" && it.Layer == "FOG" && it.Visible:
+			// evenodd path: first sub-path covers, the following ones are holes (revealed)
+			for i, poly := range ob2PathPolys(it, sx, sy, origin) {
+				f := ob2Poly(poly)
+				f["kind"], f["shape"] = "fog", "poly"
+				if i > 0 {
+					f["cut"] = true
+				}
+				put(f)
+			}
+		}
+	}
+
+	// Owlbear's "fill fog" covers the whole map; drawn fog paths are applied on top of it
+	if doc.Fog.Filled {
+		w, _ := p["mapW"].(float64)
+		h, _ := p["mapH"].(float64)
+		if w > 0 && h > 0 {
+			id := ttRandomID(6)
+			sc.Items[id] = map[string]interface{}{"id": id, "kind": "fog", "shape": "rect", "x": 0.0, "y": 0.0, "z": 0,
+				"points": [][]float64{{0, 0}, {w, h}}}
+		}
+	}
+	return sc
+}
+
+// ob2ImageRect returns an image item's top-left and size in scene units.
+// The image's grid offset (in image pixels) is the point placed at item.position.
+func ob2ImageRect(it *ob2Item, sceneDPI float64) (x, y, w, h float64) {
+	dpi := sceneDPI
+	var off ob2Vec
+	if it.Grid != nil && it.Grid.DPI > 0 {
+		dpi = it.Grid.DPI
+		off = it.Grid.Offset
+	}
+	sx, sy := it.Scale.X, it.Scale.Y
+	if sx == 0 {
+		sx = 1
+	}
+	if sy == 0 {
+		sy = 1
+	}
+	k := sceneDPI / dpi
+	w, h = it.Image.Width*k*math.Abs(sx), it.Image.Height*k*math.Abs(sy)
+	x = it.Position.X - off.X*k*math.Abs(sx)
+	y = it.Position.Y - off.Y*k*math.Abs(sy)
+	return
+}
+
+// ob2Points maps item-local points to scene units relative to the map origin.
+func ob2Points(it *ob2Item, pts []ob2Vec, sx, sy float64, origin ob2Vec) [][]float64 {
+	rad := it.Rotation * math.Pi / 180
+	cos, sin := math.Cos(rad), math.Sin(rad)
+	out := make([][]float64, 0, len(pts))
+	for _, p := range pts {
+		x, y := p.X*sx, p.Y*sy
+		x, y = x*cos-y*sin, x*sin+y*cos
+		out = append(out, []float64{x + it.Position.X - origin.X, y + it.Position.Y - origin.Y})
+	}
+	return out
+}
+
+// ob2Poly turns absolute points into the tabletop's {x, y, points relative to x/y} form.
+func ob2Poly(pts [][]float64) map[string]interface{} {
+	ox, oy := pts[0][0], pts[0][1]
+	rel := make([][]float64, len(pts))
+	for i, p := range pts {
+		rel[i] = []float64{round2(p[0] - ox), round2(p[1] - oy)}
+	}
+	return map[string]interface{}{"x": round2(ox), "y": round2(oy), "points": rel}
+}
+
+// ob2PathPolys splits Owlbear path commands into polygons:
+// [0,x,y] move, [1,x,y] line, [2..4,…,x,y] curves (end point kept), [5] close.
+func ob2PathPolys(it *ob2Item, sx, sy float64, origin ob2Vec) [][][]float64 {
+	var polys [][]ob2Vec
+	var cur []ob2Vec
+	flush := func() {
+		if len(cur) >= 3 {
+			polys = append(polys, cur)
+		}
+		cur = nil
+	}
+	for _, c := range it.Commands {
+		if len(c) == 0 {
+			continue
+		}
+		switch int(c[0]) {
+		case 0:
+			flush()
+			if len(c) >= 3 {
+				cur = []ob2Vec{{c[1], c[2]}}
+			}
+		case 5:
+			flush()
+		default:
+			if n := len(c); n >= 3 {
+				cur = append(cur, ob2Vec{c[n-2], c[n-1]})
+			}
+		}
+	}
+	flush()
+	out := make([][][]float64, 0, len(polys))
+	for _, poly := range polys {
+		out = append(out, ob2Points(it, poly, sx, sy, origin))
+	}
+	return out
+}
+
+func ob2Label(it *ob2Item) string {
+	if it.Text != nil && strings.TrimSpace(it.Text.PlainText) != "" {
+		return ttCleanName(it.Text.PlainText, 40, "")
+	}
+	if n := ob2String(it.Metadata["com.owlbear-rodeo-bubbles-extension/name"]); n != "" {
+		return ttCleanName(n, 40, "")
+	}
+	// "圆形图片-1787…" is an auto-generated upload name, not a label
+	if regexp.MustCompile(`^圆形图片-\d+$`).MatchString(it.Name) {
+		return ""
+	}
+	return ttCleanName(it.Name, 40, "")
+}
+
+func ob2CardName(doc *ob2SceneDoc, cardID string) string {
+	var cards []struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	}
+	json.Unmarshal(doc.Metadata["com.character-cards/list"], &cards)
+	for _, c := range cards {
+		if c.ID == cardID {
+			return ttCleanName(c.Name, 40, "")
+		}
+	}
+	return ""
+}
+
+func ob2Color(c string) string {
+	if regexp.MustCompile(`^#[0-9a-fA-F]{6}$`).MatchString(c) {
+		return c
+	}
+	switch c {
+	case "black":
+		return "#000000"
+	case "white":
+		return "#ffffff"
+	}
+	return "#e53935"
+}
+
+func ob2Bool(raw json.RawMessage) bool {
+	var b bool
+	return json.Unmarshal(raw, &b) == nil && b
+}
+
+func ob2String(raw json.RawMessage) string {
+	var s string
+	json.Unmarshal(raw, &s)
+	return s
+}
+
+// ob2Number accepts both numbers and numeric strings (Smoke stores "30").
+func ob2Number(raw json.RawMessage) float64 {
+	var f float64
+	if json.Unmarshal(raw, &f) == nil {
+		return f
+	}
+	f, _ = strconv.ParseFloat(ob2String(raw), 64)
+	return f
+}
+
+func round2(f float64) float64 { return math.Round(f*100) / 100 }
+
+func ob2RoomName(filename string, scenes int) string {
+	base := strings.TrimSuffix(filepath.Base(filename), filepath.Ext(filename))
+	if base == "" || regexp.MustCompile(`^[0-9a-fA-F-]{20,}$`).MatchString(base) {
+		return fmt.Sprintf("Owlbear 导入（%d 个场景）", scenes)
+	}
+	return base
+}

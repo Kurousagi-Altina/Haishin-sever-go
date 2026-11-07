@@ -569,6 +569,7 @@ Header: `Authorization: Bearer <token>`
 - **测距 / 指示**: 尺子与指针、标记点对所有人实时可见
 - **骰子**: 服务端掷骰防作弊，支持 `2d20kh1+5`、`4d6dl1`、`3d6!`、`d%` 等表达式，优势/劣势、暗骰（仅自己和 GM 可见）、快捷骰、聊天中 `/r 1d20+3`、`/gr` 暗骰
 - **备份**: GM 可把整个房间（场景 + 棋子 + 图片）导出为 zip，在任意部署了本站的服务器上「导入房间」恢复
+- **导入 Owlbear Rodeo（.ob2）**: 在大厅「导入房间」直接选择 Owlbear Rodeo 2 导出的 `.ob2` 文件，整个导出变成一个房间：所有场景、地图、棋子（位置、大小、名字、HP/AC、隐藏状态）、绘制、迷雾都会保留；Smoke & Spectre 的视线墙和门变成墙体 / 门，视野距离变成棋子视野；怪物图鉴插件里的怪物数据（不全书翻译）变成可点击掷骰的怪物卡并关联棋子。导出文件里只是外链的图片（Owlbear 自带地图、kiwee 怪物头像）会在导入时由服务器下载保存，所以要趁 Owlbear 还能访问时导入。角色卡插件的内容不在导出文件里：之后玩家导入同名的 Excel 人物卡，会自动关联到原来绑定的棋子并归该玩家控制
 
 数据目录由 `tabletop_dir` 配置（默认 `../userdata/tabletop`）：`rooms/*.json` 为房间数据（每 2 秒自动保存），`assets/` 为上传的图片。实时同步使用 SSE，若前面有 Nginx 反向代理，请确保 `/api/tabletop/events` 不被缓冲（后端已发送 `X-Accel-Buffering: no`），并适当调大 `proxy_read_timeout`。
 
@@ -591,7 +592,7 @@ Header: `Authorization: Bearer <token>`
 | `game_dir` | `../game` | 游戏文件目录 |
 | `video_dir` | `../userdata/videos` | VOD 视频文件目录 |
 | `cloud_upload_min_role` | `user` | 云盘上传最低角色：`admin`（仅管理员）、`user`（注册用户及以上）、`door`（所有人含游客） |
-| `tabletop_dir` | `../userdata/tabletop` | 跑团桌面数据目录（房间 JSON + 图片资产） |
+| `tabletop_dir` | `../userdata/tabletop` | 跑团桌面数据目录（房间 JSON + 图片资产）；导入 Owlbear `.ob2` 时服务器需要能访问 `images.owlbear.rodeo` 和 `5e.kiwee.top` 以下载外链图片 |
 
 环境变量名称为配置项的蛇形大写形式（如 `SERVER_ADDR`、`CLOUD_UPLOAD_MIN_ROLE`），可覆盖配置文件中的值。
 

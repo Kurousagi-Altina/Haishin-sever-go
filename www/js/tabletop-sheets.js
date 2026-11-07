@@ -106,12 +106,29 @@ function currentSheet() {
 function changeHp(sh, delta) {
     var tok = sheetView.tokenId && scene.items[sheetView.tokenId];
     if (tok) {
-        patchItems([{ id: tok.id, hp: (num(tok.hp, num(tok.hpMax, 0))) + delta }]);
+        patchItems([tokenHpPatch(tok, delta)]);
         renderSheets();
         return;
     }
     if (!sh || !canEditSheet(sh) || !sh.hp) return;
-    var hp = { cur: String(num(sh.hp.cur, num(sh.hp.max, 0)) + delta), max: sh.hp.max };
+    var r = applyHpDelta(sh.hp.cur, sh.hp.max, sh.hp.temp, delta);
+    saveSheetHp(sh, { cur: String(r.hp), temp: String(r.temp) });
+}
+
+function setTempHp(sh, value) {
+    var t = Math.max(0, parseInt(value, 10) || 0);
+    var tok = sheetView.tokenId && scene.items[sheetView.tokenId];
+    if (tok) {
+        patchItems([{ id: tok.id, hpTemp: t || null }]);
+        renderSheets();
+        return;
+    }
+    if (sh && canEditSheet(sh) && sh.hp) saveSheetHp(sh, { temp: String(t) });
+}
+
+function saveSheetHp(sh, change) {
+    var hp = JSON.parse(JSON.stringify(sh.hp));
+    for (var k in change) hp[k] = change[k];
     sh.hp = hp;
     op({ op: 'sheet', sheet: { id: sh.id, hp: hp } });
     renderSheets();
@@ -208,14 +225,16 @@ function sheetHtml(sh, preview) {
     }
 
     // HP（从棋子打开时显示该棋子的血量）
-    var hpCur, hpMax;
-    if (tok && tok.hpMax) { hpCur = num(tok.hp, tok.hpMax); hpMax = tok.hpMax; }
-    else if (sh.hp) { hpCur = num(sh.hp.cur, num(sh.hp.max, 0)); hpMax = num(sh.hp.max, 0); }
+    var hpCur, hpMax, hpTemp = 0;
+    if (tok && tok.hpMax) { hpCur = num(tok.hp, tok.hpMax); hpMax = tok.hpMax; hpTemp = num(tok.hpTemp, 0); }
+    else if (sh.hp) { hpCur = num(sh.hp.cur, num(sh.hp.max, 0)); hpMax = num(sh.hp.max, 0); hpTemp = num(sh.hp.temp, 0); }
     var canHp = tok ? canEdit(tok) : edit;
     h += '<div class="stat-chips">' + chip('AC', escapeHtml(sh.ac || '')) +
-        (hpMax != null ? '<div class="stat-chip hp"><span>HP</span><b>' + hpCur + ' / ' + hpMax + '</b>' +
+        (hpMax != null ? '<div class="stat-chip hp"><span>HP</span><b>' + hpCur + ' / ' + hpMax +
+            (hpTemp > 0 ? ' <span class="temp-hp">+' + hpTemp + ' 临时</span>' : '') + '</b>' +
             (canHp ? '<div><button class="tt-btn small" data-act="hp" data-delta="-5">-5</button><button class="tt-btn small" data-act="hp" data-delta="-1">-1</button>' +
-                '<button class="tt-btn small" data-act="hp" data-delta="1">+1</button><button class="tt-btn small" data-act="hp" data-delta="5">+5</button></div>' : '') +
+                '<button class="tt-btn small" data-act="hp" data-delta="1">+1</button><button class="tt-btn small" data-act="hp" data-delta="5">+5</button></div>' +
+                '<div>临时 <input class="tt-input narrow" data-temp type="number" min="0" value="' + (hpTemp || '') + '" placeholder="0" title="临时生命值：受到伤害时先扣除"></div>' : '') +
             (sh.hp && sh.hp.formula ? '<div>' + rollBtn('roll', sh.hp.formula.replace(/\s/g, ''), '生命值', sh.hp.formula) + '</div>' : '') + '</div>' : '') +
         chip('速度', escapeHtml(sh.speed || '')) +
         (sh.init != null && sh.init !== '' ? '<div class="stat-chip"><span>先攻</span>' + rollBtn('d20', sh.init, '先攻', normBonus(sh.init) || '+0') + '</div>' : '') +
@@ -299,7 +318,11 @@ function sheetHtml(sh, preview) {
 }
 
 function sourceHtml(sh) {
-    return sh.source ? '<div class="tt-hint" style="margin-top:12px;">来源：DND5e 不全书 · ' + escapeHtml(sh.source.replace(/^topics\//, '').replace(/\.html?$/, '')) + '</div>' : '';
+    if (!sh.source) return '';
+    var text = /^bestiary\//.test(sh.source)
+        ? '来源：Owlbear 怪物图鉴插件（不全书翻译）· ' + sh.source.replace(/^bestiary\//, '')
+        : '来源：DND5e 不全书 · ' + sh.source.replace(/^topics\//, '').replace(/\.html?$/, '');
+    return '<div class="tt-hint" style="margin-top:12px;">' + escapeHtml(text) + '</div>';
 }
 
 // ===== 放置棋子 =====
@@ -319,6 +342,7 @@ function placeSheetToken(sh) {
         color: sh.kind === 'pc' ? '#1e88e5' : '#c62828', label: sh.name + (sh.kind !== 'pc' && same ? ' ' + (same + 1) : '') };
     var max = sh.hp ? num(sh.hp.max, 0) : 0;
     if (max > 0) { it.hpMax = max; it.hp = num(sh.hp.cur, max); }
+    if (sh.hp && num(sh.hp.temp, 0) > 0) it.hpTemp = num(sh.hp.temp, 0);
     if (me.gm && sh.kind === 'pc' && sh.owner) it.owner = sh.owner;
     createItems([it]);
     setTool('select');
@@ -658,6 +682,9 @@ function parseItems(doc, path) {
 
 function initSheets() {
     $('sheetPane').addEventListener('click', onSheetPaneClick);
+    $('sheetPane').addEventListener('change', function(e) {
+        if (e.target.dataset.temp != null) setTempHp(currentSheet(), e.target.value);
+    });
     $('sheetPane').addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && e.target.id === 'lkQ') runLookup();
     });

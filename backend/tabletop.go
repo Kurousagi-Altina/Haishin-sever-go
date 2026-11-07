@@ -456,6 +456,48 @@ func (room *TTRoom) broadcastSheet(sh map[string]interface{}) {
 	}
 }
 
+// ttNameKey normalises character names for matching ("德斯克 · 拉赫兰" == "德斯克·拉赫兰").
+func ttNameKey(s string) string {
+	return strings.ToLower(strings.Map(func(r rune) rune {
+		if unicode.IsSpace(r) || strings.ContainsRune("·・.*＊•", r) {
+			return -1
+		}
+		return r
+	}, s))
+}
+
+// linkPCTokens attaches a newly imported PC sheet to tokens that were bound to a character
+// card of the same name in Owlbear (item["pcName"], set by the .ob2 import), in every scene.
+// The token also becomes the sheet owner's, so their vision and control follow.
+func (room *TTRoom) linkPCTokens(sh map[string]interface{}) {
+	name, _ := sh["name"].(string)
+	key := ttNameKey(name)
+	if key == "" {
+		return
+	}
+	owner, _ := sh["owner"].(string)
+	active := room.activeScene()
+	var changed []map[string]interface{}
+	for _, sc := range room.Scenes {
+		for _, it := range sc.Items {
+			pc, _ := it["pcName"].(string)
+			if pc == "" || ttNameKey(pc) != key || it["sheet"] != nil {
+				continue
+			}
+			it["sheet"] = sh["id"]
+			if _, has := it["owner"]; !has && owner != "" {
+				it["owner"] = owner
+			}
+			if sc == active {
+				changed = append(changed, it)
+			}
+		}
+	}
+	if len(changed) > 0 {
+		room.broadcastItems(changed)
+	}
+}
+
 func (room *TTRoom) userList() []map[string]interface{} {
 	byName := make(map[string]*ttSub)
 	for sub := range room.subs {
@@ -792,6 +834,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 			return http.StatusBadRequest, "无效的角色卡ID"
 		}
 		sh := room.Sheets[id]
+		created := sh == nil
 		if sh == nil {
 			kind, _ := req.Sheet["kind"].(string)
 			if !gm && kind != "pc" {
@@ -822,6 +865,9 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		}
 		room.Sheets[id] = sh
 		room.broadcastSheet(sh)
+		if created && sh["kind"] == "pc" {
+			room.linkPCTokens(sh)
+		}
 
 	case "sheet.delete":
 		var deleted []string
@@ -1264,7 +1310,24 @@ func (t *Tabletop) HandleImport(w http.ResponseWriter, r *http.Request) {
 	defer file.Close()
 	zr, err := zip.NewReader(file, header.Size)
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "不是有效的 zip 文件"})
+		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "不是有效的 zip / .ob2 文件"})
+		return
+	}
+
+	// Owlbear Rodeo 2 export (.ob2)
+	if isOB2(zr) {
+		room, stats, err := t.importOB2(zr, header.Filename, info.Username)
+		if err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+			return
+		}
+		room.dirty = true
+		t.mu.Lock()
+		t.rooms[room.ID] = room
+		t.mu.Unlock()
+		t.db.RecordAction(getClientIP(r), info.Username, "tabletop_import", room.Name+" (Owlbear)")
+		log.Printf("[TABLETOP] imported Owlbear export as room %s: %+v", room.ID, *stats)
+		writeJSON(w, http.StatusOK, map[string]interface{}{"success": true, "id": room.ID, "owlbear": stats})
 		return
 	}
 
