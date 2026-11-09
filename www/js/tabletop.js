@@ -93,7 +93,9 @@ function flushItems() {
     if (itemQueue.busy || !itemQueue.order.length) return;
     var ids = itemQueue.order.splice(0, 400); // 服务器单次最多接受 500 个
     var items = ids.map(function(id) { var p = itemQueue.pending[id]; delete itemQueue.pending[id]; return p; });
-    itemQueue.inflight = idSet(ids);
+    var infl = {};
+    items.forEach(function(p) { infl[p.id] = p; });
+    itemQueue.inflight = infl;
     itemQueue.busy = true;
     op({ op: 'items', items: items }).then(function(ok) {
         itemQueue.busy = false;
@@ -334,7 +336,14 @@ function connect() {
     source.onerror = function() {
         $('connDot').classList.remove('ok');
         if (source.readyState !== EventSource.CLOSED || es !== source) return;
-        // 被服务器拒绝（令牌失效 / 房间不存在）时 EventSource 不会自动重连
+        // 被服务器拒绝（令牌失效 / 房间不存在 / 访客昵称冲突）时 EventSource 不会自动重连
+        if (isDoor()) {
+            var ac = new AbortController();
+            fetch(url, { signal: ac.signal }).then(function(r) {
+                if (r.status === 409) return r.json().then(function(d) { notice(d.error || '昵称冲突', true); leaveRoom(); });
+                ac.abort();
+            }).catch(function() { /* 中止 */ });
+        }
         fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + authToken } }).then(function(r) {
             if (r.status === 401) { handleAuthExpired(); return; }
             return api('/api/tabletop/rooms', 'GET').then(function(data) {
@@ -380,9 +389,10 @@ function handleMsg(m) {
         break;
     case 'items':
         m.items.forEach(function(it) {
-            // 本地正在拖动或还有未确认的修改：忽略回显，避免棋子来回跳
-            if (gesture && gesture.ids && gesture.ids[it.id]) return;
-            if (itemQueue.pending[it.id] || itemQueue.inflight[it.id]) return;
+            // 本地正在拖动或还有未确认的修改：只合并服务器上其他字段（如被别人改了血量、状态），
+            // 自己正在改的字段保持本地值，避免棋子来回跳
+            var dragging = gesture && gesture.ids && gesture.ids[it.id];
+            if (dragging || itemQueue.pending[it.id] || itemQueue.inflight[it.id]) { mergeServerItem(it, dragging); return; }
             if (it.kind === 'wall') wallsVersion++;
             scene.items[it.id] = it;
         });
@@ -427,6 +437,18 @@ function handleMsg(m) {
     }
 }
 
+function mergeServerItem(it, dragging) {
+    var local = scene.items[it.id];
+    if (!local) return;
+    var keep = { id: true };
+    [itemQueue.pending[it.id], itemQueue.inflight[it.id]].forEach(function(p) {
+        if (p) Object.keys(p).forEach(function(k) { keep[k] = true; });
+    });
+    if (dragging) ['x', 'y', 'w', 'h', 'rot'].forEach(function(k) { keep[k] = true; });
+    Object.keys(it).forEach(function(k) { if (!keep[k]) local[k] = it[k]; });
+    Object.keys(local).forEach(function(k) { if (!keep[k] && !(k in it)) delete local[k]; });
+}
+
 function setRoomMeta(r) {
     room = r;
     $('roomName').textContent = r.name;
@@ -437,6 +459,7 @@ function setRoomMeta(r) {
     if (document.activeElement !== $('setRoomName')) $('setRoomName').value = r.name;
     renderAssets();
     renderScenes();
+    applyRoomSettings();
 }
 
 function renderUsers() {
@@ -463,7 +486,22 @@ function handleFx(m) {
     } else if (fx.t === 'ping') {
         remote.pings.push({ x: fx.x, y: fx.y, color: m.color, name: m.from, at: now });
     } else if (fx.t === 'ruler') {
-        remote.rulers[m.from] = { a: fx.a, b: fx.b, color: m.color, at: now };
+        remote.rulers[m.from] = { a: fx.a, b: fx.b, p: Array.isArray(fx.p) ? fx.p.slice(0, 30) : null, color: m.color, at: now };
+    } else if (fx.t === 'portal') {
+        remote.pings.push({ x: fx.x, y: fx.y, color: '#b388ff', at: now });
+    } else if (fx.t === 'banner') {
+        var bs = users.filter(function(u) { return u.name === m.from; })[0];
+        if (bs && bs.gm) showBanner(String(fx.text || '').slice(0, 40), fx.color);
+    } else if (fx.t === 'focus') { // GM：全员看这里
+        var sender = users.filter(function(u) { return u.name === m.from; })[0];
+        if (sender && sender.gm && isFinite(fx.x) && isFinite(fx.y)) {
+            if (fx.s > 0.05 && fx.s < 8) view.s = fx.s;
+            view.x = canvas.clientWidth / 2 - fx.x * view.s;
+            view.y = canvas.clientHeight / 2 - fx.y * view.s;
+            $('zoomLabel').textContent = Math.round(view.s * 100) + '%';
+            remote.pings.push({ x: fx.x, y: fx.y, color: m.color, name: m.from, at: now });
+            notice('📍 ' + m.from + ' 请大家看这里');
+        }
     } else if (fx.t === 'ruler-end') {
         delete remote.rulers[m.from];
     }
@@ -487,6 +525,9 @@ function onPropsChanged() {
         $('setMeasure').value = p.measure || 'alternating';
         $('setBg').value = p.bg || '#1b1d22';
         $('setVision').checked = !!p.vision;
+        $('setHpStep').value = String(p.hpStep != null ? p.hpStep : 25);
+        $('setGridType').value = p.gridType || 'square';
+        $('setDark').checked = !!p.dark;
         $('setCells').value = p.mapW ? Math.round(p.mapW / gridSize() * 100) / 100 : '';
     }
     $('mapInfo').textContent = p.mapAsset ? '当前地图：' + p.mapW + ' × ' + p.mapH + ' px，约 ' +
@@ -504,6 +545,7 @@ function scheduleCombatUi() {
         combatUiTimer = null;
         renderCombat();
         renderCombatHud();
+        renderBossBars();
     }, 300);
 }
 
@@ -650,6 +692,7 @@ function snapToGrid(x, y, step) {
 }
 
 function cellCenter(x, y) {
+    if (isHex()) return hexCenterNear(x, y);
     var p = scene.props, g = gridSize(), ox = num(p.gridOffX, 0), oy = num(p.gridOffY, 0);
     return { x: Math.floor((x - ox) / g) * g + ox + g / 2, y: Math.floor((y - oy) / g) * g + oy + g / 2 };
 }
@@ -687,6 +730,7 @@ function canMove(it) {
 function itemBBox(it) {
     var x = it.x || 0, y = it.y || 0;
     if (it.kind === 'token') return { x0: x, y0: y, x1: x + (it.w || gridSize()), y1: y + (it.h || gridSize()) };
+    if (it.shape === 'text') return textBBox(it);
     if (it.shape === 'circle') { var r = it.r || 0; return { x0: x - r, y0: y - r, x1: x + r, y1: y + r }; }
     var pts = shapePoints(it), b = { x0: x, y0: y, x1: x, y1: y };
     pts.forEach(function(p) {
@@ -729,7 +773,7 @@ function pointInPoly(x, y, pts) {
 function hitItem(it, w) {
     var tol = 6 / view.s;
     var lx = w.x - (it.x || 0), ly = w.y - (it.y || 0);
-    if (it.kind === 'token') {
+    if (it.kind === 'token' || it.shape === 'text') {
         var b = itemBBox(it);
         return w.x >= b.x0 && w.x <= b.x1 && w.y >= b.y0 && w.y <= b.y1;
     }
@@ -768,7 +812,80 @@ function selectOnly(ids) {
     requestRender();
 }
 
+// ===== 撤销 / 重做（只撤销自己的操作；Ctrl+Z / Ctrl+Y 或 Ctrl+Shift+Z）=====
+var undoStack = [], redoStack = [], undoBusy = false;
+function snapshotItems(ids) {
+    return ids.map(function(id) { return scene.items[id] ? JSON.parse(JSON.stringify(scene.items[id])) : { id: id, __absent: true }; });
+}
+function pushUndo(snaps) {
+    if (undoBusy || !snaps.length) return;
+    undoStack.push({ scene: scene.id, snaps: snaps });
+    if (undoStack.length > 100) undoStack.shift();
+    redoStack = [];
+}
+// 把物件恢复成快照的样子，返回恢复前的快照（用于反向操作）
+function applySnapshots(snaps) {
+    var before = snapshotItems(snaps.map(function(s) { return s.id; }));
+    var patches = [], creates = [], dels = [];
+    snaps.forEach(function(s) {
+        var cur = scene.items[s.id];
+        if (s.__absent) { if (cur && canEdit(cur)) dels.push(s.id); return; }
+        if (!cur) { creates.push(JSON.parse(JSON.stringify(s))); return; }
+        if (!canEdit(cur) && !canMove(cur)) return;
+        var p = { id: s.id };
+        Object.keys(s).forEach(function(k) { if (k !== 'id' && k !== 'kind' && JSON.stringify(s[k]) !== JSON.stringify(cur[k])) p[k] = s[k]; });
+        Object.keys(cur).forEach(function(k) { if (k !== 'id' && k !== 'kind' && !(k in s)) p[k] = null; });
+        if (Object.keys(p).length > 1) patches.push(p);
+    });
+    undoBusy = true;
+    try {
+        if (patches.length) patchItems(patches);
+        if (creates.length) createItems(creates);
+        if (dels.length) deleteItems(dels);
+    } finally { undoBusy = false; }
+    return before;
+}
+function undo(redo) {
+    var from = redo ? redoStack : undoStack, to = redo ? undoStack : redoStack;
+    var u = from.pop();
+    if (!u) { notice(redo ? '没有可以重做的操作' : '没有可以撤销的操作'); return; }
+    if (u.scene !== scene.id) { notice('这一步属于另一个场景，已跳过', true); return; }
+    to.push({ scene: u.scene, snaps: applySnapshots(u.snaps) });
+    renderSelPanel();
+}
+
+// ===== 复制 / 粘贴（Ctrl+C / Ctrl+V，可跨场景）=====
+var clipItems = [];
+function copySelected() {
+    clipItems = selectedIds().map(function(id) { return scene.items[id]; }).filter(function(it) {
+        return it && (it.kind === 'token' || it.kind === 'draw' || me.gm);
+    }).map(function(it) { return JSON.parse(JSON.stringify(it)); });
+    if (clipItems.length) notice('已复制 ' + clipItems.length + ' 个物件，Ctrl+V 粘贴到鼠标位置');
+}
+function pasteItems() {
+    if (!clipItems.length) return;
+    var b = null;
+    clipItems.forEach(function(it) {
+        var bb = itemBBox(it);
+        if (!b) b = { x0: bb.x0, y0: bb.y0, x1: bb.x1, y1: bb.y1 };
+        else { b.x0 = Math.min(b.x0, bb.x0); b.y0 = Math.min(b.y0, bb.y0); b.x1 = Math.max(b.x1, bb.x1); b.y1 = Math.max(b.y1, bb.y1); }
+    });
+    var dx = cursorWorld.x - (b.x0 + b.x1) / 2, dy = cursorWorld.y - (b.y0 + b.y1) / 2, z = nextZ();
+    var copies = clipItems.map(function(src, i) {
+        var c = JSON.parse(JSON.stringify(src));
+        c.id = genId();
+        c.x = (c.x || 0) + dx;
+        c.y = (c.y || 0) + dy;
+        c.z = z + i;
+        ['owner', 'init', 'initRolled', 'initTie', 'initHidden', 'follow', 'ds'].forEach(function(k) { delete c[k]; });
+        return c;
+    });
+    createItems(copies);
+    selectOnly(copies.map(function(c) { return c.id; }));
+}
+
 function patchItems(patches) {
+    pushUndo(snapshotItems(patches.map(function(p) { return p.id; })));
     wallsVersion++;
     patches.forEach(function(p) {
         var it = scene.items[p.id];
@@ -780,6 +897,7 @@ function patchItems(patches) {
 }
 
 function createItems(items) {
+    pushUndo(items.map(function(it) { return { id: it.id, __absent: true }; }));
     wallsVersion++;
     items.forEach(function(it) {
         if (!me.gm) it.owner = me.name;
@@ -792,6 +910,7 @@ function createItems(items) {
 function deleteItems(ids) {
     ids = ids.filter(function(id) { return scene.items[id] && canEdit(scene.items[id]); });
     if (!ids.length) return;
+    pushUndo(snapshotItems(ids));
     wallsVersion++;
     ids.forEach(function(id) { delete scene.items[id]; delete selected[id]; });
     op({ op: 'delete', ids: ids });
@@ -922,6 +1041,15 @@ function drawGrid() {
         x1 = Math.min(x1, p.mapW); y1 = Math.min(y1, p.mapH);
         if (x0 >= x1 || y0 >= y1) return;
     }
+    if (isHex()) {
+        drawHexGrid(x0, y0, x1, y1);
+        ctx.strokeStyle = p.gridColor || '#000';
+        ctx.globalAlpha = num(p.gridAlpha, 0.35);
+        ctx.lineWidth = 1 / view.s;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+        return;
+    }
     ctx.beginPath();
     for (var x = Math.ceil((x0 - ox) / g) * g + ox; x <= x1; x += g) { ctx.moveTo(x, y0); ctx.lineTo(x, y1); }
     for (var y = Math.ceil((y0 - oy) / g) * g + oy; y <= y1; y += g) { ctx.moveTo(x0, y); ctx.lineTo(x1, y); }
@@ -929,6 +1057,21 @@ function drawGrid() {
     ctx.globalAlpha = num(p.gridAlpha, 0.35);
     ctx.lineWidth = 1 / view.s;
     ctx.stroke();
+    // 吸附到 1/2、1/4 格时画出细分线（放大到看得清时）
+    var div = snapDiv(), sub = g / div;
+    if (div > 1 && sub * view.s >= 12) {
+        ctx.beginPath();
+        for (var sx = Math.ceil((x0 - ox) / sub) * sub + ox; sx <= x1; sx += sub) {
+            if (Math.abs(((sx - ox) / g) - Math.round((sx - ox) / g)) > 1e-6) { ctx.moveTo(sx, y0); ctx.lineTo(sx, y1); }
+        }
+        for (var sy = Math.ceil((y0 - oy) / sub) * sub + oy; sy <= y1; sy += sub) {
+            if (Math.abs(((sy - oy) / g) - Math.round((sy - oy) / g)) > 1e-6) { ctx.moveTo(x0, sy); ctx.lineTo(x1, sy); }
+        }
+        ctx.globalAlpha = num(p.gridAlpha, 0.35) * 0.4;
+        ctx.setLineDash([3 / view.s, 4 / view.s]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
     ctx.globalAlpha = 1;
 }
 
@@ -943,6 +1086,7 @@ function tracePath(c, it) {
 }
 
 function drawShape(c, it) {
+    if (it.shape === 'text') { drawTextItem(c, it); return; }
     var color = it.color || '#e53935';
     c.save();
     c.translate(it.x || 0, it.y || 0);
@@ -976,6 +1120,7 @@ function drawToken(it) {
     if (it.hidden) ctx.globalAlpha = 0.45;
     ctx.translate((it.x || 0) + w / 2, (it.y || 0) + h / 2);
     if (it.rot) ctx.rotate(it.rot * Math.PI / 180);
+    if (it.flipX) ctx.scale(-1, 1);
     var r = Math.min(w, h) / 2;
     if (it.circle || !img) {
         ctx.save();
@@ -1022,6 +1167,8 @@ function drawToken(it) {
     }
     if (it.label) drawLabel(it.label, x + w / 2, y + h, it.hidden ? '#ba68c8' : '#fff', true);
     drawTokenBadges(it);
+    drawStatusIcons(it);
+    drawPortal(it);
     if (it.hidden) {
         ctx.save();
         ctx.setLineDash([6 / view.s, 4 / view.s]);
@@ -1136,15 +1283,25 @@ function drawOverlays() {
             ctx.setTransform(1, 0, 0, 1, 0, 0);
             applyView(ctx);
         } else ctx.strokeRect(b.x0 - pad, b.y0 - pad, b.x1 - b.x0 + pad * 2, b.y1 - b.y0 + pad * 2);
-        if (it.kind === 'token' && !(gesture && (gesture.type === 'move' || gesture.type === 'rotate'))) {
-            var f = footprint(it);
-            ctx.setLineDash([]);
-            ctx.fillStyle = 'rgba(66,165,245,0.10)';
-            ctx.fillRect(f.x0, f.y0, f.size, f.size);
-        }
         ctx.restore();
+        if (it.kind === 'token' && !(gesture && (gesture.type === 'move' || gesture.type === 'rotate'))) {
+            drawHitCircle(it, '#42a5f5', false); // 判定圆
+            var lead = it.follow && scene.items[it.follow];
+            if (lead) { // 跟随连线
+                var c1 = tokenCenter(it), c2 = tokenCenter(lead);
+                ctx.save();
+                ctx.setLineDash([3 / view.s, 4 / view.s]);
+                ctx.lineWidth = 1.5 / view.s;
+                ctx.strokeStyle = '#ce93d8';
+                ctx.beginPath(); ctx.moveTo(c1.x, c1.y); ctx.lineTo(c2.x, c2.y); ctx.stroke();
+                ctx.restore();
+                drawLabel('🔗 跟随 ' + (lead.label || ''), c1.x, c1.y - (it.h || g) / 2 - 26 / view.s, '#e1bee7');
+            }
+        }
     });
     drawTarget();
+    drawActionOverlay();
+    if (rulerPath) drawRulerPath(rulerPathPoints(), me.color, '');
     drawTokenHandles();
 
     if (gesture) {
@@ -1205,7 +1362,8 @@ function drawOverlays() {
     for (var name in remote.rulers) {
         var rr = remote.rulers[name];
         if (now - rr.at > 5000) { delete remote.rulers[name]; continue; }
-        drawRuler({ x: rr.a[0], y: rr.a[1] }, { x: rr.b[0], y: rr.b[1] }, rr.color, name);
+        if (rr.p && rr.p.length) drawRulerPath(rr.p.map(function(q) { return { x: q[0], y: q[1] }; }).concat([{ x: rr.b[0], y: rr.b[1] }]), rr.color, name);
+        else drawRuler({ x: rr.a[0], y: rr.a[1] }, { x: rr.b[0], y: rr.b[1] }, rr.color, name);
     }
     for (var pn in remote.pointers) {
         var pt = remote.pointers[pn];
@@ -1383,7 +1541,8 @@ function wheelTransform(e, w) {
 var WALL_STYLE = {
     wall: { color: '#ff9800', name: '墙' },
     window: { color: '#4fc3f7', name: '窗' },
-    door: { color: '#a1887f', name: '门' }
+    door: { color: '#a1887f', name: '门' },
+    secret: { color: '#e040fb', name: '暗门' } // 玩家看不到也打不开，GM 打开后才通行
 };
 
 function wallSegments(forMove) {
@@ -1391,7 +1550,7 @@ function wallSegments(forMove) {
     for (var id in scene.items) {
         var w = scene.items[id];
         if (w.kind !== 'wall') continue;
-        if (w.wtype === 'door' && w.open) continue;
+        if ((w.wtype === 'door' || w.wtype === 'secret') && w.open) continue;
         if (w.wtype === 'window' && !forMove) continue;
         var pts = w.points || [], x = w.x || 0, y = w.y || 0;
         for (var i = 1; i < pts.length; i++) segs.push([x + pts[i - 1][0], y + pts[i - 1][1], x + pts[i][0], y + pts[i][1]]);
@@ -1468,9 +1627,11 @@ function visionViewers() {
 function computeVision() {
     var g = gridSize(), p = scene.props;
     var viewers = visionViewers();
-    var key = wallsVersion + '|' + (p.mapW || 0) + '|' + viewers.map(function(t) {
+    var key = wallsVersion + '|' + (p.mapW || 0) + '|' + (p.dark ? 1 : 0) + '|' + viewers.map(function(t) {
         return t.id + ',' + Math.round(t.x) + ',' + Math.round(t.y) + ',' + (t.sight || 0);
-    }).join(';');
+    }).join(';') + '|' + (p.dark ? lightTokens().map(function(t) {
+        return t.id + ',' + Math.round(t.x) + ',' + Math.round(t.y) + ',' + num(t.light.bright, 0) + ',' + num(t.light.dim, 0);
+    }).join(';') : '');
     if (key === visCache.key) return visCache.polys;
 
     var b;
@@ -1480,8 +1641,9 @@ function computeVision() {
     var polys = viewers.map(function(t) {
         var cx = t.x + (t.w || g) / 2, cy = t.y + (t.h || g) / 2;
         var r = t.sight > 0 ? t.sight / num(p.gridScale, 5) * g : 0;
-        return { x: cx, y: cy, r: r, pts: visibilityPolygon(cx, cy, segs, b) };
+        return { x: cx, y: cy, r: r, dark: !!p.dark, pts: visibilityPolygon(cx, cy, segs, b) };
     });
+    if (p.dark) polys.lights = computeLights(segs, b); // 黑暗环境：光源的照亮范围
     visCache = { key: key, polys: polys };
     if (!gesture) { // 拖动途中不记录，避免探索记录被大量中间状态挤满
         var ex = explored[scene.id] || (explored[scene.id] = []);
@@ -1493,8 +1655,10 @@ function computeVision() {
 
 function pointVisible(x, y, polys) {
     return polys.some(function(p) {
-        if (p.r && Math.hypot(x - p.x, y - p.y) > p.r) return false;
-        return pointInPoly(x, y, p.pts);
+        if (!pointInPoly(x, y, p.pts)) return false;
+        if (!p.dark) return !p.r || Math.hypot(x - p.x, y - p.y) <= p.r;
+        // 黑暗环境：在黑暗视觉范围内，或被光照到
+        return (p.r && Math.hypot(x - p.x, y - p.y) <= p.r) || inLight(x, y, polys);
     });
 }
 
@@ -1528,9 +1692,14 @@ function drawVision(polys) {
     vctx.globalAlpha = 0.45;
     vctx.drawImage(exCanvas, 0, 0);
     vctx.globalAlpha = 1;
-    applyView(vctx);
-    vctx.fillStyle = '#000';
-    polys.forEach(function(p) { fillVis(vctx, p); });
+    if (scene.props.dark) {
+        vctx.globalCompositeOperation = 'source-over';
+        cutDarkness(polys);
+    } else {
+        applyView(vctx);
+        vctx.fillStyle = '#000';
+        polys.forEach(function(p) { fillVis(vctx, p); });
+    }
     vctx.globalCompositeOperation = 'source-over';
 
     ctx.save();
@@ -1550,10 +1719,10 @@ function drawWalls(items, gmView) {
         ctx.save();
         ctx.translate(it.x || 0, it.y || 0);
         ctx.lineCap = 'round';
-        ctx.strokeStyle = it.wtype === 'door' && it.open ? '#81c784' : st.color;
+        ctx.strokeStyle = (it.wtype === 'door' || it.wtype === 'secret') && it.open ? '#81c784' : st.color;
         ctx.globalAlpha = gmView && !strong && it.wtype !== 'door' ? 0.6 : 1;
         ctx.lineWidth = (it.wtype === 'door' ? 6 : strong ? 4 : 3) / view.s;
-        if (it.wtype === 'window' || (it.wtype === 'door' && it.open)) ctx.setLineDash([8 / view.s, 5 / view.s]);
+        if (it.wtype === 'window' || ((it.wtype === 'door' || it.wtype === 'secret') && it.open)) ctx.setLineDash([8 / view.s, 5 / view.s]);
         ctx.beginPath();
         pts.forEach(function(p, i) { if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); });
         ctx.stroke();
@@ -1599,7 +1768,7 @@ function finishWall() {
     var o = pts[0];
     var it = { id: genId(), kind: 'wall', wtype: type, x: o.x, y: o.y, z: nextZ(),
         points: pts.map(function(p) { return [p.x - o.x, p.y - o.y]; }) };
-    if (type === 'door') it.open = false;
+    if (type === 'door' || type === 'secret') it.open = false;
     createItems([it]);
 }
 
@@ -1608,7 +1777,7 @@ function doorAt(w) {
     var list = sortedItems().reverse();
     for (var i = 0; i < list.length; i++) {
         var it = list[i];
-        if (it.kind === 'wall' && it.wtype === 'door' && hitItem(it, w)) return it;
+        if (it.kind === 'wall' && (it.wtype === 'door' || (it.wtype === 'secret' && me.gm)) && hitItem(it, w)) return it;
     }
     return null;
 }
@@ -1628,6 +1797,7 @@ function clearWalls() {
 // ===== 工具 =====
 function setTool(t) {
     if ((t === 'fog' || t === 'wall') && !me.gm) return;
+    if (t !== 'ruler') endRulerPath();
     if (tool === 'wall' && t !== 'wall') finishWall();
     tool = t;
     polyDraft = null;
@@ -1675,18 +1845,22 @@ function onPointerDown(e) {
     var start = { s: s, w: w, moved: false };
 
     if (tool === 'wall' && wallDraft && e.button === 2) { finishWall(); return; } // 右键结束墙体
+    if (rulerPath && e.button === 2) { endRulerPath(); return; } // 右键结束尺子
+    // 时间停止：玩家只能平移 / 缩放
+    if (timeStopped() && !me.gm && !(e.button === 1 || e.button === 2 || tool === 'pan' || spaceDown)) { notice('⏸ 时间停止中', true); return; }
     if (e.button === 1 || e.button === 2 || tool === 'pan' || spaceDown) {
         gesture = { type: 'pan', start: start, view: { x: view.x, y: view.y } };
         updateCursor();
         return;
     }
     if (e.button !== 0) return;
+    if (actionMode) { actionPointerDown(w, e); return; } // 行动选目标
 
     if (tool === 'wall' && wallOpts.mode === 'draw') {
         var wp = wallSnap(w, e.altKey);
         if (!wallDraft) wallDraft = { type: wallOpts.type, points: [] };
         wallDraft.points.push(wp);
-        if (wallDraft.type === 'door' && wallDraft.points.length >= 2) finishWall(); // 门是一段直线
+        if ((wallDraft.type === 'door' || wallDraft.type === 'secret') && wallDraft.points.length >= 2) finishWall(); // 门是一段直线
         requestRender();
         return;
     }
@@ -1696,7 +1870,7 @@ function onPointerDown(e) {
         if (hh) {
             var t = scene.items[hh.h.id];
             var orig = { w: t.w || gridSize(), h: t.h || gridSize(), x: t.x, y: t.y, rot: t.rot || 0 };
-            gesture = { type: hh.kind === 'rot' ? 'rotate' : 'resize', start: start, id: t.id, ids: idSet([t.id]), orig: orig, lastSent: 0 };
+            gesture = { type: hh.kind === 'rot' ? 'rotate' : 'resize', start: start, id: t.id, ids: idSet([t.id]), orig: orig, lastSent: 0, snap: snapshotItems([t.id]) };
             canvas.style.cursor = hh.kind === 'rot' ? 'grabbing' : handleCursor(hh);
             return;
         }
@@ -1719,7 +1893,7 @@ function onPointerDown(e) {
             if (movable.length) {
                 var orig = {};
                 movable.forEach(function(id) { orig[id] = { x: scene.items[id].x || 0, y: scene.items[id].y || 0 }; });
-                gesture = { type: 'move', start: start, ids: idSet(movable), orig: orig, lastSent: 0 };
+                gesture = { type: 'move', start: start, ids: idSet(movable), orig: orig, lastSent: 0, snap: snapshotItems(movable) };
             }
         } else {
             if (!e.shiftKey) selectOnly([]);
@@ -1729,6 +1903,7 @@ function onPointerDown(e) {
         return;
     }
 
+    if (tool === 'draw' && drawOpts.shape === 'text') { createTextAt(w); return; }
     if (tool === 'draw') {
         var it = { id: genId(), kind: 'draw', shape: drawOpts.shape, x: w.x, y: w.y, points: [[0, 0]],
             color: drawOpts.color, width: drawOpts.width };
@@ -1760,6 +1935,7 @@ function onPointerDown(e) {
     }
 
     if (tool === 'ruler') {
+        if (rulerPath) { rulerPath.pts.push(rulerPoint(w, e.altKey)); sendRulerPath(); requestRender(); return; }
         var a = e.altKey ? w : cellCenter(w.x, w.y);
         gesture = { type: 'ruler', start: start, a: a, b: a };
         requestRender();
@@ -1782,6 +1958,17 @@ function onPointerMove(e) {
     var w = toWorld(s.x, s.y);
     cursorWorld = w;
     if (polyDraft) requestRender();
+    if (rulerPath && !gesture) {
+        rulerPath.b = rulerPoint(w, e.altKey);
+        sendRulerPath();
+        requestRender();
+        return;
+    }
+    if (actionMode && !gesture) {
+        actionPointerMove(w);
+        canvas.style.cursor = 'crosshair';
+        return;
+    }
     if (!gesture) {
         if (tool === 'select' && !spaceDown && e.pointerType !== 'touch') {
             var hov = handleAt(w);
@@ -1814,6 +2001,7 @@ function onPointerMove(e) {
         break;
     case 'move':
         if (!st.moved) return;
+        gesture.alt = e.altKey;
         var patches = [];
         for (var id in gesture.orig) {
             var it = scene.items[id];
@@ -1900,7 +2088,8 @@ function onPointerUp(e) {
         break;
     case 'move':
         if (!g.start.moved) break;
-        var patches = [], blocked = false;
+        pushUndo(g.snap || []);
+        var patches = [], blocked = false, noRoom = false, nudged = false;
         for (var id in g.orig) {
             var it = scene.items[id];
             if (!it) continue;
@@ -1914,9 +2103,13 @@ function onPointerUp(e) {
                     continue;
                 }
             }
-            if (it.kind === 'token' && !e.altKey) {
-                // 按占格（生物体型）对齐网格，图片相对占格居中；微型生物按半格对齐
-                var c = snapTokenPos(it, it.x, it.y);
+            if (it.kind === 'token') {
+                // 按吸附档位对齐，再确认能放下（不压墙、不和其他生物重叠），否则挪到最近的空位
+                var c = dropSpot(it, it.x, it.y, g.orig[id], e.altKey);
+                if (!c) {
+                    c = g.orig[id];
+                    noRoom = true;
+                } else if (c.moved) nudged = true;
                 it.x = c.x;
                 it.y = c.y;
             }
@@ -1924,6 +2117,7 @@ function onPointerUp(e) {
         }
         if (blocked) notice('被墙挡住了', true);
         queueItems(patches);
+        if (!blocked) setTimeout(function() { checkPortals(Object.keys(g.orig)); }, 50);
         break;
     case 'resize':
         var t = scene.items[g.id];
@@ -1959,6 +2153,11 @@ function onPointerUp(e) {
         if (f.shape === 'brush' || g.start.moved) { f.z = nextZ(); createItems([f]); }
         break;
     case 'ruler':
+        if (!g.start.moved) { // 单击：进入逐点测量
+            rulerPath = { pts: [g.a], b: g.a };
+            notice('继续单击添加拐点，双击 / 右键 / Enter 结束，Esc 取消');
+            break;
+        }
         sendFx({ t: 'ruler-end' });
         break;
     case 'pointer':
@@ -1998,16 +2197,26 @@ function onWheel(e) {
 function onKeyDown(e) {
     var tag = (e.target.tagName || '').toLowerCase();
     if (tag === 'input' || tag === 'textarea' || tag === 'select' || $('table').style.display === 'none') return;
-    if ($('rollDialog').style.display !== 'none') return;
+    if ($('rollDialog').style.display !== 'none' || $('actDialog').style.display !== 'none') return;
+    if (actionMode) {
+        if (e.key === 'Escape') { cancelActionTargeting(); return; }
+        if (e.key === 'Enter') { confirmActionTargeting(); return; }
+    }
     if (e.key === ' ') { if (!spaceDown) { spaceDown = true; updateCursor(); } e.preventDefault(); return; }
     if (e.ctrlKey || e.metaKey) {
-        if (e.key === 'd' || e.key === 'D') { e.preventDefault(); duplicateSelected(); }
+        var ck = e.key.toLowerCase();
+        if (ck === 'd') { e.preventDefault(); duplicateSelected(); }
+        else if (ck === 'z') { e.preventDefault(); undo(e.shiftKey); }
+        else if (ck === 'y') { e.preventDefault(); undo(true); }
+        else if (ck === 'c' && selectedIds().length) { e.preventDefault(); copySelected(); }
+        else if (ck === 'v' && clipItems.length) { e.preventDefault(); pasteItems(); }
         return;
     }
     var keyTools = { v: 'select', h: 'pan', d: 'draw', m: 'ruler', l: 'pointer', f: 'fog', w: 'wall' };
     var k = e.key.toLowerCase();
     if (k === 't') {
         var hov = hitTest(cursorWorld, ['token']);
+        if (hov && !visibleToMe(hov)) hov = null; // 迷雾 / 视野外的看不见，不能选
         setTarget(hov ? hov.id : '');
         if (hov && target.id) notice('🎯 目标：' + (hov.label || '未命名') + '（再按一次 T 取消）');
         return;
@@ -2015,12 +2224,13 @@ function onKeyDown(e) {
     if (keyTools[k]) { setTool(keyTools[k]); return; }
     if (k === '0') { fitView(); return; }
     if (e.key === 'Delete' || e.key === 'Backspace') { deleteItems(selectedIds()); e.preventDefault(); return; }
-    if (e.key === 'Escape') { polyDraft = null; wallDraft = null; cancelGesture(); selectOnly([]); return; }
+    if (e.key === 'Escape') { polyDraft = null; wallDraft = null; endRulerPath(); cancelGesture(); selectOnly([]); return; }
+    if (e.key === 'Enter' && rulerPath) { endRulerPath(); return; }
     if (e.key === 'Enter' && polyDraft) { finishPoly(); return; }
     if (e.key === 'Enter' && wallDraft) { finishWall(); return; }
     var arrows = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
     if (arrows[e.key]) {
-        var step = e.shiftKey ? gridSize() / 4 : gridSize();
+        var step = e.shiftKey ? snapStep() : gridSize();
         var patches = selectedIds().filter(function(id) { return canMove(scene.items[id]); }).map(function(id) {
             var it = scene.items[id], hw = (it.w || gridSize()) / 2, hh = (it.h || gridSize()) / 2;
             var p = { id: id, x: (it.x || 0) + arrows[e.key][0] * step, y: (it.y || 0) + arrows[e.key][1] * step };
@@ -2073,13 +2283,17 @@ function renderSelPanel() {
     var panel = $('selPanel');
     var ids = selectedIds();
     if (!ids.length) { panel.className = 'tt-float'; panel.innerHTML = ''; return; }
-    if (panel.contains(document.activeElement) && document.activeElement.tagName === 'INPUT' && panel.dataset.ids === ids.join(',')) return;
+    if (panel.contains(document.activeElement) && /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName) && panel.dataset.ids === ids.join(',')) return;
     panel.dataset.ids = ids.join(',');
     panel.className = 'tt-float show';
 
     if (ids.length > 1) {
         var editable = ids.filter(function(id) { return canEdit(scene.items[id]); });
+        var toks = editable.filter(function(id) { return scene.items[id].kind === 'token'; });
         panel.innerHTML = '<h4>已选择 ' + ids.length + ' 个物件 <button class="tt-btn small" data-act="close">✕</button></h4>' +
+            (toks.length ? '<div class="prop-row"><input class="tt-input narrow" data-amount type="number" min="0" placeholder="数值">' +
+                '<button class="tt-btn small danger" data-act="gdmg">全体伤害</button><button class="tt-btn small" data-act="gheal">全体治疗</button></div>' +
+                '<div class="prop-btns"><button class="tt-btn small" data-act="ginit">加入先攻</button><button class="tt-btn small" data-act="grest" title="恢复满血、清除临时生命、恢复资源与法术位、力竭 −1">长休</button></div>' : '') +
             '<div class="prop-btns">' +
             (me.gm ? '<button class="tt-btn small" data-act="hideAll">隐藏</button><button class="tt-btn small" data-act="showAll">显示</button>' +
                 '<button class="tt-btn small" data-act="lockAll">锁定</button><button class="tt-btn small" data-act="unlockAll">解锁</button>' : '') +
@@ -2107,21 +2321,32 @@ function renderSelPanel() {
     if (it.kind === 'token') {
         h += row('名称', '<input class="tt-input" data-prop="label" maxlength="40" value="' + escapeHtml(it.label || '') + '">');
         h += row('尺寸', '<input class="tt-input narrow" data-prop="size" type="number" min="0.25" step="0.5" value="' + (Math.round((it.w || g) / g * 100) / 100) + '"> 格');
-        h += row('HP', '<input class="tt-input narrow" data-prop="hp" type="number" value="' + (it.hp != null ? it.hp : '') + '"> / ' +
+        h += row('HP', '<input class="tt-input narrow" data-prop="hp" inputmode="numeric" title="填 20 设为 20；+5 治疗、-3 伤害（先扣临时生命）；15+5 先算再设" value="' + (it.hp != null ? it.hp : '') + '"> / ' +
             '<input class="tt-input narrow" data-prop="hpMax" type="number" min="0" value="' + (it.hpMax || '') + '">');
         h += row('临时', '<input class="tt-input narrow" data-prop="hpTemp" type="number" min="0" value="' + (it.hpTemp || '') + '" placeholder="0">' +
             '<span class="tt-hint">受伤先扣临时生命</span>');
+        if (it.hpMax > 0 && num(it.hp, it.hpMax) <= 0) h += deathSaveRow(it, row);
         h += row('', '<button class="tt-btn small" data-hp="-5">-5</button><button class="tt-btn small" data-hp="-1">-1</button>' +
             '<button class="tt-btn small" data-hp="1">+1</button><button class="tt-btn small" data-hp="5">+5</button>');
         h += row('', '<input class="tt-input narrow" data-amount type="number" min="0" placeholder="数值">' +
             '<button class="tt-btn small danger" data-act="dmg">伤害</button><button class="tt-btn small" data-act="heal">治疗</button>');
         h += row('颜色', '<input class="tt-input" type="color" data-prop="color" value="' + escapeHtml(it.color || '#607d8b') + '">' +
-            '<label><input type="checkbox" data-prop="circle"' + (it.circle ? ' checked' : '') + '> 圆形</label>');
+            '<label><input type="checkbox" data-prop="circle"' + (it.circle ? ' checked' : '') + '> 圆形</label>' +
+            '<label><input type="checkbox" data-prop="flipX"' + (it.flipX ? ' checked' : '') + '> 翻转</label>');
         h += row('旋转', '<input type="range" data-prop="rot" min="0" max="359" step="1" value="' + (it.rot || 0) + '" style="flex:1;"><span class="tt-hint">' + (it.rot || 0) + '°</span>');
         if (!it.locked) h += '<div class="tt-hint" style="margin:-4px 0 8px;">地图上拖四角缩放、拖顶部圆钮旋转（Alt 不吸附）；也可 Alt+滚轮旋转、Shift+滚轮缩放</div>';
         h += row('视野', '<input class="tt-input narrow" data-prop="sight" type="number" min="0" step="5" value="' + (it.sight || '') + '" placeholder="不限"> ' +
             escapeHtml(scene.props.gridUnit || 'ft') + '<span class="tt-hint">（动态视野用）</span>');
         h += combatPanelHtml(it, row);
+        h += statusPanelHtml(it, row);
+        var lt = it.light || {};
+        h += row('光源', '<input class="tt-input narrow" data-prop="lightB" type="number" min="0" step="5" value="' + (lt.bright || '') + '" placeholder="明亮" title="明亮光照半径（尺）" style="width:52px;">' +
+            '<input class="tt-input narrow" data-prop="lightD" type="number" min="0" step="5" value="' + (lt.dim || '') + '" placeholder="微光" title="明亮之外再延伸的微光（尺）" style="width:52px;">' +
+            '<select class="tt-select" data-prop="lightPreset" style="width:72px;"><option value="">预设</option><option value="20/20">火把</option><option value="30/30">提灯</option>' +
+            '<option value="60/60">牛眼提灯</option><option value="20/20">光亮术</option><option value="40/40">日光术(大)</option><option value="0/0">熄灭</option></select>');
+        if (me.gm) h += row('传送门', '<label><input type="checkbox" data-prop="portalOn"' + (it.portal ? ' checked' : '') + '> 是传送门</label>' +
+            (it.portal ? '<input class="tt-input narrow" data-prop="portalTag" maxlength="12" value="' + escapeHtml(it.portal.tag || '') + '" title="同一标签的传送门互通">' : ''));
+        h += transformPanelHtml(it, row);
         var linked = it.sheet && sheets[it.sheet];
         h += row('角色卡', linked ? '<button class="tt-btn small" data-act="sheet">' + escapeHtml(linked.name) + '</button>' +
             '<button class="tt-btn small" data-act="unlink" title="取消关联">✕</button>' :
@@ -2131,16 +2356,19 @@ function renderSelPanel() {
     } else if (it.kind === 'draw') {
         h += row('颜色', '<input class="tt-input" type="color" data-prop="color" value="' + escapeHtml(it.color || '#e53935') + '">' +
             (it.shape === 'rect' || it.shape === 'circle' || it.shape === 'cone' ? '<label><input type="checkbox" data-prop="fill"' + (it.fill ? ' checked' : '') + '> 填充</label>' : ''));
-        h += row('线宽', '<input class="tt-input narrow" type="number" min="1" max="64" data-prop="width" value="' + (it.width || 4) + '">');
+        if (it.shape === 'text') {
+            h += row('文字', '<input class="tt-input" data-prop="text" maxlength="500" value="' + escapeHtml(it.text || '') + '" style="flex:1;">');
+            h += row('字号', '<input class="tt-input narrow" type="number" min="6" max="400" data-prop="size" value="' + Math.round(num(it.size, gridSize() * 0.45)) + '">');
+        } else h += row('线宽', '<input class="tt-input narrow" type="number" min="1" max="64" data-prop="width" value="' + (it.width || 4) + '">');
         if (it.shape === 'circle') h += row('半径', '<span>' + distText(it.r || 0) + '</span>');
     } else if (it.kind === 'wall') {
         h += row('类型', '<select class="tt-select" data-prop="wtype" style="flex:1;">' +
-            ['wall', 'window', 'door'].map(function(t) {
+            ['wall', 'window', 'door', 'secret'].map(function(t) {
                 return '<option value="' + t + '"' + ((it.wtype || 'wall') === t ? ' selected' : '') + '>' + WALL_STYLE[t].name + '</option>';
             }).join('') + '</select>');
-        if (it.wtype === 'door') h += row('', '<label><input type="checkbox" data-prop="open"' + (it.open ? ' checked' : '') + '> 打开</label>' +
+        if (it.wtype === 'door' || it.wtype === 'secret') h += row('', '<label><input type="checkbox" data-prop="open"' + (it.open ? ' checked' : '') + '> 打开</label>' +
             '<label><input type="checkbox" data-prop="locked"' + (it.locked ? ' checked' : '') + '> 上锁（玩家打不开）</label>');
-        h += '<div class="tt-hint">墙：挡视线和移动；窗：只挡移动；门：关着时同墙，玩家可点击开关。</div>';
+        h += '<div class="tt-hint">墙：挡视线和移动；窗：只挡移动；门：关着时同墙，玩家可点击开关；暗门：玩家看不到也打不开，GM 打开后才能通行。</div>';
     } else if (it.kind === 'fog') {
         h += row('类型', '<label><input type="checkbox" data-prop="cut"' + (it.cut ? ' checked' : '') + '> 揭示（挖空迷雾）</label>');
     }
@@ -2155,7 +2383,9 @@ function renderSelPanel() {
                 '</select>');
         }
     }
-    h += '<div class="prop-btns">' + (it.kind === 'token' ? '<button class="tt-btn small' + (target.id === it.id ? ' primary' : '') + '" data-act="target">' +
+    h += '<div class="prop-btns">' + (it.kind === 'token' ? '<button class="tt-btn small" data-act="shortrest" title="花费生命骰回复生命值">短休</button>' +
+        '<button class="tt-btn small" data-act="rest" title="恢复满血、清除临时生命、恢复资源与法术位、力竭 −1">长休</button>' : '') +
+        (it.kind === 'token' ? '<button class="tt-btn small' + (target.id === it.id ? ' primary' : '') + '" data-act="target">' +
         (target.id === it.id ? '取消目标' : '🎯 设为目标') + '</button>' : '') +
         '<button class="tt-btn small" data-act="front">置顶</button><button class="tt-btn small" data-act="back">置底</button>' +
         '<button class="tt-btn small" data-act="dup">复制</button><button class="tt-btn small danger" data-act="del">删除</button></div>';
@@ -2180,7 +2410,47 @@ function applyHpDelta(hp, max, temp, delta) {
     return { hp: hp, temp: temp };
 }
 
+// 死亡豁免：0 生命值时显示，点按钮由服务器掷 d20
+function deathSaveRow(it, row) {
+    var ds = it.ds || {}, s = num(ds.s, 0), f = num(ds.f, 0);
+    var dots = function(n, on, off) { var t = ''; for (var i = 0; i < 3; i++) t += i < n ? on : off; return t; };
+    if (hasStatus(it, 'dead')) return row('', '<span class="tt-hint">💀 已死亡</span>');
+    if (hasStatus(it, 'stable')) return row('', '<span class="tt-hint">💤 伤势稳定（不用再做死亡豁免）</span>');
+    return row('死亡豁免', '<span title="成功">' + dots(s, '🟢', '⚪') + '</span> <span title="失败">' + dots(f, '🔴', '⚪') + '</span>' +
+        '<button class="tt-btn small" data-act="death">🎲 掷</button>');
+}
+
+// 长休：满血、清临时生命和死亡豁免、恢复棋子资源；关联角色卡的法术位 / 资源也恢复；力竭 −1
+function longRest(ids) {
+    var patches = [];
+    ids.forEach(function(id) {
+        var it = scene.items[id];
+        if (!it || it.kind !== 'token' || !canEdit(it) || hasStatus(it, 'dead')) return;
+        var p = { id: id, hpTemp: null, ds: null };
+        if (it.hpMax > 0) p.hp = it.hpMax;
+        if (it.res && it.res.length) p.res = it.res.map(function(r) { var c = JSON.parse(JSON.stringify(r)); c.cur = num(r.max, 0); return c; });
+        var st = statusList(it).map(function(s) { return JSON.parse(JSON.stringify(s)); }).filter(function(s) {
+            if (s.id === 'exhaustion') { s.lv = num(s.lv, 1) - 1; return s.lv > 0; }
+            return s.id !== 'stable' && s.id !== 'concentration';
+        });
+        p.status = st.length ? st : null;
+        patches.push(p);
+        var sh = it.sheet && sheets[it.sheet];
+        if (sh && sh.kind === 'pc' && canEditSheet(sh)) {
+            var upd = { id: sh.id };
+            if (sh.slots) upd.slots = sh.slots.map(function(s) { return { level: s.level, cur: s.max, max: s.max }; });
+            if (sh.resources) upd.resources = sh.resources.map(function(r) { var c = JSON.parse(JSON.stringify(r)); c.cur = r.max; return c; });
+            if (sh.hp) upd.hp = { cur: sh.hp.max, max: sh.hp.max, temp: '0', formula: sh.hp.formula };
+            op({ op: 'sheet', sheet: upd });
+        }
+    });
+    if (!patches.length) return;
+    patchItems(patches);
+    op({ op: 'chat', text: '🛏 ' + patches.map(function(p) { return scene.items[p.id].label || '棋子'; }).join('、') + ' 完成了长休' });
+}
+
 function tokenHpPatch(it, delta) {
+    if (delta < 0) concentrationCheck(it, -delta);
     var r = applyHpDelta(it.hp, it.hpMax, it.hpTemp, delta);
     return { id: it.id, hp: r.hp, hpTemp: r.temp > 0 ? r.temp : null };
 }
@@ -2200,10 +2470,27 @@ function onSelPanelChange(e) {
     } else if (prop === 'hpTemp') {
         var t = parseFloat(el.value);
         patch.hpTemp = t > 0 ? t : null;
-    } else if (prop === 'hp' || prop === 'hpMax' || prop === 'width' || prop === 'rot' || prop === 'sight' || prop === 'ac' || prop === 'initMod' || prop === 'init') {
+    } else if (prop === 'hp' && /[+\-]/.test(el.value)) {
+        var rel = el.value.replace(/\s/g, '');
+        if (/^[+\-]\d+$/.test(rel)) { patchItems([tokenHpPatch(it, parseInt(rel, 10))]); $('selPanel').dataset.ids = ''; renderSelPanel(); return; }
+        var sum = /^\d+([+\-]\d+)+$/.test(rel) ? rel.match(/[+\-]?\d+/g).reduce(function(a, b) { return a + parseInt(b, 10); }, 0) : NaN;
+        if (!isFinite(sum)) { notice('HP 只支持 20、+5、-3、15+5 这样的写法', true); return; }
+        patch.hp = Math.max(0, it.hpMax > 0 ? Math.min(it.hpMax, sum) : sum);
+    } else if (prop === 'hp' || prop === 'hpMax' || prop === 'width' || prop === 'rot' || prop === 'sight' || prop === 'ac' || prop === 'initMod' || prop === 'init' || prop === 'hitR' || prop === 'size') {
         var v = parseFloat(el.value);
         patch[prop] = el.value === '' || !isFinite(v) ? (prop === 'init' ? 0 : null) : v;
         if (prop === 'init') patch.initRolled = true;
+    } else if (prop === 'lightB' || prop === 'lightD') {
+        var lb = parseFloat($('selPanel').querySelector('[data-prop=lightB]').value) || 0;
+        var ld = parseFloat($('selPanel').querySelector('[data-prop=lightD]').value) || 0;
+        patch.light = lb + ld > 0 ? { bright: lb, dim: ld } : null;
+    } else if (prop === 'lightPreset') {
+        var lp = el.value.split('/');
+        patch.light = lp.length === 2 ? { bright: +lp[0], dim: +lp[1] } : null;
+    } else if (prop === 'portalOn') {
+        patch.portal = el.checked ? { tag: 'A', r: Math.round(g * 0.6) } : null;
+    } else if (prop === 'portalTag') {
+        patch.portal = { tag: el.value.trim().slice(0, 12) || 'A', r: it.portal && it.portal.r || Math.round(g * 0.6) };
     } else if (prop === 'fp') {
         var cells = parseFloat(el.value);
         patch.fp = cells > 0 ? cells : null;
@@ -2222,6 +2509,29 @@ function onSelPanelClick(e) {
     var ids = selectedIds();
     var amountEl = $('selPanel').querySelector('[data-amount]');
     var amount = amountEl ? Math.abs(parseInt(amountEl.value, 10) || 0) : 0;
+    if (ids.length > 1 && /^g(dmg|heal|init|rest)$/.test(b.dataset.act || '')) {
+        var toks = ids.filter(function(id) { return scene.items[id] && scene.items[id].kind === 'token' && canEdit(scene.items[id]); });
+        if (b.dataset.act === 'ginit') joinInit(toks);
+        else if (b.dataset.act === 'grest') longRest(toks);
+        else if (!amount) notice('先填写数值', true);
+        else {
+            patchItems(toks.map(function(id) { return tokenHpPatch(scene.items[id], b.dataset.act === 'gdmg' ? -amount : amount); }));
+            notice((b.dataset.act === 'gdmg' ? '已对 ' : '已治疗 ') + toks.length + ' 个单位' + (b.dataset.act === 'gdmg' ? '造成 ' : ' ') + amount + ' 点');
+        }
+        $('selPanel').dataset.ids = '';
+        renderSelPanel();
+        return;
+    }
+    if (b.dataset.act === 'death') { op({ op: 'death', ids: [ids[0]] }); return; }
+    if (b.dataset.act === 'transform') {
+        var tsel = $('selPanel').querySelector('[data-tfsheet]'), tas = $('selPanel').querySelector('[data-tfasset]');
+        if (!tsel.value) { notice('先选择要变成的形态', true); return; }
+        transformToken(scene.items[ids[0]], tsel.value, tas ? tas.value : '');
+        $('selPanel').dataset.ids = ''; renderSelPanel(); return;
+    }
+    if (b.dataset.act === 'revert') { revertToken(scene.items[ids[0]]); $('selPanel').dataset.ids = ''; renderSelPanel(); return; }
+    if (b.dataset.act === 'shortrest') { shortRest(scene.items[ids[0]]); return; }
+    if (b.dataset.act === 'rest') { longRest([ids[0]]); $('selPanel').dataset.ids = ''; renderSelPanel(); return; }
     var delta = b.dataset.hp ? parseInt(b.dataset.hp, 10) : b.dataset.act === 'dmg' ? -amount : b.dataset.act === 'heal' ? amount : 0;
     if (delta) {
         patchItems([tokenHpPatch(scene.items[ids[0]], delta)]);
@@ -2230,7 +2540,7 @@ function onSelPanelClick(e) {
         return;
     }
     if (b.dataset.act === 'dmg' || b.dataset.act === 'heal') return; // 没填数值
-    if (ids.length === 1 && scene.items[ids[0]].kind === 'token' && onCombatPanelClick(b, scene.items[ids[0]])) {
+    if (ids.length === 1 && scene.items[ids[0]].kind === 'token' && (onStatusPanelClick(b, scene.items[ids[0]]) || onCombatPanelClick(b, scene.items[ids[0]]))) {
         $('selPanel').dataset.ids = '';
         renderSelPanel();
         return;
@@ -2259,7 +2569,7 @@ function onSelPanelClick(e) {
 
 // ===== 资产栏 =====
 function renderAssets() {
-    var list = (room.assets || []).filter(function(a) { return assetFilter === 'all' || a.kind === assetFilter; });
+    var list = (room.assets || []).filter(function(a) { return a.kind !== 'audio' && (assetFilter === 'all' || a.kind === assetFilter); });
     if (!list.length) {
         $('assetGrid').innerHTML = '<div class="tt-hint" style="grid-column:1/-1;">还没有' + (assetFilter === 'map' ? '地图' : '图片') + '，点上方按钮上传</div>';
         return;
@@ -2544,7 +2854,7 @@ function onTrayChipClick(e) {
 
 function roll(expr, label, hidden, vs) {
     var body = { op: 'roll', expr: expr, label: label || '', hidden: !!hidden };
-    if (vs && vs.target) { body.target = vs.target; body.cover = vs.cover || 0; }
+    if (vs && vs.target) { body.target = vs.target; body.cover = vs.cover || 0; if (vs.autoCrit) body.autoCrit = true; }
     op(body);
 }
 
@@ -2655,9 +2965,13 @@ function quickRoll(o) {
     rd.mode = advMode;
     if (advMode) { advMode = ''; renderDiceButtons(); }
     var ac = rd.d20 && o.attack ? attackContext(o) : null;
-    if (ac && ac.dis && !rd.mode) rd.mode = 'dis';
+    if (ac) {
+        if (!rd.mode && ac.mode) rd.mode = ac.mode;
+        if (ac.adj) rd.adj = ac.adj;
+        if (ac.extra) rd.extra = ac.extra;
+    }
     roll(rollDialogExpr(), (rd.who ? rd.who + '·' : '') + rd.label, $('diceHidden').checked,
-        ac && !ac.blocked ? { target: ac.target.id, cover: ac.cover } : null);
+        ac && !ac.blocked ? { target: ac.target.id, cover: ac.cover, autoCrit: ac.autoCrit } : null);
     rd = null;
 }
 
@@ -2693,7 +3007,9 @@ function openRollDialog(o) {
     if (rd.ctx) {
         $('rdTarget').innerHTML = rd.ctx.lines.join('<br>');
         $('rdVs').checked = !rd.ctx.blocked;
-        if (rd.ctx.dis && !rd.mode) rd.mode = 'dis';
+        if (!rd.mode && rd.ctx.mode) rd.mode = rd.ctx.mode;
+        if (rd.ctx.adj) $('rdAdj').value = rd.ctx.adj;
+        if (rd.ctx.extra) rd.extra = rd.ctx.extra;
     } else if (rd.d20 && o.attack && !me.gm) {
         $('rdTargetRow').style.display = '';
         $('rdTarget').innerHTML = '<span class="tt-hint">没有选择目标：鼠标放在敌人棋子上按 T 即可选为目标，自动判断距离、掩护和是否命中</span>';
@@ -2727,7 +3043,7 @@ function confirmRollDialog() {
     if (!rd) return;
     syncRollDialog();
     var label = $('rdLabel').value.trim();
-    var vs = rd.ctx && $('rdVs').checked ? { target: rd.ctx.target.id, cover: rd.ctx.cover } : null;
+    var vs = rd.ctx && $('rdVs').checked ? { target: rd.ctx.target.id, cover: rd.ctx.cover, autoCrit: rd.ctx.autoCrit } : null;
     roll(rollDialogExpr(), (rd.who ? rd.who + '·' : '') + label, $('rdHidden').checked, vs);
     if (advMode) { advMode = ''; renderDiceButtons(); } // 骰子栏里的优势 / 劣势只作用于一次掷骰
     closeRollDialog();
@@ -2779,6 +3095,7 @@ function rollHtml(r) {
             if (t.sides === 20 && !d.d) { if (d.v === 20) crit = true; if (d.v === 1) fumble = true; }
             var s = cls ? '<span class="' + cls + '">' + d.v + '</span>' : String(d.v);
             if (d.x) s += '!';
+            if (d.r) s += '<sup title="重骰过">↺</sup>';
             return d.d ? '<s>' + d.v + '</s>' : s;
         }).join(', ');
         return op + '[' + dice + ']';
@@ -2795,7 +3112,10 @@ function logHtml(e) {
     if (e.kind === 'chat') return '<div class="log-entry">' + who + time + '<div>' + escapeHtml(e.text) + '</div></div>';
     var h = '<div class="log-entry">' + who + (e.label ? '<span class="label">' + escapeHtml(e.label) + '</span>' : '') +
         (e.hidden ? '<span class="hidden-tag">暗骰</span>' : '') + time;
-    h += e.roll ? rollHtml(e.roll) : '<div class="tt-hint">' + escapeHtml(e.text || '') + '</div>';
+    h += e.act ? actionLogHtml(e) : e.roll ? rollHtml(e.roll) : '<div class="tt-hint">' + escapeHtml(e.text || '') + '</div>';
+    if (e.roll && e.text) h += '<div class="tt-hint">' + escapeHtml(e.text) + '</div>';
+    if (e.kind === 'roll' && e.roll && e.who === me.name && !e.target) h += '<button class="reroll" data-reroll="' + escapeHtml(e.roll.expr.replace(/\s/g, '')) +
+        '" data-label="' + escapeHtml(e.label || '') + '" data-hidden="' + (e.hidden ? 1 : 0) + '" title="用同样的表达式再掷一次">↻</button>';
     if (e.target) {
         var HIT = { hit: ['命中', 'hit'], miss: ['未命中', 'miss'], crit: ['重击！', 'crit'], fumble: ['大失败', 'miss'] };
         var hr = HIT[e.hit];
@@ -2817,6 +3137,14 @@ function appendLog(e, live) {
     el.insertAdjacentHTML('beforeend', logHtml(e));
     if (atBottom || e.who === me.name) el.scrollTop = el.scrollHeight;
     if (live && e.kind === 'roll') showRollToast(e);
+    if (live && e.kind === 'action' && e.act) {
+        var t = document.createElement('div');
+        t.className = 'roll-toast';
+        t.innerHTML = '⚡ <span style="color:' + escapeHtml(userColor(e.who)) + '">' + escapeHtml(e.who) + '</span> ' + escapeHtml(e.act.name) + ' → ' +
+            escapeHtml(e.act.targets.map(function(x) { return x.name + (x.amount ? ' ' + (x.amount > 0 ? '+' : '') + x.amount : ''); }).join('，') || '无目标');
+        $('rollToasts').appendChild(t);
+        setTimeout(function() { t.remove(); }, 4500);
+    }
 }
 
 function showRollToast(e) {
@@ -2857,6 +3185,7 @@ function init() {
     canvas.addEventListener('wheel', onWheel, { passive: false });
     canvas.addEventListener('contextmenu', function(e) { e.preventDefault(); });
     canvas.addEventListener('dblclick', function(e) {
+        if (rulerPath) { endRulerPath(); return; }
         if (polyDraft) { finishPoly(); return; }
         if (wallDraft) { finishWall(); return; }
         if (tool !== 'select') return;
@@ -2952,6 +3281,24 @@ function init() {
     bindSettings();
     initSheets();
     initCombat();
+    initStatus();
+    initAction();
+    initExtra();
+    $('setHpStep').addEventListener('change', function() { setProps({ hpStep: parseFloat(this.value) }); });
+    $('prefFollowTurn').checked = gmPref('ttFollowTurn', true);
+    $('prefFollowTurn').addEventListener('change', function() { setGmPref('ttFollowTurn', this.checked); });
+    $('focusAllBtn').addEventListener('click', function() {
+        var c = toWorld(canvas.clientWidth / 2, canvas.clientHeight / 2);
+        sendFx({ t: 'focus', x: c.x, y: c.y, s: view.s });
+        notice('已让所有人的镜头移到你现在看的位置');
+    });
+    $('prefPlaceHidden').checked = gmPref('ttPlaceHidden', true);
+    $('prefInitHidden').checked = gmPref('ttInitHidden', false);
+    $('prefPlaceHidden').addEventListener('change', function() { setGmPref('ttPlaceHidden', this.checked); });
+    $('prefInitHidden').addEventListener('change', function() { setGmPref('ttInitHidden', this.checked); });
+    $('snapSel').innerHTML = SNAP_OPTS.map(function(o) { return '<option value="' + o[0] + '">' + o[1] + '</option>'; }).join('');
+    $('snapSel').value = snapMode;
+    $('snapSel').addEventListener('change', function() { setSnapMode(this.value); });
     initAuth();
 }
 

@@ -50,20 +50,83 @@ function footprint(it, center) {
     return { ix0: ix0, iy0: iy0, n: n, cells: cells, x0: cells < 1 ? c.x - size / 2 : ox + ix0 * g, y0: cells < 1 ? c.y - size / 2 : oy + iy0 * g, size: size };
 }
 
-// 松手时让占格对齐网格（图片相对占格居中）；微型生物按半格对齐
+// ===== 吸附档位（每人各自设置，存在本机）=====
+// 自由：停在任意位置；1/4 格、半格、整格：占格的边对齐到对应的细分网格
+var SNAP_OPTS = [['free', '自由放置'], ['quarter', '吸附 1/4 格'], ['half', '吸附半格'], ['cell', '吸附整格']];
+var snapMode = (function() { try { return localStorage.getItem('ttSnap') || 'free'; } catch (e) { return 'free'; } })();
+
+function snapDiv() { return snapMode === 'cell' ? 1 : snapMode === 'half' ? 2 : snapMode === 'quarter' ? 4 : 0; }
+
+// 网格细分后一步的长度（自由模式下用于挪位 / 方向键的步长）
+function snapStep() { var d = snapDiv(); return gridSize() / (d || 4); }
+
+function setSnapMode(m) {
+    snapMode = m;
+    try { localStorage.setItem('ttSnap', m); } catch (e) { /* 无痕模式等 */ }
+    var sel = $('snapSel');
+    if (sel) sel.value = m;
+    requestRender();
+}
+
+// 松手时的位置：按吸附档位让占格对齐细分网格（图片相对占格居中）
 function snapTokenPos(it, x, y) {
-    var g = gridSize(), w = it.w || g, h = it.h || g, cells = tokenCells(it);
-    var cx = x + w / 2, cy = y + h / 2, c;
-    if (cells < 1) {
-        var half = g / 2;
-        c = snapToGrid(cx - half / 2, cy - half / 2, half);
-        cx = c.x + half / 2; cy = c.y + half / 2;
-    } else {
-        var F = cells * g;
-        c = snapToGrid(cx - F / 2, cy - F / 2);
-        cx = c.x + F / 2; cy = c.y + F / 2;
+    var div = snapDiv();
+    if (!div) return { x: x, y: y };
+    if (isHex()) { // 六角格：格心对齐
+        var gg = gridSize(), hc = hexCenterNear(x + (it.w || gg) / 2, y + (it.h || gg) / 2);
+        return { x: hc.x - (it.w || gg) / 2, y: hc.y - (it.h || gg) / 2 };
     }
+    var g = gridSize(), w = it.w || g, h = it.h || g, cells = tokenCells(it), step = g / div;
+    var cx = x + w / 2, cy = y + h / 2, c;
+    var F = cells < 1 ? g * cells : cells * g;
+    if (cells < 1) step = Math.min(step, g / 2);
+    c = snapToGrid(cx - F / 2, cy - F / 2, step);
+    cx = c.x + F / 2; cy = c.y + F / 2;
     return { x: cx - w / 2, y: cy - h / 2 };
+}
+
+// 松手时的落点：按吸附档位对齐；按住 Alt 不吸附。停在哪就是哪，不会自动挪开
+function dropSpot(it, x, y, from, alt) {
+    var c = alt ? { x: x, y: y } : snapTokenPos(it, x, y);
+    c.moved = false;
+    return c;
+}
+
+// ===== 判定圆 =====
+// 判定圆 = 生物身体在地面上实际占的范围（俯视的身体宽度），和图片大小无关。
+// 默认按体型取一个小圆（半径）：微型 0.5 尺、小型 0.75 尺、中型 1 尺（约两尺宽的成人肩宽）、
+// 大型 2.5 尺、巨型 4 尺、超巨型 6 尺；每个棋子都可以单独调整（item.hitR，单位尺）。
+// 距离、触及、射程、掩护、范围是否波及都按判定圆计算。
+function feetToPx(ft) { return ft / num(scene.props.gridScale, 5) * gridSize(); }
+
+function defaultHitFt(it) {
+    var c = tokenCells(it);
+    if (c < 1) return 0.5;
+    if (c >= 4) return 6;
+    if (c >= 3) return 4;
+    if (c >= 2) return 2.5;
+    var sh = it.sheet && sheets[it.sheet];
+    if (sh && /小型/.test((sh.size || '') + ' ' + (sh.meta || ''))) return 0.75;
+    return 1;
+}
+
+function hitFt(it) { var r = num(it.hitR, 0); return r > 0 ? r : defaultHitFt(it); }
+function hitPx(it) { return feetToPx(hitFt(it)); }
+
+function drawHitCircle(it, color, dashed, center) {
+    var c = center || tokenCenter(it), r = Math.max(hitPx(it), 3 / view.s);
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.globalAlpha = dashed ? 0.12 : 0.28;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.lineWidth = 1.5 / view.s;
+    if (dashed) ctx.setLineDash([4 / view.s, 3 / view.s]);
+    ctx.strokeStyle = color;
+    ctx.stroke();
+    ctx.restore();
 }
 
 // 体型变化时把图片缩放到占格大小（保持比例）
@@ -89,12 +152,12 @@ function gridSteps(dx, dy) {
 function stepsToUnits(steps) { return steps * num(scene.props.gridScale, 5); }
 function unitName() { return scene.props.gridUnit || 'ft'; }
 
-// 生物之间的距离：两块占格之间最近的格子
+// 生物之间的距离：判定圆边缘之间（按测距规则计算圆心距离，再减去两个半径）
 function creatureDist(a, b, aCenter, bCenter) {
-    var fa = footprint(a, aCenter), fb = footprint(b, bCenter);
-    var dx = Math.max(0, fb.ix0 - (fa.ix0 + fa.n - 1), fa.ix0 - (fb.ix0 + fb.n - 1));
-    var dy = Math.max(0, fb.iy0 - (fa.iy0 + fa.n - 1), fa.iy0 - (fb.iy0 + fb.n - 1));
-    return stepsToUnits(gridSteps(dx, dy));
+    var ca = aCenter || tokenCenter(a), cb = bCenter || tokenCenter(b), g = gridSize();
+    var steps = isHex() ? Math.hypot(cb.x - ca.x, cb.y - ca.y) / g : gridSteps(Math.abs(cb.x - ca.x) / g, Math.abs(cb.y - ca.y) / g);
+    var d = stepsToUnits(steps) - hitFt(a) - hitFt(b);
+    return Math.max(0, Math.round(d * 2) / 2);
 }
 
 // 从格子 a 走到格子 b 经过的格子（先走斜线再走直线，与计数方式一致）
@@ -129,6 +192,7 @@ function drawPathCells(cells, n, color) {
 
 // 尺子：起点终点都吸附格心时显示经过的格子和斜步规则
 function rulerText(a, b) {
+    if (isHex()) return fmtDist(stepsToUnits(hexDist(a.x, a.y, b.x, b.y)));
     var g = gridSize();
     var dx = Math.round(Math.abs(b.x - a.x) / g * 1000) / 1000, dy = Math.round(Math.abs(b.y - a.y) / g * 1000) / 1000;
     var t = fmtDist(stepsToUnits(gridSteps(dx, dy)));
@@ -138,6 +202,7 @@ function rulerText(a, b) {
 }
 
 function drawRulerCells(a, b, color) {
+    if (isHex()) return;
     var ia = cellIndex(a.x, a.y), ib = cellIndex(b.x, b.y);
     if (ia[0] === ib[0] && ia[1] === ib[1]) return;
     drawPathCells([ia].concat(gridPath(ia[0], ia[1], ib[0], ib[1])), 1, color);
@@ -150,28 +215,31 @@ function tokenSpeed(it) {
     return m ? parseInt(m[0], 10) : 0;
 }
 
-// 拖动棋子时：显示占格经过的格子、移动距离（对比速度）
+// 拖动棋子时：显示起点和落点的判定圆、移动距离（对比速度）
 function drawMoveGuide(g0) {
     var ids = Object.keys(g0.orig);
     if (ids.length !== 1) return;
     var it = scene.items[ids[0]];
     if (!it || it.kind !== 'token') return;
-    var o = g0.orig[ids[0]], gs = gridSize();
-    var from = footprint(it, { x: o.x + (it.w || gs) / 2, y: o.y + (it.h || gs) / 2 });
-    var snapped = snapTokenPos(it, it.x, it.y);
-    var to = footprint(it, { x: snapped.x + (it.w || gs) / 2, y: snapped.y + (it.h || gs) / 2 });
-    var dist = stepsToUnits(gridSteps(to.ix0 - from.ix0, to.iy0 - from.iy0));
+    var o = g0.orig[ids[0]], gs = gridSize(), w = it.w || gs, h = it.h || gs;
+    var spot = dropSpot(it, it.x, it.y, o, g0.alt);
+    var c0 = { x: o.x + w / 2, y: o.y + h / 2 }, c1 = { x: spot.x + w / 2, y: spot.y + h / 2 };
+    var dist = Math.round(stepsToUnits(isHex() ? Math.hypot(c1.x - c0.x, c1.y - c0.y) / gs : gridSteps(Math.abs(c1.x - c0.x) / gs, Math.abs(c1.y - c0.y) / gs)) * 2) / 2;
     var speed = tokenSpeed(it);
     var over = speed && dist > speed;
     var color = over ? '#ef5350' : '#42a5f5';
-    if (from.cells >= 1) drawPathCells(gridPath(from.ix0, from.iy0, to.ix0, to.iy0), from.n, color);
     ctx.save();
     ctx.strokeStyle = color;
     ctx.lineWidth = 2 / view.s;
     ctx.setLineDash([6 / view.s, 4 / view.s]);
-    ctx.strokeRect(from.x0, from.y0, from.size, from.size);
+    ctx.beginPath();
+    ctx.moveTo(c0.x, c0.y);
+    ctx.lineTo(c1.x, c1.y);
+    ctx.stroke();
     ctx.restore();
-    if (dist > 0) drawLabel('移动 ' + fmtDist(dist) + (speed ? ' / ' + speed : ''), to.x0 + to.size / 2, to.y0, over ? '#ef9a9a' : '#fff');
+    drawHitCircle(it, color, true, c0);
+    drawHitCircle(it, color, false, c1);
+    if (dist > 0) drawLabel('移动 ' + fmtDist(dist) + (speed ? ' / ' + speed : ''), c1.x, spot.y, over ? '#ef9a9a' : '#fff');
 }
 
 // ===== 目标 / 掩护 =====
@@ -218,57 +286,43 @@ function segHitsRect(ax, ay, bx, by, x0, y0, x1, y1) {
     return t0 < t1;
 }
 
-// DMG 掩护规则：从攻击者占格的某个角向目标某一格的四个角连线，被墙挡住 1–2 条 = 半身掩护，
-// 3 条 = 四分之三掩护，4 条 = 完全掩护；攻击者取最有利的角和格子。中间隔着其他生物 = 半身掩护。
+// 掩护（参照 DMG 角对角规则，用判定圆代替格子）：从攻击者判定圆的圆心或边缘四点之一，
+// 连线到目标判定圆边缘的四点，被墙挡住 1–2 条 = 半身掩护，3 条 = 四分之三，4 条 = 完全掩护；
+// 攻击者取最有利的起点。连线穿过其他生物的判定圆 = 半身掩护。
 function coverInfo(att, tgt) {
-    var key = wallsVersion + '|' + [att, tgt].map(function(t) { return t.id + ',' + Math.round(t.x) + ',' + Math.round(t.y) + ',' + (t.w || 0) + ',' + (t.fp || ''); }).join('|') +
-        '|' + sortedItems().filter(function(t) { return t.kind === 'token'; }).length;
+    var key = wallsVersion + '|' + att.id + '|' + tgt.id + '|' + num(scene.props.gridScale, 5) + measureRule() + '|' +
+        sortedItems().filter(function(t) { return t.kind === 'token'; }).map(function(t) {
+            return [t.id, Math.round(t.x), Math.round(t.y), t.w || 0, t.h || 0, t.hitR || '', t.fp || '', t.hp, t.hpMax, t.hidden ? 1 : 0].join(',');
+        }).join(';');
     if (coverCache.key === key) return coverCache.info;
-    var g = gridSize(), p = scene.props, ox = num(p.gridOffX, 0), oy = num(p.gridOffY, 0);
-    var fa = footprint(att), ft = footprint(tgt);
-    var bx0 = Math.min(fa.x0, ft.x0) - g, by0 = Math.min(fa.y0, ft.y0) - g;
-    var bx1 = Math.max(fa.x0 + fa.size, ft.x0 + ft.size) + g, by1 = Math.max(fa.y0 + fa.size, ft.y0 + ft.size) + g;
+    var a = tokenCenter(att), b = tokenCenter(tgt), ra = hitPx(att) * 0.9, rt = hitPx(tgt) * 0.9;
+    var ring = function(c, r) { return [[c.x + r, c.y], [c.x - r, c.y], [c.x, c.y + r], [c.x, c.y - r]]; };
+    var pad = Math.max(ra, rt) + gridSize();
     var segs = wallSegments(false).filter(function(s) {
-        return Math.max(s[0], s[2]) >= bx0 && Math.min(s[0], s[2]) <= bx1 && Math.max(s[1], s[3]) >= by0 && Math.min(s[1], s[3]) <= by1;
+        return Math.max(s[0], s[2]) >= Math.min(a.x, b.x) - pad && Math.min(s[0], s[2]) <= Math.max(a.x, b.x) + pad &&
+            Math.max(s[1], s[3]) >= Math.min(a.y, b.y) - pad && Math.min(s[1], s[3]) <= Math.max(a.y, b.y) + pad;
     });
-    var inset = g * 0.03;
-    function squares(f) {
-        var list = [];
-        if (f.cells < 1) { list.push([f.x0, f.y0, f.size]); return list; }
-        for (var i = 0; i < f.n; i++) for (var j = 0; j < f.n; j++) list.push([ox + (f.ix0 + i) * g, oy + (f.iy0 + j) * g, g]);
-        return list;
-    }
-    function corners(sq) {
-        var x = sq[0], y = sq[1], s = sq[2];
-        return [[x + inset, y + inset], [x + s - inset, y + inset], [x + s - inset, y + s - inset], [x + inset, y + s - inset]];
-    }
-    var best = 4;
+    var best = 0;
     if (segs.length) {
-        var aSq = squares(fa), tSq = squares(ft);
-        outer:
-        for (var i = 0; i < aSq.length; i++) {
-            var ac = corners(aSq[i]);
-            for (var k = 0; k < 4; k++) {
-                for (var j = 0; j < tSq.length; j++) {
-                    var blocked = 0;
-                    corners(tSq[j]).forEach(function(tc) {
-                        for (var s = 0; s < segs.length; s++) {
-                            if (segmentsCross(ac[k][0], ac[k][1], tc[0], tc[1], segs[s])) { blocked++; return; }
-                        }
-                    });
-                    if (blocked < best) best = blocked;
-                    if (best === 0) break outer;
+        best = 4;
+        var from = [[a.x, a.y]].concat(ring(a, ra)), to = ring(b, rt);
+        for (var i = 0; i < from.length && best > 0; i++) {
+            var blocked = 0;
+            to.forEach(function(tc) {
+                for (var s = 0; s < segs.length; s++) {
+                    if (segmentsCross(from[i][0], from[i][1], tc[0], tc[1], segs[s])) { blocked++; return; }
                 }
-            }
+            });
+            if (blocked < best) best = blocked;
         }
-    } else best = 0;
+    }
     var level = best === 0 ? 0 : best <= 2 ? 2 : best === 3 ? 5 : -1; // -1 = 完全掩护
-    var a = tokenCenter(att), b = tokenCenter(tgt), by = '';
+    var by = '';
     if (level >= 0 && level < 2) {
         sortedItems().some(function(t) {
-            if (t.kind !== 'token' || t.id === att.id || t.id === tgt.id || (t.hidden && !me.gm) || !isCreature(t)) return false;
-            var f = footprint(t), sh = f.size * 0.1;
-            if (segHitsRect(a.x, a.y, b.x, b.y, f.x0 + sh, f.y0 + sh, f.x0 + f.size - sh, f.y0 + f.size - sh)) { by = t.label || '其他生物'; return true; }
+            if (t.kind !== 'token' || t.id === att.id || t.id === tgt.id || (t.hidden && !me.gm) || !isCreature(t) || !visibleToMe(t)) return false;
+            var c = tokenCenter(t);
+            if (distToSeg(c.x, c.y, a.x, a.y, b.x, b.y) < hitPx(t)) { by = t.label || '其他生物'; return true; }
             return false;
         });
         if (by) level = 2;
@@ -278,10 +332,39 @@ function coverInfo(att, tgt) {
     return info;
 }
 
-// 能提供掩护的生物：有血量 / 角色卡 / 在先攻里 / 有控制者，且没有倒下（法术范围图片、道具不算）
+// 生物棋子：有血量 / 角色卡 / 在先攻里 / 有控制者（法术范围图片、道具不算）——0 血的也算，可以被治疗或攻击
+function isCreatureToken(t) { return t.hpMax > 0 || !!t.sheet || inInit(t) || !!t.owner; }
+
+// 能提供掩护的生物：没有倒下的生物
 function isCreature(t) {
     if (t.hpMax > 0 && num(t.hp, t.hpMax) <= 0) return false;
-    return t.hpMax > 0 || !!t.sheet || inInit(t) || !!t.owner;
+    return isCreatureToken(t);
+}
+
+// 玩家能不能看见这个棋子：自己的总能看见；动态视野外、或被迷雾盖住的看不见（GM 全都能看见）
+function fogCovers(x, y) {
+    var covered = false;
+    sortedItems().forEach(function(f) {
+        if (f.kind !== 'fog') return;
+        var lx = x - (f.x || 0), ly = y - (f.y || 0), inside = false;
+        if (f.shape === 'brush') {
+            var pts = f.points || [], half = (f.width || gridSize()) / 2;
+            for (var i = 0; i < pts.length && !inside; i++) {
+                var a = pts[i], b = pts[i + 1] || a;
+                if (distToSeg(lx, ly, a[0], a[1], b[0], b[1]) <= half) inside = true;
+            }
+        } else if (f.shape === 'circle') inside = Math.hypot(lx, ly) <= (f.r || 0);
+        else inside = pointInPoly(lx, ly, shapePoints(f));
+        if (inside) covered = !f.cut;
+    });
+    return covered;
+}
+
+function visibleToMe(t) {
+    if (me.gm || (t.owner && t.owner === me.name)) return true;
+    var c = tokenCenter(t);
+    if (visionActive() && !pointVisible(c.x, c.y, computeVision())) return false;
+    return !fogCovers(c.x, c.y);
 }
 
 function coverText(level) {
@@ -316,7 +399,7 @@ function rangeVerdict(rng, dist) {
 function hostileAdjacent(att) {
     if (!att.owner) return false;
     return sortedItems().some(function(t) {
-        return t.kind === 'token' && !t.owner && !t.hidden && t.id !== att.id && isCreature(t) && creatureDist(att, t) <= 5;
+        return t.kind === 'token' && !t.owner && !t.hidden && t.id !== att.id && isCreature(t) && visibleToMe(t) && creatureDist(att, t) <= 5;
     });
 }
 
@@ -340,17 +423,33 @@ function attackContext(o) {
         ctxInfo.lines.push('<span class="' + (v.ok ? (v.dis ? 'warn' : 'ok') : 'bad') + '">' + escapeHtml(v.text) + '</span>');
         if (v.dis) ctxInfo.dis = true;
     }
-    if (o.range && o.range.normal && !(o.range.reach && ci.dist <= o.range.reach) && hostileAdjacent(att)) {
-        ctxInfo.lines.push('<span class="warn">5 尺内有敌人：远程攻击具有劣势</span>');
-        ctxInfo.dis = true;
-    }
+    var adv = [], dis = [];
+    if (ctxInfo.dis) dis.push('远射程');
+    if (o.range && o.range.normal && !(o.range.reach && ci.dist <= o.range.reach) && hostileAdjacent(att)) dis.push('5 尺内有敌人（远程攻击）');
+    // 状态：目盲、隐形、倒地、束缚、麻痹…（优势与劣势同时存在时相互抵消）
+    var sm = statusAttackMods(att, tgt, ci.dist);
+    adv = adv.concat(sm.adv);
+    dis = dis.concat(sm.dis);
+    ctxInfo.adv = adv.length > 0;
+    ctxInfo.dis = dis.length > 0;
+    ctxInfo.mode = ctxInfo.adv && ctxInfo.dis ? '' : ctxInfo.adv ? 'adv' : ctxInfo.dis ? 'dis' : '';
+    if (adv.length) ctxInfo.lines.push('<span class="ok">优势：' + escapeHtml(adv.join('、')) + '</span>');
+    if (dis.length) ctxInfo.lines.push('<span class="warn">劣势：' + escapeHtml(dis.join('、')) + '</span>');
+    if (adv.length && dis.length) ctxInfo.lines.push('<span class="tt-hint">优势与劣势相互抵消 → 普通</span>');
+    ctxInfo.autoCrit = sm.autoCrit;
+    if (sm.autoCrit) ctxInfo.lines.push('<span class="ok">目标麻痹 / 昏迷且在 5 尺内：命中即重击</span>');
+    ctxInfo.adj = sm.adj;
+    if (sm.adj) ctxInfo.lines.push('<span class="warn">力竭：调整值 ' + sm.adj + '</span>');
+    ctxInfo.extra = sm.extra;
+    if (sm.extra) ctxInfo.lines.push('<span class="ok">' + (sm.extra === '+1d4' ? '祝福 +1d4' : '灾祸 −1d4') + '</span>');
     return ctxInfo;
 }
 
 function drawTarget() {
     var tgt = targetToken();
     if (!tgt) return;
-    var f = footprint(tgt), pad = gridSize() * 0.08, x0 = f.x0 - pad, y0 = f.y0 - pad, s = f.size + pad * 2, l = s * 0.28;
+    var bb = itemBBox(tgt), pad = gridSize() * 0.08, x0 = bb.x0 - pad, y0 = bb.y0 - pad, s = Math.max(bb.x1 - bb.x0, bb.y1 - bb.y0) + pad * 2, l = s * 0.28;
+    drawHitCircle(tgt, '#ff5252', false);
     ctx.save();
     ctx.strokeStyle = '#ff5252';
     ctx.lineWidth = 3 / view.s;
@@ -381,6 +480,15 @@ function combatState() {
 
 function inInit(it) { return it.kind === 'token' && it.init != null && it.init !== '' && isFinite(parseFloat(it.init)); }
 
+// 在先攻条中对玩家隐藏：GM 设置的，或 GM 控制的生物正处于「躲藏」（玩家端收不到这些先攻数据）
+function initHiddenFor(it) { return !!it.initHidden || (!it.owner && hasStatus(it, 'hidden')); }
+
+// GM 偏好（存在本机）：加入先攻时默认隐藏 / 从资料放置的棋子默认隐藏
+function gmPref(key, def) {
+    try { var v = localStorage.getItem(key); return v == null ? def : v === '1'; } catch (e) { return def; }
+}
+function setGmPref(key, on) { try { localStorage.setItem(key, on ? '1' : '0'); } catch (e) { /* 无痕模式等 */ } }
+
 function initOrder() {
     return sortedItems().filter(inInit).sort(function(a, b) {
         return num(b.init, 0) - num(a.init, 0) || num(b.initMod, 0) - num(a.initMod, 0) ||
@@ -397,16 +505,39 @@ function initBonus(it) {
 function joinInit(ids) {
     var patches = ids.map(function(id) { return scene.items[id]; }).filter(function(it) {
         return it && it.kind === 'token' && canEdit(it) && !inInit(it);
-    }).map(function(it) { return { id: it.id, init: 0, initTie: Math.random() }; });
+    }).map(function(it) {
+        var p = { id: it.id, init: 0, initTie: Math.random() };
+        if (me.gm && gmPref('ttInitHidden', false)) p.initHidden = true;
+        return p;
+    });
     if (!patches.length) { notice('选中的棋子已经在先攻里了', true); return; }
     patchItems(patches);
     renderCombat();
 }
 
+// GM 调整顺序：把先攻值改到相邻两者之间（可能出现 .5 之类的小数），排在前面 / 后面
+function moveInit(id, dir) {
+    var order = initOrder(), i = -1;
+    order.forEach(function(t, k) { if (t.id === id) i = k; });
+    if (i < 0) return;
+    var j = i + dir;
+    if (j < 0 || j >= order.length) return;
+    var other = num(order[j].init, 0), beyond = order[j + dir], v;
+    if (beyond) v = (other + num(beyond.init, 0)) / 2;
+    else v = other + (dir < 0 ? 1 : -1);
+    if (v === other) v = other + (dir < 0 ? 0.5 : -0.5); // 相邻两者同值时也能分开
+    v = Math.round(v * 100) / 100;
+    // 同值时决胜：上移排在对方前面，下移排在后面
+    var tie = num(order[j].initTie, 0.5) + (dir < 0 ? 0.001 : -0.001);
+    patchItems([{ id: id, init: v, initRolled: true, initTie: tie, initMod: order[i].initMod != null ? order[i].initMod : null }]);
+    renderCombat();
+    renderCombatHud();
+}
+
 function leaveInit(id) {
     var it = scene.items[id];
     if (!it || !canEdit(it)) return;
-    patchItems([{ id: id, init: null, initRolled: null }]);
+    patchItems([{ id: id, init: null, initRolled: null, initHidden: null }]);
     renderCombat();
 }
 
@@ -449,17 +580,21 @@ function renderCombat() {
     if (c) {
         var mineTurn = scene.items[cur] && canEdit(scene.items[cur]) && !me.gm;
         h += '<div class="combat-head"><b>⚔ 第 ' + num(c.round, 1) + ' 轮</b>' +
+            (me.gm ? '<button class="tt-btn small" data-cact="round" data-delta="-1" title="轮数 −1">−</button><button class="tt-btn small" data-cact="round" data-delta="1" title="轮数 +1">+</button>' : '') +
             (me.gm ? '<button class="tt-btn small" data-cact="prev">上一位</button><button class="tt-btn small primary" data-cact="next">下一位</button>' +
                 '<button class="tt-btn small danger" data-cact="end">结束战斗</button>' : '') +
             (mineTurn ? '<button class="tt-btn small primary" data-cact="next">结束我的回合</button>' : '') + '</div>';
         if (cur && !scene.items[cur]) h += '<div class="tt-hint">隐藏单位行动中…</div>';
     } else {
         h += '<div class="combat-head"><b>先攻</b>' +
-            (me.gm ? '<button class="tt-btn small primary" data-cact="start"' + (order.length ? '' : ' disabled') + '>开始战斗</button>' : '') + '</div>';
+            (me.gm ? '<button class="tt-btn small" data-cact="prep"' + (order.length ? '' : ' disabled') + ' title="给还没掷的单位掷先攻，全员显示「准备战斗」后开战">准备</button>' +
+                '<button class="tt-btn small danger" data-cact="ambush"' + (order.length ? '' : ' disabled') + ' title="突袭开战：全员显示「伏击」">伏击</button>' +
+                '<button class="tt-btn small primary" data-cact="start"' + (order.length ? '' : ' disabled') + '>开始战斗</button>' : '') + '</div>';
     }
     var unrolled = order.filter(function(t) { return !t.initRolled && canEdit(t); });
     h += '<div class="lobby-row" style="gap:6px;">' +
         '<button class="tt-btn small" data-cact="join" title="把地图上选中的棋子加入先攻">加入选中棋子</button>' +
+        '<button class="tt-btn small" data-cact="custom" title="手动填写一个攻击 / 法术 / 治疗，在地图上选目标并自动结算">⚡ 自定义行动</button>' +
         (unrolled.length ? '<button class="tt-btn small" data-cact="rollall" title="为' + (me.gm ? '还没掷先攻的' : '你的') + '棋子掷先攻（使用骰子栏的优势 / 劣势）">掷先攻（' + unrolled.length + '）</button>' : '') +
         '</div>';
     if (!order.length) {
@@ -471,11 +606,18 @@ function renderCombat() {
             (edit ? '<input class="tt-input init-val" type="number" data-init="' + escapeHtml(it.id) + '" value="' + num(it.init, 0) + '" title="先攻值">' :
                 '<span class="init-val">' + num(it.init, 0) + '</span>') +
             '<div class="init-info" data-focus="' + escapeHtml(it.id) + '" title="定位到棋子"><div class="name">' + (active ? '▶ ' : '') + escapeHtml(it.label || '未命名') +
-            (it.hidden ? ' <span class="tt-hint">隐藏</span>' : '') + (!it.initRolled ? ' <span class="tt-hint">未掷</span>' : '') + '</div>' +
+            (it.hidden ? ' <span class="tt-hint">隐藏</span>' : initHiddenFor(it) ? ' <span class="tt-hint" title="玩家的先攻条里看不到它">先攻隐藏</span>' : '') +
+            (!it.initRolled ? ' <span class="tt-hint">未掷</span>' : '') +
+            statusList(it).map(function(s) { return ' <span title="' + escapeHtml(statusLabel(s)) + '">' + escapeHtml(statusIcon(s)) + '</span>'; }).join('') + '</div>' +
             '<div class="sub">' + hpMini(it) + (it.ac != null && it.ac !== '' ? '<span class="ac-mini" title="护甲等级">🛡' + escapeHtml(String(it.ac)) + '</span>' : '') +
             '<span class="tt-hint">先攻 ' + (signed(initBonus(it)) || '+0') + '</span></div></div>' +
             (edit ? '<button class="tt-btn small" data-cact="roll" data-id="' + escapeHtml(it.id) + '" title="掷先攻 d20' + (signed(initBonus(it)) || '') + '">🎲</button>' +
                 '<button class="tt-btn small" data-cact="leave" data-id="' + escapeHtml(it.id) + '" title="移出先攻">✕</button>' : '') +
+            (me.gm ? '<span class="init-move"><button class="tt-btn small" data-cact="up" data-id="' + escapeHtml(it.id) + '" title="在先攻顺序中上移">▲</button>' +
+                '<button class="tt-btn small" data-cact="down" data-id="' + escapeHtml(it.id) + '" title="在先攻顺序中下移">▼</button></span>' +
+                (c && !active ? '<button class="tt-btn small" data-cact="setturn" data-id="' + escapeHtml(it.id) + '" title="直接切换到它的回合">▶</button>' : '') : '') +
+            (me.gm && !it.hidden ? '<button class="tt-btn small' + (it.initHidden ? ' primary' : '') + '" data-cact="inithide" data-id="' + escapeHtml(it.id) + '" title="' +
+                (it.initHidden ? '当前在玩家的先攻条中隐藏，点击显示' : '在玩家的先攻条中隐藏') + '">' + (it.initHidden ? '🙈' : '👁') + '</button>' : '') +
             (target.id === it.id ? '<span title="你的目标">🎯</span>' : '') +
             '</div>';
     }).join('') + '</div>';
@@ -491,9 +633,24 @@ function onCombatPaneClick(e) {
     if (!b) return;
     switch (b.dataset.cact) {
     case 'start': case 'next': case 'prev': case 'end': combatAction(b.dataset.cact); break;
+    case 'prep': startCombatWith('prep'); break;
+    case 'ambush': startCombatWith('ambush'); break;
     case 'join': joinInit(selectedIds()); break;
+    case 'custom': openActionDialog(null, attackerToken(), null); break;
     case 'roll': rollInit([b.dataset.id], e.shiftKey ? 'adv' : ''); break;
     case 'leave': leaveInit(b.dataset.id); break;
+    case 'up': case 'down': moveInit(b.dataset.id, b.dataset.cact === 'up' ? -1 : 1); break;
+    case 'setturn': op({ op: 'combat', action: 'set', ids: [b.dataset.id] }); break;
+    case 'round':
+        var cs = combatState();
+        if (cs) op({ op: 'combat', action: 'round', round: Math.max(1, num(cs.round, 1) + parseInt(b.dataset.delta, 10)) });
+        break;
+    case 'inithide':
+        var ih = scene.items[b.dataset.id];
+        if (ih) patchItems([{ id: ih.id, initHidden: !ih.initHidden || null }]);
+        renderCombat();
+        renderCombatHud();
+        break;
     case 'rollall':
         rollInit(initOrder().filter(function(t) { return !t.initRolled && canEdit(t); }).map(function(t) { return t.id; }));
         break;
@@ -515,28 +672,49 @@ function renderCombatHud() {
     var hud = $('combatHud');
     if (!hud) return;
     var c = combatState(), parts = [];
-    if (c) {
-        var order = initOrder(), idx = -1;
-        order.forEach(function(t, i) { if (t.id === c.turn) idx = i; });
-        var cur = scene.items[c.turn], next = order.length ? order[(idx + 1) % order.length] : null;
+    var order = initOrder();
+    if (c || order.length) {
+        // 先攻条：所有人可见。玩家端没有被隐藏单位的数据；GM 端用暗色和 🙈 标出
+        var idx = -1;
+        order.forEach(function(t, i) { if (c && t.id === c.turn) idx = i; });
+        var list = idx > 0 ? order.slice(idx).concat(order.slice(0, idx)) : order; // 从当前行动者开始
+        var cur = c && scene.items[c.turn], curShown = cur && idx >= 0;
         var mine = cur && canEdit(cur);
-        parts.push('<span class="hud-round">⚔ 第 ' + num(c.round, 1) + ' 轮</span>' +
-            '<span class="hud-cur' + (mine ? ' mine' : '') + '">当前：' + escapeHtml(cur ? cur.label || '未命名' : '隐藏单位') + '</span>' +
-            (next && next.id !== c.turn ? '<span class="tt-hint">下一位：' + escapeHtml(next.label || '未命名') + '</span>' : '') +
-            ((me.gm || (mine && cur)) ? '<button class="tt-btn small primary" data-cact="next">' + (me.gm ? '下一位' : '结束回合') + '</button>' : ''));
+        var chips = list.map(function(t) {
+            var down = t.hpMax > 0 && num(t.hp, t.hpMax) <= 0;
+            var cls = 'init-chip' + (c && t.id === c.turn ? ' active' : '') + (t.owner && t.owner === me.name ? ' mine' : '') +
+                (t.hidden || initHiddenFor(t) ? ' hid' : '') + (down ? ' down' : '');
+            return '<span class="' + cls + '" data-focus="' + escapeHtml(t.id) + '" title="' + escapeHtml((t.label || '未命名') + ' · 先攻 ' + num(t.init, 0) +
+                (t.hidden ? ' · 地图上隐藏' : initHiddenFor(t) ? ' · 玩家看不到' : '')) + '">' +
+                '<i style="background:' + escapeHtml(t.color || (t.owner ? '#1e88e5' : '#c62828')) + '">' + escapeHtml((t.label || '?').slice(0, 1)) + '</i>' +
+                '<span class="nm">' + escapeHtml((t.label || '未命名').slice(0, 6)) + '</span><b>' + num(t.init, 0) + '</b>' +
+                (t.hidden || initHiddenFor(t) ? '🙈' : '') + '</span>';
+        }).join('');
+        // 每一行包在 .hud-line 里：外层容器不接收鼠标（不挡地图），行本身可点击
+        parts.push('<div class="hud-line init-strip"><span class="hud-round">' + (c ? '⚔ 第 ' + num(c.round, 1) + ' 轮' : '先攻') + '</span>' +
+            (c && !curShown ? '<span class="init-chip active hid"><i>?</i><span class="nm">隐藏单位</span></span>' : '') +
+            '<span class="init-chips">' + chips + '</span>' +
+            (c && (me.gm || (mine && curShown)) ? '<button class="tt-btn small primary" data-cact="next">' + (me.gm ? '下一位' : '结束回合') + '</button>' : '') + '</div>');
     }
     var tgt = targetToken();
     if (tgt) {
         var att = attackerToken(), ci = att ? coverInfo(att, tgt) : null;
-        parts.push('<span class="hud-target">🎯 ' + escapeHtml(tgt.label || '目标') +
+        parts.push('<div class="hud-line hud-target">🎯 ' + escapeHtml(tgt.label || '目标') +
             (ci ? ' · ' + escapeHtml(fmtDist(ci.dist)) + ' · ' + escapeHtml(coverText(ci.level).replace(/（.*）/, '')) : '') +
-            ' <i data-cact="untarget" title="取消目标">✕</i></span>');
+            ' <i data-cact="untarget" title="取消目标">✕</i></div>');
     }
     hud.innerHTML = parts.join('');
     hud.style.display = parts.length ? '' : 'none';
 }
 
+function onCombatHudDblClick(e) {
+    var f = e.target.closest('[data-focus]');
+    if (f && me.gm && combatState()) op({ op: 'combat', action: 'set', ids: [f.dataset.focus] });
+}
+
 function onCombatHudClick(e) {
+    var f = e.target.closest('[data-focus]');
+    if (f) { focusToken(f.dataset.focus); return; }
     var b = e.target.closest('[data-cact]');
     if (!b) return;
     if (b.dataset.cact === 'untarget') setTarget('');
@@ -548,17 +726,33 @@ function onCombatChanged() {
     var c = combatState(), turn = c ? c.turn + '#' + c.round : '';
     if (turn !== lastTurn) {
         var cur = c && scene.items[c.turn];
-        if (lastTurn !== null && cur && cur.owner === me.name) notice('⚔ 轮到你了：' + (cur.label || ''), false, 4000);
+        if (lastTurn !== null && c) {
+            if (cur && cur.owner === me.name) notice('⚔ 轮到你了：' + (cur.label || ''), false, 4000);
+            else {
+                // 下一位是自己的棋子：提前提醒
+                var order = initOrder(), i = -1;
+                order.forEach(function(t, k) { if (t.id === c.turn) i = k; });
+                var nx = i >= 0 && order.length > 1 ? order[(i + 1) % order.length] : null;
+                if (nx && nx.owner === me.name) notice('⏳ 下一个就是你：' + (nx.label || ''), false, 3500);
+            }
+            // 镜头跟随当前行动者（设置里可关）
+            if (cur && visibleToMe(cur) && gmPref('ttFollowTurn', true) && canvas) {
+                var cc = tokenCenter(cur);
+                view.x = canvas.clientWidth / 2 - cc.x * view.s;
+                view.y = canvas.clientHeight / 2 - cc.y * view.s;
+            }
+        }
         lastTurn = turn;
     }
     renderCombat();
     renderCombatHud();
+    renderBossBars();
 }
 
 function drawTurnRing() {
     var c = combatState(), it = c && scene.items[c.turn];
     if (!it) return;
-    var f = footprint(it), cx = f.x0 + f.size / 2, cy = f.y0 + f.size / 2, r = Math.max(f.size, gridSize() * 0.6) * 0.62;
+    var bb = itemBBox(it), cx = (bb.x0 + bb.x1) / 2, cy = (bb.y0 + bb.y1) / 2, r = Math.max(bb.x1 - bb.x0, bb.y1 - bb.y0, gridSize() * 0.6) * 0.62;
     ctx.save();
     ctx.strokeStyle = 'rgba(0,0,0,0.55)';
     ctx.lineWidth = 6 / view.s;
@@ -627,12 +821,19 @@ function combatPanelHtml(it, row) {
     h += row('体型', '<select class="tt-select" data-prop="fp" style="flex:1;">' + SIZE_OPTS.map(function(o) {
         return '<option value="' + o[0] + '"' + (String(cells || '') === o[0] ? ' selected' : '') + '>' + o[1] + (o[0] ? '（' + o[0] + ' 格）' : '（' + tokenCells(it) + ' 格）') + '</option>';
     }).join('') + '</select><button class="tt-btn small" data-act="fitsize" title="把图片缩放到占格大小">贴合</button>');
+    h += row('判定圈', '<input class="tt-input narrow" data-prop="hitR" type="number" min="0.25" step="0.25" value="' + (it.hitR > 0 ? it.hitR : '') +
+        '" placeholder="' + defaultHitFt(it) + '"> 尺半径<span class="tt-hint">（距离、触及、范围按它算）</span>');
+    var others = sortedItems().filter(function(t) { return t.kind === 'token' && t.id !== it.id && (t.label || '').trim(); });
+    h += row('跟随', '<select class="tt-select" data-prop="follow" style="flex:1;min-width:0;"><option value="">（不跟随）</option>' + others.map(function(t) {
+        return '<option value="' + escapeHtml(t.id) + '"' + (it.follow === t.id ? ' selected' : '') + '>' + escapeHtml(t.label) + '</option>';
+    }).join('') + '</select>');
     h += row('AC', '<input class="tt-input narrow" data-prop="ac" type="number" min="0" value="' + (it.ac != null ? escapeHtml(String(it.ac)) : '') + '" placeholder="—">' +
         '<span class="tt-hint">' + (it.owner ? '' : '玩家看不到') + '</span>');
     if (inInit(it)) {
         h += row('先攻', '<input class="tt-input narrow" data-prop="init" type="number" value="' + num(it.init, 0) + '">' +
             '<span class="tt-hint">加值</span><input class="tt-input narrow" data-prop="initMod" type="number" value="' + (it.initMod != null ? it.initMod : '') + '" placeholder="' + initBonus(it) + '">' +
             '<button class="tt-btn small" data-act="initroll" title="掷先攻">🎲</button><button class="tt-btn small" data-act="initleave" title="移出先攻">✕</button>');
+        if (me.gm) h += row('', '<label title="玩家的先攻条和战斗栏里看不到这个单位（地图上仍可见）"><input type="checkbox" data-prop="initHidden"' + (it.initHidden ? ' checked' : '') + '> 在玩家的先攻条中隐藏</label>');
     } else {
         h += row('先攻', '<button class="tt-btn small" data-act="initjoin">加入先攻</button>' +
             '<span class="tt-hint">加值</span><input class="tt-input narrow" data-prop="initMod" type="number" value="' + (it.initMod != null ? it.initMod : '') + '" placeholder="' + initBonus(it) + '">');
@@ -712,4 +913,5 @@ function initCombat() {
     $('combatPane').addEventListener('click', onCombatPaneClick);
     $('combatPane').addEventListener('change', onCombatPaneChange);
     $('combatHud').addEventListener('click', onCombatHudClick);
+    $('combatHud').addEventListener('dblclick', onCombatHudDblClick);
 }

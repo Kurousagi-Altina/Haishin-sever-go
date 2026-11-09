@@ -108,6 +108,7 @@ function onSheetPaneClick(e) {
     case 'hp': changeHp(sh, parseInt(b.dataset.delta, 10)); break;
     case 'slot': changeSlot(sh, parseInt(b.dataset.idx, 10), parseInt(b.dataset.delta, 10)); break;
     case 'res': changeResource(sh, parseInt(b.dataset.idx, 10), parseInt(b.dataset.delta, 10)); break;
+    case 'cast': e.preventDefault(); castFromSheet(sh, b.dataset); break;
     case 'search': runLookup(); break;
     case 'lkfilter': lookup.filter = b.dataset.filter; renderSheets(); break;
     case 'lkpage': loadLookupPage(b.dataset.path, b.dataset.title); break;
@@ -236,6 +237,15 @@ function sheetHtml(sh, preview) {
     if (preview) {
         h += '<div class="lobby-row" style="gap:6px;">' + (me.gm ? '<button class="tt-btn primary" data-act="import-tmp">导入到房间</button>' : '') +
             '<span class="tt-hint">预览（未保存）· 点击数值可直接掷骰</span></div>';
+    }
+    if (!preview && me.gm && sh.kind === 'pc') {
+        var players = users.filter(function(u) { return !u.gm; }).map(function(u) { return u.name; });
+        if (sh.owner && players.indexOf(sh.owner) < 0) players.push(sh.owner);
+        h += '<div class="lobby-row" style="gap:6px;"><span class="tt-hint">分配给</span><select class="tt-select" data-sheetowner="' + escapeHtml(sh.id) + '"><option value="">（未分配）</option>' +
+            players.map(function(n) { return '<option value="' + escapeHtml(n) + '"' + (n === sh.owner ? ' selected' : '') + '>' + escapeHtml(n) + '</option>'; }).join('') +
+            '</select><span class="tt-hint">关联的棋子也归他控制</span></div>';
+    }
+    if (preview) {
     } else if (sh.kind !== 'item' && edit) {
         h += '<div class="lobby-row" style="gap:6px;"><button class="tt-btn small" data-act="place" data-id="' + escapeHtml(sh.id) + '">放置棋子</button>' +
             (tok ? '<span class="tt-hint">正在查看棋子「' + escapeHtml(tok.label || '') + '」</span>' : '') + '</div>';
@@ -284,8 +294,9 @@ function sheetHtml(sh, preview) {
     }
 
     if (sh.attacks && sh.attacks.length) {
-        h += '<div class="side-section"><h5>武器攻击</h5>' + sh.attacks.map(function(a) {
+        h += '<div class="side-section"><h5>武器攻击</h5>' + sh.attacks.map(function(a, ai) {
             return '<div class="attack-row"><div class="name">' + escapeHtml(a.name) + '</div>' +
+                (a.atk || a.damage ? '<button class="tt-btn small cast-btn" data-act="cast" data-kind="atk" data-idx="' + ai + '" title="选择目标、显示射程并自动结算命中与伤害">⚡</button>' : '') +
                 (a.atk ? '<button class="roll-btn" data-d20="' + escapeHtml(a.atk) + '" data-atk="1" data-range="' + escapeHtml((a.props || '') + ' ' + (a.range || '')) +
                     '" data-label="' + escapeHtml(a.name + ' 命中') + '">命中 ' + escapeHtml(a.atk) + '</button>' : '') +
                 (a.damage ? rollBtn('roll', a.damage, a.name + ' 伤害' + (a.type ? '（' + a.type + '）' : ''), a.damage + (a.type ? ' ' + a.type : '')) : '') +
@@ -306,9 +317,10 @@ function sheetHtml(sh, preview) {
                 (edit ? '<button class="tt-btn small" data-act="slot" data-idx="' + i + '" data-delta="-1">用</button><button class="tt-btn small" data-act="slot" data-idx="' + i + '" data-delta="1">回</button>' : '') + '</div>';
         });
         if (sh.spells && sh.spells.length) {
-            h += '<div class="spell-chips">' + sh.spells.map(function(s) {
-                return '<button class="tt-btn small" data-act="spell" data-name="' + escapeHtml(s.name) + '" data-level="' + escapeHtml(String(s.level == null ? '' : s.level).trim()) + '" title="查看法术效果">' +
-                    (s.level === '0' || s.level === 0 ? '戏法·' : s.level ? s.level + '环·' : '') + escapeHtml(s.name) + '</button>';
+            h += '<div class="spell-chips">' + sh.spells.map(function(s, si) {
+                return '<span class="spell-pair"><button class="tt-btn small" data-act="spell" data-name="' + escapeHtml(s.name) + '" data-level="' + escapeHtml(String(s.level == null ? '' : s.level).trim()) + '" title="查看法术效果">' +
+                    (s.level === '0' || s.level === 0 ? '戏法·' : s.level ? s.level + '环·' : '') + escapeHtml(s.name) + '</button>' +
+                    '<button class="tt-btn small cast-btn" data-act="cast" data-kind="spell" data-idx="' + si + '" title="施放：显示范围 / 选择目标并自动结算">⚡</button></span>';
             }).join('') + '</div>';
         }
         h += '</div>';
@@ -327,16 +339,18 @@ function sheetHtml(sh, preview) {
         }).join('') + '</div>';
     }
 
-    (sh.sections || []).forEach(function(sec) {
-        h += '<div class="side-section"><h5>' + escapeHtml(sec.title) + '</h5>' + sec.entries.map(function(en) {
+    (sh.sections || []).forEach(function(sec, si) {
+        h += '<div class="side-section"><h5>' + escapeHtml(sec.title) + '</h5>' + sec.entries.map(function(en, ei) {
             var label = (en.name || sec.title).replace(/。$/, '');
-            return '<div class="entry">' + (en.name ? '<b>' + escapeHtml(en.name.replace(/。$/, '')) + '。</b>' : '') + rollify(en.text, label) + '</div>';
+            return '<div class="entry">' + (entryActionable(en.text) ? '<button class="tt-btn small cast-btn" data-act="cast" data-kind="entry" data-sec="' + si + '" data-idx="' + ei + '" title="选择目标、显示范围并自动结算">⚡</button>' : '') +
+                (en.name ? '<b>' + escapeHtml(en.name.replace(/。$/, '')) + '。</b>' : '') + rollify(en.text, label) + '</div>';
         }).join('') + '</div>';
     });
 
     if (sh.features && sh.features.length) {
-        h += '<div class="side-section"><h5>特性与专长</h5>' + sh.features.map(function(f) {
-            return '<details class="feature"><summary>' + escapeHtml(f.name) + '</summary><div class="entry-text">' + rollify(f.text, f.name) + '</div></details>';
+        h += '<div class="side-section"><h5>特性与专长</h5>' + sh.features.map(function(f, fi) {
+            return '<details class="feature"><summary>' + escapeHtml(f.name) + (entryActionable(f.text) ? ' <button class="tt-btn small cast-btn" data-act="cast" data-kind="feat" data-idx="' + fi + '" title="选择目标并自动结算">⚡</button>' : '') +
+                '</summary><div class="entry-text">' + rollify(f.text, f.name) + '</div></details>';
         }).join('') + '</div>';
     }
     return h + sourceHtml(sh);
@@ -371,10 +385,14 @@ function placeSheetToken(sh) {
     if (max > 0) { it.hpMax = max; it.hp = num(sh.hp.cur, max); }
     if (sh.hp && num(sh.hp.temp, 0) > 0) it.hpTemp = num(sh.hp.temp, 0);
     if (me.gm && sh.kind === 'pc' && sh.owner) it.owner = sh.owner;
+    if (me.gm && gmPref('ttPlaceHidden', true)) it.hidden = true; // GM 从资料拉出来的棋子默认先对玩家隐藏
+    var joining = me.gm && combatState() && sh.kind !== 'item';
+    if (joining) { it.init = 0; it.initTie = Math.random(); }
     createItems([it]);
+    if (joining) setTimeout(function() { rollInit([it.id]); }, 600); // 战斗中放下的单位自动掷先攻加入
     setTool('select');
     selectOnly([it.id]);
-    notice('已放置「' + it.label + '」，可把资产库里的图片拖到棋子上更换头像');
+    notice('已放置「' + it.label + '」' + (it.hidden ? '（对玩家隐藏，在属性面板取消勾选「对玩家隐藏」即可公开）' : '') + '，可把资产库里的图片拖到棋子上更换头像', false, 5000);
 }
 
 // ===== Excel 人物卡 =====

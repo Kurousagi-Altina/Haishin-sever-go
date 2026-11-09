@@ -408,6 +408,13 @@ func (t *Tabletop) importOB2(zr *zip.Reader, filename, owner string) (*TTRoom, *
 				}
 				delete(it, "bestiary")
 			}
+			// size from the linked sheet, stored on the token so players (who may not see
+			// the monster sheet) compute the same hit circle as the GM
+			if id, _ := it["sheet"].(string); id != "" && it["fp"] == nil {
+				if c := ttSheetSizeCells(room.Sheets[id]); c > 0 {
+					it["fp"] = c
+				}
+			}
 			if card, ok := it["cardId"].(string); ok {
 				if id := cardSheetIDs[card]; id != "" {
 					it["sheet"] = id
@@ -860,7 +867,9 @@ var ob2KnownMeta = map[string]bool{
 	"com.obr-suite/bubbles/data": true, "com.owlbear-rodeo-bubbles-extension/name": true,
 	"com.bestiary/slug": true, "com.character-cards/boundCardId": true,
 	"com.initiative-tracker/data": true, "com.initiative-tracker/dexMod": true,
-	"com.obr-suite/resources/data":      true,
+	"com.obr-suite/resources/data": true,
+	"com.obr-suite/status/buffs":   true, "com.obr-suite/status/buff-rounds": true,
+	"com.obr-suite/boss-bar/config":     true,
 	"com.battle-system.smoke/hasVision": true, "com.battle-system.smoke/visionRange": true,
 }
 
@@ -925,6 +934,41 @@ func ob2TokenExtras(it *ob2Item, tok map[string]interface{}, turn *ob2Turn) bool
 			tok["res"] = out
 		}
 	}
+	// obr-suite status tracker: buff ids (+ remaining rounds) → item["status"]
+	var buffs []string
+	if raw, ok := it.Metadata["com.obr-suite/status/buffs"]; ok && json.Unmarshal(raw, &buffs) == nil && len(buffs) > 0 {
+		var rounds map[string]float64
+		json.Unmarshal(it.Metadata["com.obr-suite/status/buff-rounds"], &rounds)
+		var out []map[string]interface{}
+		for _, id := range buffs {
+			def, ok := ob2Buffs[id]
+			if !ok {
+				def = ob2Buff{statusCustomName(id), "#9e9e9e"}
+			}
+			if def.name == "" || len(out) >= 12 {
+				continue
+			}
+			st := map[string]interface{}{"id": ob2StatusID(id), "name": def.name, "color": def.color}
+			if r := rounds[id]; r > 0 {
+				st["rounds"] = r
+			}
+			out = append(out, st)
+		}
+		if len(out) > 0 {
+			tok["status"] = out
+		}
+	}
+	// obr-suite boss bar
+	var boss struct {
+		Enabled bool `json:"enabled"`
+		Exact   bool `json:"exact"`
+	}
+	if raw, ok := it.Metadata["com.obr-suite/boss-bar/config"]; ok && json.Unmarshal(raw, &boss) == nil && boss.Enabled {
+		tok["boss"] = true
+		if boss.Exact {
+			tok["bossExact"] = true
+		}
+	}
 	// keep other (small) extension metadata
 	keep := map[string]interface{}{}
 	total := 0
@@ -942,4 +986,54 @@ func ob2TokenExtras(it *ob2Item, tok map[string]interface{}, turn *ob2Turn) bool
 		tok["obr"] = keep
 	}
 	return inTracker
+}
+
+type ob2Buff struct{ name, color string }
+
+// obr-suite's built-in status buffs, mapped onto the tabletop's condition ids
+var ob2Buffs = map[string]ob2Buff{
+	"u_paralyzed": {"麻痹", "#fdd835"}, "u_stunned": {"震慑", "#f5deb3"}, "u_charmed": {"魅惑", "#ff00d0"},
+	"u_invisible": {"隐形", "#cccccc"}, "u_bardic": {"诗人激励", "#7300ff"}, "u_disadvantage": {"劣势", "#3b82f6"},
+	"u_advantage": {"优势", "#ffcc00"}, "u_restrained": {"束缚", "#8b4513"}, "u_blessing": {"祝福", "#fff176"},
+	"u_guidance": {"神导术", "#fff59d"}, "u_hex": {"侵扰", "#7a1e9c"}, "u_focused": {"专注", "#4682b4"},
+}
+
+var ob2StatusIDs = map[string]string{
+	"u_paralyzed": "paralyzed", "u_stunned": "stunned", "u_charmed": "charmed", "u_invisible": "invisible",
+	"u_bardic": "bardic", "u_disadvantage": "disadvantage", "u_advantage": "advantage", "u_restrained": "restrained",
+	"u_blessing": "blessed", "u_guidance": "guidance", "u_hex": "hexed", "u_focused": "concentration",
+}
+
+func ob2StatusID(id string) string {
+	if v := ob2StatusIDs[id]; v != "" {
+		return v
+	}
+	if ttIDRe.MatchString(id) {
+		return id
+	}
+	return ttRandomID(4)
+}
+
+// custom buffs are scene-catalog entries we don't import; keep a readable name
+func statusCustomName(id string) string {
+	return ttCleanName(strings.TrimPrefix(strings.TrimPrefix(id, "u_"), "c_"), 20, "")
+}
+
+// ttSheetSizeCells: creature size (Chinese size words in size / meta) → cells.
+func ttSheetSizeCells(sh map[string]interface{}) float64 {
+	if sh == nil {
+		return 0
+	}
+	size, _ := sh["size"].(string)
+	meta, _ := sh["meta"].(string)
+	text := size + " " + meta
+	for _, s := range []struct {
+		word  string
+		cells float64
+	}{{"超巨型", 4}, {"巨型", 3}, {"大型", 2}, {"中型", 1}, {"小型", 1}, {"微型", 0.5}} {
+		if strings.Contains(text, s.word) {
+			return s.cells
+		}
+	}
+	return 0
 }

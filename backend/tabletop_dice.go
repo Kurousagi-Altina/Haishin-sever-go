@@ -20,6 +20,7 @@ type TTDieRoll struct {
 	Value    int  `json:"v"`
 	Dropped  bool `json:"d,omitempty"`
 	Exploded bool `json:"x,omitempty"`
+	Rerolled bool `json:"r,omitempty"`
 }
 
 type TTDiceTerm struct {
@@ -36,7 +37,11 @@ type TTDiceResult struct {
 	Total int          `json:"total"`
 }
 
-var ttDiceTermRe = regexp.MustCompile(`^(\d*)d(\d+|%)(kh|kl|dh|dl|k)?(\d*)(!)?$`)
+// NdM[kh|kl|dh|dl|k n][!][r(<|<=|>|>=|=)n][mi n][ma n]
+//
+//	r…  reroll each die matching the condition once (Great Weapon Fighting: 2d6r<=2)
+//	mi / ma  per-die minimum / maximum (Reliable Talent: 1d20mi10)
+var ttDiceTermRe = regexp.MustCompile(`^(\d*)d(\d+|%)(kh|kl|dh|dl|k)?(\d*)(!)?(?:r(<=|>=|<|>|=)?(\d+))?(?:mi(\d+))?(?:ma(\d+))?$`)
 
 const (
 	maxDiceCount    = 200
@@ -158,6 +163,46 @@ func ttRollTerm(t string, budget int) (*TTDiceTerm, int, error) {
 			extra++
 		}
 		term.Rolls = append(term.Rolls, roll)
+	}
+
+	// reroll once, then clamp (before keep / drop so "2d20kh1" + "mi10" behaves per die)
+	if m[7] != "" {
+		lim, _ := strconv.Atoi(m[7])
+		match := func(v int) bool {
+			switch m[6] {
+			case "<":
+				return v < lim
+			case "<=":
+				return v <= lim
+			case ">":
+				return v > lim
+			case ">=":
+				return v >= lim
+			}
+			return v == lim
+		}
+		for i := range term.Rolls {
+			if match(term.Rolls[i].Value) {
+				term.Rolls[i].Value = rand.IntN(sides) + 1
+				term.Rolls[i].Rerolled = true
+			}
+		}
+	}
+	if m[8] != "" {
+		lo, _ := strconv.Atoi(m[8])
+		for i := range term.Rolls {
+			if term.Rolls[i].Value < lo {
+				term.Rolls[i].Value = lo
+			}
+		}
+	}
+	if m[9] != "" {
+		hi, _ := strconv.Atoi(m[9])
+		for i := range term.Rolls {
+			if term.Rolls[i].Value > hi {
+				term.Rolls[i].Value = hi
+			}
+		}
 	}
 
 	if mode := m[3]; mode != "" {

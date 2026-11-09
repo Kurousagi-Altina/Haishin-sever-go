@@ -17,6 +17,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -41,9 +42,10 @@ const (
 
 var (
 	ttIDRe     = regexp.MustCompile(`^[A-Za-z0-9_-]{1,40}$`)
-	ttAssetRe  = regexp.MustCompile(`^[0-9a-f]{32}\.(png|jpg|gif|webp)$`)
+	ttAssetRe  = regexp.MustCompile(`^[0-9a-f]{32}\.(png|jpg|gif|webp|mp3|ogg|wav|m4a)$`)
 	ttColors   = []string{"#e57373", "#64b5f6", "#81c784", "#ffb74d", "#ba68c8", "#4dd0e1", "#f06292", "#aed581", "#ffd54f", "#90a4ae"}
 	ttImageExt = map[string]string{"image/png": ".png", "image/jpeg": ".jpg", "image/gif": ".gif", "image/webp": ".webp"}
+	ttAudioExt = map[string]string{"audio/mpeg": ".mp3", "application/ogg": ".ogg", "audio/ogg": ".ogg", "audio/wave": ".wav", "video/mp4": ".m4a", "audio/mp4": ".m4a"}
 
 	errTTUnsupported = errors.New("仅支持 PNG / JPG / GIF / WebP 图片")
 )
@@ -61,6 +63,8 @@ type TTLogEntry struct {
 	Target string `json:"target,omitempty"`
 	Hit    string `json:"hit,omitempty"`
 	Cover  string `json:"cover,omitempty"`
+	// kind "action": an attack / spell resolved against several tokens
+	Act *TTActionResult `json:"act,omitempty"`
 }
 
 type TTAsset struct {
@@ -89,6 +93,9 @@ type TTRoom struct {
 	Log       []TTLogEntry `json:"log"`
 	// character / monster / item sheets; tokens link to them via item["sheet"]
 	Sheets map[string]map[string]interface{} `json:"sheets"`
+	// room-wide settings: player permissions (playerTokens / playerDraw / playerMoveOthers /
+	// playerDoors), timeStop, music — see ttSettingKeys
+	Settings map[string]interface{} `json:"settings"`
 
 	mu      sync.Mutex
 	dirty   bool
@@ -125,6 +132,12 @@ type ttOpRequest struct {
 	Mode   string                   `json:"mode"`   // init: "" / adv / dis
 	Target string                   `json:"target"` // roll: token id the attack is aimed at
 	Cover  int                      `json:"cover"`  // roll: cover bonus to the target's AC (2 / 5)
+	// roll: a hit counts as a critical (paralysed / unconscious target within 5 ft)
+	AutoCrit bool `json:"autoCrit"`
+	// action: attack / spell / ability with targets (tabletop_action.go)
+	Act *TTActionReq `json:"act"`
+	// combat "round": the round number to set
+	Round int `json:"round"`
 }
 
 type Tabletop struct {
@@ -135,6 +148,11 @@ type Tabletop struct {
 
 	mu    sync.RWMutex
 	rooms map[string]*TTRoom
+
+	// door guests: nickname ↔ door token, so one guest can't act as another
+	guestMu      sync.Mutex
+	guestByToken map[string]string
+	guestByNick  map[string]string
 }
 
 func NewTabletop(dir string, db *DB, tm *TokenManager) (*Tabletop, error) {
@@ -230,6 +248,23 @@ func (t *Tabletop) storeAsset(data []byte) (string, error) {
 	if !ok {
 		return "", errTTUnsupported
 	}
+	return t.writeAsset(data, ext)
+}
+
+// storeAudio stores background music / sound effects (MP3 / OGG / WAV / M4A).
+func (t *Tabletop) storeAudio(data []byte) (string, error) {
+	ext, ok := ttAudioExt[http.DetectContentType(data)]
+	// MP3 without an ID3 tag starts directly with a frame sync (0xFFEx / 0xFFFx)
+	if !ok && len(data) > 2 && data[0] == 0xFF && data[1]&0xE0 == 0xE0 {
+		ext, ok = ".mp3", true
+	}
+	if !ok {
+		return "", errors.New("仅支持 MP3 / OGG / WAV / M4A 音频")
+	}
+	return t.writeAsset(data, ext)
+}
+
+func (t *Tabletop) writeAsset(data []byte, ext string) (string, error) {
 	sum := sha256.Sum256(data)
 	id := hex.EncodeToString(sum[:16]) + ext
 	path := filepath.Join(t.assetsDir, id)
@@ -290,6 +325,9 @@ func defaultSceneProps() map[string]interface{} {
 func (room *TTRoom) normalize() {
 	if room.subs == nil {
 		room.subs = make(map[*ttSub]struct{})
+	}
+	if room.Settings == nil {
+		room.Settings = make(map[string]interface{})
 	}
 	seen := make(map[string]bool)
 	scenes := room.Scenes[:0]
@@ -408,13 +446,22 @@ func (room *TTRoom) meta() map[string]interface{} {
 		scenes = append(scenes, map[string]interface{}{"id": sc.ID, "name": sc.Name})
 	}
 	return map[string]interface{}{
-		"id":     room.ID,
-		"name":   room.Name,
-		"owner":  room.Owner,
-		"active": room.Active,
-		"scenes": scenes,
-		"assets": room.Assets,
+		"id":       room.ID,
+		"name":     room.Name,
+		"owner":    room.Owner,
+		"active":   room.Active,
+		"scenes":   scenes,
+		"assets":   room.Assets,
+		"settings": room.Settings,
 	}
+}
+
+// setting reads a boolean room setting.
+func (room *TTRoom) setting(key string, def bool) bool {
+	if v, ok := room.Settings[key].(bool); ok {
+		return v
+	}
+	return def
 }
 
 func (room *TTRoom) sceneView(sc *TTScene, gm bool) map[string]interface{} {
@@ -424,11 +471,11 @@ func (room *TTRoom) sceneView(sc *TTScene, gm bool) map[string]interface{} {
 			continue
 		}
 		if !gm {
-			it = ttPlayerItem(it)
+			it = ttPlayerItem(it, ttHPStep(sc.Props))
 		}
 		items = append(items, it)
 	}
-	return map[string]interface{}{"id": sc.ID, "name": sc.Name, "props": sc.Props, "items": items}
+	return map[string]interface{}{"id": sc.ID, "name": sc.Name, "props": sc.propsFor(gm), "items": items}
 }
 
 // logEntryFor masks hidden rolls for everyone except GMs and the roller.
@@ -480,12 +527,15 @@ func ttNameKey(s string) string {
 // linkPCTokens attaches a newly imported PC sheet to tokens that were bound to a character
 // card of the same name in Owlbear (item["pcName"], set by the .ob2 import), in every scene.
 // The token also becomes the sheet owner's, so their vision and control follow.
-func (room *TTRoom) linkPCTokens(sh map[string]interface{}) {
+// Only a GM import also hands the tokens to the sheet's owner — otherwise any player could
+// claim another character's tokens by importing a card with the same name.
+func (room *TTRoom) linkPCTokens(sh map[string]interface{}, byGM bool) int {
 	name, _ := sh["name"].(string)
 	key := ttNameKey(name)
 	if key == "" {
-		return
+		return 0
 	}
+	linked := 0
 	owner, _ := sh["owner"].(string)
 	active := room.activeScene()
 	var changed []map[string]interface{}
@@ -496,7 +546,8 @@ func (room *TTRoom) linkPCTokens(sh map[string]interface{}) {
 				continue
 			}
 			it["sheet"] = sh["id"]
-			if _, has := it["owner"]; !has && owner != "" {
+			linked++
+			if _, has := it["owner"]; !has && owner != "" && byGM {
 				it["owner"] = owner
 			}
 			if sc == active {
@@ -507,6 +558,7 @@ func (room *TTRoom) linkPCTokens(sh map[string]interface{}) {
 	if len(changed) > 0 {
 		room.broadcastItems(changed)
 	}
+	return linked
 }
 
 func (room *TTRoom) userList() []map[string]interface{} {
@@ -588,7 +640,7 @@ func (room *TTRoom) broadcastItems(items []map[string]interface{}) {
 	}
 	var playerMsgs [][]byte
 	if len(visible) > 0 {
-		playerMsgs = append(playerMsgs, ttMsg(map[string]interface{}{"type": "items", "items": ttPlayerItems(visible)}))
+		playerMsgs = append(playerMsgs, ttMsg(map[string]interface{}{"type": "items", "items": ttPlayerItems(visible, ttHPStep(room.activeScene().Props))}))
 	}
 	if len(hiddenIDs) > 0 {
 		playerMsgs = append(playerMsgs, ttMsg(map[string]interface{}{"type": "del", "ids": hiddenIDs}))
@@ -600,6 +652,16 @@ func (room *TTRoom) broadcastItems(items []map[string]interface{}) {
 		}
 		for _, m := range playerMsgs {
 			room.send(sub, m)
+		}
+	}
+	// the acting token was hidden / un-hidden: players' view of the turn changes too
+	sc := room.activeScene()
+	if c, _ := sc.Props["combat"].(map[string]interface{}); c != nil {
+		for _, it := range items {
+			if it["id"] == c["turn"] {
+				room.broadcastProps(sc)
+				break
+			}
 		}
 	}
 }
@@ -626,7 +688,7 @@ func newLogEntry(kind, who string) TTLogEntry {
 
 // ttCanEdit decides whether a non-GM may apply patch to an existing item:
 // players fully control their own items, and may move unlocked tokens.
-func ttCanEdit(item map[string]interface{}, u ttUser, patch map[string]interface{}) bool {
+func ttCanEdit(room *TTRoom, item map[string]interface{}, u ttUser, patch map[string]interface{}) bool {
 	if ttBool(item["hidden"]) {
 		return false
 	}
@@ -635,9 +697,9 @@ func ttCanEdit(item map[string]interface{}, u ttUser, patch map[string]interface
 	}
 	allowed := map[string]bool{}
 	switch {
-	case item["kind"] == "token" && !ttBool(item["locked"]):
+	case item["kind"] == "token" && !ttBool(item["locked"]) && room.setting("playerMoveOthers", true):
 		allowed = map[string]bool{"id": true, "x": true, "y": true}
-	case item["kind"] == "wall" && item["wtype"] == "door" && !ttBool(item["locked"]):
+	case item["kind"] == "wall" && item["wtype"] == "door" && !ttBool(item["locked"]) && room.setting("playerDoors", true):
 		allowed = map[string]bool{"id": true, "open": true}
 	default:
 		return false
@@ -655,11 +717,17 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 	sc := room.activeScene()
 	gmOnly := map[string]bool{
 		"props": true, "scene.add": true, "scene.duplicate": true, "scene.rename": true,
-		"scene.delete": true, "scene.activate": true, "room.rename": true,
+		"scene.delete": true, "scene.activate": true, "room.rename": true, "room.settings": true,
 		"asset.delete": true, "log.clear": true,
 	}
 	if gmOnly[req.Op] && !gm {
 		return http.StatusForbidden, "仅 GM 可执行该操作"
+	}
+	if !gm && room.setting("timeStop", false) {
+		switch req.Op {
+		case "items", "delete", "action", "portal", "combat":
+			return http.StatusForbidden, "时间停止中"
+		}
 	}
 
 	switch req.Op {
@@ -675,7 +743,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 				return http.StatusBadRequest, "无效的物件ID"
 			}
 			if item := sc.Items[id]; item != nil {
-				if !gm && !ttCanEdit(item, u, patch) {
+				if !gm && !ttCanEdit(room, item, u, patch) {
 					return http.StatusForbidden, "无权修改该物件"
 				}
 				continue
@@ -684,6 +752,9 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 			if kind != "token" && kind != "draw" && !((kind == "fog" || kind == "wall") && gm) {
 				return http.StatusForbidden, "无权创建该物件"
 			}
+			if !gm && ((kind == "token" && !room.setting("playerTokens", true)) || (kind == "draw" && !room.setting("playerDraw", true))) {
+				return http.StatusForbidden, "GM 关闭了玩家放置棋子 / 绘制"
+			}
 			created++
 		}
 		if len(sc.Items)+created > ttMaxItems {
@@ -691,9 +762,29 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		}
 
 		changed := make([]map[string]interface{}, 0, len(req.Items))
+		inBatch := make(map[string]bool, len(req.Items))
+		for _, patch := range req.Items {
+			inBatch[patch["id"].(string)] = true
+		}
+		var moved []ttMove
 		for _, patch := range req.Items {
 			id := patch["id"].(string)
 			item := sc.Items[id]
+			if item != nil {
+				ox, _ := ttNum(item["x"])
+				oy, _ := ttNum(item["y"])
+				nx, okx := ttNum(patch["x"])
+				ny, oky := ttNum(patch["y"])
+				if !okx {
+					nx = ox
+				}
+				if !oky {
+					ny = oy
+				}
+				if (okx || oky) && (nx != ox || ny != oy) {
+					moved = append(moved, ttMove{id, nx - ox, ny - oy})
+				}
+			}
 			if item == nil {
 				item = map[string]interface{}{"id": id, "kind": patch["kind"]}
 				if !gm {
@@ -716,6 +807,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 			}
 			changed = append(changed, item)
 		}
+		changed = append(changed, sc.moveFollowers(moved, inBatch)...)
 		room.broadcastItems(changed)
 
 	case "delete":
@@ -750,7 +842,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 				sc.Props[k] = v
 			}
 		}
-		room.broadcastAll(ttMsg(map[string]interface{}{"type": "props", "props": sc.Props}))
+		room.broadcastProps(sc)
 
 	case "scene.add":
 		if len(room.Scenes) >= 100 {
@@ -820,6 +912,24 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		room.appendLog(e)
 		room.broadcastState()
 
+	case "room.settings":
+		for k, v := range req.Props {
+			if !ttSettingKeys[k] {
+				continue
+			}
+			if v == nil {
+				delete(room.Settings, k)
+			} else {
+				room.Settings[k] = v
+			}
+		}
+		room.broadcastMeta()
+
+	case "portal":
+		if st, msg := room.applyPortal(u, gm, req); st != 0 {
+			return st, msg
+		}
+
 	case "room.rename":
 		room.Name = ttCleanName(req.Text, 40, room.Name)
 		room.broadcastMeta()
@@ -876,7 +986,11 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		room.Sheets[id] = sh
 		room.broadcastSheet(sh)
 		if created && sh["kind"] == "pc" {
-			room.linkPCTokens(sh)
+			if n := room.linkPCTokens(sh, gm); n > 0 && !gm {
+				e := newLogEntry("sys", u.name)
+				e.Text = "导入了角色卡「" + ttCleanName(fmt.Sprint(sh["name"]), 40, "") + "」，已关联 " + strconv.Itoa(n) + " 个同名棋子，请 GM 在角色卡里「分配给」玩家"
+				room.addLog(e)
+			}
 		}
 
 	case "sheet.delete":
@@ -913,6 +1027,16 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 
 	case "init":
 		if st, msg := room.applyInit(u, gm, req); st != 0 {
+			return st, msg
+		}
+
+	case "death":
+		if st, msg := room.applyDeath(u, gm, req); st != 0 {
+			return st, msg
+		}
+
+	case "action":
+		if st, msg := room.applyAction(u, gm, req); st != 0 {
 			return st, msg
 		}
 
@@ -1089,7 +1213,11 @@ func (t *Tabletop) HandleEvents(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u := t.userFrom(info, r.URL.Query().Get("name"))
+	u, nerr := t.guestUser(info, ttRequestToken(r), r.URL.Query().Get("name"))
+	if nerr != nil {
+		http.Error(w, `{"error":"`+nerr.Error()+`"}`, http.StatusConflict)
+		return
+	}
 	sub := &ttSub{name: u.name, color: ttColorFor(u.name), ch: make(chan []byte, 512)}
 
 	room.mu.Lock()
@@ -1160,7 +1288,11 @@ func (t *Tabletop) HandleOp(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "invalid request body"})
 		return
 	}
-	u := t.userFrom(getTokenInfo(r), req.Name)
+	u, nerr := t.guestUser(getTokenInfo(r), ttRequestToken(r), req.Name)
+	if nerr != nil {
+		writeJSON(w, http.StatusConflict, map[string]interface{}{"error": nerr.Error()})
+		return
+	}
 
 	room.mu.Lock()
 	status, msg := http.StatusNotFound, "房间不存在"
@@ -1189,10 +1321,14 @@ func (t *Tabletop) HandleUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	kind := r.URL.Query().Get("kind")
-	if kind != "map" {
+	if kind != "map" && kind != "audio" {
 		kind = "token"
 	}
-	u := t.userFrom(info, r.URL.Query().Get("name"))
+	u, nerr := t.guestUser(info, ttRequestToken(r), r.URL.Query().Get("name"))
+	if nerr != nil {
+		writeJSON(w, http.StatusConflict, map[string]interface{}{"error": nerr.Error()})
+		return
+	}
 
 	r.Body = http.MaxBytesReader(w, r.Body, ttMaxAssetSize+(1<<20))
 	file, header, err := r.FormFile("file")
@@ -1215,7 +1351,11 @@ func (t *Tabletop) HandleUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := t.storeAsset(data)
+	store := t.storeAsset
+	if kind == "audio" {
+		store = t.storeAudio
+	}
+	id, err := store(data)
 	if err != nil {
 		if !errors.Is(err, errTTUnsupported) {
 			log.Printf("[TABLETOP] failed to store asset: %v", err)
@@ -1387,7 +1527,11 @@ func (t *Tabletop) HandleImport(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 			// only keep files whose content matches their hash name
-			if stored, err := t.storeAsset(data); err != nil || stored != id {
+			store := t.storeAsset
+			if regexp.MustCompile(`\.(mp3|ogg|wav|m4a)$`).MatchString(id) {
+				store = t.storeAudio
+			}
+			if stored, err := store(data); err != nil || stored != id {
 				log.Printf("[TABLETOP] import: skipped asset %s", id)
 			}
 		}
@@ -1467,4 +1611,45 @@ func ttCleanName(s string, max int, def string) string {
 		return def
 	}
 	return s
+}
+
+var ttSettingKeys = map[string]bool{
+	"playerTokens": true, "playerDraw": true, "playerMoveOthers": true, "playerDoors": true,
+	"timeStop": true, "music": true,
+}
+
+func ttRequestToken(r *http.Request) string {
+	if tok := r.URL.Query().Get("token"); tok != "" {
+		return tok
+	}
+	tok, _ := strings.CutPrefix(r.Header.Get("Authorization"), "Bearer ")
+	return tok
+}
+
+// guestUser resolves the acting user. Door guests have no account, so a nickname is bound
+// to the door token that first used it: another guest can't take it while that token is
+// still valid, and a guest who changes nickname releases the old one.
+func (t *Tabletop) guestUser(info TokenInfo, token, nick string) (ttUser, error) {
+	u := t.userFrom(info, nick)
+	if u.role != "door" || token == "" {
+		return u, nil
+	}
+	t.guestMu.Lock()
+	defer t.guestMu.Unlock()
+	if t.guestByToken == nil {
+		t.guestByToken = make(map[string]string)
+		t.guestByNick = make(map[string]string)
+	}
+	if other, ok := t.guestByNick[u.name]; ok && other != token {
+		if _, valid := t.tm.Validate(other); valid {
+			return u, errors.New("昵称「" + strings.TrimPrefix(u.name, "访客·") + "」已被其他访客使用，请换一个")
+		}
+		delete(t.guestByToken, other)
+	}
+	if old, ok := t.guestByToken[token]; ok && old != u.name {
+		delete(t.guestByNick, old)
+	}
+	t.guestByToken[token] = u.name
+	t.guestByNick[u.name] = token
+	return u, nil
 }
