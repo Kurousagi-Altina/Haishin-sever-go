@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -328,6 +329,7 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 
 	hidden := req.Hidden
 	var changed []map[string]interface{}
+	var undo []ttUndoRec
 	seen := map[string]bool{}
 	for _, t := range a.Targets {
 		it := sc.Items[t.ID]
@@ -335,6 +337,7 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 			continue
 		}
 		seen[t.ID] = true
+		undo = append(undo, ttSnapHP(sc, it))
 		if ttBool(it["hidden"]) {
 			hidden = true
 		}
@@ -549,6 +552,9 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 	// concentration on the caster
 	if a.Concentration && a.Caster != "" {
 		if c := sc.Items[a.Caster]; c != nil && c["kind"] == "token" {
+			if !seen[a.Caster] {
+				undo = append(undo, ttSnapHP(sc, c))
+			}
 			ttAddStatus(c, map[string]interface{}{"id": "concentration", "name": "专注", "color": "#4682b4", "icon": "🧠"})
 			changed = append(changed, c)
 			if ttConcealed(c) {
@@ -574,6 +580,87 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 	e.Label = res.Name
 	e.Act = res
 	e.Hidden = hidden
+	room.addLog(e)
+	if len(changed) > 0 {
+		room.rememberUndo(e.ID, undo)
+	}
+	return 0, ""
+}
+
+// ===== GM: undo a resolved action =====
+
+// ttUndoRec: one token's HP / temp HP / conditions / death saves before an action changed them.
+type ttUndoRec struct {
+	scene *TTScene
+	id    string
+	vals  map[string]interface{} // nil value = the key was absent
+}
+
+var ttUndoKeys = []string{"hp", "hpTemp", "status", "ds"}
+
+func ttSnapHP(sc *TTScene, it map[string]interface{}) ttUndoRec {
+	r := ttUndoRec{scene: sc, id: it["id"].(string), vals: map[string]interface{}{}}
+	for _, k := range ttUndoKeys {
+		v, ok := it[k]
+		if !ok {
+			r.vals[k] = nil
+			continue
+		}
+		var cp interface{} // deep copy (status lists / ds maps are mutated in place later)
+		if b, err := json.Marshal(v); err == nil && json.Unmarshal(b, &cp) == nil {
+			r.vals[k] = cp
+		}
+	}
+	return r
+}
+
+func (room *TTRoom) rememberUndo(id string, recs []ttUndoRec) {
+	if room.actUndo == nil {
+		room.actUndo = map[string][]ttUndoRec{}
+	}
+	room.actUndo[id] = recs
+	room.actUndoOrder = append(room.actUndoOrder, id)
+	if len(room.actUndoOrder) > 30 {
+		delete(room.actUndo, room.actUndoOrder[0])
+		room.actUndoOrder = room.actUndoOrder[1:]
+	}
+}
+
+func (room *TTRoom) undoAction(u ttUser, logID string) (int, string) {
+	recs, ok := room.actUndo[logID]
+	if !ok {
+		return http.StatusBadRequest, "这次结算已经撤销过，或者太久远（只保留最近 30 次）"
+	}
+	delete(room.actUndo, logID)
+	name := "行动"
+	for _, e := range room.Log {
+		if e.ID == logID && e.Act != nil {
+			name = e.Act.Name
+		}
+	}
+	active := room.activeScene()
+	var changed []map[string]interface{}
+	for _, r := range recs {
+		it := r.scene.Items[r.id]
+		if it == nil {
+			continue
+		}
+		for k, v := range r.vals {
+			if v == nil {
+				delete(it, k)
+			} else {
+				it[k] = v
+			}
+		}
+		if r.scene == active {
+			changed = append(changed, it)
+		}
+	}
+	if len(changed) > 0 {
+		room.broadcastItems(changed)
+	}
+	e := newLogEntry("sys", u.name)
+	e.Text = "撤销了「" + name + "」的结算（生命值、状态已恢复）"
 	room.addLog(e)
 	return 0, ""
 }

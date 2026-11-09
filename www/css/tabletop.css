@@ -466,3 +466,12 @@ details.feature summary { cursor: pointer; font-size: 13px; }
     .tt-header .copy-link { display: none; }
     .tt-header > .tt-btn { flex: none; white-space: nowrap; }
 }
+
+/* 棋子快捷菜单（右键 / 长按） */
+.token-menu { position: absolute; z-index: 40; min-width: 168px; max-width: 240px; padding: 6px; background: rgba(28,30,36,0.97); border: 1px solid #3a3e48; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+.token-menu .tm-title { font-weight: bold; padding: 2px 6px 6px; border-bottom: 1px solid #333; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.token-menu .tm-row { display: flex; gap: 4px; align-items: center; padding: 2px 4px; }
+.token-menu .tm-row .tt-select { flex: 1; min-width: 0; }
+.token-menu > button { text-align: left; background: none; border: none; color: #ddd; padding: 6px 8px; border-radius: 5px; cursor: pointer; font-size: 13px; }
+.token-menu > button:hover { background: #2f333d; color: #fff; }
+.token-menu > button.tm-danger { color: #ef9a9a; }

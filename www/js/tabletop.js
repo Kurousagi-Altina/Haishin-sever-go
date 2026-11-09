@@ -583,6 +583,7 @@ function scheduleCombatUi() {
     if (combatUiTimer) return;
     combatUiTimer = setTimeout(function() {
         combatUiTimer = null;
+        cleanupZones();
         renderCombat();
         renderCombatHud();
         renderBossBars();
@@ -818,13 +819,16 @@ function hitItem(it, w) {
         var b = itemBBox(it);
         return w.x >= b.x0 && w.x <= b.x1 && w.y >= b.y0 && w.y <= b.y1;
     }
+    // 持续区域只有点到边框才算选中，点中间覆盖的范围当作空地
+    var solid = (it.fill && !it.zone) || it.kind === 'fog';
+    if (it.zone) tol = 9 / view.s;
     if (it.shape === 'circle') {
         var d = Math.sqrt(lx * lx + ly * ly), r = it.r || 0;
-        return it.fill || it.kind === 'fog' ? d <= r + tol : Math.abs(d - r) <= tol + (it.width || 0) / 2;
+        return solid ? d <= r + tol : Math.abs(d - r) <= tol + (it.width || 0) / 2;
     }
     var pts = shapePoints(it);
     var closed = it.shape === 'rect' || it.shape === 'cone' || it.shape === 'poly';
-    if (closed && (it.fill || it.kind === 'fog') && pointInPoly(lx, ly, pts)) return true;
+    if (closed && solid && pointInPoly(lx, ly, pts)) return true;
     var half = (it.width || 0) / 2 + tol;
     for (var i = 1; i < pts.length; i++) {
         if (distToSeg(lx, ly, pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1]) <= half) return true;
@@ -1167,11 +1171,25 @@ function drawShape(c, it) {
         var closed = tracePath(c, it);
         if (closed && it.fill) {
             c.fillStyle = color;
-            c.globalAlpha = 0.3;
+            c.globalAlpha = it.zone ? 0.18 : 0.3;
             c.fill();
             c.globalAlpha = 1;
         }
+        if (it.zone) c.setLineDash([8 / view.s, 5 / view.s]);
         c.stroke();
+        if (it.zone && it.label) { // 区域名称
+            var zc = { x: 0, y: 0 }, zp = shapePoints(it);
+            if (it.shape !== 'circle' && zp.length) zc = { x: zp.reduce(function(s, p) { return s + p[0]; }, 0) / zp.length, y: zp.reduce(function(s, p) { return s + p[1]; }, 0) / zp.length };
+            c.setLineDash([]);
+            c.font = 'bold ' + Math.round(13 / view.s) + 'px sans-serif';
+            c.textAlign = 'center';
+            c.textBaseline = 'middle';
+            c.lineWidth = 3 / view.s;
+            c.strokeStyle = 'rgba(0,0,0,0.7)';
+            c.strokeText('⏳ ' + it.label, zc.x, zc.y);
+            c.fillStyle = '#fff';
+            c.fillText('⏳ ' + it.label, zc.x, zc.y);
+        }
     }
     c.restore();
 }
@@ -1328,8 +1346,36 @@ function drawFog(items) {
     }
 }
 
+// 当前行动者回合开始时的位置：结束回合前一直在地图上标出来（虚线轮廓 + 连线）
+function drawTurnStart() {
+    var c = combatState(), it = c && scene.items[c.turn], ts = it && it.turnStart;
+    if (!ts || ts.k !== turnKey() || it.kind !== 'token') return;
+    var g = gridSize(), w = it.w || g, h = it.h || g;
+    var sx = num(ts.x, 0) + w / 2, sy = num(ts.y, 0) + h / 2, cur = tokenCenter(it);
+    if (Math.hypot(cur.x - sx, cur.y - sy) < 2) return;
+    var r = Math.min(w, h) / 2;
+    ctx.save();
+    ctx.globalAlpha = 0.85;
+    ctx.setLineDash([6 / view.s, 4 / view.s]);
+    ctx.lineWidth = 2 / view.s;
+    ctx.strokeStyle = '#ffd54f';
+    ctx.fillStyle = 'rgba(255,213,79,0.12)';
+    ctx.beginPath();
+    ctx.arc(sx, sy, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    ctx.lineTo(cur.x, cur.y);
+    ctx.lineWidth = 1.5 / view.s;
+    ctx.stroke();
+    ctx.restore();
+    drawLabel('回合开始', sx, sy + r, '#ffd54f', true);
+}
+
 function drawOverlays() {
     var g = gridSize();
+    drawTurnStart();
     // 选中框；棋子另外画出占据的格子
     var ids = selectedIds();
     ids.forEach(function(id) {
@@ -1461,6 +1507,7 @@ function drawOverlays() {
 
 var localTrail = [];
 function drawTrail(trail, color, now) {
+    if (!trail.length) return; // 轨迹刚好全部淡出
     ctx.save();
     ctx.lineCap = 'round';
     ctx.strokeStyle = color;
@@ -1859,6 +1906,7 @@ function clearWalls() {
 
 // ===== 工具 =====
 function setTool(t) {
+    if (t === 'pan' || t === 'pointer') t = 'select'; // 平移、指示已合并进「手」工具
     if ((t === 'fog' || t === 'wall') && !me.gm) return;
     if (t !== 'ruler') endRulerPath();
     if (tool === 'wall' && t !== 'wall') finishWall();
@@ -1875,9 +1923,9 @@ function setTool(t) {
 
 function updateCursor() {
     var c = 'default';
-    if (spaceDown || tool === 'pan') c = gesture && gesture.type === 'pan' ? 'grabbing' : 'grab';
+    if (gesture && gesture.type === 'pan') c = 'grabbing';
+    else if (spaceDown) c = 'grab';
     else if (tool === 'draw' || tool === 'ruler' || (tool === 'fog' && fogOpts.shape !== 'select') || (tool === 'wall' && wallOpts.mode === 'draw')) c = 'crosshair';
-    else if (tool === 'pointer') c = 'pointer';
     canvas.style.cursor = c;
 }
 
@@ -1910,9 +1958,26 @@ function onPointerDown(e) {
     if (tool === 'wall' && wallDraft && e.button === 2) { finishWall(); return; } // 右键结束墙体
     if (rulerPath && e.button === 2) { endRulerPath(); return; } // 右键结束尺子
     // 时间停止：玩家只能平移 / 缩放
-    if (timeStopped() && !me.gm && !(e.button === 1 || e.button === 2 || tool === 'pan' || spaceDown)) { notice('⏸ 时间停止中', true); return; }
-    if (e.button === 1 || e.button === 2 || tool === 'pan' || spaceDown) {
-        gesture = { type: 'pan', start: start, view: { x: view.x, y: view.y } };
+    if (timeStopped() && !me.gm && tool !== 'select' && !(e.button === 1 || e.button === 2 || spaceDown)) { notice('⏸ 时间停止中', true); return; }
+    closeTokenMenu();
+    if (e.pointerType === 'touch' && tool === 'select' && !actionMode) { // 触屏长按棋子 = 右键菜单
+        var lpHit = hitTest(w, ['token']), lpId = e.pointerId;
+        clearTimeout(longPressTimer);
+        longPressTimer = setTimeout(function() {
+            var p = pointers[lpId];
+            if (!p || Math.hypot(p.x - s.x, p.y - s.y) > 10 || Object.keys(pointers).length > 1) return;
+            if (gesture && gesture.snap) cancelGesture();
+            gesture = null;
+            if (lpHit) openTokenMenu(lpHit, s.x, s.y);
+            else { remote.pings.push({ x: w.x, y: w.y, color: me.color, at: performance.now() }); sendFx({ t: 'ping', x: w.x, y: w.y }); requestRender(); }
+        }, 550);
+    }
+    if (e.button === 2 && tool === 'select' && !spaceDown && !actionMode) {
+        gesture = { type: 'rpointer', start: start };
+        return;
+    }
+    if (e.button === 1 || e.button === 2 || spaceDown) {
+        gesture = { type: 'pan', start: start, view: { x: view.x, y: view.y }, button: e.button };
         updateCursor();
         return;
     }
@@ -1958,10 +2023,10 @@ function onPointerDown(e) {
                 movable.forEach(function(id) { orig[id] = { x: scene.items[id].x || 0, y: scene.items[id].y || 0 }; });
                 gesture = { type: 'move', start: start, ids: idSet(movable), orig: orig, lastSent: 0, snap: snapshotItems(movable, ['x', 'y', 'moved', 'movedKey']) };
             }
-        } else if (e.pointerType === 'touch' && tool === 'select') {
-            // 触屏：单指拖空白处 = 平移地图（框选请用 Shift / 鼠标）
-            if (!e.shiftKey) selectOnly([]);
-            gesture = { type: 'pan', start: start, view: { x: view.x, y: view.y } };
+        } else if (tool === 'select' && !e.shiftKey) {
+            // 手：拖空白处 = 平移地图（Shift + 拖动 = 框选）
+            gesture = { type: 'pan', start: start, view: { x: view.x, y: view.y }, clearSel: true };
+            updateCursor();
         } else {
             if (!e.shiftKey) selectOnly([]);
             gesture = { type: 'marquee', start: start, a: w, b: w };
@@ -2137,6 +2202,8 @@ function onPointerMove(e) {
         sendFx({ t: 'ruler', a: [gesture.a.x, gesture.a.y], b: [gesture.b.x, gesture.b.y] });
         break;
     case 'pointer':
+    case 'rpointer':
+        if (gesture.type === 'rpointer' && !st.moved) break;
         localTrail.push({ x: w.x, y: w.y, at: performance.now() });
         sendFx({ t: 'ptr', x: w.x, y: w.y });
         break;
@@ -2144,8 +2211,10 @@ function onPointerMove(e) {
     requestRender();
 }
 
+var longPressTimer = null;
 function onPointerUp(e) {
     delete pointers[e.pointerId];
+    clearTimeout(longPressTimer);
     if (!gesture) return;
     if (gesture.type === 'pinch') { if (Object.keys(pointers).length < 2) gesture = null; return; }
     var g = gesture, w = toWorld(eventPos(e).x, eventPos(e).y);
@@ -2154,6 +2223,7 @@ function onPointerUp(e) {
     switch (g.type) {
     case 'pan':
         updateCursor();
+        if (g.clearSel && !g.start.moved && !e.shiftKey) selectOnly([]); // 点空地：取消选择
         break;
     case 'move':
         if (!g.start.moved) break;
@@ -2236,7 +2306,10 @@ function onPointerUp(e) {
         sendFx({ t: 'ruler-end' });
         break;
     case 'pointer':
+    case 'rpointer':
         if (!g.start.moved) {
+            var rh = g.type === 'rpointer' ? hitTest(g.start.w, ['token']) : null;
+            if (rh) { openTokenMenu(rh, g.start.s.x, g.start.s.y); break; } // 右键轻点棋子：快捷菜单
             remote.pings.push({ x: w.x, y: w.y, color: me.color, at: performance.now() });
             sendFx({ t: 'ping', x: w.x, y: w.y });
         }
@@ -2322,7 +2395,7 @@ function onKeyDown(e) {
         else if (ck === 'v' && clipItems.length) { e.preventDefault(); pasteItems(); }
         return;
     }
-    var keyTools = { v: 'select', h: 'pan', d: 'draw', m: 'ruler', l: 'pointer', f: 'fog', w: 'wall' };
+    var keyTools = { v: 'select', h: 'select', d: 'draw', m: 'ruler', l: 'select', f: 'fog', w: 'wall' };
     var k = e.key.toLowerCase();
     if (k === 't') {
         var hov = hitTest(cursorWorld, ['token']);
@@ -2353,7 +2426,7 @@ function onKeyDown(e) {
         notice('已删除 ' + del.length + ' 个物件，Ctrl+Z 撤销');
         return;
     }
-    if (e.key === 'Escape') { polyDraft = null; wallDraft = null; endRulerPath(); cancelGesture(); selectOnly([]); return; }
+    if (e.key === 'Escape') { closeTokenMenu(); polyDraft = null; wallDraft = null; endRulerPath(); cancelGesture(); selectOnly([]); return; }
     if (e.key === 'Enter' && rulerPath) { endRulerPath(); return; }
     if (e.key === 'Enter' && polyDraft) { finishPoly(); return; }
     if (e.key === 'Enter' && wallDraft) { finishWall(); return; }
@@ -2435,7 +2508,7 @@ function renderSelPanel() {
 
     var it = scene.items[ids[0]];
     var edit = canEdit(it), g = gridSize();
-    var title = it.kind === 'token' ? '棋子' : it.kind === 'fog' ? (it.cut ? '揭示区域' : '迷雾') :
+    var title = it.zone ? '持续区域' : it.kind === 'token' ? '棋子' : it.kind === 'fog' ? (it.cut ? '揭示区域' : '迷雾') :
         it.kind === 'wall' ? (WALL_STYLE[it.wtype] || WALL_STYLE.wall).name : '绘制';
     var h = '<h4>' + title + ' <button class="tt-btn small" data-act="close">✕</button></h4>';
     if (!edit) {
@@ -2448,6 +2521,12 @@ function renderSelPanel() {
         }
         panel.innerHTML = h;
         return;
+    }
+    if (it.zone) {
+        h += '<div class="tt-hint">' + escapeHtml(it.label || '') + (it.zone.conc ? ' · 专注（施放者失去专注时自动移除）' : '') + '</div>' +
+            '<div class="prop-btns"><button class="tt-btn small primary" data-act="zoneGo" title="生物进入区域、在区域里开始 / 结束回合时">⚡ 对区域内结算</button>' +
+            '<button class="tt-btn small danger" data-act="zoneEnd">结束效果</button></div>' +
+            '<div class="tt-hint">拖动可以移动区域（如月华之光每回合可移动）</div>';
     }
     if (it.kind === 'token') {
         h += row('名称', '<input class="tt-input" data-prop="label" maxlength="40" value="' + escapeHtml(it.label || '') + '">');
@@ -2662,6 +2741,8 @@ function onSelPanelClick(e) {
     var b = e.target.closest('button');
     if (!b) return;
     var ids = selectedIds();
+    if (b.dataset.act === 'zoneGo') { zoneRetrigger(scene.items[ids[0]]); return; }
+    if (b.dataset.act === 'zoneEnd') { deleteItems(ids.slice(0, 1)); return; }
     var amountEl = $('selPanel').querySelector('[data-amount]');
     var amount = amountEl ? Math.abs(parseInt(amountEl.value, 10) || 0) : 0;
     if (ids.length > 1 && /^g(dmg|heal|init|rest)$/.test(b.dataset.act || '')) {
@@ -3270,6 +3351,8 @@ function logHtml(e) {
         (e.hidden ? '<span class="hidden-tag">暗骰</span>' : '') + time;
     h += e.act ? actionLogHtml(e) : e.roll ? rollHtml(e.roll) : '<div class="tt-hint">' + escapeHtml(e.text || '') + '</div>';
     if (e.roll && e.text) h += '<div class="tt-hint">' + escapeHtml(e.text) + '</div>';
+    if (e.kind === 'action' && me.gm && e.act && (e.act.targets || []).some(function(t) { return t.amount || t.status || t.note; })) h +=
+        '<button class="reroll" data-undo="' + escapeHtml(e.id) + '" title="撤销这次结算：恢复目标的生命值、状态和死亡豁免">↶</button>';
     if (e.kind === 'roll' && e.roll && e.who === me.name && !e.target && !/·(先攻|死亡豁免)$/.test(e.label || '')) h += '<button class="reroll" data-reroll="' + escapeHtml(e.roll.expr.replace(/\s/g, '')) +
         '" data-label="' + escapeHtml(e.label || '') + '" data-hidden="' + (e.hidden ? 1 : 0) + '" title="用同样的表达式再掷一次">↻</button>';
     if (e.target) {

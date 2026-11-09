@@ -461,9 +461,84 @@ function uploadMusic(input) {
 
 // ===== 记录：重掷 =====
 function onLogClick(e) {
+    var u = e.target.closest('[data-undo]');
+    if (u) {
+        if (confirm('撤销这次结算？目标的生命值、临时生命、状态和死亡豁免会恢复到结算前。')) op({ op: 'action.undo', text: u.dataset.undo });
+        return;
+    }
     var b = e.target.closest('[data-reroll]');
     if (!b) return;
     roll(b.dataset.reroll, b.dataset.label || '', b.dataset.hidden === '1');
+}
+
+// ===== 棋子快捷菜单（右键 / 触屏长按）=====
+var tokMenuEl = null;
+function closeTokenMenu() { if (tokMenuEl) { tokMenuEl.remove(); tokMenuEl = null; } }
+
+function openTokenMenu(it, sx, sy) {
+    closeTokenMenu();
+    if (!it || it.kind !== 'token') return;
+    var edit = canEdit(it), h = '<div class="tm-title">' + escapeHtml(it.label || '棋子') + '</div>';
+    if (edit && it.hpMax > 0) h += '<div class="tm-row"><input class="tt-input narrow" data-tm-amt type="number" min="0" placeholder="数值">' +
+        '<button class="tt-btn small danger" data-tm="dmg">伤害</button><button class="tt-btn small" data-tm="heal">治疗</button></div>';
+    if (edit) h += '<div class="tm-row"><select class="tt-select" data-tm-status><option value="">＋ 添加状态…</option>' +
+        STATUS_DEFS.map(function(d) { return '<option value="' + d.id + '">' + d.icon + ' ' + d.name + '</option>'; }).join('') + '</select></div>';
+    h += '<button data-tm="target">' + (target.id === it.id ? '✖ 取消目标' : '🎯 设为目标') + '</button>';
+    if (edit && isCreatureToken(it)) h += '<button data-tm="init">' + (inInit(it) ? '🎲 重掷先攻' : '⚔ 加入先攻并掷骰') + '</button>';
+    if (edit) h += '<button data-tm="act">⚡ 以它行动…</button>';
+    if (it.sheet && sheets[it.sheet]) h += '<button data-tm="sheet">📜 查看角色卡</button>';
+    if (me.gm) h += '<button data-tm="hide">' + (it.hidden ? '👁 对玩家显示' : '🙈 对玩家隐藏') + '</button>' +
+        '<button data-tm="lock">' + (it.locked ? '🔓 解锁' : '🔒 锁定位置') + '</button>';
+    if (edit) h += '<button data-tm="del" class="tm-danger">🗑 删除</button>';
+    var el = document.createElement('div');
+    el.className = 'token-menu';
+    el.innerHTML = h;
+    el.dataset.id = it.id;
+    $('stage').appendChild(el);
+    var st = $('stage');
+    el.style.left = Math.max(4, Math.min(sx, st.clientWidth - el.offsetWidth - 4)) + 'px';
+    el.style.top = Math.max(4, Math.min(sy, st.clientHeight - el.offsetHeight - 4)) + 'px';
+    tokMenuEl = el;
+    el.addEventListener('pointerdown', function(e) { e.stopPropagation(); });
+    el.addEventListener('click', onTokenMenu);
+    el.addEventListener('change', onTokenMenu);
+    el.addEventListener('keydown', function(e) {
+        e.stopPropagation();
+        if (e.key === 'Enter' && e.target.dataset.tmAmt !== undefined) el.querySelector('[data-tm=dmg]').click();
+        if (e.key === 'Escape') closeTokenMenu();
+    });
+    var amt = el.querySelector('[data-tm-amt]');
+    if (amt && e2IsMouse()) amt.focus();
+}
+function e2IsMouse() { return !window.matchMedia || !window.matchMedia('(pointer: coarse)').matches; }
+
+function onTokenMenu(e) {
+    var it = tokMenuEl && scene.items[tokMenuEl.dataset.id];
+    if (!it) { closeTokenMenu(); return; }
+    if (e.type === 'change' && e.target.dataset.tmStatus !== undefined) {
+        if (e.target.value) addStatus(it, e.target.value);
+        closeTokenMenu();
+        return;
+    }
+    var b = e.type === 'click' && e.target.closest('[data-tm]');
+    if (!b) return;
+    var act2 = b.dataset.tm;
+    if (act2 === 'dmg' || act2 === 'heal') {
+        var n = Math.abs(parseInt(tokMenuEl.querySelector('[data-tm-amt]').value, 10) || 0);
+        if (!n) { notice('先填写数值', true); return; }
+        patchItems([tokenHpPatch(it, act2 === 'dmg' ? -n : n)]);
+    } else if (act2 === 'target') setTarget(target.id === it.id ? '' : it.id);
+    else if (act2 === 'init') rollInit([it.id]);
+    else if (act2 === 'act') { selectOnly([it.id]); openActionDialog(null, it, it.sheet && sheets[it.sheet] || null); }
+    else if (act2 === 'sheet') openSheet(it.sheet, it.id);
+    else if (act2 === 'hide') patchItems([{ id: it.id, hidden: !it.hidden || null }]);
+    else if (act2 === 'lock') patchItems([{ id: it.id, locked: !it.locked || null }]);
+    else if (act2 === 'del') {
+        if (inInit(it) && !confirm('「' + (it.label || '棋子') + '」在先攻里，确定删除？')) return;
+        deleteItems([it.id]);
+        notice('已删除，Ctrl+Z 撤销');
+    }
+    closeTokenMenu();
 }
 
 function initExtra() {

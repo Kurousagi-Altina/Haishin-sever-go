@@ -450,6 +450,19 @@ func (room *TTRoom) applyCombat(u ttUser, gm bool, req *ttOpRequest) (int, strin
 	default:
 		return http.StatusBadRequest, "无效的战斗操作"
 	}
+	// a new turn: remember where the acting creature started it (shown on the map until its turn ends)
+	if req.Action == "start" || req.Action == "next" || req.Action == "prev" || req.Action == "set" {
+		if c, _ := sc.Props["combat"].(map[string]interface{}); c != nil {
+			id, _ := c["turn"].(string)
+			if it := sc.Items[id]; it != nil {
+				x, _ := ttNum(it["x"])
+				y, _ := ttNum(it["y"])
+				r, _ := ttNum(c["round"])
+				it["turnStart"] = map[string]interface{}{"x": x, "y": y, "k": strconv.Itoa(int(r)) + ":" + id}
+				room.broadcastItems([]map[string]interface{}{it})
+			}
+		}
+	}
 	room.broadcastProps(sc)
 	return 0, ""
 }
@@ -610,6 +623,60 @@ func (sc *TTScene) moveFollowers(moved []ttMove, inBatch map[string]bool) []map[
 		}
 	}
 	return out
+}
+
+// ===== Manual HP changes → log =====
+
+type ttHPChange struct {
+	it     map[string]interface{}
+	before float64
+}
+
+// logHPChanges writes manual HP edits (panel, ±, group damage, long rest, undo) to the log.
+// Players see exact numbers only where they'd see them on the token anyway; changes to
+// tokens hidden from players go into a GM-only entry.
+func (room *TTRoom) logHPChanges(u ttUser, sc *TTScene, list []ttHPChange) {
+	hpStep := ttHPStep(sc.Props)
+	var public []string
+	secret := map[string][]string{} // owner ("" = GM only) → parts
+	for _, c := range list {
+		after, ok := ttNum(c.it["hp"])
+		if !ok {
+			continue
+		}
+		d := after - c.before
+		if d == 0 {
+			continue
+		}
+		part := ttCleanName(ttItemLabel(c.it), 40, "单位") + " "
+		if d < 0 {
+			part += "−" + strconv.FormatFloat(-d, 'f', -1, 64)
+		} else {
+			part += "+" + strconv.FormatFloat(d, 'f', -1, 64)
+		}
+		exact := part + "（" + strconv.FormatFloat(c.before, 'f', -1, 64) + " → " + strconv.FormatFloat(after, 'f', -1, 64) + "）"
+		owner, _ := c.it["owner"].(string)
+		switch {
+		case ttConcealed(c.it):
+			secret[owner] = append(secret[owner], exact)
+		case owner != "" || hpStep <= 0 || ttBool(c.it["bossExact"]):
+			public = append(public, exact)
+		default:
+			public = append(public, part)
+		}
+	}
+	if len(public) > 0 {
+		e := newLogEntry("sys", u.name)
+		e.Text = "调整生命值：" + strings.Join(public, "，")
+		room.addLog(e)
+	}
+	for owner, parts := range secret { // hidden tokens: the GM and the token's own player
+		e := newLogEntry("sys", u.name)
+		e.Text = "调整生命值（隐藏单位，仅 " + map[bool]string{true: "GM ", false: "GM 和控制者"}[owner == ""] + "可见）：" + strings.Join(parts, "，")
+		e.GMOnly = true
+		e.For = owner
+		room.addLog(e)
+	}
 }
 
 // ===== Death saving throws =====

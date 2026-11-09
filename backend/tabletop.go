@@ -65,6 +65,9 @@ type TTLogEntry struct {
 	Cover  string `json:"cover,omitempty"`
 	// kind "action": an attack / spell resolved against several tokens
 	Act *TTActionResult `json:"act,omitempty"`
+	// only the GM (and the player named in For) receives it, e.g. HP changes of hidden tokens
+	GMOnly bool   `json:"gmOnly,omitempty"`
+	For    string `json:"for,omitempty"`
 }
 
 type TTAsset struct {
@@ -101,6 +104,9 @@ type TTRoom struct {
 	dirty   bool
 	deleted bool
 	subs    map[*ttSub]struct{}
+	// GM undo of resolved actions: log entry id → the targets' HP / status before (memory only)
+	actUndo      map[string][]ttUndoRec
+	actUndoOrder []string
 }
 
 type ttSub struct {
@@ -580,6 +586,9 @@ func (room *TTRoom) userList() []map[string]interface{} {
 func (room *TTRoom) stateMsg(sub *ttSub) []byte {
 	entries := make([]TTLogEntry, 0, len(room.Log))
 	for _, e := range room.Log {
+		if e.GMOnly && !sub.gm && (e.For == "" || e.For != sub.name) {
+			continue
+		}
 		entries = append(entries, logEntryFor(sub, e))
 	}
 	return ttMsg(map[string]interface{}{
@@ -683,6 +692,9 @@ func (room *TTRoom) appendLog(e TTLogEntry) {
 func (room *TTRoom) addLog(e TTLogEntry) {
 	room.appendLog(e)
 	for sub := range room.subs {
+		if e.GMOnly && !sub.gm && (e.For == "" || e.For != sub.name) {
+			continue
+		}
 		room.send(sub, ttMsg(map[string]interface{}{"type": "log", "entry": logEntryFor(sub, e)}))
 	}
 }
@@ -738,7 +750,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 	gmOnly := map[string]bool{
 		"props": true, "scene.add": true, "scene.duplicate": true, "scene.rename": true,
 		"scene.delete": true, "scene.activate": true, "room.rename": true, "room.settings": true,
-		"asset.delete": true, "log.clear": true,
+		"asset.delete": true, "log.clear": true, "action.undo": true,
 	}
 	if gmOnly[req.Op] && !gm {
 		return http.StatusForbidden, "仅 GM 可执行该操作"
@@ -787,9 +799,17 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 			inBatch[patch["id"].(string)] = true
 		}
 		var moved []ttMove
+		var hpChanges []ttHPChange
 		for _, patch := range req.Items {
 			id := patch["id"].(string)
 			item := sc.Items[id]
+			if _, hasHP := patch["hp"]; hasHP && item != nil && item["kind"] == "token" {
+				before, ok := ttNum(item["hp"])
+				if !ok {
+					before, _ = ttNum(item["hpMax"])
+				}
+				hpChanges = append(hpChanges, ttHPChange{item, before})
+			}
 			if item != nil {
 				ox, _ := ttNum(item["x"])
 				oy, _ := ttNum(item["y"])
@@ -835,6 +855,12 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		}
 		changed = append(changed, sc.moveFollowers(moved, inBatch)...)
 		room.broadcastItems(changed)
+		room.logHPChanges(u, sc, hpChanges)
+
+	case "action.undo":
+		if st, msg := room.undoAction(u, req.Text); st != 0 {
+			return st, msg
+		}
 
 	case "delete":
 		var deleted []string

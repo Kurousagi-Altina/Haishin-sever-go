@@ -25,10 +25,12 @@ function parseActionText(name, text, meta) {
     var a = { name: name || '行动', range: 0, area: { shape: '', size: 0, width: 5, self: false }, targets: 1 };
     var m;
     // 伤害：「10（2d6+3）点挥砍伤害」「受到8d6点火焰伤害」
-    m = t.match(new RegExp('[（(]\\s*(\\d+d\\d+(?:\\s*[+＋\\-－]\\s*\\d+)?)\\s*[)）]\\s*点?\\s*(' + DMG_TYPES + ')?\\s*伤害')) ||
-        t.match(new RegExp('(\\d+d\\d+(?:\\s*[+＋\\-－]\\s*\\d+)?)\\s*点?\\s*(' + DMG_TYPES + ')\\s*伤害')) ||
-        t.match(/(\d+d\d+(?:\s*[+＋\-－]\s*\d+)?)\s*点?\s*伤害/);
-    if (m) { a.damage = m[1].replace(/\s/g, '').replace(/＋/g, '+').replace(/[－−]/g, '-'); a.dtype = m[2] || ''; }
+    m = t.match(new RegExp('[（(]\\s*(\\d+d\\d+(?:\\s*[+＋\\-－]\\s*\\d+)?)\\s*[)）]\\s*点?\\s*(' + DMG_TYPES + ')?\\s*伤害'));
+    if (m) { a.damage = m[1]; a.dtype = m[2] || ''; }
+    else if ((m = t.match(new RegExp('(\\d+d\\d+(?:\\s*[+＋\\-－]\\s*\\d+)?)(\\s*[+＋]\\s*你?的?施法属性调整值)?\\s*(?:点|的)?\\s*(' + DMG_TYPES + ')?\\s*伤害')))) {
+        a.damage = m[1]; a.dtype = m[3] || ''; a.dmgMod = !!m[2];
+    }
+    if (a.damage) a.damage = a.damage.replace(/\s/g, '').replace(/＋/g, '+').replace(/[－−]/g, '-');
     // 治疗 / 临时生命
     var heal = t.match(/(?:恢复|回复)[^。\n]{0,30}?(\d+d\d+(?:\s*[+＋]\s*\d+)?)([^。\n]{0,20})/);
     if (heal && /生命/.test(heal[0] + heal[2])) { a.heal = heal[1].replace(/\s|＋/g, function(c) { return c === '＋' ? '+' : ''; }); a.healMod = /施法属性调整值/.test(heal[2]); }
@@ -65,6 +67,8 @@ function parseActionText(name, text, meta) {
     else if ((m = t.match(/(\d+)\s*尺\s*的?\s*立方/))) a.area = { shape: 'cube', size: +m[1], width: 5, self: a.area.self };
     // 目标数
     if ((m = t.match(/至多\s*([一二两三四五六七八九十\d]+)\s*(?:名|个)/))) a.targets = cnInt(m[1]) || 1;
+    // 魔法飞弹「三枚飞镖」、灼热射线「三道射线」：每一发可以打不同目标
+    else if ((m = t.match(/(?:创造|射出|发射|造出)\s*([一二两三四五六七八九十\d]+)\s*(?:枚|支|道|发|束)/))) a.targets = cnInt(m[1]) || 1;
     // 附带状态
     var buff = Object.keys(SPELL_BUFFS).filter(function(k) { return (name || '').indexOf(k) >= 0; })[0];
     if (buff) a.status = SPELL_BUFFS[buff];
@@ -122,7 +126,93 @@ function finishAction(a, sh) {
         if (mod) a.heal += signed(mod);
     }
     if (a.kind === 'heal' || a.kind === 'temp') a.damage = a.heal || a.temp;
+    else if (a.dmgMod && a.damage) { // 「1d8+你的施法属性调整值」
+        var dm = castingMod(sh);
+        if (dm) a.damage += signed(dm);
+    }
     return a;
+}
+
+// ===== 升环 / 戏法强化 =====
+// 升环：「使用的法术位每比二环高一环，伤害增加1d10」「使用2环或更高的法术位…每高一环…提高1d8」
+//       「每比一环高一环，就会多制造出一支飞镖」（多一个目标）
+// 戏法强化：「5级（2d8）、11级（3d8）、17级（4d8）」按角色等级取对应的骰子
+function parseScaling(t) {
+    var out = {};
+    t = String(t || '');
+    var i = t.search(/升环|更高环位|更高的法术位/);
+    if (i >= 0) {
+        var s = t.slice(i, i + 180).split('\n')[0], from = 0, fm;
+        if ((fm = s.match(/比\s*([一二三四五六七八九\d])\s*环高/) || s.match(/高于\s*([一二三四五六七八九\d])\s*环/))) from = cnInt(fm[1]);
+        else if ((fm = s.match(/使用\s*([一二三四五六七八九\d])\s*环或更高/))) from = cnInt(fm[1]) - 1;
+        var dice = s.match(/(?:增加|提高|多)\s*(\d+d\d+)/) || s.match(/(\d+d\d+)/);
+        var extra = /(?:多|额外)(?:制造出?|发射|创造|射出)?\s*(?:一|1)\s*(?:支|道|枚|发|个|条|束)/.test(s);
+        if (dice || extra) out.upcast = { from: from, dice: dice ? dice[1] : '', extra: !dice && extra };
+    }
+    var j = t.indexOf('戏法强化');
+    if (j >= 0) {
+        var tiers = [], re = /(\d+)\s*级[^（(，,、。\d]{0,6}(?:\d+d\d+)?\s*[（(]\s*(\d+d\d+)/g, mm, seg = t.slice(j, j + 220);
+        while ((mm = re.exec(seg))) tiers.push([+mm[1], mm[2]]);
+        if (tiers.length) out.cantrip = tiers;
+    }
+    return out;
+}
+
+// 给表达式加上 n 份骰子：同面数的合并（2d10 + 1d10 → 3d10），否则追加
+function addDice(expr, inc, n) {
+    var im = String(inc || '').match(/^(\d+)d(\d+)$/);
+    if (!im || !(n > 0)) return expr;
+    var cnt = +im[1] * n, die = im[2];
+    var re = new RegExp('(^|[+\\-])(\\d+)d' + die + '(?!\\d)');
+    if (re.test(expr)) return expr.replace(re, function(all, sign, c) { return sign + (+c + cnt) + 'd' + die; });
+    return (expr ? expr + '+' : '') + cnt + 'd' + die;
+}
+
+// 法术：环阶、升环、戏法强化、是否持续（在地图上保留区域）
+function applySpellScaling(a, sp, text, meta, sh) {
+    var sc = parseScaling(text);
+    a.spellLevel = parseInt(sp.level, 10) || 0;
+    if (a.spellLevel === 0 && sc.cantrip && a.damage) {
+        var lv = parseInt(sh && sh.level, 10) || 1, pick = null;
+        sc.cantrip.forEach(function(t) { if (lv >= t[0]) pick = t[1]; });
+        if (pick) { a.damage = a.damage.replace(/^\d+d\d+/, pick); a.scaleNote = '戏法强化：' + lv + ' 级 → ' + pick; }
+    }
+    if (a.spellLevel > 0 && sc.upcast) {
+        a.upcast = sc.upcast;
+        if (!a.upcast.from) a.upcast.from = a.spellLevel;
+    }
+    a.slotLevel = a.spellLevel;
+    a.baseDamage = a.damage || '';
+    a.baseTargets = a.targets || 1;
+    var dur = String(meta || '').split(/\s*·\s*/).pop() || '';
+    a.lasting = !!(a.area && a.area.shape) && !!meta && !/立即/.test(dur) && /专注|分钟|小时|轮|天/.test(dur);
+    a.zone = a.lasting;
+    return a;
+}
+
+// 角色卡上某一环的法术位（没有就 null）
+function slotOf(sh, lv) {
+    var list = sh && sh.slots || [];
+    for (var i = 0; i < list.length; i++) if (parseInt(list[i].level, 10) === lv) return { idx: i, cur: num(list[i].cur, 0), max: num(list[i].max, 0) };
+    return null;
+}
+
+// 换环阶：按升环规则重算伤害 / 治疗骰和目标数
+function applySlotLevel(a, lv) {
+    a.slotLevel = lv;
+    if (!a.upcast) return;
+    var n = Math.max(0, lv - a.upcast.from);
+    if (a.upcast.dice) a.damage = addDice(a.baseDamage, a.upcast.dice, n);
+    if (a.upcast.extra) a.targets = (a.baseTargets || 1) + n;
+}
+
+// 施放时扣法术位（勾了「消耗法术位」时）
+function consumeSlot(a, sheetId) {
+    var sh = sheetId && sheets[sheetId];
+    if (!a.useSlot || !(a.slotLevel > 0) || !sh || !canEditSheet(sh)) return;
+    var s = slotOf(sh, a.slotLevel);
+    if (s && s.cur > 0) { changeSlot(sh, s.idx, -1); notice('已消耗 1 个 ' + a.slotLevel + ' 环法术位（剩 ' + (s.cur - 1) + '）'); }
+    else notice('没有剩余的 ' + a.slotLevel + ' 环法术位（仍然施放了，可在角色卡上调整）', true);
 }
 
 function actionFromAttack(sh, at) {
@@ -141,7 +231,13 @@ function castFromSheet(sh, ds) {
         var go = function(text, meta) {
             var a = parseActionText(sp.name, text, meta);
             if (!a.kind && /法术攻击/.test(text)) a.kind = 'attack';
-            openActionDialog(finishAction(a, sh), caster, sh);
+            a = applySpellScaling(finishAction(a, sh), sp, text, meta, sh);
+            // 有法术位时默认选能用的最低一环
+            if (a.spellLevel > 0 && sh.slots && sh.slots.length) {
+                for (var lv = a.spellLevel; lv <= 9; lv++) { var s = slotOf(sh, lv); if (s && s.cur > 0) { applySlotLevel(a, lv); break; } }
+                a.useSlot = canEditSheet(sh);
+            }
+            openActionDialog(a, caster, sh);
         };
         if (sp.text) { go(sp.text, sp.meta); return; }
         notice('正在查找「' + sp.name + '」的法术说明…');
@@ -173,7 +269,28 @@ function openActionDialog(a, caster, sh) {
     f('acKind').value = a.kind || 'auto';
     f('acAttack').value = a.attack || '';
     f('acDamage').value = a.damage || '';
+    var types = DMG_TYPES.split('|');
+    f('acDtype').innerHTML = '<option value="">（无类型）</option>' + types.map(function(t) { return '<option value="' + t + '">' + t + '</option>'; }).join('') +
+        (a.dtype && types.indexOf(a.dtype) < 0 ? '<option value="' + escapeHtml(a.dtype) + '">' + escapeHtml(a.dtype) + '</option>' : '');
     f('acDtype').value = a.dtype || '';
+    // 环阶（升环）
+    if (a.spellLevel > 0) {
+        var top = 9;
+        if (sh && sh.slots && sh.slots.length) top = Math.max(a.spellLevel, Math.max.apply(null, sh.slots.map(function(s) { return parseInt(s.level, 10) || 0; })));
+        var opts = '';
+        for (var lv = a.spellLevel; lv <= top; lv++) {
+            var s = slotOf(sh, lv);
+            opts += '<option value="' + lv + '">' + lv + ' 环' + (s ? '（剩 ' + s.cur + '/' + s.max + '）' : sh && sh.slots && sh.slots.length ? '（没有法术位）' : '') + '</option>';
+        }
+        f('acSlot').innerHTML = opts;
+        f('acSlot').value = a.slotLevel || a.spellLevel;
+        f('acUseSlot').checked = !!a.useSlot;
+        f('acUseSlot').parentNode.style.display = sh && sh.slots && sh.slots.length && canEditSheet(sh) ? '' : 'none';
+        f('acUpHint').textContent = a.upcast ? (a.upcast.dice ? '每高一环 +' + a.upcast.dice : '每高一环多 1 个目标') : '';
+        f('acSlotRow').style.display = '';
+    } else f('acSlotRow').style.display = 'none';
+    f('acScaleNote').textContent = a.scaleNote || '';
+    f('acZone').checked = !!a.zone;
     f('acSave').value = a.save || 'dex';
     f('acDC').value = a.dc || '';
     f('acHalf').checked = !!a.half;
@@ -201,6 +318,8 @@ function readActionDialog() {
     a.attack = normBonus(v('acAttack')) || (a.kind === 'attack' ? '+0' : '');
     a.damage = v('acDamage').replace(/\s/g, '');
     a.dtype = v('acDtype');
+    if (a.spellLevel > 0) { a.slotLevel = parseInt(v('acSlot'), 10) || a.spellLevel; a.useSlot = $('acUseSlot').checked; }
+    a.zone = $('acZone').checked;
     a.save = v('acSave');
     a.dc = parseInt(v('acDC'), 10) || 0;
     a.half = $('acHalf').checked;
@@ -223,6 +342,7 @@ function syncActionDialog() {
     $('acDamageLabel').textContent = k === 'heal' ? '治疗' : k === 'temp' ? '临时生命' : '伤害';
     $('acDtype').style.display = k === 'heal' || k === 'temp' ? 'none' : '';
     $('acSizeWrap').style.display = shape ? '' : 'none';
+    $('acZoneRow').style.display = shape ? '' : 'none';
     $('acTargetsWrap').style.display = shape ? 'none' : '';
 }
 
@@ -232,6 +352,7 @@ function closeActionDialog() { $('actDialog').style.display = 'none'; }
 function actionRollOnly() {
     var a = readActionDialog(), who = act.sheet ? act.sheet.name : (act.caster && act.caster.label) || '';
     closeActionDialog();
+    consumeSlot(a, act.sheet && act.sheet.id);
     if (a.kind === 'attack') openRollDialog({ who: who, label: a.name + ' 命中', bonus: a.attack, attack: true, range: { normal: a.range, long: a.rangeLong, reach: a.reach } });
     else if (a.damage) openRollDialog({ who: who, label: a.name + (a.kind === 'heal' ? ' 治疗' : a.kind === 'temp' ? ' 临时生命' : ' 伤害'), expr: a.damage });
     else notice('这个行动没有可以掷的骰子', true);
@@ -244,7 +365,7 @@ function startActionTargeting() {
     if (a.kind === 'save' && !a.dc) { notice('填写豁免 DC', true); return; }
     if ((a.kind === 'heal' || a.kind === 'temp') && !a.damage) { notice('填写治疗 / 临时生命的骰子', true); return; }
     closeActionDialog();
-    actionMode = { act: a, caster: act.caster, targets: {}, aim: null, locked: false };
+    actionMode = { act: a, caster: act.caster, targets: {}, aim: null, locked: false, sheetId: act.sheet ? act.sheet.id : '' };
     if (a.area.shape && a.area.self && act.caster) actionMode.aim = tokenCenter(act.caster);
     setTool('select');
     selectOnly([]);
@@ -425,7 +546,7 @@ function confirmActionTargeting() {
     if (!ids.length && !a.conc) { notice('还没有选择目标', true); return; }
     var targets = ids.map(function(id) {
         var t = scene.items[id], o = { id: id, cover: 0, mode: '', autoCrit: false };
-        if (!m.caster || t.id === m.caster.id) return o;
+        if (!m.caster || t.id === m.caster.id || m.zoneId) return o;
         var ci = coverInfo(m.caster, t);
         if (a.kind === 'attack') {
             if (ci.level < 0) return null; // 完全掩护：无法被直接攻击
@@ -451,8 +572,68 @@ function confirmActionTargeting() {
         caster: m.caster && canEdit(m.caster) ? m.caster.id : '', concentration: !!a.conc, targets: targets,
         status: def ? { id: def.id, name: def.name, color: def.color, icon: def.icon, rounds: a.rounds || 0 } : null
     } };
+    if (a.zone && a.area && a.area.shape && !m.zoneId) createZone(a, actionShape(), m.caster);
+    if (!m.zoneId) consumeSlot(a, m.sheetId);
     cancelActionTargeting();
     op(body);
+}
+
+// ===== 持续区域（月华之光、灵体卫士、匕首之云…）=====
+// 地图上留一个半透明区域（绘制物件，带 zone 信息）：可拖动移动；以自身为中心的光环跟随施放者；
+// 选中后可「对区域内结算」（生物进入 / 在其中结束回合时）；施放者失去专注时自动移除
+function zoneAct(a) {
+    return { name: a.name, kind: a.kind, attack: a.attack || '', damage: a.damage || '', dtype: a.dtype || '', save: a.save || '', dc: a.dc || 0,
+        half: !!a.half, status: a.status || '', rounds: a.rounds || 0 };
+}
+
+function createZone(a, shp, caster) {
+    if (!shp) return;
+    if (!me.gm && !roomSetting('playerDraw', true)) { notice('GM 关闭了玩家绘制，区域没有保留在地图上', true); return; }
+    var minZ = 0;
+    for (var id in scene.items) minZ = Math.min(minZ, scene.items[id].z || 0);
+    var good = a.kind === 'heal' || a.kind === 'temp';
+    var it = { id: genId(), kind: 'draw', fill: true, width: 2, color: good ? '#66bb6a' : '#ff7043', z: minZ - 1, label: a.name,
+        zone: { act: zoneAct(a), caster: caster ? caster.id : '', conc: a.conc && caster ? caster.id : '' } };
+    if (shp.type === 'circle') { it.shape = 'circle'; it.x = shp.x; it.y = shp.y; it.r = shp.r; }
+    else { it.shape = 'poly'; it.x = shp.pts[0][0]; it.y = shp.pts[0][1]; it.points = shp.pts.map(function(p) { return [p[0] - it.x, p[1] - it.y]; }); }
+    if (a.area.self && caster) it.follow = caster.id; // 光环跟着施放者走
+    createItems([it]);
+}
+
+function zoneShapeOf(z) {
+    return z.shape === 'circle' ? { type: 'circle', x: z.x, y: z.y, r: z.r || 0 } :
+        { type: 'poly', pts: (z.points || []).map(function(p) { return [p[0] + (z.x || 0), p[1] + (z.y || 0)]; }) };
+}
+
+// 对区域内的生物再结算一次（目标已自动选好，可点选增减）
+function zoneRetrigger(z) {
+    if (!z || !z.zone || !z.zone.act) return;
+    var a = JSON.parse(JSON.stringify(z.zone.act));
+    a.area = { shape: '', size: 0, width: 5, self: false };
+    a.targets = 99; a.range = 0; a.rangeLong = 0; a.reach = 0;
+    actionMode = { act: a, caster: scene.items[z.zone.caster] || null, targets: {}, aim: null, locked: false, zoneId: z.id };
+    var shp = zoneShapeOf(z);
+    actionCandidates().forEach(function(t) { if (tokenInShape(t, shp)) actionMode.targets[t.id] = true; });
+    setTool('select');
+    selectOnly([]);
+    renderActionBar();
+    requestRender();
+}
+
+// 施放者不再专注 → 移除它的区域（由 GM 或区域的主人那一端执行；新建的区域先等几秒，等服务器加上专注）
+var zoneSeen = {}, zoneGone = {};
+function cleanupZones() {
+    var now = Date.now();
+    sortedItems().forEach(function(z) {
+        if (!z.zone || !z.zone.conc || zoneGone[z.id]) return;
+        if (!zoneSeen[z.id]) { zoneSeen[z.id] = now; return; }
+        if (now - zoneSeen[z.id] < 4000 || !canEdit(z) || !(me.gm || z.owner === me.name)) return;
+        var c = scene.items[z.zone.conc];
+        if (c && hasStatus(c, 'concentration')) return;
+        zoneGone[z.id] = true;
+        deleteItems([z.id]);
+        notice('「' + (z.label || '区域') + '」的专注结束，区域已移除', false, 3000);
+    });
 }
 
 function onActionBarClick(e) {
@@ -492,7 +673,14 @@ function actionLogHtml(e) {
 }
 
 function initAction() {
-    $('actDialog').addEventListener('change', function(e) { if (e.target.id === 'acKind' || e.target.id === 'acShape') syncActionDialog(); });
+    $('actDialog').addEventListener('change', function(e) {
+        if (e.target.id === 'acKind' || e.target.id === 'acShape') syncActionDialog();
+        if (e.target.id === 'acSlot' && act) { // 换环阶：自动改成对应的伤害 / 治疗公式和目标数
+            applySlotLevel(act.a, parseInt(e.target.value, 10) || act.a.spellLevel);
+            $('acDamage').value = act.a.damage || '';
+            $('acTargets').value = act.a.targets || 1;
+        }
+    });
     $('actDialog').addEventListener('click', function(e) { if (e.target === $('actDialog')) closeActionDialog(); });
     $('actDialog').addEventListener('keydown', function(e) {
         if (e.key === 'Escape') { e.preventDefault(); closeActionDialog(); }
