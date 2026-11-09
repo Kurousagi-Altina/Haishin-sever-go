@@ -128,7 +128,7 @@ function currentSheet() {
 // HP：从棋子打开时改棋子血量（同一怪物的多个棋子各自独立），否则改角色卡
 function changeHp(sh, delta) {
     var tok = sheetView.tokenId && scene.items[sheetView.tokenId];
-    if (tok) {
+    if (tok && tok.hpMax > 0) {
         patchItems([tokenHpPatch(tok, delta)]);
         renderSheets();
         return;
@@ -141,7 +141,7 @@ function changeHp(sh, delta) {
 function setTempHp(sh, value) {
     var t = Math.max(0, parseInt(value, 10) || 0);
     var tok = sheetView.tokenId && scene.items[sheetView.tokenId];
-    if (tok) {
+    if (tok && tok.hpMax > 0) {
         patchItems([{ id: tok.id, hpTemp: t || null }]);
         renderSheets();
         return;
@@ -385,7 +385,7 @@ function placeSheetToken(sh) {
     if (max > 0) { it.hpMax = max; it.hp = num(sh.hp.cur, max); }
     if (sh.hp && num(sh.hp.temp, 0) > 0) it.hpTemp = num(sh.hp.temp, 0);
     if (me.gm && sh.kind === 'pc' && sh.owner) it.owner = sh.owner;
-    if (me.gm && gmPref('ttPlaceHidden', true)) it.hidden = true; // GM 从资料拉出来的棋子默认先对玩家隐藏
+    if (me.gm && gmPref('ttPlaceHidden', true) && !it.owner) it.hidden = true; // GM 从资料拉出来的棋子默认先对玩家隐藏（已分配给玩家的角色除外）
     var joining = me.gm && combatState() && sh.kind !== 'item';
     if (joining) { it.init = 0; it.initTie = Math.random(); }
     createItems([it]);

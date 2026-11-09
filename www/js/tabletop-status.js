@@ -1,6 +1,6 @@
 // 跑团桌面：状态效果、Boss 血条、全局搜索
 // - 状态挂在棋子上：item.status = [{ id, name, color, icon, rounds?, lv? }]（兼容 obr-suite 状态追踪导入）
-//   带轮数的状态在该棋子的回合开始时由服务器递减，到 0 自动移除
+//   带轮数的状态在该棋子的回合结束时由服务器递减，到 0 自动移除
 // - 状态参与攻击判定：目盲、隐形、倒地、束缚、麻痹等自动给出优势 / 劣势，麻痹 / 昏迷目标 5 尺内命中即重击
 // - 专注中的棋子受伤时提醒专注豁免 DC
 // - Boss 血条：GM 标记的棋子在画面上方显示大血条（玩家默认只看比例）
@@ -35,7 +35,9 @@ var STATUS_DEFS = [
     { id: 'guidance', name: '神导术', icon: '👍', color: '#fff59d', desc: '下一次属性检定可额外加 1d4。' },
     { id: 'advantage', name: '优势', icon: '⬆', color: '#ffcc00', desc: '自己的攻击检定具有优势（通用标记）。' },
     { id: 'disadvantage', name: '劣势', icon: '⬇', color: '#3b82f6', desc: '自己的攻击检定具有劣势（通用标记）。' },
-    { id: 'hidden', name: '躲藏', icon: '🫥', color: '#607d8b', desc: '躲藏中（隐匿检定成功）：被发现前视为隐形。' }
+    { id: 'hidden', name: '躲藏', icon: '🫥', color: '#607d8b', desc: '躲藏中（隐匿检定成功）：被发现前视为隐形。GM 的单位躲藏时，玩家地图和先攻条上都看不到它。' },
+    { id: 'stable', name: '稳定', icon: '💤', color: '#90a4ae', desc: '0 生命值但伤势稳定，不用再做死亡豁免。' },
+    { id: 'dead', name: '死亡', icon: '💀', color: '#424242', desc: '已死亡：先攻里自动跳过。' }
 ];
 var STATUS_BY_ID = {};
 STATUS_DEFS.forEach(function(d) { STATUS_BY_ID[d.id] = d; });
@@ -133,7 +135,7 @@ function statusPanelHtml(it, row) {
     h += '<div class="prop-row"><select class="tt-select" data-stsel style="flex:1;min-width:0;"><option value="">添加状态…</option>' +
         STATUS_DEFS.map(function(d) { return '<option value="' + d.id + '">' + d.icon + ' ' + d.name + '</option>'; }).join('') +
         '<option value="custom">自定义…</option></select>' +
-        '<input class="tt-input narrow" data-strounds type="number" min="0" placeholder="轮数" title="持续轮数（回合开始时递减，留空 = 不限）" style="width:52px;">' +
+        '<input class="tt-input narrow" data-strounds type="number" min="0" placeholder="轮数" title="持续轮数（该棋子的回合结束时减 1，留空 = 不限）" style="width:52px;">' +
         '<button class="tt-btn small" data-act="stadd">添加</button></div>';
     if (me.gm) {
         h += row('Boss', '<label><input type="checkbox" data-prop="boss"' + (it.boss ? ' checked' : '') + '> 顶部大血条</label>' +
@@ -217,7 +219,7 @@ function searchAll(q) {
     var key = q.toLowerCase(), out = [];
     var has = function(s) { return String(s || '').toLowerCase().indexOf(key) >= 0; };
     sortedItems().forEach(function(t) {
-        if (t.kind === 'token' && has(t.label)) out.push({ kind: '棋子', text: t.label, sub: t.hidden ? '隐藏' : '', run: function() { focusToken(t.id); } });
+        if (t.kind === 'token' && has(t.label) && seeable(t)) out.push({ kind: '棋子', text: t.label, sub: t.hidden ? '隐藏' : '', run: function() { focusToken(t.id); } });
     });
     Object.keys(sheets).forEach(function(id) {
         var sh = sheets[id];

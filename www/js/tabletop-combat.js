@@ -550,7 +550,12 @@ function joinInit(ids) {
         if (me.gm && gmPref('ttInitHidden', false)) p.initHidden = true;
         return p;
     });
-    if (!patches.length) { notice('选中的棋子已经在先攻里了', true); return; }
+    if (!patches.length) {
+        var picked = ids.filter(function(id) { var it = scene.items[id]; return it && it.kind === 'token'; });
+        notice(!picked.length ? '先在地图上选中要加入先攻的棋子' : picked.some(function(id) { return !canEdit(scene.items[id]); }) ?
+            '只能把自己控制的棋子加入先攻' : '选中的棋子已经在先攻里了', true);
+        return;
+    }
     patchItems(patches);
     renderCombat();
 }
@@ -589,6 +594,15 @@ function rollInit(ids, mode) {
 }
 
 function combatAction(action) {
+    if (action === 'death') { var cs = combatState(); if (cs) op({ op: 'death', ids: [cs.turn] }); return; }
+    if (action === 'follow') {
+        var on = !gmPref('ttFollowTurn', true);
+        setGmPref('ttFollowTurn', on);
+        if ($('prefFollowTurn')) $('prefFollowTurn').checked = on;
+        notice(on ? '🎥 镜头会跟随当前行动者' : '🎥 镜头不再自动跟随');
+        renderCombatHud();
+        return;
+    }
     if (action === 'end' && !confirm('结束战斗？先攻列表会保留，下次开战需要重新掷先攻。')) return;
     op({ op: 'combat', action: action });
 }
@@ -721,13 +735,13 @@ function renderCombatHud() {
         var cur = c && scene.items[c.turn], curShown = cur && idx >= 0;
         var mine = cur && canEdit(cur);
         var chips = list.map(function(t) {
-            var down = t.hpMax > 0 && num(t.hp, t.hpMax) <= 0;
+            var down = (t.hpMax > 0 && num(t.hp, t.hpMax) <= 0) || hasStatus(t, 'dead');
             var cls = 'init-chip' + (c && t.id === c.turn ? ' active' : '') + (t.owner && t.owner === me.name ? ' mine' : '') +
                 (t.hidden || initHiddenFor(t) ? ' hid' : '') + (down ? ' down' : '');
             return '<span class="' + cls + '" data-focus="' + escapeHtml(t.id) + '" title="' + escapeHtml((t.label || '未命名') + ' · 先攻 ' + num(t.init, 0) +
                 (t.hidden ? ' · 地图上隐藏' : initHiddenFor(t) ? ' · 玩家看不到' : '')) + '">' +
                 '<i style="background:' + escapeHtml(t.color || (t.owner ? '#1e88e5' : '#c62828')) + '">' + escapeHtml((t.label || '?').slice(0, 1)) + '</i>' +
-                '<span class="nm">' + escapeHtml((t.label || '未命名').slice(0, 6)) + '</span><b>' + num(t.init, 0) + '</b>' +
+                '<span class="nm">' + escapeHtml(chipName(t.label)) + '</span><b>' + num(t.init, 0) + '</b>' +
                 (t.hidden || initHiddenFor(t) ? '🙈' : '') + '</span>';
         }).join('');
         // 每一行包在 .hud-line 里：外层容器不接收鼠标（不挡地图），行本身可点击
@@ -735,7 +749,10 @@ function renderCombatHud() {
             (c && !curShown ? '<span class="init-chip active hid"><i>?</i><span class="nm">隐藏单位</span></span>' : '') +
             '<span class="init-chips">' + chips + '</span>' +
             (curShown && cur && isCreatureToken(cur) ? '<span class="hud-move" title="本回合已移动 / 速度">🏃 ' + fmtDist(movedThisTurn(cur)) + (tokenSpeed(cur) ? ' / ' + tokenSpeed(cur) : '') + '</span>' : '') +
-            (c && (me.gm || (mine && curShown)) ? '<button class="tt-btn small primary" data-cact="next">' + (me.gm ? '下一位' : '结束回合') + '</button>' : '') + '</div>');
+            (curShown && cur.owner === me.name && cur.hpMax > 0 && num(cur.hp, cur.hpMax) <= 0 && !hasStatus(cur, 'dead') && !hasStatus(cur, 'stable') ?
+                '<button class="tt-btn small" data-cact="death" title="0 生命值：掷死亡豁免">💀 死亡豁免</button>' : '') +
+            (c && (me.gm || (mine && curShown)) ? '<button class="tt-btn small primary" data-cact="next" title="快捷键 N">' + (me.gm ? '下一位' : '结束回合') + '</button>' : '') +
+            (c ? '<i class="hud-follow' + (gmPref('ttFollowTurn', true) ? ' on' : '') + '" data-cact="follow" title="镜头跟随当前行动者（点击开关）">🎥</i>' : '') + '</div>');
     }
     var tgt = targetToken();
     if (tgt) {
@@ -746,6 +763,14 @@ function renderCombatHud() {
     }
     hud.innerHTML = parts.join('');
     hud.style.display = parts.length ? '' : 'none';
+}
+
+// 先攻条上的名字：太长时截短，但保留末尾编号（「狗头人武者 2」→「狗头人…2」）
+function chipName(label) {
+    label = label || '未命名';
+    if (label.length <= 6) return label;
+    var m = label.match(/\s*(\d+)$/);
+    return m ? label.slice(0, Math.max(2, 5 - m[1].length)) + '…' + m[1] : label.slice(0, 6);
 }
 
 function onCombatHudDblClick(e) {
@@ -777,7 +802,7 @@ function onCombatChanged() {
                 if (nx && nx.owner === me.name) notice('⏳ 下一个就是你：' + (nx.label || ''), false, 3500);
             }
             // 镜头跟随当前行动者（设置里可关）
-            if (cur && visibleToMe(cur) && gmPref('ttFollowTurn', true) && canvas) {
+            if (cur && visibleToMe(cur) && gmPref('ttFollowTurn', true) && canvas && !gesture && !actionMode) {
                 var cc = tokenCenter(cur);
                 view.x = canvas.clientWidth / 2 - cc.x * view.s;
                 view.y = canvas.clientHeight / 2 - cc.y * view.s;

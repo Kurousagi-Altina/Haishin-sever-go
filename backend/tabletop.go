@@ -293,6 +293,7 @@ func newTTRoom(name, owner string) *TTRoom {
 		Assets:    []TTAsset{},
 		Log:       []TTLogEntry{},
 		Sheets:    make(map[string]map[string]interface{}),
+		Settings:  make(map[string]interface{}),
 		subs:      make(map[*ttSub]struct{}),
 	}
 }
@@ -464,10 +465,10 @@ func (room *TTRoom) setting(key string, def bool) bool {
 	return def
 }
 
-func (room *TTRoom) sceneView(sc *TTScene, gm bool) map[string]interface{} {
+func (room *TTRoom) sceneView(sc *TTScene, gm bool, name string) map[string]interface{} {
 	items := make([]map[string]interface{}, 0, len(sc.Items))
 	for _, it := range sc.Items {
-		if !gm && ttBool(it["hidden"]) {
+		if !gm && ttHiddenFrom(it, name) {
 			continue
 		}
 		if !gm {
@@ -585,7 +586,7 @@ func (room *TTRoom) stateMsg(sub *ttSub) []byte {
 		"type":   "state",
 		"me":     map[string]interface{}{"name": sub.name, "color": sub.color, "gm": sub.gm},
 		"room":   room.meta(),
-		"scene":  room.sceneView(room.activeScene(), sub.gm),
+		"scene":  room.sceneView(room.activeScene(), sub.gm, sub.name),
 		"log":    entries,
 		"users":  room.userList(),
 		"sheets": room.sheetsFor(sub),
@@ -626,31 +627,37 @@ func (room *TTRoom) broadcastUsers() {
 	room.broadcastAll(ttMsg(map[string]interface{}{"type": "users", "users": room.userList()}))
 }
 
-// broadcastItems sends full items; non-GMs get hidden items as deletions instead.
+// broadcastItems sends full items; non-GMs get items hidden from them as deletions instead
+// (a token's owner still sees it while the GM hides it from everyone else).
 func (room *TTRoom) broadcastItems(items []map[string]interface{}) {
 	all := ttMsg(map[string]interface{}{"type": "items", "items": items})
-	var visible []map[string]interface{}
-	var hiddenIDs []string
-	for _, it := range items {
-		if ttBool(it["hidden"]) {
-			hiddenIDs = append(hiddenIDs, it["id"].(string))
-		} else {
-			visible = append(visible, it)
-		}
-	}
-	var playerMsgs [][]byte
-	if len(visible) > 0 {
-		playerMsgs = append(playerMsgs, ttMsg(map[string]interface{}{"type": "items", "items": ttPlayerItems(visible, ttHPStep(room.activeScene().Props))}))
-	}
-	if len(hiddenIDs) > 0 {
-		playerMsgs = append(playerMsgs, ttMsg(map[string]interface{}{"type": "del", "ids": hiddenIDs}))
-	}
+	hpStep := ttHPStep(room.activeScene().Props)
+	cache := map[string][][]byte{} // per player name
 	for sub := range room.subs {
 		if sub.gm {
 			room.send(sub, all)
 			continue
 		}
-		for _, m := range playerMsgs {
+		msgs, ok := cache[sub.name]
+		if !ok {
+			var visible []map[string]interface{}
+			var hiddenIDs []string
+			for _, it := range items {
+				if ttHiddenFrom(it, sub.name) {
+					hiddenIDs = append(hiddenIDs, it["id"].(string))
+				} else {
+					visible = append(visible, it)
+				}
+			}
+			if len(visible) > 0 {
+				msgs = append(msgs, ttMsg(map[string]interface{}{"type": "items", "items": ttPlayerItems(visible, hpStep)}))
+			}
+			if len(hiddenIDs) > 0 {
+				msgs = append(msgs, ttMsg(map[string]interface{}{"type": "del", "ids": hiddenIDs}))
+			}
+			cache[sub.name] = msgs
+		}
+		for _, m := range msgs {
 			room.send(sub, m)
 		}
 	}
@@ -689,11 +696,24 @@ func newLogEntry(kind, who string) TTLogEntry {
 // ttCanEdit decides whether a non-GM may apply patch to an existing item:
 // players fully control their own items, and may move unlocked tokens.
 func ttCanEdit(room *TTRoom, item map[string]interface{}, u ttUser, patch map[string]interface{}) bool {
-	if ttBool(item["hidden"]) {
+	if ttHiddenFrom(item, u.name) {
 		return false
 	}
 	if owner, _ := item["owner"].(string); owner != "" && owner == u.name {
 		return true
+	}
+	// someone else's item: only positions (numbers) / a door's open flag (bool)
+	for _, k := range []string{"x", "y"} {
+		if v, in := patch[k]; in {
+			if _, ok := v.(float64); !ok {
+				return false
+			}
+		}
+	}
+	if v, in := patch["open"]; in {
+		if _, ok := v.(bool); !ok {
+			return false
+		}
 	}
 	allowed := map[string]bool{}
 	switch {
@@ -799,6 +819,12 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 				if !gm && (k == "hidden" || k == "locked" || k == "owner") {
 					continue
 				}
+				if !gm && k == "follow" && v != nil { // players can only follow tokens they can see
+					lid, _ := v.(string)
+					if leader := sc.Items[lid]; leader == nil || ttHiddenFrom(leader, u.name) {
+						continue
+					}
+				}
 				if v == nil {
 					delete(item, k)
 				} else {
@@ -819,7 +845,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 			}
 			if !gm {
 				owner, _ := item["owner"].(string)
-				if owner != u.name || ttBool(item["hidden"]) {
+				if owner != u.name || ttHiddenFrom(item, u.name) {
 					continue
 				}
 			}
@@ -1294,12 +1320,20 @@ func (t *Tabletop) HandleOp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	room.mu.Lock()
-	status, msg := http.StatusNotFound, "房间不存在"
-	if !room.deleted {
-		status, msg = room.apply(u, room.isGM(u), &req)
-	}
-	room.mu.Unlock()
+	status, msg := func() (st int, m string) {
+		room.mu.Lock()
+		defer room.mu.Unlock() // a panic in an op must never leave the room locked
+		defer func() {
+			if p := recover(); p != nil {
+				log.Printf("tabletop op %q panicked: %v", req.Op, p)
+				st, m = http.StatusInternalServerError, "服务器处理出错"
+			}
+		}()
+		if room.deleted {
+			return http.StatusNotFound, "房间不存在"
+		}
+		return room.apply(u, room.isGM(u), &req)
+	}()
 
 	if msg != "" {
 		writeJSON(w, status, map[string]interface{}{"error": msg})

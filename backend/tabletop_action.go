@@ -50,6 +50,7 @@ type TTActionHit struct {
 
 type TTActionResult struct {
 	Name       string         `json:"name"`
+	Caster     string         `json:"caster,omitempty"` // the acting token's name (when players may see it)
 	Kind       string         `json:"kind"`
 	Roll       *TTDiceResult  `json:"roll,omitempty"` // shared damage / healing roll (save, auto, heal, temp)
 	DamageType string         `json:"damageType,omitempty"`
@@ -127,7 +128,7 @@ func ttAddStatus(it map[string]interface{}, st map[string]interface{}) {
 	for k, v := range st {
 		cp[k] = v
 	}
-	if len(out) < 12 {
+	if len(out) < 12 || id == "dead" || id == "stable" || id == "unconscious" {
 		out = append(out, cp)
 	}
 	it["status"] = out
@@ -282,6 +283,21 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 	if a.Kind == "attack" && strings.TrimSpace(a.Attack) == "" {
 		a.Attack = "+0"
 	}
+	if a.Caster != "" {
+		c := sc.Items[a.Caster]
+		if c == nil || c["kind"] != "token" {
+			a.Caster = ""
+		} else if owner, _ := c["owner"].(string); !gm && (owner == "" || owner != u.name) {
+			return http.StatusForbidden, "只能用自己控制的棋子行动"
+		} else if !ttConcealed(c) && !ttInitHidden(c) {
+			res.Caster = ttCleanName(ttItemLabel(c), 40, "")
+		}
+	}
+	if a.Kind == "attack" && a.Damage != "" { // a crit doubles the dice: make sure that still rolls
+		if _, err := RollTabletopDice(ttDoubleDice(a.Damage)); err != nil {
+			return http.StatusBadRequest, err.Error()
+		}
+	}
 	bonus, _ := ttNum(a.Attack)
 
 	// one shared roll for area / save / healing effects
@@ -315,14 +331,17 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 	seen := map[string]bool{}
 	for _, t := range a.Targets {
 		it := sc.Items[t.ID]
-		if it == nil || it["kind"] != "token" || seen[t.ID] || (!gm && ttBool(it["hidden"])) {
+		if it == nil || it["kind"] != "token" || seen[t.ID] || (!gm && ttHiddenFrom(it, u.name)) {
 			continue
 		}
 		seen[t.ID] = true
 		if ttBool(it["hidden"]) {
 			hidden = true
 		}
-		hpBefore, _ := ttNum(it["hp"])
+		hpBefore, hasHP := ttNum(it["hp"])
+		if !hasHP { // no hp yet = full health
+			hpBefore, _ = ttNum(it["hpMax"])
+		}
 		crit := false
 		h := &TTActionHit{Name: ttCleanName(ttItemLabel(it), 40, "目标")}
 		res.Targets = append(res.Targets, h)
@@ -476,6 +495,8 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 					if note := ttDamageAtZero(it, dmg, crit); note != "" {
 						h.Note = strings.TrimSpace(h.Note + " " + note)
 					}
+				} else if note := room.dropToZero(it, hpBefore, dmg); note != "" {
+					h.Note = strings.TrimSpace(h.Note + " " + note)
 				}
 			} else {
 				h.Amount = -dmg
@@ -505,7 +526,7 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 				changed = append(changed, it)
 				if hp, _ := ttNum(it["hp"]); hp > 0 { // back on their feet: death saves reset
 					delete(it, "ds")
-					ttRemoveStatus(it, "stable")
+					ttRemoveStatus(it, "stable", "unconscious")
 				}
 			}
 		case a.Kind == "temp" && shared != nil:
@@ -530,9 +551,10 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 		if c := sc.Items[a.Caster]; c != nil && c["kind"] == "token" {
 			ttAddStatus(c, map[string]interface{}{"id": "concentration", "name": "专注", "color": "#4682b4", "icon": "🧠"})
 			changed = append(changed, c)
-			res.Note = ttItemLabel(c) + " 开始专注"
-			if ttBool(c["hidden"]) {
+			if ttConcealed(c) {
 				hidden = true // a hidden caster isn't revealed by the log
+			} else {
+				res.Note = ttItemLabel(c) + " 开始专注"
 			}
 		}
 	}
@@ -555,6 +577,35 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 	room.addLog(e)
 	return 0, ""
 }
+
+// dropToZero: a creature knocked from above 0 to 0 HP. Player characters fall unconscious
+// (or die outright when the leftover damage reaches their HP maximum); GM creatures die.
+// Concentration ends either way.
+func (room *TTRoom) dropToZero(it map[string]interface{}, hpBefore float64, dmg int) string {
+	hp, _ := ttNum(it["hp"])
+	if hp > 0 || hpBefore <= 0 {
+		return ""
+	}
+	ttRemoveStatus(it, "concentration")
+	owner, _ := it["owner"].(string)
+	pc := owner != ""
+	if sh := room.tokenSheet(it); sh != nil && sh["kind"] == "pc" {
+		pc = true
+	}
+	if !pc {
+		ttAddStatus(it, ttDeadStatus)
+		return "倒下了"
+	}
+	max, _ := ttNum(it["hpMax"])
+	if max > 0 && float64(dmg)-hpBefore >= max {
+		ttAddStatus(it, ttDeadStatus)
+		return "溢出伤害不低于生命上限：当场死亡"
+	}
+	ttAddStatus(it, ttUnconsciousStatus)
+	return "倒地昏迷，需要死亡豁免"
+}
+
+var ttUnconsciousStatus = map[string]interface{}{"id": "unconscious", "name": "昏迷", "color": "#5d4037", "icon": "😵"}
 
 // ttStatusLevel: level of a stacking condition (exhaustion), 0 when absent.
 func ttStatusLevel(it map[string]interface{}, id string) int {

@@ -47,6 +47,24 @@ func ttInitHidden(it map[string]interface{}) bool {
 	return owner == "" && ttStatusIDs(it)["hidden"]
 }
 
+// ttConcealed: kept from players — hidden by the GM, or a GM-controlled creature that is 躲藏.
+func ttConcealed(it map[string]interface{}) bool {
+	if ttBool(it["hidden"]) {
+		return true
+	}
+	owner, _ := it["owner"].(string)
+	return it["kind"] == "token" && owner == "" && ttStatusIDs(it)["hidden"]
+}
+
+// ttHiddenFrom: concealed from this player. A token's owner always sees it.
+func ttHiddenFrom(it map[string]interface{}, name string) bool {
+	if !ttConcealed(it) {
+		return false
+	}
+	owner, _ := it["owner"].(string)
+	return owner == "" || owner != name
+}
+
 var ttInitKeys = map[string]bool{"init": true, "initMod": true, "initRolled": true, "initTie": true, "initHidden": true}
 
 // ttHPStep: how coarse players see the HP of GM-controlled tokens, in percent
@@ -83,12 +101,17 @@ func ttPlayerItem(it map[string]interface{}, hpStep float64) map[string]interfac
 	stripInit := ttInitHidden(it)
 	max, hasMax := ttNum(it["hpMax"])
 	coarseHP := hasMax && max > 0 && owner == "" && hpStep > 0 && !ttBool(it["bossExact"])
-	if !stripAC && !stripInit && !coarseHP {
+	// earlier forms (transform stack) and raw Owlbear metadata carry exact HP / AC
+	_, hasForms := it["forms"]
+	_, hasObr := it["obr"]
+	stripExtra := owner == "" && it["kind"] == "token" && (hasForms || hasObr)
+	if !stripAC && !stripInit && !coarseHP && !stripExtra {
 		return it
 	}
 	cp := make(map[string]interface{}, len(it))
 	for k, v := range it {
-		if (stripAC && k == "ac") || (stripInit && ttInitKeys[k]) || (coarseHP && (k == "hpTemp" || k == "hp" || k == "hpMax")) {
+		if (stripAC && k == "ac") || (stripInit && ttInitKeys[k]) || (coarseHP && (k == "hpTemp" || k == "hp" || k == "hpMax")) ||
+			(stripExtra && (k == "forms" || k == "obr")) {
 			continue
 		}
 		cp[k] = v
@@ -126,7 +149,7 @@ func (sc *TTScene) propsFor(gm bool) map[string]interface{} {
 		return sc.Props
 	}
 	turn, _ := c["turn"].(string)
-	if it := sc.Items[turn]; it == nil || ttBool(it["hidden"]) || ttInitHidden(it) {
+	if it := sc.Items[turn]; it == nil || ttConcealed(it) || ttInitHidden(it) {
 		turn = "?"
 	}
 	cp := make(map[string]interface{}, len(sc.Props))
@@ -247,7 +270,7 @@ func (room *TTRoom) applyInit(u ttUser, gm bool, req *ttOpRequest) (int, string)
 			continue
 		}
 		owner, _ := it["owner"].(string)
-		if !gm && (owner == "" || owner != u.name || ttBool(it["hidden"])) {
+		if !gm && (owner == "" || owner != u.name) {
 			continue
 		}
 		bonus := room.initBonus(it)
@@ -274,7 +297,7 @@ func (room *TTRoom) applyInit(u ttUser, gm bool, req *ttOpRequest) (int, string)
 		e := newLogEntry("roll", u.name)
 		e.Label = ttCleanName(ttItemLabel(it)+"·先攻", 40, "先攻")
 		e.Roll = res
-		e.Hidden = ttBool(it["hidden"]) || ttInitHidden(it) || req.Hidden
+		e.Hidden = ttConcealed(it) || ttInitHidden(it) || req.Hidden
 		room.addLog(e)
 	}
 	if len(changed) == 0 {
@@ -352,22 +375,32 @@ func (room *TTRoom) applyCombat(u ttUser, gm bool, req *ttOpRequest) (int, strin
 			if gone {
 				idx = after - 1
 			}
-			idx++
-			if idx >= len(order) {
-				idx = 0
-				round++
-				sys("第 " + strconv.Itoa(round) + " 轮")
+			for step := 0; step < len(order); step++ { // dead creatures are skipped
+				idx++
+				if idx >= len(order) {
+					idx = 0
+					round++
+					sys("第 " + strconv.Itoa(round) + " 轮")
+				}
+				if !ttStatusIDs(order[idx])["dead"] {
+					break
+				}
 			}
 		} else {
 			if gone {
 				idx = after
 			}
-			idx--
-			if idx < 0 {
-				if round > 1 {
-					round--
+			for step := 0; step < len(order); step++ {
+				idx--
+				if idx < 0 {
+					if round > 1 {
+						round--
+					}
+					idx = len(order) - 1
 				}
-				idx = len(order) - 1
+				if !ttStatusIDs(order[idx])["dead"] {
+					break
+				}
 			}
 		}
 		sc.Props["combat"] = ttCombatState(round, order[idx])
@@ -426,7 +459,7 @@ func (room *TTRoom) applyCombat(u ttUser, gm bool, req *ttOpRequest) (int, strin
 // computed by the client from walls and creatures in the way.
 func (room *TTRoom) resolveAttack(e *TTLogEntry, gm bool, req *ttOpRequest) {
 	it := room.activeScene().Items[req.Target]
-	if it == nil || it["kind"] != "token" || (!gm && ttBool(it["hidden"])) {
+	if it == nil || it["kind"] != "token" || (!gm && ttConcealed(it)) {
 		return
 	}
 	e.Target = ttCleanName(ttItemLabel(it), 40, "目标")
@@ -538,7 +571,7 @@ func (room *TTRoom) tickStatus(it map[string]interface{}) {
 		it["status"] = kept
 	}
 	room.broadcastItems([]map[string]interface{}{it})
-	if len(ended) > 0 && !ttBool(it["hidden"]) {
+	if len(ended) > 0 && !ttConcealed(it) && !ttInitHidden(it) {
 		e := newLogEntry("sys", ttItemLabel(it))
 		e.Text = "的「" + strings.Join(ended, "」「") + "」结束了"
 		room.addLog(e)
@@ -705,7 +738,7 @@ func (room *TTRoom) applyDeath(u ttUser, gm bool, req *ttOpRequest) (int, string
 		e.Label = ttCleanName(ttItemLabel(it)+"·死亡豁免", 40, "死亡豁免")
 		e.Roll = res
 		e.Text = outcome
-		e.Hidden = ttBool(it["hidden"]) || req.Hidden
+		e.Hidden = ttConcealed(it) || req.Hidden
 		room.addLog(e)
 	}
 	if len(changed) == 0 {
@@ -748,13 +781,13 @@ func (room *TTRoom) applyPortal(u ttUser, gm bool, req *ttOpRequest) (int, strin
 	sc := room.activeScene()
 	from := sc.Items[req.Scene]
 	tag, radius, ok := ttPortal(from)
-	if !ok || len(req.IDs) == 0 || (!gm && ttBool(from["hidden"])) {
+	if !ok || len(req.IDs) == 0 || (!gm && ttHiddenFrom(from, u.name)) {
 		return http.StatusBadRequest, "不是传送门"
 	}
 	var dest map[string]interface{}
 	var candidates []map[string]interface{}
 	for id, it := range sc.Items {
-		if t2, _, ok := ttPortal(it); ok && it["id"] != from["id"] && t2 == tag {
+		if t2, _, ok := ttPortal(it); ok && it["id"] != from["id"] && t2 == tag && (gm || !ttHiddenFrom(it, u.name)) {
 			candidates = append(candidates, it)
 			if id == req.Target {
 				dest = it
@@ -777,7 +810,7 @@ func (room *TTRoom) applyPortal(u ttUser, gm bool, req *ttOpRequest) (int, strin
 			continue
 		}
 		owner, _ := it["owner"].(string)
-		if !gm && (ttBool(it["hidden"]) || ((owner == "" || owner != u.name) && (ttBool(it["locked"]) || !room.setting("playerMoveOthers", true)))) {
+		if !gm && (ttHiddenFrom(it, u.name) || ((owner == "" || owner != u.name) && (ttBool(it["locked"]) || !room.setting("playerMoveOthers", true)))) {
 			continue
 		}
 		cx, cy := ttItemCenter(it)
@@ -806,7 +839,7 @@ func (room *TTRoom) applyPortal(u ttUser, gm bool, req *ttOpRequest) (int, strin
 	}
 	changed = append(changed, sc.moveFollowers(moved, inBatch)...)
 	room.broadcastItems(changed)
-	if !ttBool(dest["hidden"]) {
+	if !ttConcealed(dest) {
 		room.broadcastAll(ttMsg(map[string]interface{}{"type": "fx", "from": u.name, "color": ttColorFor(u.name),
 			"fx": map[string]interface{}{"t": "portal", "x": dx, "y": dy}}))
 	}

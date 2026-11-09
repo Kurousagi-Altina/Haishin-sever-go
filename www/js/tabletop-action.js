@@ -101,6 +101,11 @@ function casterFor(sh) {
     if (tok && tok.sheet === (sh && sh.id)) return tok;
     if (sh) {
         var list = sortedItems().filter(function(t) { return t.kind === 'token' && t.sheet === sh.id; });
+        // 同一张怪物卡放了多个棋子：优先用正在行动的那个，其次是选中的那个
+        var cs = combatState(), cur = cs && scene.items[cs.turn];
+        if (cur && cur.sheet === sh.id && canEdit(cur)) return cur;
+        var sel = list.filter(function(t) { return selected[t.id] && canEdit(t); })[0];
+        if (sel) return sel;
         var mine = list.filter(function(t) { return canEdit(t); });
         if (mine.length || list.length) return (mine[0] || list[0]);
     }
@@ -415,6 +420,7 @@ function renderActionBar() {
 function confirmActionTargeting() {
     var m = actionMode;
     if (!m) return;
+    if (m.caster) m.caster = scene.items[m.caster.id] || null; // 用最新的棋子数据（状态可能变了）
     var a = m.act, ids = Object.keys(m.targets).filter(function(id) { return scene.items[id]; });
     if (!ids.length && !a.conc) { notice('还没有选择目标', true); return; }
     var targets = ids.map(function(id) {
@@ -441,7 +447,8 @@ function confirmActionTargeting() {
     var def = a.status && STATUS_BY_ID[a.status];
     var body = { op: 'action', hidden: !!a.hidden, act: {
         name: a.name, kind: a.kind, attack: a.attack || '', damage: a.damage || '', damageType: a.dtype || '',
-        save: a.save || '', dc: a.dc || 0, half: !!a.half, caster: m.caster ? m.caster.id : '', concentration: !!a.conc, targets: targets,
+        save: a.kind === 'save' ? a.save || '' : '', dc: a.kind === 'save' ? a.dc || 0 : 0, half: !!a.half,
+        caster: m.caster && canEdit(m.caster) ? m.caster.id : '', concentration: !!a.conc, targets: targets,
         status: def ? { id: def.id, name: def.name, color: def.color, icon: def.icon, rounds: a.rounds || 0 } : null
     } };
     cancelActionTargeting();
@@ -465,7 +472,7 @@ function actionLogHtml(e) {
     var r = e.act, h = '<div class="act-log">';
     var KIND = { attack: '攻击', save: '豁免', auto: '伤害', heal: '治疗', temp: '临时生命', effect: '效果' };
     if (r.roll) h += '<div class="act-roll">' + (KIND[r.kind] || '') + (r.damageType ? '（' + escapeHtml(r.damageType) + '）' : '') + rollHtml(r.roll).replace(/^<div class="log-roll">|<\/div>$/g, '') + '</div>';
-    if (r.save) h += '<div class="tt-hint">' + ({ str: '力量', dex: '敏捷', con: '体质', int: '智力', wis: '感知', cha: '魅力' }[r.save] || r.save) + '豁免 DC ' + r.dc + '</div>';
+    if (r.save && r.kind === 'save') h += '<div class="tt-hint">' + ({ str: '力量', dex: '敏捷', con: '体质', int: '智力', wis: '感知', cha: '魅力' }[r.save] || r.save) + '豁免 DC ' + r.dc + '</div>';
     (r.targets || []).forEach(function(t) {
         var parts = [];
         if (t.attack) {

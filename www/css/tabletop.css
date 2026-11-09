@@ -222,7 +222,7 @@ input[type="color"].tt-input { padding: 0 2px; width: 36px; height: 28px; }
 @media (max-width: 760px) {
     .tt-side { position: absolute; right: 0; top: 44px; bottom: 0; width: min(330px, 100%); z-index: 20; }
     .tt-header .scene-name, .tt-users { display: none; }
-    .tt-float { width: calc(100% - 20px); max-height: 45%; top: auto; bottom: 56px; }
+    .tt-float { width: calc(100% - 20px); max-height: 40%; top: auto; bottom: 112px; }
 }
 
 /* 鉴权标签（与 cloud.html 一致） */
@@ -452,3 +452,17 @@ details.feature summary { cursor: pointer; font-size: 13px; }
 .log-entry .reroll:hover { color: #fff; border-color: #888; }
 
 .combat-hud .hud-move { white-space: nowrap; flex: none; color: #90caf9; font-size: 12px; }
+
+.combat-hud .hud-follow { font-style: normal; cursor: pointer; opacity: 0.4; flex: none; padding: 0 2px; }
+.combat-hud .hud-follow.on { opacity: 1; }
+
+/* 手机：顶栏不换行，侧栏按钮始终可见 */
+@media (max-width: 760px) {
+    .tt-header { gap: 6px; padding: 0 8px; }
+    .tt-header .room-name { min-width: 0; flex: 0 1 auto; max-width: 28vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tt-header .spacer { flex: 0 0 0; }
+    .tt-header .global-search { flex: 1 1 auto; min-width: 0; }
+    .tt-header .global-search .tt-input { width: 100%; }
+    .tt-header .copy-link { display: none; }
+    .tt-header > .tt-btn { flex: none; white-space: nowrap; }
+}
