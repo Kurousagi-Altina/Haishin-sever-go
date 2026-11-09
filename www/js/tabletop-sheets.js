@@ -492,7 +492,7 @@ function runLookup() {
     var q = lookup.q;
     api('/api/tabletop/5e/search?q=' + enc(q), 'GET').then(function(data) {
         var results = (data.results || []).map(function(r) { return { title: r.title || r.rawTitle, path: r.path }; })
-            .filter(function(r) { return r.path && /^topics\//.test(r.path); });
+            .filter(function(r) { return r.path && /^topics\//.test(r.path) && !is2014Core(r.path); });
         if (results.length || lookup.q !== q) return results;
         // 法术没有独立页面（按环阶放在一起），标题搜不到时去法术详述里找
         return findSpell(q, '').then(function(spell) {
@@ -507,13 +507,15 @@ function runLookup() {
 }
 
 // ===== 法术 =====
-// 不全书里法术按环阶整页存放（<H4>疗伤术｜Cure Wounds</H4>），依次查 2024 玩家手册、XGE、TCE、2014 玩家手册
+// 不全书里法术按环阶整页存放（<H4>疗伤术｜Cure Wounds</H4>）。规则统一按 2024 版：先查 2024 玩家手册，
+// 2024 版没有收录的法术再查 XGE、TCE；不查 2014 玩家手册
 var SPELL_SOURCES = [
     function(l) { return 'topics/玩家手册2024/法术详述/' + l + '环.htm'; },
     function(l) { return 'topics/珊娜萨的万事指南/法术/法术详述/' + (l === 0 ? '戏法' : l + '环') + '.html'; },
-    function(l) { return 'topics/塔莎的万事坩埚/法术/法术详述/' + (l === 0 ? '戏法' : l + '环') + '.html'; },
-    function(l) { return 'topics/玩家手册/魔法/法术详述/' + (l === 0 ? '戏法' : l + '环') + '.html'; }
+    function(l) { return 'topics/塔莎的万事坩埚/法术/法术详述/' + (l === 0 ? '戏法' : l + '环') + '.html'; }
 ];
+// 2014 版核心三书（不带年份的目录）：搜索结果里不显示
+function is2014Core(path) { return /^topics\/(玩家手册|怪物图鉴|城主指南)\//.test(path || ''); }
 var pageEntryCache = {};
 
 function fetch5eHtml(path) {

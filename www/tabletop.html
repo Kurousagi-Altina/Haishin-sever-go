@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css?v=2026110914">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026110916">
 </head>
 <body class="tt-body">
 
@@ -417,7 +417,9 @@
             <div class="rd-row"><span class="rd-key">射程</span><input class="tt-input narrow" id="acRange" type="number" min="0" placeholder="不限"> /
                 <input class="tt-input narrow" id="acLong" type="number" min="0" placeholder="远"> 尺</div>
             <div class="rd-row"><span class="rd-key">范围</span><select class="tt-select" id="acShape"></select>
-                <span id="acSizeWrap"><input class="tt-input narrow" id="acSize" type="number" min="5" step="5"> 尺 <label title="从施放者自身展开（如锥形、直线、以自身为中心的光环）"><input type="checkbox" id="acSelf"> 从自身展开</label></span>
+                <span id="acSizeWrap"><span id="acSizeLabel">大小</span> <input class="tt-input narrow" id="acSize" type="number" min="1" step="5"> 尺
+                    <span id="acWidthWrap">宽 / 厚 <input class="tt-input narrow" id="acWidth" type="number" min="1" step="1"> 尺</span>
+                    <label id="acSelfLabel" title="从施放者自身展开（如锥形、直线、以自身为中心的光环）"><input type="checkbox" id="acSelf"> 从自身展开</label></span>
                 <span id="acTargetsWrap">目标数 <input class="tt-input narrow" id="acTargets" type="number" min="1" value="1"></span></div>
             <div class="rd-row" id="acZoneRow"><span class="rd-key"></span><label title="持续性的范围法术（如月华之光、灵体卫士）：结算后在地图上保留区域，可移动、可再次对区域内结算，专注结束自动移除"><input type="checkbox" id="acZone"> 在地图上保留区域（持续效果）</label></div>
             <div class="rd-row"><span class="rd-key">附加状态</span><select class="tt-select" id="acStatus"></select>
@@ -434,11 +436,11 @@
     </div>
 
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js?v=2026110914"></script>
-    <script src="js/tabletop-combat.js?v=2026110914"></script>
-    <script src="js/tabletop-status.js?v=2026110914"></script>
-    <script src="js/tabletop-action.js?v=2026110914"></script>
-    <script src="js/tabletop-extra.js?v=2026110914"></script>
-    <script src="js/tabletop.js?v=2026110914"></script>
+    <script src="js/tabletop-sheets.js?v=2026110916"></script>
+    <script src="js/tabletop-combat.js?v=2026110916"></script>
+    <script src="js/tabletop-status.js?v=2026110916"></script>
+    <script src="js/tabletop-action.js?v=2026110916"></script>
+    <script src="js/tabletop-extra.js?v=2026110916"></script>
+    <script src="js/tabletop.js?v=2026110916"></script>
 </body>
 </html>

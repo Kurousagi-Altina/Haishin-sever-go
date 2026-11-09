@@ -1175,8 +1175,10 @@ function drawShape(c, it) {
             c.fill();
             c.globalAlpha = 1;
         }
-        if (it.zone) c.setLineDash([8 / view.s, 5 / view.s]);
+        if (it.zone && it.fill) c.setLineDash([8 / view.s, 5 / view.s]);
+        if (it.zone && !it.fill) { c.globalAlpha = 0.55; c.lineCap = 'butt'; } // 墙类区域：按厚度画成半透明的带子
         c.stroke();
+        c.globalAlpha = 1;
         if (it.zone && it.label) { // 区域名称
             var zc = { x: 0, y: 0 }, zp = shapePoints(it);
             if (it.shape !== 'circle' && zp.length) zc = { x: zp.reduce(function(s, p) { return s + p[0]; }, 0) / zp.length, y: zp.reduce(function(s, p) { return s + p[1]; }, 0) / zp.length };
@@ -2261,6 +2263,11 @@ function onPointerUp(e) {
             patches.push(mp);
         }
         if (blocked) notice('被墙挡住了', true);
+        // 移动了自己能操作的持续区域（如月华之光）：问一下要不要对新位置里的生物结算
+        var movedZones = Object.keys(g.orig).map(function(id) { return scene.items[id]; }).filter(function(z) {
+            return z && z.zone && z.zone.act && canEdit(z) && (z.x !== g.orig[z.id].x || z.y !== g.orig[z.id].y);
+        });
+        if (movedZones.length === 1) { var mz = movedZones[0]; setTimeout(function() { if (!actionMode && scene.items[mz.id]) zoneRetrigger(scene.items[mz.id], true); }, 50); }
         queueItems(patches);
         if (!blocked) setTimeout(function() { checkPortals(Object.keys(g.orig)); }, 50);
         break;
@@ -2383,7 +2390,9 @@ function onKeyDown(e) {
     if ($('rollDialog').style.display !== 'none' || $('actDialog').style.display !== 'none') return;
     if (actionMode) {
         if (e.key === 'Escape') { cancelActionTargeting(); return; }
-        if (e.key === 'Enter') { confirmActionTargeting(); return; }
+        var am = actionMode, pathOpen = isPathShape(am.act.area) && !am.locked && am.pts && am.pts.length;
+        if (e.key === 'Enter') { if (pathOpen && am.pts.length > 1) finishPathShape(); else confirmActionTargeting(); return; }
+        if (e.key === 'Backspace' && isPathShape(am.act.area) && am.pts && am.pts.length) { e.preventDefault(); undoPathPoint(); return; }
     }
     if (e.key === ' ') { if (!spaceDown) { spaceDown = true; updateCursor(); } e.preventDefault(); return; }
     if (e.ctrlKey || e.metaKey) {

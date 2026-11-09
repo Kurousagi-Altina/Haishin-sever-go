@@ -11,7 +11,13 @@ var CN_NUM = { '一': 1, '二': 2, '两': 2, '三': 3, '四': 4, '五': 5, '六'
 var DMG_TYPES = '强酸|钝击|寒冷|火焰|力场|闪电|黯蚀|死灵|穿刺|毒素|心灵|光耀|挥砍|雷鸣';
 var SPELL_BUFFS = { '祝福术': 'blessed', '灾祸术': 'baned', '加速术': 'hasted', '侵扰术': 'hexed', '神导术': 'guidance', '隐形术': 'invisible' };
 var ACT_KINDS = [['attack', '攻击检定'], ['save', '豁免'], ['auto', '自动命中伤害'], ['heal', '治疗'], ['temp', '临时生命'], ['effect', '仅附加状态']];
-var AREA_SHAPES = [['', '无（点选目标）'], ['circle', '球形 / 圆形（半径）'], ['cone', '锥形（长度）'], ['line', '直线（长度）'], ['cube', '立方（边长）']];
+var AREA_SHAPES = [['', '无（点选目标）'], ['circle', '球形 / 圆形（半径）'], ['cone', '锥形（长度）'], ['line', '直线（长度）'], ['cube', '立方（边长）'],
+    ['wall', '直墙（点两下定起点和方向）'], ['path', '自由形状墙（连续路径）'], ['ring', '环形墙（直径）']];
+// 大小那一栏的含义
+var AREA_SIZE_LABEL = { circle: '半径', cone: '长度', line: '长度', cube: '边长', wall: '最长', path: '总长至多', ring: '直径' };
+// 在地图上逐点放置的形状（直墙、自由路径、不从自身发出的直线）
+function isPathShape(ar) { return ar && (ar.shape === 'wall' || ar.shape === 'path' || (ar.shape === 'line' && !ar.self)); }
+function hasWidth(ar) { return ar && (ar.shape === 'line' || ar.shape === 'wall' || ar.shape === 'path' || ar.shape === 'ring'); }
 
 var act = null;        // 行动框里正在编辑的行动
 var actionMode = null; // 地图选目标状态 { act, caster, targets:{}, aim, locked }
@@ -63,8 +69,22 @@ function parseActionText(name, text, meta) {
     var selfCenter = /光环|散发|以(?:它|你|其|自身)所在(?:的)?空间为中心|以(?:你|自身)为中心/.test(t);
     if ((m = t.match(/(\d+)\s*尺\s*半径/) || t.match(/半径\s*(\d+)\s*尺/) || t.match(/(\d+)\s*尺\s*的?\s*(?:光环|散发)/))) a.area = { shape: 'circle', size: +m[1], width: 5, self: a.area.self || selfCenter };
     else if ((m = t.match(/(\d+)\s*尺\s*的?\s*(?:长的?)?\s*锥/))) a.area = { shape: 'cone', size: +m[1], width: 5, self: true };
+    // 「长100尺、宽5尺的直线」
+    else if ((m = t.match(/长\s*(\d+)\s*尺\s*[、，,]?\s*(?:宽\s*(\d+)\s*尺)?\s*的?\s*(?:直线|线状|线形)/))) a.area = { shape: 'line', size: +m[1], width: +(m[2] || 5), self: true };
     else if ((m = t.match(/(\d+)\s*尺\s*(?:长)?(?:[，,、]?\s*(\d+)\s*尺\s*宽)?\s*的?\s*(?:直线|线状|线形)/))) a.area = { shape: 'line', size: +m[1], width: +(m[2] || 5), self: true };
     else if ((m = t.match(/(\d+)\s*尺\s*的?\s*立方/))) a.area = { shape: 'cube', size: +m[1], width: 5, self: a.area.self };
+    // 墙：「长至多50尺、高15尺、厚1尺」「可塑造为任意形状 / 连续路径」「直径至多20尺的环形墙」「十块10尺×10尺的嵌板」
+    if (/墙|屏障|护壁/.test(t)) {
+        var wl = t.match(/长(?:度)?\s*(?:为|可达)?\s*(?:至多|最多|不超过)?\s*(\d+)\s*尺/);
+        var panels = t.match(/([一二两三四五六七八九十\d]+)\s*(?:块|片)[^。]{0,8}?(\d+)\s*尺\s*[×xX＊*乘]\s*\d+\s*尺/);
+        var th = t.match(/厚(?:度)?\s*(?:为)?\s*(?:至多)?\s*(\d+)\s*尺/) || t.match(/(\d+)\s*尺\s*厚/);
+        var ringM = t.match(/直径\s*(?:为)?\s*(?:至多)?\s*(\d+)\s*尺[^。；;]{0,20}环/) || t.match(/环形[^。；;]{0,20}?直径\s*(?:至多)?\s*(\d+)\s*尺/);
+        var free = /任意形状|任何形状|连续(?:的)?路径|形状由你决定|蜿蜒|相邻/.test(t);
+        var len = wl ? +wl[1] : panels ? (cnInt(panels[1]) || 1) * +panels[2] : 0;
+        if (len) a.area = { shape: free || panels ? 'path' : 'wall', size: len, width: th ? +th[1] : (panels ? 1 : 1), self: false };
+        else if (ringM) a.area = { shape: 'ring', size: +ringM[1], width: th ? +th[1] : 1, self: false };
+        if (ringM) a.area.ringSize = +ringM[1];
+    }
     // 目标数
     if ((m = t.match(/至多\s*([一二两三四五六七八九十\d]+)\s*(?:名|个)/))) a.targets = cnInt(m[1]) || 1;
     // 魔法飞弹「三枚飞镖」、灼热射线「三道射线」：每一发可以打不同目标
@@ -299,6 +319,7 @@ function openActionDialog(a, caster, sh) {
     f('acShape').innerHTML = AREA_SHAPES.map(function(s) { return '<option value="' + s[0] + '">' + s[1] + '</option>'; }).join('');
     f('acShape').value = a.area.shape || '';
     f('acSize').value = a.area.size || '';
+    f('acWidth').value = a.area.width || '';
     f('acSelf').checked = !!a.area.self;
     f('acTargets').value = a.targets || 1;
     f('acStatus').innerHTML = '<option value="">（无）</option>' + STATUS_DEFS.map(function(d) { return '<option value="' + d.id + '">' + d.icon + ' ' + d.name + '</option>'; }).join('');
@@ -325,7 +346,8 @@ function readActionDialog() {
     a.half = $('acHalf').checked;
     a.range = parseFloat(v('acRange')) || 0;
     a.rangeLong = parseFloat(v('acLong')) || 0;
-    a.area = { shape: v('acShape'), size: parseFloat(v('acSize')) || 0, width: a.area && a.area.width || 5, self: $('acSelf').checked };
+    var oldArea = a.area || {};
+    a.area = { shape: v('acShape'), size: parseFloat(v('acSize')) || 0, width: parseFloat(v('acWidth')) || oldArea.width || 5, self: $('acSelf').checked, ringSize: oldArea.ringSize };
     a.targets = Math.max(1, parseInt(v('acTargets'), 10) || 1);
     a.status = v('acStatus');
     a.rounds = parseInt(v('acRounds'), 10) || 0;
@@ -342,6 +364,9 @@ function syncActionDialog() {
     $('acDamageLabel').textContent = k === 'heal' ? '治疗' : k === 'temp' ? '临时生命' : '伤害';
     $('acDtype').style.display = k === 'heal' || k === 'temp' ? 'none' : '';
     $('acSizeWrap').style.display = shape ? '' : 'none';
+    $('acSizeLabel').textContent = AREA_SIZE_LABEL[shape] || '大小';
+    $('acWidthWrap').style.display = hasWidth({ shape: shape }) ? '' : 'none';
+    $('acSelfLabel').style.display = shape === 'wall' || shape === 'path' ? 'none' : '';
     $('acZoneRow').style.display = shape ? '' : 'none';
     $('acTargetsWrap').style.display = shape ? 'none' : '';
 }
@@ -385,11 +410,50 @@ function actionRangePx() {
 }
 
 // 区域多边形 / 圆（世界坐标）；self 区域从施放者占格边缘朝鼠标方向展开
+// ===== 逐点放置的墙 / 直线 =====
+function pathLen(pts) {
+    var l = 0;
+    for (var i = 1; i < pts.length; i++) l += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+    return l;
+}
+// 下一个点：直线固定长度；直墙 / 自由路径不超过剩余长度
+function clampNext(pts, w, ar) {
+    var last = pts[pts.length - 1], dx = w.x - last[0], dy = w.y - last[1], d = Math.hypot(dx, dy);
+    var maxPx = ftToPx(ar.size || 0);
+    if (!d) return [last[0], last[1]];
+    var len = ar.shape === 'line' ? maxPx : Math.min(d, Math.max(0, maxPx - pathLen(pts)));
+    if (!(maxPx > 0)) len = d;
+    return [last[0] + dx / d * len, last[1] + dy / d * len];
+}
+// 改了最长长度：把已经画好的路径截到新长度以内
+function clampPath(pts, maxPx) {
+    if (!(maxPx > 0) || pts.length < 2) return pts;
+    var out = [pts[0]], left = maxPx;
+    for (var i = 1; i < pts.length && left > 0; i++) {
+        var a = out[out.length - 1], dx = pts[i][0] - pts[i - 1][0], dy = pts[i][1] - pts[i - 1][1], d = Math.hypot(dx, dy);
+        var k = d > left ? left / d : 1;
+        out.push([a[0] + dx * k, a[1] + dy * k]);
+        left -= d * k;
+    }
+    return out;
+}
+
 function actionShape() {
     var m = actionMode, a = m.act, ar = a.area;
+    if (isPathShape(ar)) {
+        var pts = (m.pts || []).slice(), wpx = ftToPx(ar.width || (ar.shape === 'line' ? 5 : 1));
+        if (!pts.length) return m.aim ? { type: 'path', pts: [[m.aim.x, m.aim.y], [m.aim.x, m.aim.y]], w: wpx } : null;
+        if (!m.locked && m.aim && !(ar.shape !== 'path' && pts.length >= 2)) pts.push(clampNext(pts, m.aim, ar));
+        if (pts.length === 1) pts.push(pts[0]);
+        return { type: 'path', pts: pts, w: wpx };
+    }
     if (!ar.shape || !m.aim) return null;
     var size = ftToPx(ar.size || 0), c = m.caster ? tokenCenter(m.caster) : null;
     var half = m.caster ? hitPx(m.caster) : 0; // 从施放者判定圆的边缘展开
+    if (ar.shape === 'ring') {
+        var rc = ar.self && c ? c : m.aim;
+        return { type: 'ring', x: rc.x, y: rc.y, r: size / 2, w: ftToPx(ar.width || 1) };
+    }
     if (ar.shape === 'circle') {
         var center = ar.self && c ? c : m.aim;
         return { type: 'circle', x: center.x, y: center.y, r: size + (ar.self && c ? half : 0) };
@@ -414,6 +478,13 @@ function actionShape() {
 function tokenInShape(t, sh) {
     var c = tokenCenter(t), r = hitPx(t);
     if (sh.type === 'circle') return Math.hypot(c.x - sh.x, c.y - sh.y) < sh.r + r;
+    if (sh.type === 'ring') return Math.abs(Math.hypot(c.x - sh.x, c.y - sh.y) - sh.r) < sh.w / 2 + r;
+    if (sh.type === 'path') {
+        for (var k = 1; k < sh.pts.length; k++) {
+            if (distToSeg(c.x, c.y, sh.pts[k - 1][0], sh.pts[k - 1][1], sh.pts[k][0], sh.pts[k][1]) < sh.w / 2 + r) return true;
+        }
+        return false;
+    }
     if (pointInPoly(c.x, c.y, sh.pts)) return true;
     for (var i = 0; i < sh.pts.length; i++) {
         var p1 = sh.pts[i], p2 = sh.pts[(i + 1) % sh.pts.length];
@@ -447,6 +518,30 @@ function actionPointerDown(w, e) {
     var m = actionMode, a = m.act;
     var hit = hitTest(w, ['token']);
     if (hit && (!isCreatureToken(hit) || !visibleToMe(hit))) hit = null;
+    if (isPathShape(a.area)) {
+        if (m.locked && hit) { // 已放好：点生物切换是否包含
+            if (m.targets[hit.id]) delete m.targets[hit.id]; else m.targets[hit.id] = true;
+        } else if (m.locked || !m.pts || !m.pts.length) { // 起点（重新放置）
+            if (m.caster && actionRangePx()) {
+                var c0 = tokenCenter(m.caster);
+                if (Math.hypot(w.x - c0.x, w.y - c0.y) > actionRangePx() + hitPx(m.caster)) { notice('起点超出施法距离', true); return; }
+            }
+            m.pts = [[w.x, w.y]];
+            m.locked = false;
+            m.targets = {};
+        } else {
+            var last = m.pts[m.pts.length - 1], nx = clampNext(m.pts, w, a.area);
+            if (Math.hypot(nx[0] - last[0], nx[1] - last[1]) * view.s < 4) { if (m.pts.length > 1) finishPathShape(); } // 原地再点一下 = 完成
+            else {
+                m.pts.push(nx);
+                if (a.area.shape !== 'path' || pathLen(m.pts) >= ftToPx(a.area.size || 0) - 0.5) finishPathShape();
+            }
+        }
+        recomputeAreaTargets();
+        renderActionBar();
+        requestRender();
+        return;
+    }
     if (a.area.shape) {
         if (m.locked && hit) { // 已放置范围：点生物切换是否包含
             if (m.targets[hit.id]) delete m.targets[hit.id]; else m.targets[hit.id] = true;
@@ -475,6 +570,68 @@ function actionPointerMove(w) {
     requestRender();
 }
 
+// 自由路径画完（再点一下原地 / Enter / 「完成形状」）
+function finishPathShape() {
+    var m = actionMode;
+    if (!m || !m.pts || m.pts.length < 2) { notice('至少要放两个点', true); return; }
+    m.locked = true;
+    recomputeAreaTargets();
+    renderActionBar();
+    requestRender();
+}
+
+// 撤销上一个点（画完后也可以，回到继续画的状态）
+function undoPathPoint() {
+    var m = actionMode;
+    if (!m || !m.pts || !m.pts.length) return;
+    m.pts.pop();
+    m.locked = false;
+    recomputeAreaTargets();
+    renderActionBar();
+    requestRender();
+}
+
+// 重画：清掉已放置的范围，从头再放
+function redrawArea() {
+    var m = actionMode;
+    if (!m) return;
+    m.pts = [];
+    m.locked = false;
+    m.targets = {};
+    renderActionBar();
+    requestRender();
+}
+
+// 只放置区域、不结算：施法（扣法术位、进入专注）并把区域留在地图上，之后需要时再「对区域内结算」
+function placeZoneOnly() {
+    var m = actionMode;
+    if (!m) return;
+    var a = m.act;
+    if (isPathShape(a.area) && !m.locked) { if (!m.pts || m.pts.length < 2) { notice('先把范围画好', true); return; } finishPathShape(); }
+    var shp = actionShape();
+    if (!shp) { notice('先把范围放到地图上', true); return; }
+    createZone(a, shp, m.caster);
+    consumeSlot(a, m.sheetId);
+    var caster = m.caster && scene.items[m.caster.id];
+    if (a.conc && caster && canEdit(caster)) {
+        op({ op: 'action', hidden: !!a.hidden, act: { name: a.name, kind: 'effect', caster: caster.id, concentration: true, targets: [] } });
+    }
+    cancelActionTargeting();
+    notice('「' + a.name + '」已放到地图上；需要时选中区域边框点「⚡ 对区域内结算」');
+}
+
+// 放置时调整大小 / 宽度（操作条上的 − / ＋）
+function adjustArea(which, dir) {
+    var m = actionMode, ar = m.act.area;
+    if (which === 'size') ar.size = Math.max(5, (ar.size || 0) + dir * 5);
+    else { var st = (ar.width || 1) < 5 || ((ar.width || 1) === 5 && dir < 0) ? 1 : 5; ar.width = Math.max(1, (ar.width || 1) + dir * st); }
+    if (which === 'size' && m.pts && m.pts.length > 1 && ar.shape !== 'line') m.pts = clampPath(m.pts, ftToPx(ar.size));
+    if (which === 'size' && ar.shape === 'line' && m.pts && m.pts.length > 1) m.pts = [m.pts[0], clampNext([m.pts[0]], { x: m.pts[1][0], y: m.pts[1][1] }, ar)];
+    if (m.locked || isPathShape(ar)) recomputeAreaTargets();
+    renderActionBar();
+    requestRender();
+}
+
 function drawActionOverlay() {
     var m = actionMode;
     if (!m) return;
@@ -494,6 +651,24 @@ function drawActionOverlay() {
         ctx.setLineDash([]);
     }
     var sh = actionShape();
+    var heal0 = m.act.kind === 'heal' || m.act.kind === 'temp';
+    if (sh && (sh.type === 'path' || sh.type === 'ring')) { // 墙：按厚度画出带子 + 中线
+        ctx.beginPath();
+        if (sh.type === 'ring') ctx.arc(sh.x, sh.y, sh.r, 0, Math.PI * 2);
+        else sh.pts.forEach(function(p, i) { if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); });
+        ctx.lineCap = 'butt';
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = Math.max(sh.w, 4 / view.s);
+        ctx.strokeStyle = heal0 ? 'rgba(102,187,106,0.35)' : 'rgba(255,82,82,0.35)';
+        ctx.stroke();
+        ctx.lineWidth = 1.5 / view.s;
+        ctx.strokeStyle = heal0 ? '#66bb6a' : '#ff5252';
+        ctx.setLineDash([6 / view.s, 4 / view.s]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        if (sh.type === 'path') sh.pts.forEach(function(p) { ctx.beginPath(); ctx.arc(p[0], p[1], 3 / view.s, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill(); });
+        sh = null;
+    }
     if (sh) {
         ctx.beginPath();
         if (sh.type === 'circle') ctx.arc(sh.x, sh.y, sh.r, 0, Math.PI * 2);
@@ -528,12 +703,33 @@ function renderActionBar() {
     var bar = $('actionBar');
     if (!actionMode) { bar.style.display = 'none'; return; }
     var a = actionMode.act, n = Object.keys(actionMode.targets).length;
-    var hint = a.area.shape ? (actionMode.locked ? '已放置范围：点击生物可排除 / 加入，点空地重新放置' : (a.area.self ? '移动鼠标调整方向，点击确定' : '点击地图放置范围中心')) :
+    var ar = a.area, m0 = actionMode, hint;
+    if (isPathShape(ar)) {
+        var np = (m0.pts || []).length;
+        hint = m0.locked ? '已放好：点击生物可排除 / 加入，点空地重新放置' :
+            !np ? '点击地图放起点' : ar.shape === 'path' ? '继续点击添加拐点（总长不超过上限），原地再点一下 / Enter 完成，Backspace 撤掉上一点' : '点击确定方向和终点';
+    } else hint = ar.shape ? (m0.locked ? '已放置范围：点击生物可排除 / 加入，点空地重新放置' : (ar.self ? '移动鼠标调整方向，点击确定' : '点击地图放置范围中心')) :
         '点击选择目标（最多 ' + a.targets + ' 个）';
+    var shp0 = ar.shape ? actionShape() : null, sizeTxt = '';
+    if (ar.shape) {
+        var used = shp0 && shp0.type === 'path' ? ' 已用 ' + fmtDist(Math.round(pxToFt(pathLen(shp0.pts)))) : '';
+        sizeTxt = '<span class="ab-size">' + (AREA_SIZE_LABEL[ar.shape] || '大小') + ' <button class="tt-btn small" data-ab="sz-">−</button> <b>' + (ar.size || 0) + '</b> 尺' +
+            ' <button class="tt-btn small" data-ab="sz+">＋</button>' + used + '</span>' +
+            (hasWidth(ar) ? '<span class="ab-size">' + (ar.shape === 'line' ? '宽' : '厚') + ' <button class="tt-btn small" data-ab="w-">−</button> <b>' + (ar.width || 1) + '</b> 尺' +
+                ' <button class="tt-btn small" data-ab="w+">＋</button></span>' : '') +
+            (ar.shape === 'path' && !m0.locked && (m0.pts || []).length > 1 ? '<button class="tt-btn small primary" data-ab="finish">完成形状</button>' : '') +
+            (isPathShape(ar) && (m0.pts || []).length ? '<button class="tt-btn small" data-ab="undo-pt" title="Backspace">↶ 撤销上一点</button>' : '') +
+            ((m0.locked || (m0.pts || []).length) && !m0.zoneId ? '<button class="tt-btn small" data-ab="redraw">重画</button>' : '');
+    }
+    if (m0.zoneMoved) hint = '「' + a.name + '」已移动：要对现在区域内的生物结算吗？（可点击生物增减）';
     var names = Object.keys(actionMode.targets).map(function(id) { return scene.items[id] && scene.items[id].label; }).filter(Boolean);
     bar.innerHTML = '<div class="ab-line"><b>⚡ ' + escapeHtml(a.name) + '</b><span class="tt-hint">' + escapeHtml(hint) + '</span></div>' +
+        (sizeTxt ? '<div class="ab-line">' + sizeTxt + '</div>' : '') +
         '<div class="ab-line"><span>目标 ' + n + '：' + escapeHtml(names.join('、') || '—') + '</span>' +
-        '<button class="tt-btn small primary" data-ab="go">结算（Enter）</button><button class="tt-btn small" data-ab="edit">修改</button><button class="tt-btn small" data-ab="cancel">取消（Esc）</button></div>';
+        '<button class="tt-btn small primary" data-ab="go">' + (m0.zoneMoved ? '⚡ 结算（Enter）' : '结算（Enter）') + '</button>' +
+        (a.zone && ar.shape && !m0.zoneId && (m0.locked || isPathShape(ar)) ? '<button class="tt-btn small" data-ab="place" title="只把区域放到地图上（施法、扣法术位、专注），现在不结算伤害">只放置，不结算</button>' : '') +
+        (m0.zoneId ? '' : '<button class="tt-btn small" data-ab="edit">修改</button>') +
+        '<button class="tt-btn small" data-ab="cancel">' + (m0.zoneMoved ? '不结算（Esc）' : '取消（Esc）') + '</button></div>';
     bar.style.display = '';
 }
 
@@ -572,6 +768,7 @@ function confirmActionTargeting() {
         caster: m.caster && canEdit(m.caster) ? m.caster.id : '', concentration: !!a.conc, targets: targets,
         status: def ? { id: def.id, name: def.name, color: def.color, icon: def.icon, rounds: a.rounds || 0 } : null
     } };
+    if (isPathShape(a.area) && !m.locked && m.pts && m.pts.length > 1) finishPathShape();
     if (a.zone && a.area && a.area.shape && !m.zoneId) createZone(a, actionShape(), m.caster);
     if (!m.zoneId) consumeSlot(a, m.sheetId);
     cancelActionTargeting();
@@ -595,23 +792,30 @@ function createZone(a, shp, caster) {
     var it = { id: genId(), kind: 'draw', fill: true, width: 2, color: good ? '#66bb6a' : '#ff7043', z: minZ - 1, label: a.name,
         zone: { act: zoneAct(a), caster: caster ? caster.id : '', conc: a.conc && caster ? caster.id : '' } };
     if (shp.type === 'circle') { it.shape = 'circle'; it.x = shp.x; it.y = shp.y; it.r = shp.r; }
-    else { it.shape = 'poly'; it.x = shp.pts[0][0]; it.y = shp.pts[0][1]; it.points = shp.pts.map(function(p) { return [p[0] - it.x, p[1] - it.y]; }); }
+    else if (shp.type === 'ring') { it.shape = 'circle'; it.x = shp.x; it.y = shp.y; it.r = shp.r; it.width = Math.max(shp.w, 3); it.fill = false; it.zone.geom = 'ring'; }
+    else if (shp.type === 'path') {
+        it.shape = 'line'; it.x = shp.pts[0][0]; it.y = shp.pts[0][1]; it.fill = false; it.width = Math.max(shp.w, 4); it.zone.geom = 'path';
+        it.points = shp.pts.map(function(p) { return [p[0] - it.x, p[1] - it.y]; });
+    } else { it.shape = 'poly'; it.x = shp.pts[0][0]; it.y = shp.pts[0][1]; it.points = shp.pts.map(function(p) { return [p[0] - it.x, p[1] - it.y]; }); }
     if (a.area.self && caster) it.follow = caster.id; // 光环跟着施放者走
     createItems([it]);
 }
 
 function zoneShapeOf(z) {
+    var g0 = z.zone && z.zone.geom;
+    if (g0 === 'ring') return { type: 'ring', x: z.x, y: z.y, r: z.r || 0, w: z.width || 3 };
+    if (g0 === 'path') return { type: 'path', pts: (z.points || []).map(function(p) { return [p[0] + (z.x || 0), p[1] + (z.y || 0)]; }), w: z.width || 4 };
     return z.shape === 'circle' ? { type: 'circle', x: z.x, y: z.y, r: z.r || 0 } :
         { type: 'poly', pts: (z.points || []).map(function(p) { return [p[0] + (z.x || 0), p[1] + (z.y || 0)]; }) };
 }
 
 // 对区域内的生物再结算一次（目标已自动选好，可点选增减）
-function zoneRetrigger(z) {
+function zoneRetrigger(z, moved) {
     if (!z || !z.zone || !z.zone.act) return;
     var a = JSON.parse(JSON.stringify(z.zone.act));
     a.area = { shape: '', size: 0, width: 5, self: false };
     a.targets = 99; a.range = 0; a.rangeLong = 0; a.reach = 0;
-    actionMode = { act: a, caster: scene.items[z.zone.caster] || null, targets: {}, aim: null, locked: false, zoneId: z.id };
+    actionMode = { act: a, caster: scene.items[z.zone.caster] || null, targets: {}, aim: null, locked: false, zoneId: z.id, zoneMoved: !!moved };
     var shp = zoneShapeOf(z);
     actionCandidates().forEach(function(t) { if (tokenInShape(t, shp)) actionMode.targets[t.id] = true; });
     setTool('select');
@@ -640,6 +844,12 @@ function onActionBarClick(e) {
     var b = e.target.closest('[data-ab]');
     if (!b || !actionMode) return;
     if (b.dataset.ab === 'go') confirmActionTargeting();
+    else if (b.dataset.ab === 'sz-' || b.dataset.ab === 'sz+') adjustArea('size', b.dataset.ab === 'sz+' ? 1 : -1);
+    else if (b.dataset.ab === 'w-' || b.dataset.ab === 'w+') adjustArea('width', b.dataset.ab === 'w+' ? 1 : -1);
+    else if (b.dataset.ab === 'finish') finishPathShape();
+    else if (b.dataset.ab === 'undo-pt') undoPathPoint();
+    else if (b.dataset.ab === 'redraw') redrawArea();
+    else if (b.dataset.ab === 'place') placeZoneOnly();
     else if (b.dataset.ab === 'cancel') cancelActionTargeting();
     else if (b.dataset.ab === 'edit') {
         var m = actionMode;
@@ -674,6 +884,10 @@ function actionLogHtml(e) {
 
 function initAction() {
     $('actDialog').addEventListener('change', function(e) {
+        if (e.target.id === 'acShape' && act) { // 换成环形墙时带出法术写的直径
+            if (e.target.value === 'ring' && act.a.area && act.a.area.ringSize) $('acSize').value = act.a.area.ringSize;
+            if (hasWidth({ shape: e.target.value }) && !$('acWidth').value) $('acWidth').value = e.target.value === 'line' ? 5 : 1;
+        }
         if (e.target.id === 'acKind' || e.target.id === 'acShape') syncActionDialog();
         if (e.target.id === 'acSlot' && act) { // 换环阶：自动改成对应的伤害 / 治疗公式和目标数
             applySlotLevel(act.a, parseInt(e.target.value, 10) || act.a.spellLevel);
