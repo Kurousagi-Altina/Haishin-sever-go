@@ -10,5 +10,6 @@
   "game_dir":       "../game",
   "video_dir":      "../userdata/videos",
   "cloud_upload_min_role": "user",
-  "notify_sendkey": ""
+  "notify_sendkey": "",
+  "tabletop_dir":   "../userdata/tabletop"
 }
