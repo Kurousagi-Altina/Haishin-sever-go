@@ -368,6 +368,8 @@ function handleMsg(m) {
         updateGmUi();
         onPropsChanged();
         renderSelPanel();
+        lastTurn = null;
+        onCombatChanged();
         break;
     case 'room':
         setRoomMeta(m.room);
@@ -385,6 +387,7 @@ function handleMsg(m) {
             scene.items[it.id] = it;
         });
         renderSelPanel();
+        scheduleCombatUi();
         requestRender();
         break;
     case 'del':
@@ -394,6 +397,7 @@ function handleMsg(m) {
             delete selected[id];
         });
         renderSelPanel();
+        scheduleCombatUi();
         requestRender();
         break;
     case 'sheets':
@@ -480,7 +484,7 @@ function onPropsChanged() {
         $('setGridAlpha').value = num(p.gridAlpha, 0.35);
         $('setGridScale').value = num(p.gridScale, 5);
         $('setGridUnit').value = p.gridUnit || 'ft';
-        $('setMeasure').value = p.measure || 'chebyshev';
+        $('setMeasure').value = p.measure || 'alternating';
         $('setBg').value = p.bg || '#1b1d22';
         $('setVision').checked = !!p.vision;
         $('setCells').value = p.mapW ? Math.round(p.mapW / gridSize() * 100) / 100 : '';
@@ -488,7 +492,19 @@ function onPropsChanged() {
     $('mapInfo').textContent = p.mapAsset ? '当前地图：' + p.mapW + ' × ' + p.mapH + ' px，约 ' +
         Math.round(p.mapW / gridSize() * 10) / 10 + ' × ' + Math.round(p.mapH / gridSize() * 10) / 10 + ' 格' : '当前场景没有地图';
     if (fitPending && (!p.mapAsset || getImg(p.mapAsset).complete)) { fitPending = false; fitView(); }
+    onCombatChanged();
     requestRender();
+}
+
+// 拖动时物件消息很多：先攻列表 / 回合信息最多每 300ms 刷新一次
+var combatUiTimer = null;
+function scheduleCombatUi() {
+    if (combatUiTimer) return;
+    combatUiTimer = setTimeout(function() {
+        combatUiTimer = null;
+        renderCombat();
+        renderCombatHud();
+    }, 300);
 }
 
 function setProps(props) {
@@ -639,12 +655,7 @@ function cellCenter(x, y) {
 }
 
 function measureText(ax, ay, bx, by) {
-    var p = scene.props, g = gridSize();
-    var dx = Math.abs(bx - ax) / g, dy = Math.abs(by - ay) / g, d;
-    if (p.measure === 'euclidean') d = Math.sqrt(dx * dx + dy * dy);
-    else if (p.measure === 'alternating') d = Math.max(dx, dy) + Math.floor(Math.min(dx, dy) / 2);
-    else d = Math.max(dx, dy);
-    return fmtDist(d * num(p.gridScale, 5));
+    return rulerText({ x: ax, y: ay }, { x: bx, y: by });
 }
 
 function fmtDist(v) {
@@ -887,6 +898,7 @@ function render() {
         if (vision && it.owner !== me.name && !pointVisible(it.x + (it.w || gridSize()) / 2, it.y + (it.h || gridSize()) / 2, vision)) return;
         drawToken(it);
     });
+    drawTurnRing();
     if (!me.gm) drawWalls(items, false);
     drawFog(items);
     if (vision) drawVision(vision);
@@ -1009,6 +1021,7 @@ function drawToken(it) {
         }
     }
     if (it.label) drawLabel(it.label, x + w / 2, y + h, it.hidden ? '#ba68c8' : '#fff', true);
+    drawTokenBadges(it);
     if (it.hidden) {
         ctx.save();
         ctx.setLineDash([6 / view.s, 4 / view.s]);
@@ -1107,7 +1120,7 @@ function drawFog(items) {
 
 function drawOverlays() {
     var g = gridSize();
-    // 选中框
+    // 选中框；棋子另外画出占据的格子
     var ids = selectedIds();
     ids.forEach(function(id) {
         var it = scene.items[id], b = itemBBox(it), pad = 3 / view.s;
@@ -1115,14 +1128,24 @@ function drawOverlays() {
         ctx.setLineDash([5 / view.s, 3 / view.s]);
         ctx.lineWidth = 1.5 / view.s;
         ctx.strokeStyle = '#42a5f5';
-        ctx.strokeRect(b.x0 - pad, b.y0 - pad, b.x1 - b.x0 + pad * 2, b.y1 - b.y0 + pad * 2);
+        if (it.kind === 'token' && it.rot) {
+            var tc = tokenCenter(it);
+            ctx.translate(tc.x, tc.y);
+            ctx.rotate(it.rot * Math.PI / 180);
+            ctx.strokeRect(-(b.x1 - b.x0) / 2 - pad, -(b.y1 - b.y0) / 2 - pad, b.x1 - b.x0 + pad * 2, b.y1 - b.y0 + pad * 2);
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            applyView(ctx);
+        } else ctx.strokeRect(b.x0 - pad, b.y0 - pad, b.x1 - b.x0 + pad * 2, b.y1 - b.y0 + pad * 2);
+        if (it.kind === 'token' && !(gesture && (gesture.type === 'move' || gesture.type === 'rotate'))) {
+            var f = footprint(it);
+            ctx.setLineDash([]);
+            ctx.fillStyle = 'rgba(66,165,245,0.10)';
+            ctx.fillRect(f.x0, f.y0, f.size, f.size);
+        }
         ctx.restore();
     });
-    var handle = resizeHandle();
-    if (handle) {
-        ctx.fillStyle = '#42a5f5';
-        ctx.fillRect(handle.x - handle.r, handle.y - handle.r, handle.r * 2, handle.r * 2);
-    }
+    drawTarget();
+    drawTokenHandles();
 
     if (gesture) {
         if (gesture.type === 'marquee') {
@@ -1148,9 +1171,14 @@ function drawOverlays() {
             }
         } else if (gesture.type === 'ruler') {
             drawRuler(gesture.a, gesture.b, me.color, '');
+        } else if (gesture.type === 'move' && gesture.start.moved) {
+            drawMoveGuide(gesture);
         } else if (gesture.type === 'resize') {
             var t = scene.items[gesture.id];
-            if (t) drawLabel(Math.round((t.w || g) / g * 10) / 10 + ' 格', t.x + (t.w || g) / 2, t.y, '#fff');
+            if (t) drawLabel(Math.round((t.w || g) / g * 100) / 100 + ' 格', t.x + (t.w || g) / 2, t.y - 30 / view.s, '#fff');
+        } else if (gesture.type === 'rotate') {
+            var tr = scene.items[gesture.id];
+            if (tr) drawLabel((tr.rot || 0) + '°', tr.x + (tr.w || g) / 2, tr.y - 30 / view.s, '#fff');
         }
     }
 
@@ -1233,6 +1261,7 @@ function drawTrail(trail, color, now) {
 }
 
 function drawRuler(a, b, color, who) {
+    if (gridSize() * view.s >= 8) drawRulerCells(a, b, color);
     ctx.save();
     ctx.strokeStyle = color;
     ctx.lineWidth = 3 / view.s;
@@ -1252,13 +1281,100 @@ function drawRuler(a, b, color, who) {
     drawLabel((who ? who + '：' : '') + measureText(a.x, a.y, b.x, b.y), b.x, b.y, color);
 }
 
-function resizeHandle() {
+// ===== 棋子变换手柄 =====
+// 选中单个可编辑、未锁定的棋子：四角拖动 = 以中心等比缩放（吸附半格，Alt 自由），
+// 顶部圆形手柄拖动 = 旋转（吸附 15°，Alt 自由）。手柄跟随棋子旋转。
+function tokenHandles() {
     var ids = selectedIds();
-    if (ids.length !== 1 || tool !== 'select') return null;
+    if (ids.length !== 1 || tool !== 'select' || (gesture && gesture.type === 'move')) return null;
     var it = scene.items[ids[0]];
     if (it.kind !== 'token' || !canEdit(it) || it.locked) return null;
-    var b = itemBBox(it);
-    return { x: b.x1, y: b.y1, r: 5 / view.s, id: it.id };
+    var g = gridSize(), c = tokenCenter(it), pad = 3 / view.s;
+    var hw = (it.w || g) / 2 + pad, hh = (it.h || g) / 2 + pad, a = (it.rot || 0) * Math.PI / 180;
+    var cos = Math.cos(a), sin = Math.sin(a);
+    var toW = function(lx, ly) { return { x: c.x + lx * cos - ly * sin, y: c.y + lx * sin + ly * cos }; };
+    return {
+        id: it.id, c: c, a: a, r: 6 / view.s,
+        corners: [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(function(k) { var p = toW(k[0] * hw, k[1] * hh); p.k = k; return p; }),
+        top: toW(0, -hh),
+        rot: toW(0, -hh - 28 / view.s)
+    };
+}
+
+function handleAt(w) {
+    var h = tokenHandles();
+    if (!h) return null;
+    var near = function(p) { return Math.hypot(w.x - p.x, w.y - p.y) <= h.r * 1.8; };
+    if (near(h.rot)) return { kind: 'rot', h: h };
+    for (var i = 0; i < 4; i++) if (near(h.corners[i])) return { kind: 'corner', h: h, corner: h.corners[i] };
+    return null;
+}
+
+function drawTokenHandles() {
+    var h = tokenHandles();
+    if (!h) return;
+    ctx.save();
+    ctx.strokeStyle = '#42a5f5';
+    ctx.lineWidth = 1.5 / view.s;
+    ctx.beginPath();
+    ctx.moveTo(h.top.x, h.top.y);
+    ctx.lineTo(h.rot.x, h.rot.y);
+    ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.lineWidth = 2 / view.s;
+    h.corners.forEach(function(p) {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(h.a);
+        ctx.fillRect(-h.r, -h.r, h.r * 2, h.r * 2);
+        ctx.strokeRect(-h.r, -h.r, h.r * 2, h.r * 2);
+        ctx.restore();
+    });
+    ctx.beginPath();
+    ctx.arc(h.rot.x, h.rot.y, h.r * 1.15, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    // 旋转箭头
+    ctx.beginPath();
+    ctx.arc(h.rot.x, h.rot.y, h.r * 0.6, -Math.PI * 0.9, Math.PI * 0.4);
+    ctx.stroke();
+    ctx.restore();
+}
+
+function handleCursor(hit) {
+    if (hit.kind === 'rot') return 'grab';
+    var ang = Math.atan2(hit.corner.y - hit.h.c.y, hit.corner.x - hit.h.c.x) * 180 / Math.PI;
+    ang = ((ang % 180) + 180) % 180;
+    return ang < 90 ? 'nwse-resize' : 'nesw-resize';
+}
+
+// 以中心等比缩放到 nw 宽
+function scaleTokenTo(t, nw, ratio) {
+    var c = tokenCenter(t);
+    t.w = nw;
+    t.h = nw * ratio;
+    t.x = c.x - t.w / 2;
+    t.y = c.y - t.h / 2;
+}
+
+// 鼠标滚轮：Alt+滚轮旋转 15°，Shift+滚轮缩放半格（作用于鼠标下的棋子）
+function wheelTransform(e, w) {
+    if (!e.altKey && !e.shiftKey) return false;
+    var it = hitTest(w, ['token']);
+    if (!it || !canEdit(it) || it.locked) return false;
+    var d = (e.deltaY || e.deltaX) > 0 ? 1 : -1, g = gridSize();
+    if (e.altKey) {
+        var rot = ((Math.round((it.rot || 0) / 15) * 15 + d * 15) % 360 + 360) % 360;
+        patchItems([{ id: it.id, rot: rot || null }]);
+    } else {
+        var ratio = (it.h || g) / (it.w || g);
+        var nw = Math.max(0.5, Math.round((it.w || g) / g * 2) / 2 - d * 0.5) * g;
+        var t = { x: it.x, y: it.y, w: it.w || g, h: it.h || g };
+        scaleTokenTo(t, nw, ratio);
+        patchItems([{ id: it.id, w: t.w, h: t.h, x: t.x, y: t.y }]);
+    }
+    if (selected[it.id]) { $('selPanel').dataset.ids = ''; renderSelPanel(); }
+    return true;
 }
 
 // ===== 墙体 / 门窗 / 动态视野 =====
@@ -1576,10 +1692,12 @@ function onPointerDown(e) {
     }
 
     if (tool === 'select' || (tool === 'fog' && fogOpts.shape === 'select') || (tool === 'wall' && wallOpts.mode === 'select')) {
-        var handle = resizeHandle();
-        if (handle && Math.abs(w.x - handle.x) <= handle.r * 2 && Math.abs(w.y - handle.y) <= handle.r * 2) {
-            var t = scene.items[handle.id];
-            gesture = { type: 'resize', start: start, id: t.id, ids: idSet([t.id]), orig: { w: t.w || gridSize(), h: t.h || gridSize() } };
+        var hh = tool === 'select' ? handleAt(w) : null;
+        if (hh) {
+            var t = scene.items[hh.h.id];
+            var orig = { w: t.w || gridSize(), h: t.h || gridSize(), x: t.x, y: t.y, rot: t.rot || 0 };
+            gesture = { type: hh.kind === 'rot' ? 'rotate' : 'resize', start: start, id: t.id, ids: idSet([t.id]), orig: orig, lastSent: 0 };
+            canvas.style.cursor = hh.kind === 'rot' ? 'grabbing' : handleCursor(hh);
             return;
         }
         var hit = hitTest(w, tool === 'fog' ? ['fog'] : tool === 'wall' ? ['wall'] : ['token', 'draw']);
@@ -1664,7 +1782,13 @@ function onPointerMove(e) {
     var w = toWorld(s.x, s.y);
     cursorWorld = w;
     if (polyDraft) requestRender();
-    if (!gesture) return;
+    if (!gesture) {
+        if (tool === 'select' && !spaceDown && e.pointerType !== 'touch') {
+            var hov = handleAt(w);
+            canvas.style.cursor = hov ? handleCursor(hov) : 'default';
+        }
+        return;
+    }
 
     if (gesture.type === 'pinch') {
         var ids = Object.keys(pointers);
@@ -1704,11 +1828,27 @@ function onPointerMove(e) {
     case 'resize':
         var t = scene.items[gesture.id];
         if (!t) return;
-        var ratio = gesture.orig.h / gesture.orig.w;
-        var nw = Math.max(gridSize() / 4, gesture.orig.w + Math.max(dx, dy / ratio));
+        // 指针换到棋子自身（未旋转）坐标系，按离中心的距离等比缩放
+        var ratio = gesture.orig.h / gesture.orig.w, a = (t.rot || 0) * Math.PI / 180;
+        var cx0 = gesture.orig.x + gesture.orig.w / 2, cy0 = gesture.orig.y + gesture.orig.h / 2;
+        var px = w.x - cx0, py = w.y - cy0;
+        var lx = px * Math.cos(a) + py * Math.sin(a), ly = -px * Math.sin(a) + py * Math.cos(a);
+        var nw = Math.max(gridSize() / 4, Math.abs(lx) * 2, Math.abs(ly) * 2 / ratio);
         if (!e.altKey) nw = Math.max(0.5, Math.round(nw / gridSize() * 2) / 2) * gridSize();
         t.w = nw;
         t.h = nw * ratio;
+        t.x = cx0 - t.w / 2;
+        t.y = cy0 - t.h / 2;
+        if (performance.now() - gesture.lastSent > 80) { gesture.lastSent = performance.now(); queueItems([{ id: t.id, w: t.w, h: t.h, x: t.x, y: t.y }]); }
+        break;
+    case 'rotate':
+        var tr = scene.items[gesture.id];
+        if (!tr) return;
+        var c0 = { x: gesture.orig.x + gesture.orig.w / 2, y: gesture.orig.y + gesture.orig.h / 2 };
+        var deg = Math.atan2(w.y - c0.y, w.x - c0.x) * 180 / Math.PI + 90;
+        deg = e.altKey ? Math.round(deg) : Math.round(deg / 15) * 15;
+        tr.rot = ((deg % 360) + 360) % 360;
+        if (performance.now() - gesture.lastSent > 80) { gesture.lastSent = performance.now(); queueItems([{ id: tr.id, rot: tr.rot || null }]); }
         break;
     case 'marquee':
         gesture.b = w;
@@ -1775,12 +1915,10 @@ function onPointerUp(e) {
                 }
             }
             if (it.kind === 'token' && !e.altKey) {
-                // 左上角对齐网格；小于 1 格的棋子按半格对齐，非整格的余量居中
-                var gs = gridSize(), step = (it.w || gs) >= gs ? gs : gs / 2;
-                var adjX = ((it.w || gs) % step) / 2, adjY = ((it.h || gs) % step) / 2;
-                var c = snapToGrid(it.x - adjX, it.y - adjY, step);
-                it.x = c.x + adjX;
-                it.y = c.y + adjY;
+                // 按占格（生物体型）对齐网格，图片相对占格居中；微型生物按半格对齐
+                var c = snapTokenPos(it, it.x, it.y);
+                it.x = c.x;
+                it.y = c.y;
             }
             patches.push({ id: id, x: it.x, y: it.y });
         }
@@ -1789,8 +1927,17 @@ function onPointerUp(e) {
         break;
     case 'resize':
         var t = scene.items[g.id];
-        if (t) queueItems([{ id: t.id, w: t.w, h: t.h }]);
+        if (t) queueItems([{ id: t.id, w: t.w, h: t.h, x: t.x, y: t.y }]);
+        $('selPanel').dataset.ids = '';
         renderSelPanel();
+        updateCursor();
+        break;
+    case 'rotate':
+        var tr = scene.items[g.id];
+        if (tr) queueItems([{ id: tr.id, rot: tr.rot || null }]);
+        $('selPanel').dataset.ids = '';
+        renderSelPanel();
+        updateCursor();
         break;
     case 'marquee':
         if (!g.start.moved) break;
@@ -1843,6 +1990,7 @@ function finishPoly() {
 function onWheel(e) {
     e.preventDefault();
     var s = eventPos(e);
+    if (tool === 'select' && wheelTransform(e, toWorld(s.x, s.y))) return;
     var delta = e.deltaMode === 1 ? e.deltaY * 30 : e.deltaY;
     zoomAt(s.x, s.y, Math.exp(-delta * 0.0015));
 }
@@ -1858,6 +2006,12 @@ function onKeyDown(e) {
     }
     var keyTools = { v: 'select', h: 'pan', d: 'draw', m: 'ruler', l: 'pointer', f: 'fog', w: 'wall' };
     var k = e.key.toLowerCase();
+    if (k === 't') {
+        var hov = hitTest(cursorWorld, ['token']);
+        setTarget(hov ? hov.id : '');
+        if (hov && target.id) notice('🎯 目标：' + (hov.label || '未命名') + '（再按一次 T 取消）');
+        return;
+    }
     if (keyTools[k]) { setTool(keyTools[k]); return; }
     if (k === '0') { fitView(); return; }
     if (e.key === 'Delete' || e.key === 'Backspace') { deleteItems(selectedIds()); e.preventDefault(); return; }
@@ -1942,6 +2096,11 @@ function renderSelPanel() {
     if (!edit) {
         h += '<div class="tt-hint">' + escapeHtml(it.label || '') + (it.owner ? '<br>控制者：' + escapeHtml(it.owner) : '') +
             '<br>' + (it.locked ? '已锁定' : (it.kind === 'token' ? '可拖动移动' : '只读')) + '</div>';
+        if (it.kind === 'token') {
+            h += '<div class="prop-btns"><button class="tt-btn small' + (target.id === it.id ? ' primary' : '') + '" data-act="target">' +
+                (target.id === it.id ? '取消目标' : '🎯 设为目标') + '</button>' +
+                (it.sheet && sheets[it.sheet] ? '<button class="tt-btn small" data-act="sheet">查看资料</button>' : '') + '</div>';
+        }
         panel.innerHTML = h;
         return;
     }
@@ -1958,9 +2117,11 @@ function renderSelPanel() {
             '<button class="tt-btn small danger" data-act="dmg">伤害</button><button class="tt-btn small" data-act="heal">治疗</button>');
         h += row('颜色', '<input class="tt-input" type="color" data-prop="color" value="' + escapeHtml(it.color || '#607d8b') + '">' +
             '<label><input type="checkbox" data-prop="circle"' + (it.circle ? ' checked' : '') + '> 圆形</label>');
-        h += row('旋转', '<input type="range" data-prop="rot" min="0" max="345" step="15" value="' + (it.rot || 0) + '" style="flex:1;">');
+        h += row('旋转', '<input type="range" data-prop="rot" min="0" max="359" step="1" value="' + (it.rot || 0) + '" style="flex:1;"><span class="tt-hint">' + (it.rot || 0) + '°</span>');
+        if (!it.locked) h += '<div class="tt-hint" style="margin:-4px 0 8px;">地图上拖四角缩放、拖顶部圆钮旋转（Alt 不吸附）；也可 Alt+滚轮旋转、Shift+滚轮缩放</div>';
         h += row('视野', '<input class="tt-input narrow" data-prop="sight" type="number" min="0" step="5" value="' + (it.sight || '') + '" placeholder="不限"> ' +
             escapeHtml(scene.props.gridUnit || 'ft') + '<span class="tt-hint">（动态视野用）</span>');
+        h += combatPanelHtml(it, row);
         var linked = it.sheet && sheets[it.sheet];
         h += row('角色卡', linked ? '<button class="tt-btn small" data-act="sheet">' + escapeHtml(linked.name) + '</button>' +
             '<button class="tt-btn small" data-act="unlink" title="取消关联">✕</button>' :
@@ -1994,7 +2155,9 @@ function renderSelPanel() {
                 '</select>');
         }
     }
-    h += '<div class="prop-btns"><button class="tt-btn small" data-act="front">置顶</button><button class="tt-btn small" data-act="back">置底</button>' +
+    h += '<div class="prop-btns">' + (it.kind === 'token' ? '<button class="tt-btn small' + (target.id === it.id ? ' primary' : '') + '" data-act="target">' +
+        (target.id === it.id ? '取消目标' : '🎯 设为目标') + '</button>' : '') +
+        '<button class="tt-btn small" data-act="front">置顶</button><button class="tt-btn small" data-act="back">置底</button>' +
         '<button class="tt-btn small" data-act="dup">复制</button><button class="tt-btn small danger" data-act="del">删除</button></div>';
     panel.innerHTML = h;
 
@@ -2037,8 +2200,17 @@ function onSelPanelChange(e) {
     } else if (prop === 'hpTemp') {
         var t = parseFloat(el.value);
         patch.hpTemp = t > 0 ? t : null;
-    } else if (prop === 'hp' || prop === 'hpMax' || prop === 'width' || prop === 'rot' || prop === 'sight') {
-        patch[prop] = el.value === '' ? null : parseFloat(el.value);
+    } else if (prop === 'hp' || prop === 'hpMax' || prop === 'width' || prop === 'rot' || prop === 'sight' || prop === 'ac' || prop === 'initMod' || prop === 'init') {
+        var v = parseFloat(el.value);
+        patch[prop] = el.value === '' || !isFinite(v) ? (prop === 'init' ? 0 : null) : v;
+        if (prop === 'init') patch.initRolled = true;
+    } else if (prop === 'fp') {
+        var cells = parseFloat(el.value);
+        patch.fp = cells > 0 ? cells : null;
+        if (cells > 0) { // 换体型时图片跟着缩放到新的占格大小
+            var fit = fitTokenToCells(it, cells);
+            patch.w = fit.w; patch.h = fit.h; patch.x = fit.x; patch.y = fit.y;
+        }
     } else patch[prop] = el.value === '' ? null : el.value;
     if (prop === 'color' && it.kind === 'token' && !it.asset) patch.circle = true;
     patchItems([patch]);
@@ -2058,6 +2230,11 @@ function onSelPanelClick(e) {
         return;
     }
     if (b.dataset.act === 'dmg' || b.dataset.act === 'heal') return; // 没填数值
+    if (ids.length === 1 && scene.items[ids[0]].kind === 'token' && onCombatPanelClick(b, scene.items[ids[0]])) {
+        $('selPanel').dataset.ids = '';
+        renderSelPanel();
+        return;
+    }
     var flag = function(key, val) { patchItems(ids.map(function(id) { var p = { id: id }; p[key] = val; return p; })); };
     switch (b.dataset.act) {
     case 'close': selectOnly([]); break;
@@ -2365,8 +2542,10 @@ function onTrayChipClick(e) {
     }
 }
 
-function roll(expr, label, hidden) {
-    op({ op: 'roll', expr: expr, label: label || '', hidden: !!hidden });
+function roll(expr, label, hidden, vs) {
+    var body = { op: 'roll', expr: expr, label: label || '', hidden: !!hidden };
+    if (vs && vs.target) { body.target = vs.target; body.cover = vs.cover || 0; }
+    op(body);
 }
 
 function sendChat() {
@@ -2435,7 +2614,7 @@ function renderCharQuick() {
         if (s.name === '察觉' || s.name === '隐匿') chip(s.name + ' ' + (normBonus(s.bonus) || '+0'), 'data-qd20="' + escapeHtml(s.bonus) + '" data-qlabel="' + escapeHtml(s.name) + '"');
     });
     (cur.attacks || []).forEach(function(a) {
-        if (a.atk) chip(a.name + ' 命中', 'data-qd20="' + escapeHtml(a.atk) + '" data-qlabel="' + escapeHtml(a.name + ' 命中') + '"');
+        if (a.atk) chip(a.name + ' 命中', 'data-qd20="' + escapeHtml(a.atk) + '" data-qatk="' + escapeHtml((a.props || '') + ' ' + (a.range || '')) + '" data-qlabel="' + escapeHtml(a.name + ' 命中') + '"');
         if (a.damage) chip(a.name + ' 伤害', 'data-qexpr="' + escapeHtml(a.damage) + '" data-qlabel="' + escapeHtml(a.name + ' 伤害' + (a.type ? '（' + a.type + '）' : '')) + '"');
     });
     chips.push('<span class="chip more" data-qopen="' + escapeHtml(cur.id) + '" title="打开完整角色卡">全部…</span>');
@@ -2451,6 +2630,7 @@ function onCharQuickClick(e) {
     if (c.dataset.qopen) { openSheet(sh.id, ''); return; }
     var o = { who: sh.name, label: c.dataset.qlabel };
     if (c.dataset.qd20 != null) o.bonus = c.dataset.qd20; else o.expr = c.dataset.qexpr;
+    if (c.dataset.qatk != null) { o.attack = true; o.range = parseAttackRange(c.dataset.qatk); }
     if (e.shiftKey) { quickRoll(o); return; }
     openRollDialog(o);
 }
@@ -2474,7 +2654,10 @@ function quickRoll(o) {
     rd = normalizeRollReq(o);
     rd.mode = advMode;
     if (advMode) { advMode = ''; renderDiceButtons(); }
-    roll(rollDialogExpr(), (rd.who ? rd.who + '·' : '') + rd.label, $('diceHidden').checked);
+    var ac = rd.d20 && o.attack ? attackContext(o) : null;
+    if (ac && ac.dis && !rd.mode) rd.mode = 'dis';
+    roll(rollDialogExpr(), (rd.who ? rd.who + '·' : '') + rd.label, $('diceHidden').checked,
+        ac && !ac.blocked ? { target: ac.target.id, cover: ac.cover } : null);
     rd = null;
 }
 
@@ -2504,6 +2687,18 @@ function openRollDialog(o) {
     $('rdCrit').checked = false;
     $('rdAdj').value = 0;
     $('rdHidden').checked = $('diceHidden').checked;
+    // 攻击检定：显示目标的距离、触及 / 射程、掩护，并对目标 AC 结算
+    rd.ctx = rd.d20 && o.attack ? attackContext(o) : null;
+    $('rdTargetRow').style.display = rd.ctx ? '' : 'none';
+    if (rd.ctx) {
+        $('rdTarget').innerHTML = rd.ctx.lines.join('<br>');
+        $('rdVs').checked = !rd.ctx.blocked;
+        if (rd.ctx.dis && !rd.mode) rd.mode = 'dis';
+    } else if (rd.d20 && o.attack && !me.gm) {
+        $('rdTargetRow').style.display = '';
+        $('rdTarget').innerHTML = '<span class="tt-hint">没有选择目标：鼠标放在敌人棋子上按 T 即可选为目标，自动判断距离、掩护和是否命中</span>';
+        $('rdVs').checked = false;
+    }
     $('rollDialog').style.display = 'flex';
     syncRollDialog();
     $('rdGo').focus();
@@ -2532,7 +2727,8 @@ function confirmRollDialog() {
     if (!rd) return;
     syncRollDialog();
     var label = $('rdLabel').value.trim();
-    roll(rollDialogExpr(), (rd.who ? rd.who + '·' : '') + label, $('rdHidden').checked);
+    var vs = rd.ctx && $('rdVs').checked ? { target: rd.ctx.target.id, cover: rd.ctx.cover } : null;
+    roll(rollDialogExpr(), (rd.who ? rd.who + '·' : '') + label, $('rdHidden').checked, vs);
     if (advMode) { advMode = ''; renderDiceButtons(); } // 骰子栏里的优势 / 劣势只作用于一次掷骰
     closeRollDialog();
 }
@@ -2600,6 +2796,12 @@ function logHtml(e) {
     var h = '<div class="log-entry">' + who + (e.label ? '<span class="label">' + escapeHtml(e.label) + '</span>' : '') +
         (e.hidden ? '<span class="hidden-tag">暗骰</span>' : '') + time;
     h += e.roll ? rollHtml(e.roll) : '<div class="tt-hint">' + escapeHtml(e.text || '') + '</div>';
+    if (e.target) {
+        var HIT = { hit: ['命中', 'hit'], miss: ['未命中', 'miss'], crit: ['重击！', 'crit'], fumble: ['大失败', 'miss'] };
+        var hr = HIT[e.hit];
+        h += '<div class="log-target">🎯 ' + escapeHtml(e.target) + (e.cover ? '<span class="tt-hint">（' + escapeHtml(e.cover) + '）</span>' : '') +
+            (hr ? ' <span class="hit-tag ' + hr[1] + '">' + hr[0] + '</span>' : '') + '</div>';
+    }
     return h + '</div>';
 }
 
@@ -2749,6 +2951,7 @@ function init() {
 
     bindSettings();
     initSheets();
+    initCombat();
     initAuth();
 }
 

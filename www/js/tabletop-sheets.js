@@ -55,12 +55,13 @@ function rollBtn(kind, value, label, text) {
 // 把描述文字里的「命中+4」「攻击检定：+14」以及「1d6+2」之类变成可点击的掷骰按钮
 function rollify(text, label) {
     var h = escapeHtml(text || '');
+    var ranges = (String(text || '').match(/触及\s*\d+\s*尺|射程\s*\d+\s*[\/／]\s*\d+\s*尺?|射程\s*\d+\s*尺/g) || []).join(' ');
     h = h.replace(/(\d{0,3}[dD]\d{1,3}(?:\s*[+\-−]\s*\d+)?)(?![\w])/g, function(m) {
         var expr = m.replace(/\s/g, '').replace('−', '-').toLowerCase();
         return '<button class="roll-btn dmg" data-roll="' + expr + '" data-label="' + escapeHtml(label || '') + '">' + m + '</button>';
     });
     h = h.replace(/(命中|攻击检定[：:]?|攻击：)\s*([+＋\-－]\s*\d+)/g, function(m, a, b) {
-        return a + '<button class="roll-btn atk" data-d20="' + b.replace(/\s/g, '') + '" data-label="' + escapeHtml((label || '') + ' 命中') + '">' + b + '</button>';
+        return a + '<button class="roll-btn atk" data-d20="' + b.replace(/\s/g, '') + '" data-atk="1" data-range="' + escapeHtml(ranges) + '" data-label="' + escapeHtml((label || '') + ' 命中') + '">' + b + '</button>';
     });
     return h.replace(/\n/g, '<br>');
 }
@@ -71,8 +72,13 @@ function onSheetPaneClick(e) {
     var sh = currentSheet();
     // 先弹出确认框（普通 / 优势 / 劣势、调整值、暴击、暗骰）；Shift+点击直接掷
     if (b.dataset.d20 != null) {
-        if (e.shiftKey) sheetRoll(sh, b.dataset.label, d20Expr(b.dataset.d20));
-        else openRollDialog({ who: sh && sh.name, label: b.dataset.label, bonus: b.dataset.d20 });
+        var req = { who: sh && sh.name, label: b.dataset.label, bonus: b.dataset.d20 };
+        if (b.dataset.atk != null) {
+            req.attack = true;
+            req.range = b.dataset.range != null ? parseAttackRange(b.dataset.range) : null;
+        }
+        if (e.shiftKey) quickRoll(req);
+        else openRollDialog(req);
         return;
     }
     if (b.dataset.roll) {
@@ -91,7 +97,14 @@ function onSheetPaneClick(e) {
         break;
     case 'xlsx': $('xlsxFile').click(); break;
     case 'lookup': openLookup(''); break;
-    case 'spell': openSpell(b.dataset.name, b.dataset.level); break;
+    case 'spell':
+        var own = sh && (sh.spells || []).filter(function(x) { return x.name === b.dataset.name && x.text; })[0];
+        if (own) {
+            var back = { mode: sheetView.mode, id: sheetView.id, tokenId: sheetView.tokenId, back: sheetView.back };
+            sheetView = { mode: 'preview', tmp: { kind: 'item', name: own.name, en: own.en || '', meta: (own.level === '0' ? '戏法' : own.level + '环') + (own.meta ? ' · ' + own.meta : ''), text: own.text }, back: back };
+            renderSheets();
+        } else openSpell(b.dataset.name, b.dataset.level);
+        break;
     case 'hp': changeHp(sh, parseInt(b.dataset.delta, 10)); break;
     case 'slot': changeSlot(sh, parseInt(b.dataset.idx, 10), parseInt(b.dataset.delta, 10)); break;
     case 'res': changeResource(sh, parseInt(b.dataset.idx, 10), parseInt(b.dataset.delta, 10)); break;
@@ -190,13 +203,13 @@ function listHtml() {
     all.sort(function(a, b) { return (a.name || '').localeCompare(b.name || ''); });
     var groups = [['pc', '角色'], ['monster', '怪物 / NPC'], ['item', '物品 / 资料']];
     var h = '<div class="lobby-row" style="gap:6px;">' +
-        '<button class="tt-btn primary" data-act="xlsx" title="DND 5E2024 人物卡（.xlsx）">导入人物卡 (Excel)</button>' +
+        '<button class="tt-btn primary" data-act="xlsx" title="DND 5E2024 人物卡（.xlsx），或 obr-suite 角色卡的 data.json">导入人物卡 (Excel / JSON)</button>' +
         '<button class="tt-btn" data-act="lookup">📖 不全书图鉴</button></div>';
     groups.forEach(function(g) {
         var list = all.filter(function(sh) { return sh.kind === g[0]; });
         if (!list.length && g[0] !== 'pc') return;
         h += '<div class="side-section"><h5>' + g[1] + '</h5>';
-        if (!list.length) h += '<div class="tt-hint">还没有角色卡。点「导入人物卡」选择你的 Excel 人物卡。</div>';
+        if (!list.length) h += '<div class="tt-hint">还没有角色卡。点「导入人物卡」选择你的 Excel 人物卡，或 obr-suite 角色卡导出的 JSON。</div>';
         list.forEach(function(sh) {
             h += '<div class="sheet-row"><div class="info" data-act="open" data-id="' + escapeHtml(sh.id) + '">' +
                 '<div class="name">' + escapeHtml(sh.name) + (sh.shared && sh.kind !== 'pc' ? ' <span class="tt-hint">已共享</span>' : '') + '</div>' +
@@ -273,7 +286,8 @@ function sheetHtml(sh, preview) {
     if (sh.attacks && sh.attacks.length) {
         h += '<div class="side-section"><h5>武器攻击</h5>' + sh.attacks.map(function(a) {
             return '<div class="attack-row"><div class="name">' + escapeHtml(a.name) + '</div>' +
-                (a.atk ? rollBtn('d20', a.atk, a.name + ' 命中', '命中 ' + a.atk) : '') +
+                (a.atk ? '<button class="roll-btn" data-d20="' + escapeHtml(a.atk) + '" data-atk="1" data-range="' + escapeHtml((a.props || '') + ' ' + (a.range || '')) +
+                    '" data-label="' + escapeHtml(a.name + ' 命中') + '">命中 ' + escapeHtml(a.atk) + '</button>' : '') +
                 (a.damage ? rollBtn('roll', a.damage, a.name + ' 伤害' + (a.type ? '（' + a.type + '）' : ''), a.damage + (a.type ? ' ' + a.type : '')) : '') +
                 (a.props || a.mastery ? '<div class="tt-hint">' + escapeHtml([a.props, a.mastery ? '精通：' + a.mastery : ''].filter(Boolean).join(' · ')) + '</div>' : '') +
                 '</div>';
@@ -284,7 +298,8 @@ function sheetHtml(sh, preview) {
         h += '<div class="side-section"><h5>施法</h5>';
         (sh.casting || []).forEach(function(c) {
             h += '<div class="attack-row"><div class="name">' + escapeHtml(c.ability) + '</div><span class="tt-hint">DC ' + escapeHtml(c.dc) + '</span>' +
-                rollBtn('d20', c.atk, c.ability + '法术攻击', '法术攻击 ' + (normBonus(c.atk) || '+0')) + '</div>';
+                '<button class="roll-btn" data-d20="' + escapeHtml(c.atk || '') + '" data-atk="1" data-label="' + escapeHtml(c.ability + '法术攻击') + '">法术攻击 ' +
+                escapeHtml(normBonus(c.atk) || '+0') + '</button></div>';
         });
         (sh.slots || []).forEach(function(s, i) {
             h += '<div class="attack-row"><div class="name">' + escapeHtml(s.level) + '环法术位</div><b>' + escapeHtml(s.cur) + ' / ' + escapeHtml(s.max) + '</b>' +
@@ -350,6 +365,8 @@ function placeSheetToken(sh) {
     var same = sortedItems().filter(function(it) { return it.sheet === sh.id; }).length;
     var it = { id: genId(), kind: 'token', x: pos.x, y: pos.y, w: w, h: w, circle: true, sheet: sh.id, z: nextZ(),
         color: sh.kind === 'pc' ? '#1e88e5' : '#c62828', label: sh.name + (sh.kind !== 'pc' && same ? ' ' + (same + 1) : '') };
+    sheetTokenExtras(sh, it);
+    if (it.fp) { it.w = it.h = it.fp * g; it.x = pos.x + (w - it.w) / 2; it.y = pos.y + (w - it.h) / 2; }
     var max = sh.hp ? num(sh.hp.max, 0) : 0;
     if (max > 0) { it.hpMax = max; it.hp = num(sh.hp.cur, max); }
     if (sh.hp && num(sh.hp.temp, 0) > 0) it.hpTemp = num(sh.hp.temp, 0);

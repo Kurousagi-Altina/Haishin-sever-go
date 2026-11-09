@@ -2,6 +2,7 @@ package main
 
 import (
 	"archive/zip"
+	"bytes"
 	"encoding/xml"
 	"errors"
 	"io"
@@ -377,7 +378,7 @@ func parseDnd5eCard(c xlsxCells) (map[string]interface{}, error) {
 	}, nil
 }
 
-// POST /api/tabletop/charsheet — parse an uploaded .xlsx character card (stateless)
+// POST /api/tabletop/charsheet — parse an uploaded .xlsx character card or an obr-suite card JSON (stateless)
 func (t *Tabletop) HandleCharSheet(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, `{"error":"method not allowed"}`, http.StatusMethodNotAllowed)
@@ -390,6 +391,25 @@ func (t *Tabletop) HandleCharSheet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer file.Close()
+	// obr-suite character card (data.json) — anything starting with "{"
+	head := make([]byte, 64)
+	n, _ := file.Read(head)
+	if trimmed := bytes.TrimLeft(head[:n], "\t\r\n \ufeff"); len(trimmed) > 0 && trimmed[0] == '{' {
+		file.Seek(0, io.SeekStart)
+		data, err := io.ReadAll(io.LimitReader(file, 8<<20+1))
+		if err != nil || len(data) > 8<<20 {
+			writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "角色卡 JSON 过大"})
+			return
+		}
+		sheet, err := convertCardJSON(bytes.TrimPrefix(data, []byte("\ufeff")))
+		if err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+			return
+		}
+		t.db.RecordAction(getClientIP(r), getTokenInfo(r).Username, "tabletop_charsheet", header.Filename)
+		writeJSON(w, http.StatusOK, map[string]interface{}{"success": true, "sheet": sheet})
+		return
+	}
 	zr, err := zip.NewReader(file, header.Size)
 	if err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "不是有效的 .xlsx 文件（旧版 .xls 请先另存为 .xlsx）"})

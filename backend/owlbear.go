@@ -31,7 +31,7 @@ import (
 const ob2MaxDownload = 60 << 20
 
 // hosts whose images we fetch while importing — never arbitrary user-supplied URLs
-var ob2ImageHosts = map[string]bool{"images.owlbear.rodeo": true, "5e.kiwee.top": true}
+var ob2ImageHosts = map[string]bool{"images.owlbear.rodeo": true, "5e.kiwee.top": true, "obr.dnd.center": true}
 
 var ob2Client = &http.Client{
 	Timeout: 90 * time.Second,
@@ -127,6 +127,8 @@ type OB2ImportStats struct {
 	Walls      int      `json:"walls"`
 	Doors      int      `json:"doors"`
 	Monsters   int      `json:"monsters"`
+	Cards      int      `json:"cards"`
+	Combatants int      `json:"combatants"`
 	Images     int      `json:"images"`
 	Downloaded int      `json:"downloaded"`
 	Failed     []string `json:"failed,omitempty"`
@@ -317,6 +319,37 @@ func (t *Tabletop) importOB2(zr *zip.Reader, filename, owner string) (*TTRoom, *
 	}
 	images.collect(urls)
 
+	// character cards bound to tokens live on obr-suite's server — fetch them now.
+	// The same character is often uploaded several times (one card per scene/room):
+	// keep the newest upload per name and point every older card id at it.
+	newest := make(map[string]ob2Card) // name key → newest card
+	cardKey := make(map[string]string) // card id → name key
+	for _, s := range srcs {
+		var list []ob2Card
+		json.Unmarshal(s.doc.Metadata["com.character-cards/list"], &list)
+		for _, c := range list {
+			if c.ID == "" {
+				continue
+			}
+			key := ttNameKey(c.Name)
+			if key == "" {
+				key = "#" + c.ID
+			}
+			cardKey[c.ID] = key
+			if cur, ok := newest[key]; !ok || c.stamp() > cur.stamp() {
+				newest[key] = c
+			}
+		}
+	}
+	var cards []ob2Card
+	for _, c := range newest {
+		if len(cards) < 60 {
+			cards = append(cards, c)
+		}
+	}
+	sort.Slice(cards, func(i, j int) bool { return cards[i].Name < cards[j].Name })
+	cardSheets := fetchCards(cards, stats)
+
 	room := newTTRoom(ob2RoomName(filename, len(srcs)), owner)
 	room.Scenes = nil
 	assetSeen := make(map[string]bool)
@@ -328,6 +361,24 @@ func (t *Tabletop) importOB2(zr *zip.Reader, filename, owner string) (*TTRoom, *
 		room.Assets = append(room.Assets, TTAsset{ID: id, Name: ttCleanName(name, 60, "未命名"), Kind: kind, By: owner})
 	}
 	monsterSheets := make(map[string]string) // bestiary slug → sheet id
+	cardSheetIDs := make(map[string]string)  // character card id → sheet id
+	byKey := make(map[string]string)         // name key → sheet id
+	for _, c := range cards {
+		sh := cardSheets[c.ID]
+		if sh == nil || len(room.Sheets) >= ttMaxSheets {
+			continue
+		}
+		sh["id"] = ttRandomID(6)
+		sh["cardId"] = c.ID
+		room.Sheets[sh["id"].(string)] = sh
+		byKey[cardKey[c.ID]] = sh["id"].(string)
+		stats.Cards++
+	}
+	for id, key := range cardKey {
+		if sid := byKey[key]; sid != "" {
+			cardSheetIDs[id] = sid
+		}
+	}
 
 	for _, s := range srcs {
 		sc := convertOB2Scene(s.name, s.doc, images, addAsset, stats)
@@ -348,7 +399,7 @@ func (t *Tabletop) importOB2(zr *zip.Reader, filename, owner string) (*TTRoom, *
 		}
 		room.Scenes = append(room.Scenes, sc)
 	}
-	// link monster tokens to their sheets
+	// link monster tokens and character-card tokens to their sheets
 	for _, sc := range room.Scenes {
 		for _, it := range sc.Items {
 			if slug, ok := it["bestiary"].(string); ok {
@@ -356,6 +407,17 @@ func (t *Tabletop) importOB2(zr *zip.Reader, filename, owner string) (*TTRoom, *
 					it["sheet"] = id
 				}
 				delete(it, "bestiary")
+			}
+			if card, ok := it["cardId"].(string); ok {
+				if id := cardSheetIDs[card]; id != "" {
+					it["sheet"] = id
+					delete(it, "pcName")
+					if _, has := it["ac"]; !has {
+						if ac, ok := ttNum(room.Sheets[id]["ac"]); ok && ac > 0 {
+							it["ac"] = ac
+						}
+					}
+				}
 			}
 		}
 	}
@@ -381,13 +443,13 @@ func convertOB2Scene(name string, doc *ob2SceneDoc, images *ob2Images, addAsset 
 			p["gridUnit"] = m[2]
 		}
 	}
+	// Owlbear's default CHEBYSHEV counts a diagonal step as one square, which makes
+	// diagonals free; scenes come in with the 5-10-5 rule (changeable in 设置)
 	switch doc.Grid.Measurement {
-	case "ALTERNATING":
-		p["measure"] = "alternating"
 	case "EUCLIDEAN", "MANHATTAN":
 		p["measure"] = "euclidean"
 	default:
-		p["measure"] = "chebyshev"
+		p["measure"] = "alternating"
 	}
 	if doc.Grid.Style.LineColor == "DARK" {
 		p["gridColor"] = "#000000"
@@ -431,6 +493,13 @@ func convertOB2Scene(name string, doc *ob2SceneDoc, images *ob2Images, addAsset 
 		m["z"] = z
 		sc.Items[id] = m
 	}
+	// initiative: the tracker marks the acting token with data.active
+	var combat struct {
+		InCombat bool    `json:"inCombat"`
+		Round    float64 `json:"round"`
+	}
+	json.Unmarshal(doc.Metadata["com.initiative-tracker/combat"], &combat)
+	turn := &ob2Turn{}
 	mapDone := false
 	for _, it := range items {
 		sx, sy := it.Scale.X, it.Scale.Y
@@ -497,6 +566,7 @@ func convertOB2Scene(name string, doc *ob2SceneDoc, images *ob2Images, addAsset 
 				tok["bestiary"] = slug
 			}
 			if card := ob2String(it.Metadata["com.character-cards/boundCardId"]); card != "" {
+				tok["cardId"] = card
 				if n := ob2CardName(doc, card); n != "" {
 					tok["pcName"] = n
 					if _, ok := tok["label"]; !ok { // Owlbear showed the card name over the token
@@ -504,7 +574,13 @@ func convertOB2Scene(name string, doc *ob2SceneDoc, images *ob2Images, addAsset 
 					}
 				}
 			}
+			if ob2TokenExtras(it, tok, turn) {
+				stats.Combatants++
+			}
 			put(tok)
+			if turn.id == it.ID && turn.newID == "" {
+				turn.newID = tok["id"].(string)
+			}
 			stats.Tokens++
 
 		case it.Type == "CURVE" && ob2Bool(it.Metadata["com.battle-system.smoke/isVisionLine"]):
@@ -595,6 +671,14 @@ func convertOB2Scene(name string, doc *ob2SceneDoc, images *ob2Images, addAsset 
 				put(f)
 			}
 		}
+	}
+
+	if combat.InCombat && turn.newID != "" {
+		round := combat.Round
+		if round < 1 {
+			round = 1
+		}
+		p["combat"] = map[string]interface{}{"round": round, "turn": turn.newID}
 	}
 
 	// Owlbear's "fill fog" covers the whole map; drawn fog paths are applied on top of it
@@ -763,4 +847,99 @@ func ob2RoomName(filename string, scenes int) string {
 		return fmt.Sprintf("Owlbear 导入（%d 个场景）", scenes)
 	}
 	return base
+}
+
+// ob2Turn tracks which converted token holds the initiative tracker's active turn.
+type ob2Turn struct {
+	id    string // Owlbear item id of the active token
+	newID string // its id in the tabletop scene
+}
+
+// metadata keys converted into tabletop fields; everything else is kept under item["obr"]
+var ob2KnownMeta = map[string]bool{
+	"com.obr-suite/bubbles/data": true, "com.owlbear-rodeo-bubbles-extension/name": true,
+	"com.bestiary/slug": true, "com.character-cards/boundCardId": true,
+	"com.initiative-tracker/data": true, "com.initiative-tracker/dexMod": true,
+	"com.obr-suite/resources/data":      true,
+	"com.battle-system.smoke/hasVision": true, "com.battle-system.smoke/visionRange": true,
+}
+
+// ob2TokenExtras converts obr-suite token data (AC, initiative, resources) and keeps the
+// remaining extension metadata so a later Owlbear export can carry it back.
+// Returns true when the token is in the initiative tracker.
+func ob2TokenExtras(it *ob2Item, tok map[string]interface{}, turn *ob2Turn) bool {
+	var bub struct {
+		AC *float64 `json:"armor class"`
+	}
+	if raw, ok := it.Metadata["com.obr-suite/bubbles/data"]; ok && json.Unmarshal(raw, &bub) == nil && bub.AC != nil && *bub.AC > 0 {
+		tok["ac"] = *bub.AC
+	}
+	if raw, ok := it.Metadata["com.initiative-tracker/dexMod"]; ok {
+		if v, ok := ttNum(ob2Number(raw)); ok {
+			tok["initMod"] = v
+		}
+	}
+	inTracker := false
+	var ini struct {
+		Count    *float64 `json:"count"`
+		Active   bool     `json:"active"`
+		Rolled   bool     `json:"rolled"`
+		Tiebreak *float64 `json:"tiebreak"`
+	}
+	if raw, ok := it.Metadata["com.initiative-tracker/data"]; ok && json.Unmarshal(raw, &ini) == nil && ini.Count != nil {
+		inTracker = true
+		tok["init"] = *ini.Count
+		if ini.Rolled {
+			tok["initRolled"] = true
+		}
+		if ini.Tiebreak != nil {
+			tok["initTie"] = *ini.Tiebreak
+		}
+		if ini.Active {
+			turn.id = it.ID
+		}
+	}
+	// obr-suite resource tracker: [{id,name,type,current,max,icon,...}]
+	var res []map[string]interface{}
+	if raw, ok := it.Metadata["com.obr-suite/resources/data"]; ok && json.Unmarshal(raw, &res) == nil && len(res) > 0 {
+		var out []map[string]interface{}
+		for _, r := range res {
+			name := ttCleanName(fmt.Sprint(r["name"]), 20, "")
+			max, ok := ttNum(r["max"])
+			if name == "" || !ok || len(out) >= 20 {
+				continue
+			}
+			cur, _ := ttNum(r["current"])
+			kind, _ := r["type"].(string)
+			if kind != "bar" && kind != "number" {
+				kind = "count"
+			}
+			icon, _ := r["icon"].(string)
+			id, _ := r["id"].(string)
+			if !ttIDRe.MatchString(id) {
+				id = ttRandomID(4)
+			}
+			out = append(out, map[string]interface{}{"id": id, "name": name, "type": kind, "cur": cur, "max": max, "icon": icon})
+		}
+		if len(out) > 0 {
+			tok["res"] = out
+		}
+	}
+	// keep other (small) extension metadata
+	keep := map[string]interface{}{}
+	total := 0
+	for k, raw := range it.Metadata {
+		if ob2KnownMeta[k] || len(raw) > 2048 || total+len(raw) > 8192 {
+			continue
+		}
+		var v interface{}
+		if json.Unmarshal(raw, &v) == nil {
+			keep[k] = v
+			total += len(raw)
+		}
+	}
+	if len(keep) > 0 {
+		tok["obr"] = keep
+	}
+	return inTracker
 }

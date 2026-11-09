@@ -57,6 +57,10 @@ type TTLogEntry struct {
 	Label  string        `json:"label,omitempty"`
 	Roll   *TTDiceResult `json:"roll,omitempty"`
 	Hidden bool          `json:"hidden,omitempty"`
+	// attack rolls aimed at a token: target name, result vs its AC (hit/miss/crit/fumble), cover
+	Target string `json:"target,omitempty"`
+	Hit    string `json:"hit,omitempty"`
+	Cover  string `json:"cover,omitempty"`
 }
 
 type TTAsset struct {
@@ -117,6 +121,10 @@ type ttOpRequest struct {
 	Hidden bool                     `json:"hidden"`
 	FX     map[string]interface{}   `json:"fx"`
 	Sheet  map[string]interface{}   `json:"sheet"`
+	Action string                   `json:"action"` // init / combat
+	Mode   string                   `json:"mode"`   // init: "" / adv / dis
+	Target string                   `json:"target"` // roll: token id the attack is aimed at
+	Cover  int                      `json:"cover"`  // roll: cover bonus to the target's AC (2 / 5)
 }
 
 type Tabletop struct {
@@ -273,7 +281,7 @@ func defaultSceneProps() map[string]interface{} {
 		"gridAlpha": 0.35,
 		"gridScale": 5.0,
 		"gridUnit":  "ft",
-		"measure":   "chebyshev",
+		"measure":   "alternating",
 		"bg":        "#1b1d22",
 	}
 }
@@ -414,6 +422,9 @@ func (room *TTRoom) sceneView(sc *TTScene, gm bool) map[string]interface{} {
 	for _, it := range sc.Items {
 		if !gm && ttBool(it["hidden"]) {
 			continue
+		}
+		if !gm {
+			it = ttPlayerItem(it)
 		}
 		items = append(items, it)
 	}
@@ -575,12 +586,11 @@ func (room *TTRoom) broadcastItems(items []map[string]interface{}) {
 			visible = append(visible, it)
 		}
 	}
-	playerMsgs := [][]byte{all}
+	var playerMsgs [][]byte
+	if len(visible) > 0 {
+		playerMsgs = append(playerMsgs, ttMsg(map[string]interface{}{"type": "items", "items": ttPlayerItems(visible)}))
+	}
 	if len(hiddenIDs) > 0 {
-		playerMsgs = nil
-		if len(visible) > 0 {
-			playerMsgs = append(playerMsgs, ttMsg(map[string]interface{}{"type": "items", "items": visible}))
-		}
 		playerMsgs = append(playerMsgs, ttMsg(map[string]interface{}{"type": "del", "ids": hiddenIDs}))
 	}
 	for sub := range room.subs {
@@ -896,7 +906,20 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		e.Label = ttCleanName(req.Label, 40, "")
 		e.Roll = res
 		e.Hidden = req.Hidden
+		if req.Target != "" {
+			room.resolveAttack(&e, gm, req)
+		}
 		room.addLog(e)
+
+	case "init":
+		if st, msg := room.applyInit(u, gm, req); st != 0 {
+			return st, msg
+		}
+
+	case "combat":
+		if st, msg := room.applyCombat(u, gm, req); st != 0 {
+			return st, msg
+		}
 
 	case "chat":
 		text := strings.TrimSpace(req.Text)
@@ -1404,6 +1427,17 @@ func ttMsg(v interface{}) []byte {
 func ttBool(v interface{}) bool {
 	b, _ := v.(bool)
 	return b
+}
+
+// ttRandomFloat returns a random number in [0,1) (initiative tiebreakers).
+func ttRandomFloat() float64 {
+	b := make([]byte, 7)
+	rand.Read(b)
+	var v uint64
+	for _, x := range b {
+		v = v<<8 | uint64(x)
+	}
+	return float64(v>>3) / float64(uint64(1)<<53)
 }
 
 func ttRandomID(n int) string {

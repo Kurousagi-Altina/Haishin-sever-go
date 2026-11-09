@@ -312,3 +312,53 @@ details.feature summary { cursor: pointer; font-size: 13px; }
 .rd-preview b { color: #ffd54f; font-size: 16px; margin-left: 6px; }
 .rd-btns { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
 .rd-btns .tt-hint { flex: 1; }
+
+/* ===== 战斗：先攻 / 回合 / 目标 / 资源 ===== */
+.combat-hud {
+    position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); z-index: 6;
+    display: flex; flex-direction: column; align-items: center; gap: 4px; pointer-events: none; max-width: calc(100% - 140px);
+}
+.combat-hud > span {
+    pointer-events: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center;
+    padding: 6px 12px; border-radius: 10px; background: rgba(20,22,28,0.92); border: 1px solid #444; font-size: 13px;
+}
+.combat-hud .hud-round { color: #ffd54f; font-weight: bold; }
+.combat-hud .hud-cur.mine { color: #ffd54f; }
+.combat-hud .hud-target { border-color: #ff5252; color: #ff8a80; }
+.combat-hud .hud-target i { cursor: pointer; font-style: normal; color: #aaa; margin-left: 4px; }
+.combat-hud .hud-target i:hover { color: #fff; }
+.combat-head { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.combat-head b { flex: 1; font-size: 14px; color: #ffd54f; }
+.init-list { margin: 10px 0 16px; }
+.init-row { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 8px; margin-bottom: 4px; background: #23262e; border: 1px solid transparent; }
+.init-row.active { border-color: #ffd54f; background: #2d2a1e; }
+.init-row.mine .name { color: #90caf9; }
+.init-row.hidden-tok { opacity: 0.6; }
+.init-row .init-val { width: 44px; flex: none; text-align: center; font-weight: bold; font-size: 15px; }
+.init-row input.init-val { padding: 3px 2px; }
+.init-row .init-info { flex: 1; min-width: 0; cursor: pointer; }
+.init-row .init-info:hover .name { text-decoration: underline; }
+.init-row .name { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.init-row .sub { display: flex; align-items: center; gap: 6px; font-size: 11px; margin-top: 2px; }
+.hp-mini { display: inline-block; width: 46px; height: 5px; border-radius: 3px; background: rgba(0,0,0,0.6); overflow: hidden; }
+.hp-mini i { display: block; height: 100%; }
+.ac-mini { color: #b0bec5; }
+.prop-sub { margin: 10px 0 6px; font-size: 12px; color: #90caf9; border-top: 1px solid #333; padding-top: 8px; }
+.res-row label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.res-row b { flex: 1; font-size: 12px; }
+.res-pips { flex: 1; display: flex; flex-wrap: wrap; gap: 3px; }
+.res-pips i { width: 9px; height: 9px; border-radius: 50%; border: 1px solid #b39ddb; background: rgba(0,0,0,0.5); }
+.res-pips i.on { background: #b39ddb; }
+.rd-target-row { margin: 8px 0 10px; padding: 8px 10px; border-radius: 8px; background: #2a1f22; border: 1px solid #5d3a3f; font-size: 12px; line-height: 1.7; }
+.rd-target-row label { display: block; margin-top: 4px; color: #ddd; }
+.rd-target .ok { color: #81c784; }
+.rd-target .warn { color: #ffb74d; }
+.rd-target .bad { color: #e57373; }
+.log-target { margin-top: 2px; font-size: 12px; color: #ff8a80; }
+.hit-tag { display: inline-block; padding: 0 6px; border-radius: 4px; font-weight: bold; margin-left: 4px; }
+.hit-tag.hit { background: #2e7d32; color: #fff; }
+.hit-tag.crit { background: #f9a825; color: #222; }
+.hit-tag.miss { background: #555; color: #ddd; }
+@media (max-width: 768px) {
+    .combat-hud { bottom: 56px; max-width: calc(100% - 20px); }
+}

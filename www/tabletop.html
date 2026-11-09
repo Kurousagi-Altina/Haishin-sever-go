@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css?v=2026110702">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026110802">
 </head>
 <body class="tt-body">
 
@@ -143,6 +143,9 @@
                     <button class="tt-btn small danger" onclick="clearWalls()">清除墙体</button>
                 </div>
 
+                <!-- 回合 / 目标 -->
+                <div class="combat-hud" id="combatHud" style="display:none;"></div>
+
                 <!-- 属性面板 -->
                 <div class="tt-float" id="selPanel"></div>
 
@@ -158,6 +161,7 @@
             <aside class="tt-side" id="side">
                 <div class="side-tabs">
                     <div class="side-tab active" data-pane="dice">🎲 骰子</div>
+                    <div class="side-tab" data-pane="combat">⚔ 战斗</div>
                     <div class="side-tab" data-pane="sheets">📜 角色</div>
                     <div class="side-tab" data-pane="assets">🖼 资产</div>
                     <div class="side-tab gm-only" data-pane="scenes">🗺 场景</div>
@@ -208,10 +212,15 @@
                     </div>
                 </div>
 
+                <!-- 先攻 / 回合 -->
+                <div class="side-pane" id="pane-combat">
+                    <div class="side-scroll" id="combatPane"></div>
+                </div>
+
                 <!-- 角色卡 / 怪物 / 物品 -->
                 <div class="side-pane" id="pane-sheets">
                     <div class="side-scroll" id="sheetPane"></div>
-                    <input type="file" id="xlsxFile" accept=".xlsx" style="display:none;" onchange="importXlsx(this)">
+                    <input type="file" id="xlsxFile" accept=".xlsx,.json" style="display:none;" onchange="importXlsx(this)">
                 </div>
 
                 <!-- 资产 -->
@@ -268,8 +277,8 @@
                             <div class="set-row"><label>每格距离</label><input class="tt-input" id="setGridScale" type="number" min="0" step="0.5"><input class="tt-input" id="setGridUnit" maxlength="8" style="width:60px;flex:none;"></div>
                             <div class="set-row"><label>测距规则</label>
                                 <select class="tt-select" id="setMeasure">
-                                    <option value="chebyshev">5e 默认（斜向 = 1 格）</option>
-                                    <option value="alternating">5-10-5（斜向交替）</option>
+                                    <option value="alternating">斜向 5-10-5（交替计算）</option>
+                                    <option value="chebyshev">斜向 = 1 格（斜走不额外计费）</option>
                                     <option value="euclidean">直线距离</option>
                                 </select>
                             </div>
@@ -301,6 +310,10 @@
             <div class="rd-who" id="rdWho"></div>
             <input class="tt-input rd-label" id="rdLabel" maxlength="40" placeholder="说明">
             <div class="rd-base">基础：<b id="rdBase"></b></div>
+            <div class="rd-target-row" id="rdTargetRow" style="display:none;">
+                <div class="rd-target" id="rdTarget"></div>
+                <label title="由服务器用目标的 AC（含掩护加值）判定命中，结果写进记录"><input type="checkbox" id="rdVs" checked> 对目标结算命中</label>
+            </div>
             <div class="rd-row" id="rdModeRow">
                 <span class="rd-key">检定</span>
                 <span class="seg" id="rdModeSeg">
@@ -340,7 +353,8 @@
     </div>
 
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js?v=2026110702"></script>
-    <script src="js/tabletop.js?v=2026110702"></script>
+    <script src="js/tabletop-sheets.js?v=2026110802"></script>
+    <script src="js/tabletop-combat.js?v=2026110802"></script>
+    <script src="js/tabletop.js?v=2026110802"></script>
 </body>
 </html>
