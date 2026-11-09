@@ -8,7 +8,7 @@
 
 var ABIL_KEY = { '力量': 'str', '敏捷': 'dex', '体质': 'con', '智力': 'int', '感知': 'wis', '魅力': 'cha' };
 var CN_NUM = { '一': 1, '二': 2, '两': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10 };
-var DMG_TYPES = '强酸|钝击|寒冷|火焰|力场|闪电|黯蚀|死灵|穿刺|毒素|心灵|光耀|挥砍|雷鸣';
+var DMG_TYPES = '强酸|钝击|寒冷|火焰|力场|闪电|黯蚀|暗蚀|死灵|穿刺|毒素|心灵|光耀|挥砍|雷鸣';
 var SPELL_BUFFS = { '祝福术': 'blessed', '灾祸术': 'baned', '加速术': 'hasted', '侵扰术': 'hexed', '神导术': 'guidance', '隐形术': 'invisible' };
 var ACT_KINDS = [['attack', '攻击检定'], ['save', '豁免'], ['auto', '自动命中伤害'], ['heal', '治疗'], ['temp', '临时生命'], ['effect', '仅附加状态']];
 var AREA_SHAPES = [['', '无（点选目标）'], ['circle', '球形 / 圆形（半径）'], ['cone', '锥形（长度）'], ['line', '直线（长度）'], ['cube', '立方（边长）'],
@@ -37,6 +37,7 @@ function parseActionText(name, text, meta) {
         a.damage = m[1]; a.dtype = m[3] || ''; a.dmgMod = !!m[2];
     }
     if (a.damage) a.damage = a.damage.replace(/\s/g, '').replace(/＋/g, '+').replace(/[－−]/g, '-');
+    if (a.dtype === '暗蚀') a.dtype = '黯蚀'; // 2024 版译作「暗蚀」
     // 治疗 / 临时生命
     var heal = t.match(/(?:恢复|回复)[^。\n]{0,30}?(\d+d\d+(?:\s*[+＋]\s*\d+)?)([^。\n]{0,20})/);
     if (heal && /生命/.test(heal[0] + heal[2])) { a.heal = heal[1].replace(/\s|＋/g, function(c) { return c === '＋' ? '+' : ''; }); a.healMod = /施法属性调整值/.test(heal[2]); }
@@ -67,20 +68,29 @@ function parseActionText(name, text, meta) {
     // 范围
     // 光环 / 散发 / 以自身所在空间为中心 → 从自身展开
     var selfCenter = /光环|散发|以(?:它|你|其|自身)所在(?:的)?空间为中心|以(?:你|自身)为中心/.test(t);
-    if ((m = t.match(/(\d+)\s*尺\s*半径/) || t.match(/半径\s*(\d+)\s*尺/) || t.match(/(\d+)\s*尺\s*的?\s*(?:光环|散发)/))) a.area = { shape: 'circle', size: +m[1], width: 5, self: a.area.self || selfCenter };
-    else if ((m = t.match(/(\d+)\s*尺\s*的?\s*(?:长的?)?\s*锥/))) a.area = { shape: 'cone', size: +m[1], width: 5, self: true };
+    // 取正文里最先出现的范围描述（妖火「20尺立方区域」在前，后面「10尺半径的微光」只是照明）
+    var areaCands = [];
+    var areaCand = function(re, mk) { var mm = re.exec(t); if (mm) areaCands.push({ i: mm.index, area: mk(mm) }); };
+    var selfNow = a.area.self;
+    [/(\d+)\s*尺\s*半径/, /半径\s*(\d+)\s*尺/, /(\d+)\s*尺\s*的?\s*(?:光环|散发)/].forEach(function(re) {
+        areaCand(re, function(mm) { return { shape: 'circle', size: +mm[1], width: 5, self: selfNow || selfCenter }; });
+    });
+    areaCand(/(\d+)\s*尺\s*的?\s*(?:长的?)?\s*锥/, function(mm) { return { shape: 'cone', size: +mm[1], width: 5, self: true }; });
     // 「长100尺、宽5尺的直线」
-    else if ((m = t.match(/长\s*(\d+)\s*尺\s*[、，,]?\s*(?:宽\s*(\d+)\s*尺)?\s*的?\s*(?:直线|线状|线形)/))) a.area = { shape: 'line', size: +m[1], width: +(m[2] || 5), self: true };
-    else if ((m = t.match(/(\d+)\s*尺\s*(?:长)?(?:[，,、]?\s*(\d+)\s*尺\s*宽)?\s*的?\s*(?:直线|线状|线形)/))) a.area = { shape: 'line', size: +m[1], width: +(m[2] || 5), self: true };
-    else if ((m = t.match(/(\d+)\s*尺\s*的?\s*立方/))) a.area = { shape: 'cube', size: +m[1], width: 5, self: a.area.self };
+    areaCand(/长\s*(\d+)\s*尺\s*[、，,]?\s*(?:宽\s*(\d+)\s*尺)?\s*的?\s*(?:直线|线状|线形)/, function(mm) { return { shape: 'line', size: +mm[1], width: +(mm[2] || 5), self: true }; });
+    areaCand(/(\d+)\s*尺\s*(?:长)?(?:[，,、]?\s*(\d+)\s*尺\s*宽)?\s*的?\s*(?:直线|线状|线形)/, function(mm) { return { shape: 'line', size: +mm[1], width: +(mm[2] || 5), self: true }; });
+    // 「20尺立方」「20尺见方」「20尺方格区域」「20尺方状区域」
+    areaCand(/(\d+)\s*尺\s*的?\s*(?:立方|见方|方格|方形|方状|方块|正方)/, function(mm) { return { shape: 'cube', size: +mm[1], width: 5, self: selfNow }; });
+    if (areaCands.length) a.area = areaCands.sort(function(x, y) { return x.i - y.i; })[0].area;
     // 墙：「长至多50尺、高15尺、厚1尺」「可塑造为任意形状 / 连续路径」「直径至多20尺的环形墙」「十块10尺×10尺的嵌板」
     if (/墙|屏障|护壁/.test(t)) {
-        var wl = t.match(/长(?:度)?\s*(?:为|可达)?\s*(?:至多|最多|不超过)?\s*(\d+)\s*尺/);
-        var panels = t.match(/([一二两三四五六七八九十\d]+)\s*(?:块|片)[^。]{0,8}?(\d+)\s*尺\s*[×xX＊*乘]\s*\d+\s*尺/);
-        var th = t.match(/厚(?:度)?\s*(?:为)?\s*(?:至多)?\s*(\d+)\s*尺/) || t.match(/(\d+)\s*尺\s*厚/);
-        var ringM = t.match(/直径\s*(?:为)?\s*(?:至多)?\s*(\d+)\s*尺[^。；;]{0,20}环/) || t.match(/环形[^。；;]{0,20}?直径\s*(?:至多)?\s*(\d+)\s*尺/);
+        var wl = t.match(/长(?:度)?\s*(?:为|可达|达)?\s*(?:至多|最多|不超过|不过)?\s*(\d+)\s*尺/);
+        var panels = t.match(/([一二两三四五六七八九十\d]+)\s*(?:块|片|个)[^。\d一二两三四五六七八九十]{0,8}?(\d+)\s*(?:尺)?\s*[×xX＊*乘]\s*\d+\s*尺/);
+        var th = t.match(/厚(?:度)?\s*(?:为|达)?\s*(?:至多|最多|不超过|不过)?\s*(\d+)\s*尺/) || t.match(/(\d+)\s*尺\s*厚/);
+        var ringM = t.match(/直径\s*(?:为)?\s*(?:至多|最多|不超过|不过)?\s*(\d+)\s*尺[^。；;]{0,24}环/) || t.match(/环形[^。；;]{0,20}?直径\s*(?:至多|最多|不超过|不过)?\s*(\d+)\s*尺/);
         var free = /任意形状|任何形状|连续(?:的)?路径|形状由你决定|蜿蜒|相邻/.test(t);
-        var len = wl ? +wl[1] : panels ? (cnInt(panels[1]) || 1) * +panels[2] : 0;
+        // 有嵌板时按嵌板算总长（冰墙术「半球状（半径最长10尺）……十个10尺×10尺的方板块」）
+        var len = panels ? (cnInt(panels[1]) || 1) * +panels[2] : wl ? +wl[1] : 0;
         if (len) a.area = { shape: free || panels ? 'path' : 'wall', size: len, width: th ? +th[1] : (panels ? 1 : 1), self: false };
         else if (ringM) a.area = { shape: 'ring', size: +ringM[1], width: th ? +th[1] : 1, self: false };
         if (ringM) a.area.ringSize = +ringM[1];
@@ -93,10 +103,19 @@ function parseActionText(name, text, meta) {
     var buff = Object.keys(SPELL_BUFFS).filter(function(k) { return (name || '').indexOf(k) >= 0; })[0];
     if (buff) a.status = SPELL_BUFFS[buff];
     else {
-        STATUS_DEFS.some(function(d) {
-            if (['concentration', 'advantage', 'disadvantage', 'hidden', 'bardic', 'guidance', 'dodging', 'raging'].indexOf(d.id) >= 0) return false;
-            if (t.indexOf(d.name + '状态') >= 0 || t.indexOf('陷入' + d.name) >= 0 || t.indexOf('变得' + d.name) >= 0) { a.status = d.id; return true; }
-            return false;
+        // 取正文里最早出现的状态；「免疫力竭状态」「无法受益于隐形状态」「结束束缚状态」这类否定说法不算
+        var best = -1;
+        STATUS_DEFS.forEach(function(d) {
+            if (['concentration', 'advantage', 'disadvantage', 'hidden', 'bardic', 'guidance', 'dodging', 'raging'].indexOf(d.id) >= 0) return;
+            [d.name + '状态', '陷入' + d.name, '变得' + d.name].forEach(function(w) {
+                for (var i = t.indexOf(w); i >= 0; i = t.indexOf(w, i + 1)) {
+                    // 只看紧挨着的前几个字：「免疫力竭状态」「无法受益于隐形状态」「结束其束缚状态」算否定，「回合结束陷入失能状态」不算
+                    var before = t.slice(Math.max(0, i - 8), i);
+                    if (/(?:免疫|无法受益于?|不受|不会|结束|解除|移除|终止|摆脱|不再)(?:其|该|此|所有|此类)?(?:的)?$/.test(before)) continue;
+                    if (best < 0 || i < best) { best = i; a.status = d.id; }
+                    break;
+                }
+            });
         });
     }
     a.conc = /专注/.test(String(meta || '')) || /持续时间[：:]\s*专注/.test(t);
@@ -204,8 +223,10 @@ function applySpellScaling(a, sp, text, meta, sh) {
     a.slotLevel = a.spellLevel;
     a.baseDamage = a.damage || '';
     a.baseTargets = a.targets || 1;
-    var dur = String(meta || '').split(/\s*·\s*/).pop() || '';
-    a.lasting = !!(a.area && a.area.shape) && !!meta && !/立即/.test(dur) && /专注|分钟|小时|轮|天/.test(dur);
+    // 持续时间：不全书正文里有「持续时间：专注，至多1分钟」，角色卡导入的法术可能写在 meta 的最后一段
+    var dm = String(text || '').match(/持续时间[：:]\s*([^\n]+)/);
+    var dur = dm ? dm[1] : (meta ? String(meta).split(/\s*·\s*/).pop() : '');
+    a.lasting = !!(a.area && a.area.shape) && !!dur && !/立即/.test(dur) && /专注|分钟|小时|轮|天/.test(dur);
     a.zone = a.lasting;
     return a;
 }
@@ -610,6 +631,7 @@ function placeZoneOnly() {
     if (isPathShape(a.area) && !m.locked) { if (!m.pts || m.pts.length < 2) { notice('先把范围画好', true); return; } finishPathShape(); }
     var shp = actionShape();
     if (!shp) { notice('先把范围放到地图上', true); return; }
+    if (a.conc && m.caster) endOldConcZones(m.caster.id);
     createZone(a, shp, m.caster);
     consumeSlot(a, m.sheetId);
     var caster = m.caster && scene.items[m.caster.id];
@@ -769,10 +791,20 @@ function confirmActionTargeting() {
         status: def ? { id: def.id, name: def.name, color: def.color, icon: def.icon, rounds: a.rounds || 0 } : null
     } };
     if (isPathShape(a.area) && !m.locked && m.pts && m.pts.length > 1) finishPathShape();
+    if (a.conc && !m.zoneId && m.caster) endOldConcZones(m.caster.id);
     if (a.zone && a.area && a.area.shape && !m.zoneId) createZone(a, actionShape(), m.caster);
     if (!m.zoneId) consumeSlot(a, m.sheetId);
     cancelActionTargeting();
     op(body);
+}
+
+// 开始新的专注 = 结束旧的专注：先移除同一施放者之前留下的专注区域（服务器那边专注状态本来就只有一个）
+function endOldConcZones(casterId) {
+    var old = sortedItems().filter(function(z) { return z.zone && z.zone.conc === casterId && canEdit(z); });
+    if (!old.length) return;
+    old.forEach(function(z) { zoneGone[z.id] = true; });
+    deleteItems(old.map(function(z) { return z.id; }));
+    notice('开始新的专注，「' + old.map(function(z) { return z.label || '区域'; }).join('」「') + '」已结束', false, 3500);
 }
 
 // ===== 持续区域（月华之光、灵体卫士、匕首之云…）=====

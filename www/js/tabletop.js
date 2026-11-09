@@ -2743,6 +2743,12 @@ function onSelPanelChange(e) {
     } else patch[prop] = el.value === '' ? null : el.value;
     if (prop === 'color' && it.kind === 'token' && !it.asset) patch.circle = true;
     if (prop === 'hp' && patch.hp != null) zeroHpStatus(it, patch.hp, patch);
+    // GM 把 PC 棋子交给玩家：还没分配（或原本归旧控制者）的关联角色卡一起交过去，玩家才能扣法术位、改自己的卡
+    var lsh = prop === 'owner' && me.gm && it.sheet && sheets[it.sheet];
+    if (lsh && lsh.kind === 'pc' && (!lsh.owner || lsh.owner === it.owner)) {
+        op({ op: 'sheet', sheet: { id: lsh.id, owner: patch.owner || null } });
+        notice(patch.owner ? '角色卡「' + (lsh.name || '') + '」也分配给了 ' + patch.owner : '角色卡「' + (lsh.name || '') + '」已取消分配');
+    }
     patchItems([patch]);
 }
 
@@ -3389,7 +3395,7 @@ function appendLog(e, live) {
         var t = document.createElement('div');
         t.className = 'roll-toast';
         t.innerHTML = '⚡ <span style="color:' + escapeHtml(userColor(e.who)) + '">' + escapeHtml(e.who) + '</span> ' + escapeHtml(e.act.name) + ' → ' +
-            escapeHtml(e.act.targets.map(function(x) { return x.name + (x.amount ? ' ' + (x.amount > 0 ? '+' : '') + x.amount : ''); }).join('，') || '无目标');
+            escapeHtml((e.act.targets || []).map(function(x) { return x.name + (x.amount ? ' ' + (x.amount > 0 ? '+' : '') + x.amount : ''); }).join('，') || '无目标');
         $('rollToasts').appendChild(t);
         setTimeout(function() { t.remove(); }, 4500);
     }

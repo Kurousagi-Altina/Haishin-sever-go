@@ -172,6 +172,18 @@ func (room *TTRoom) saveBonus(it map[string]interface{}, ability string) int {
 	return 0
 }
 
+// ttDamageAliases: the 2014 and 2024 Chinese translations spell some damage types differently.
+var ttDamageAliases = map[string]string{"黯蚀": "暗蚀", "暗蚀": "黯蚀"}
+
+// ttHasDamageType reports whether a resistance / immunity text mentions dtype (or its alias).
+func ttHasDamageType(text, dtype string) bool {
+	if strings.Contains(text, dtype) {
+		return true
+	}
+	alt, ok := ttDamageAliases[dtype]
+	return ok && strings.Contains(text, alt)
+}
+
 // damageFactor reads 抗性 / 免疫 / 易伤 from the linked sheet's props for a damage type.
 func (room *TTRoom) damageFactor(it map[string]interface{}, dtype string) (float64, string) {
 	dtype = strings.TrimSuffix(strings.TrimSpace(dtype), "伤害")
@@ -202,7 +214,7 @@ func (room *TTRoom) damageFactor(it map[string]interface{}, dtype string) (float
 		// only unconditional entries: skip the part after "；" / "（非魔法…）" style qualifiers
 		hit := false
 		for _, part := range strings.FieldsFunc(value, func(r rune) bool { return r == '；' || r == ';' }) {
-			if strings.Contains(part, dtype) && !strings.Contains(part, "非魔法") && !strings.Contains(part, "未被") && !strings.Contains(part, "除") {
+			if ttHasDamageType(part, dtype) && !strings.Contains(part, "非魔法") && !strings.Contains(part, "未被") && !strings.Contains(part, "除") {
 				hit = true
 			}
 		}
