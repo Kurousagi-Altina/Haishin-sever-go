@@ -522,7 +522,7 @@ function onPropsChanged() {
         $('setGridAlpha').value = num(p.gridAlpha, 0.35);
         $('setGridScale').value = num(p.gridScale, 5);
         $('setGridUnit').value = p.gridUnit || 'ft';
-        $('setMeasure').value = p.measure || 'alternating';
+        $('setMeasure').value = p.measure || 'euclidean';
         $('setBg').value = p.bg || '#1b1d22';
         $('setVision').checked = !!p.vision;
         $('setHpStep').value = String(p.hpStep != null ? p.hpStep : 25);
@@ -2002,6 +2002,8 @@ function onPointerMove(e) {
     case 'move':
         if (!st.moved) return;
         gesture.alt = e.altKey;
+        var trail = gesture.trail || (gesture.trail = [{ x: 0, y: 0 }]), lastT = trail[trail.length - 1];
+        if (Math.hypot(dx - lastT.x, dy - lastT.y) * view.s > 6 && trail.length < 500) trail.push({ x: dx, y: dy }); // 实际拖过的路线
         var patches = [];
         for (var id in gesture.orig) {
             var it = scene.items[id];
@@ -2113,7 +2115,13 @@ function onPointerUp(e) {
                 it.x = c.x;
                 it.y = c.y;
             }
-            patches.push({ id: id, x: it.x, y: it.y });
+            var mp = { id: id, x: it.x, y: it.y };
+            if (it.kind === 'token') { // 战斗中自己的回合：累计本回合移动距离
+                var gs0 = gridSize(), cc0 = { x: g.orig[id].x + (it.w || gs0) / 2, y: g.orig[id].y + (it.h || gs0) / 2 };
+                var add = movedPatch(it, moveDistFt(cc0, { x: it.x + (it.w || gs0) / 2, y: it.y + (it.h || gs0) / 2 }, g.trail));
+                if (add) { mp.moved = add.moved; mp.movedKey = add.movedKey; it.moved = add.moved; it.movedKey = add.movedKey; }
+            }
+            patches.push(mp);
         }
         if (blocked) notice('被墙挡住了', true);
         queueItems(patches);
@@ -2235,6 +2243,8 @@ function onKeyDown(e) {
             var it = scene.items[id], hw = (it.w || gridSize()) / 2, hh = (it.h || gridSize()) / 2;
             var p = { id: id, x: (it.x || 0) + arrows[e.key][0] * step, y: (it.y || 0) + arrows[e.key][1] * step };
             if (!me.gm && it.kind === 'token' && moveBlocked(it.x + hw, it.y + hh, p.x + hw, p.y + hh)) return null;
+            var add = it.kind === 'token' ? movedPatch(it, pxToFt(step)) : null;
+            if (add) { p.moved = add.moved; p.movedKey = add.movedKey; }
             return p;
         }).filter(Boolean);
         if (patches.length) { e.preventDefault(); patchItems(patches); }
@@ -2476,7 +2486,7 @@ function onSelPanelChange(e) {
         var sum = /^\d+([+\-]\d+)+$/.test(rel) ? rel.match(/[+\-]?\d+/g).reduce(function(a, b) { return a + parseInt(b, 10); }, 0) : NaN;
         if (!isFinite(sum)) { notice('HP 只支持 20、+5、-3、15+5 这样的写法', true); return; }
         patch.hp = Math.max(0, it.hpMax > 0 ? Math.min(it.hpMax, sum) : sum);
-    } else if (prop === 'hp' || prop === 'hpMax' || prop === 'width' || prop === 'rot' || prop === 'sight' || prop === 'ac' || prop === 'initMod' || prop === 'init' || prop === 'hitR' || prop === 'size') {
+    } else if (prop === 'hp' || prop === 'hpMax' || prop === 'width' || prop === 'rot' || prop === 'sight' || prop === 'ac' || prop === 'initMod' || prop === 'init' || prop === 'hitR' || prop === 'size' || prop === 'speed') {
         var v = parseFloat(el.value);
         patch[prop] = el.value === '' || !isFinite(v) ? (prop === 'init' ? 0 : null) : v;
         if (prop === 'init') patch.initRolled = true;

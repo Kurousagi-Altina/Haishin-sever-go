@@ -138,7 +138,9 @@ function fitTokenToCells(it, cells) {
 }
 
 // ===== 测距 =====
-function measureRule() { return scene.props.measure || 'alternating'; }
+// 默认按实际长度（直线距离）计算，格子只作参考；设置里可改回按格子计数的 5-10-5 / 斜向 = 1 格
+function measureRule() { return scene.props.measure || 'euclidean'; }
+function realDistance() { return measureRule() === 'euclidean'; }
 
 // dx / dy 为格数，返回走过的格数（5-10-5 规则下第 2、4… 个斜步多算 1 格）
 function gridSteps(dx, dy) {
@@ -202,7 +204,7 @@ function rulerText(a, b) {
 }
 
 function drawRulerCells(a, b, color) {
-    if (isHex()) return;
+    if (isHex() || realDistance()) return; // 按实际长度时不画格子路径
     var ia = cellIndex(a.x, a.y), ib = cellIndex(b.x, b.y);
     if (ia[0] === ib[0] && ia[1] === ib[1]) return;
     drawPathCells([ia].concat(gridPath(ia[0], ia[1], ib[0], ib[1])), 1, color);
@@ -210,12 +212,42 @@ function drawRulerCells(a, b, color) {
 
 // ===== 移动 =====
 function tokenSpeed(it) {
+    if (num(it.speed, 0) > 0) return num(it.speed, 0);
     var sh = it.sheet && sheets[it.sheet];
     var m = sh && String(sh.speed || '').match(/\d+/);
     return m ? parseInt(m[0], 10) : 0;
 }
 
-// 拖动棋子时：显示起点和落点的判定圆、移动距离（对比速度）
+// ===== 移动距离 =====
+// 按实际长度时，拖动的移动距离 = 实际拖过的路径长度（绕开障碍走的弯路也算）；
+// 按格子规则时 = 起点到落点的格数。战斗中自己的回合里，移动会累计到「本回合已移动」，并对比速度。
+function pxToFt(px) { return px / gridSize() * num(scene.props.gridScale, 5); }
+
+function movePathFt(trail, endOff) {
+    var pts = (trail || [{ x: 0, y: 0 }]).concat([endOff]), len = 0;
+    for (var i = 1; i < pts.length; i++) len += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
+    return Math.round(pxToFt(len) * 2) / 2;
+}
+
+function moveDistFt(c0, c1, trail) {
+    var gs = gridSize();
+    if (realDistance()) return movePathFt(trail, { x: c1.x - c0.x, y: c1.y - c0.y });
+    var steps = isHex() ? Math.hypot(c1.x - c0.x, c1.y - c0.y) / gs : gridSteps(Math.abs(c1.x - c0.x) / gs, Math.abs(c1.y - c0.y) / gs);
+    return Math.round(stepsToUnits(steps) * 2) / 2;
+}
+
+// 本回合（战斗中、轮到它时）已经移动了多少
+function turnKey() { var c = combatState(); return c ? c.round + ':' + c.turn : ''; }
+function movedThisTurn(it) { var k = turnKey(); return k && it.movedKey === k ? num(it.moved, 0) : 0; }
+
+// 移动后要一起写进棋子的「本回合已移动」（只在它自己的回合，且自己能改这个棋子时）
+function movedPatch(it, ft) {
+    var c = combatState();
+    if (!c || c.turn !== it.id || !canEdit(it) || !(ft > 0)) return null;
+    return { moved: Math.round((movedThisTurn(it) + ft) * 2) / 2, movedKey: turnKey() };
+}
+
+// 拖动棋子时：显示实际路径、起点和落点的判定圆、移动距离（对比速度）
 function drawMoveGuide(g0) {
     var ids = Object.keys(g0.orig);
     if (ids.length !== 1) return;
@@ -224,9 +256,11 @@ function drawMoveGuide(g0) {
     var o = g0.orig[ids[0]], gs = gridSize(), w = it.w || gs, h = it.h || gs;
     var spot = dropSpot(it, it.x, it.y, o, g0.alt);
     var c0 = { x: o.x + w / 2, y: o.y + h / 2 }, c1 = { x: spot.x + w / 2, y: spot.y + h / 2 };
-    var dist = Math.round(stepsToUnits(isHex() ? Math.hypot(c1.x - c0.x, c1.y - c0.y) / gs : gridSteps(Math.abs(c1.x - c0.x) / gs, Math.abs(c1.y - c0.y) / gs)) * 2) / 2;
+    var dist = moveDistFt(c0, c1, g0.trail);
+    var c = combatState(), mine = c && c.turn === it.id;
+    var used = mine ? movedThisTurn(it) : 0, total = used + dist;
     var speed = tokenSpeed(it);
-    var over = speed && dist > speed;
+    var over = speed && total > speed;
     var color = over ? '#ef5350' : '#42a5f5';
     ctx.save();
     ctx.strokeStyle = color;
@@ -234,12 +268,18 @@ function drawMoveGuide(g0) {
     ctx.setLineDash([6 / view.s, 4 / view.s]);
     ctx.beginPath();
     ctx.moveTo(c0.x, c0.y);
+    if (realDistance()) (g0.trail || []).forEach(function(p) { ctx.lineTo(c0.x + p.x, c0.y + p.y); }); // 实际走过的路线
     ctx.lineTo(c1.x, c1.y);
     ctx.stroke();
     ctx.restore();
     drawHitCircle(it, color, true, c0);
     drawHitCircle(it, color, false, c1);
-    if (dist > 0) drawLabel('移动 ' + fmtDist(dist) + (speed ? ' / ' + speed : ''), c1.x, spot.y, over ? '#ef9a9a' : '#fff');
+    if (dist > 0) {
+        var text = '移动 ' + fmtDist(dist);
+        if (mine && used) text += '（本回合共 ' + fmtDist(total) + '）';
+        if (speed) text += ' / 速度 ' + speed + (over ? (total <= speed * 2 ? ' · 需要疾走' : ' · 超出') : '');
+        drawLabel(text, c1.x, spot.y, over ? '#ef9a9a' : '#fff');
+    }
 }
 
 // ===== 目标 / 掩护 =====
@@ -694,6 +734,7 @@ function renderCombatHud() {
         parts.push('<div class="hud-line init-strip"><span class="hud-round">' + (c ? '⚔ 第 ' + num(c.round, 1) + ' 轮' : '先攻') + '</span>' +
             (c && !curShown ? '<span class="init-chip active hid"><i>?</i><span class="nm">隐藏单位</span></span>' : '') +
             '<span class="init-chips">' + chips + '</span>' +
+            (curShown && cur && isCreatureToken(cur) ? '<span class="hud-move" title="本回合已移动 / 速度">🏃 ' + fmtDist(movedThisTurn(cur)) + (tokenSpeed(cur) ? ' / ' + tokenSpeed(cur) : '') + '</span>' : '') +
             (c && (me.gm || (mine && curShown)) ? '<button class="tt-btn small primary" data-cact="next">' + (me.gm ? '下一位' : '结束回合') + '</button>' : '') + '</div>');
     }
     var tgt = targetToken();
@@ -827,6 +868,8 @@ function combatPanelHtml(it, row) {
     h += row('跟随', '<select class="tt-select" data-prop="follow" style="flex:1;min-width:0;"><option value="">（不跟随）</option>' + others.map(function(t) {
         return '<option value="' + escapeHtml(t.id) + '"' + (it.follow === t.id ? ' selected' : '') + '>' + escapeHtml(t.label) + '</option>';
     }).join('') + '</select>');
+    h += row('速度', '<input class="tt-input narrow" data-prop="speed" type="number" min="0" step="5" value="' + (it.speed > 0 ? it.speed : '') + '" placeholder="' + (tokenSpeed(it) || '—') + '"> 尺' +
+        (combatState() && combatState().turn === it.id ? '<span class="tt-hint">本回合已移动 ' + fmtDist(movedThisTurn(it)) + '</span>' : ''));
     h += row('AC', '<input class="tt-input narrow" data-prop="ac" type="number" min="0" value="' + (it.ac != null ? escapeHtml(String(it.ac)) : '') + '" placeholder="—">' +
         '<span class="tt-hint">' + (it.owner ? '' : '玩家看不到') + '</span>');
     if (inInit(it)) {

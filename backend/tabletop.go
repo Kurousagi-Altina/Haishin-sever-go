@@ -316,7 +316,7 @@ func defaultSceneProps() map[string]interface{} {
 		"gridAlpha": 0.35,
 		"gridScale": 5.0,
 		"gridUnit":  "ft",
-		"measure":   "alternating",
+		"measure":   "euclidean",
 		"bg":        "#1b1d22",
 	}
 }

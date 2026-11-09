@@ -450,14 +450,9 @@ func convertOB2Scene(name string, doc *ob2SceneDoc, images *ob2Images, addAsset 
 			p["gridUnit"] = m[2]
 		}
 	}
-	// Owlbear's default CHEBYSHEV counts a diagonal step as one square, which makes
-	// diagonals free; scenes come in with the 5-10-5 rule (changeable in 设置)
-	switch doc.Grid.Measurement {
-	case "EUCLIDEAN", "MANHATTAN":
-		p["measure"] = "euclidean"
-	default:
-		p["measure"] = "alternating"
-	}
+	// distances are measured by actual length (the grid is only a reference); Owlbear's
+	// CHEBYSHEV made diagonals free. The grid-counting rules stay available in 设置.
+	p["measure"] = "euclidean"
 	if doc.Grid.Style.LineColor == "DARK" {
 		p["gridColor"] = "#000000"
 	} else {

@@ -450,3 +450,5 @@ details.feature summary { cursor: pointer; font-size: 13px; }
 .log-entry { position: relative; }
 .log-entry .reroll { position: absolute; right: 4px; bottom: 4px; border: 1px solid #444; background: #2a2d35; color: #ccc; border-radius: 6px; cursor: pointer; font-size: 12px; padding: 0 6px; }
 .log-entry .reroll:hover { color: #fff; border-color: #888; }
+
+.combat-hud .hud-move { white-space: nowrap; flex: none; color: #90caf9; font-size: 12px; }
