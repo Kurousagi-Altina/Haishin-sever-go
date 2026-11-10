@@ -555,10 +555,196 @@ function initExtra() {
     });
     $('musicUnlock').addEventListener('click', function() { applyMusic(); });
     $('logList').addEventListener('click', onLogClick);
+    initFloatWins();
     ['playerTokens', 'playerDraw', 'playerMoveOthers', 'playerDoors'].forEach(function(k) {
         $('perm_' + k).addEventListener('change', function() { setRoomSetting(k, this.checked ? null : false); });
     });
     $('timeStopBtn').addEventListener('click', function() { setRoomSetting('timeStop', timeStopped() ? null : true); });
     $('setGridType').addEventListener('change', function() { setProps({ gridType: this.value === 'square' ? null : this.value }); });
     $('setDark').addEventListener('change', function() { setProps({ dark: this.checked || null }); });
+}
+
+// ===== 角色状态栏 =====
+// 右上角：自己控制的角色（GM：选中的棋子，没选就看当前行动者）的生命值、增益 / 减益、专注的法术与留在地图上的区域
+var SB_BUFFS = { blessed: 1, hasted: 1, dodging: 1, raging: 1, bardic: 1, guidance: 1, advantage: 1, invisible: 1, hidden: 1, stable: 1 };
+var sbCollapsed = false, sbBound = false;
+try { sbCollapsed = localStorage.getItem('ttStatusBar') === 'min'; } catch (e) { /* 无痕模式等 */ }
+
+function statusBarTokens() {
+    if (!scene || !scene.items) return [];
+    var list;
+    if (me.gm) {
+        list = selectedIds().map(function(id) { return scene.items[id]; }).filter(function(t) { return t && t.kind === 'token'; });
+        if (!list.length) { var c = combatState(), cur = c && scene.items[c.turn]; list = cur && cur.kind === 'token' ? [cur] : []; }
+    } else {
+        list = sortedItems().filter(function(t) { return t.kind === 'token' && t.owner === me.name; });
+    }
+    return list.slice(0, 6);
+}
+
+function sbStatusChip(s) {
+    var d = STATUS_BY_ID[s.id] || {};
+    var name = s.name || d.name || s.id, icon = s.icon || d.icon || '•';
+    var extra = (s.lv ? ' ' + s.lv + '级' : '') + (s.rounds ? ' ·' + s.rounds + '轮' : '');
+    return '<span class="sb-chip ' + (SB_BUFFS[s.id] ? 'buff' : 'debuff') + '" title="' + escapeHtml((d.desc || name) + (s.rounds ? '（还剩 ' + s.rounds + ' 轮）' : '')) + '">' +
+        escapeHtml(icon + ' ' + name + extra) + '</span>';
+}
+
+function renderStatusBar() {
+    var el = $('statusBar');
+    if (!el) return;
+    var toks = typeof roomId !== 'undefined' && roomId ? statusBarTokens() : [];
+    if (!toks.length) { el.style.display = 'none'; el.innerHTML = ''; return; }
+    if (!sbBound) { sbBound = true; el.addEventListener('click', onStatusBarClick); el.addEventListener('pointerdown', function(e) { e.stopPropagation(); }); }
+    var mb = $('musicBar');
+    el.style.top = (mb && mb.style.display !== 'none' ? 52 : 10) + 'px';
+    el.style.display = '';
+    var c = combatState(), h = '<div class="sb-top"><b>角色状态</b><button class="sb-min" data-sb="min" title="' + (sbCollapsed ? '展开' : '收起') + '">' + (sbCollapsed ? '▸' : '▾') + '</button></div>';
+    if (!sbCollapsed) h += toks.map(function(t) {
+        var st = Array.isArray(t.status) ? t.status : [];
+        var conc = st.filter(function(s) { return s.id === 'concentration'; })[0];
+        var zones = sortedItems().filter(function(z) { return z.zone && z.zone.conc === t.id && seeable(z); });
+        var others = sortedItems().filter(function(z) { return z.zone && !z.zone.conc && z.zone.caster === t.id && seeable(z); });
+        var hp = '';
+        if (t.hpMax > 0) {
+            var pct = Math.max(0, Math.min(100, (t.hp || 0) / t.hpMax * 100));
+            hp = '<span class="sb-hp">' + (t.hpPct ? Math.round(t.hp || 0) + '%' : (t.hp || 0) + '/' + t.hpMax) + (t.hpTemp ? ' <i>+' + t.hpTemp + '</i>' : '') + '</span>';
+            hp += '</div><div class="sb-hpbar"><i style="width:' + pct + '%;background:' + (pct > 50 ? '#43a047' : pct > 25 ? '#fbc02d' : '#e53935') + '"></i>';
+        }
+        var x = '<div class="sb-card' + (c && c.turn === t.id ? ' cur' : '') + '"><div class="sb-head"><a class="sb-name" data-sbfocus="' + t.id + '" title="选中并居中">' +
+            escapeHtml(t.label || '未命名') + '</a>' + hp + '</div>';
+        if (conc || zones.length) {
+            var names = zones.map(function(z) { return '<a data-sbzone="' + z.id + '" title="选中这个区域（之后在区域里任意一点拖动即可移动）">' + escapeHtml(z.label || '区域') + '</a>'; });
+            if (!names.length && conc && conc.spell) names.push(escapeHtml(conc.spell));
+            x += '<div class="sb-conc">🧠 专注：' + (names.join('、') || '（未记录法术）') +
+                (canEdit(t) && conc ? ' <button class="sb-x" data-sbendconc="' + t.id + '" title="结束专注（留在地图上的专注区域会一起移除）">✕</button>' : '') + '</div>';
+        }
+        if (others.length) x += '<div class="sb-conc">✨ 区域：' + others.map(function(z) { return '<a data-sbzone="' + z.id + '">' + escapeHtml(z.label || '区域') + '</a>'; }).join('、') + '</div>';
+        var chips = st.filter(function(s) { return s.id !== 'concentration'; });
+        chips.sort(function(a, b) { return (SB_BUFFS[a.id] ? 0 : 1) - (SB_BUFFS[b.id] ? 0 : 1); });
+        x += chips.length ? '<div class="sb-st">' + chips.map(sbStatusChip).join('') + '</div>' : '<div class="sb-st sb-none">无状态</div>';
+        return x + '</div>';
+    }).join('');
+    el.innerHTML = h;
+}
+
+function onStatusBarClick(e) {
+    var a = e.target.closest('[data-sbfocus],[data-sbzone],[data-sbendconc],[data-sb]');
+    if (!a) return;
+    if (a.dataset.sb === 'min') {
+        sbCollapsed = !sbCollapsed;
+        try { localStorage.setItem('ttStatusBar', sbCollapsed ? 'min' : ''); } catch (err) { /* ignore */ }
+        renderStatusBar();
+        return;
+    }
+    if (a.dataset.sbfocus) { focusToken(a.dataset.sbfocus); return; }
+    if (a.dataset.sbzone) {
+        var z = scene.items[a.dataset.sbzone];
+        if (!z) return;
+        var s = zoneShapeOf(z), cx = s.type === 'circle' || s.type === 'ring' ? s.x : null, cy = cx != null ? s.y : null;
+        if (cx == null && s.pts && s.pts.length) {
+            cx = s.pts.reduce(function(v, p) { return v + p[0]; }, 0) / s.pts.length;
+            cy = s.pts.reduce(function(v, p) { return v + p[1]; }, 0) / s.pts.length;
+        }
+        if (cx != null) { view.x = canvas.clientWidth / 2 - cx * view.s; view.y = canvas.clientHeight / 2 - cy * view.s; }
+        selectOnly([z.id]);
+        if (canMove(z)) notice('已选中「' + (z.label || '区域') + '」：在区域里任意一点拖动即可移动', false, 3000);
+        return;
+    }
+    if (a.dataset.sbendconc) {
+        var t = scene.items[a.dataset.sbendconc];
+        if (!t || !canEdit(t)) return;
+        if (!confirm('结束「' + (t.label || '') + '」的专注？留在地图上的专注区域会一起移除。')) return;
+        patchItems([{ id: t.id, status: (t.status || []).filter(function(s) { return s.id !== 'concentration'; }) }]);
+    }
+}
+
+
+// ===== 可拖动的浮窗（历史记录、先攻条）=====
+// 位置 / 大小 / 收起状态只存在本机（localStorage，读写失败就用默认位置）；双击把手恢复默认位置
+function floatLoad(key) { try { return JSON.parse(localStorage.getItem('ttFloat:' + key) || 'null') || {}; } catch (e) { return {}; } }
+function floatSave(key, st) { try { localStorage.setItem('ttFloat:' + key, JSON.stringify(st)); } catch (e) { /* ignore */ } }
+
+function makeFloat(el, key, opts) {
+    opts = opts || {};
+    var st = floatLoad(key);
+    var parent = el.parentElement;
+    function clampApply() {
+        if (st.l == null) { el.style.left = el.style.top = el.style.right = el.style.bottom = el.style.transform = ''; if (opts.keepWidth) el.style.width = ''; return; }
+        var pw = parent.clientWidth, ph = parent.clientHeight, l = st.l, t = st.t;
+        // 默认靠左右两边撑开宽度的（先攻条）：拖走后保持拖动前的宽度，内容多了在条内横向滚动
+        if (opts.keepWidth && st.w) el.style.width = (pw ? Math.min(st.w, pw - 10) : st.w) + 'px';
+        if (pw && ph) { // 画布还没显示（在大厅）时先按记下的位置放，进房后再校正
+            l = Math.max(0, Math.min(st.l, pw - Math.min(el.offsetWidth || 60, pw)));
+            t = Math.max(0, Math.min(st.t, ph - 30));
+        }
+        el.style.left = l + 'px'; el.style.top = t + 'px'; el.style.right = 'auto'; el.style.bottom = 'auto'; el.style.transform = 'none';
+    }
+    if (opts.resizable) {
+        if (st.w) el.style.width = st.w + 'px';
+        if (st.h) el.style.height = st.h + 'px';
+        if (window.ResizeObserver) {
+            var timer = null;
+            new ResizeObserver(function() {
+                if (el.classList.contains('min') || !el.offsetWidth) return;
+                clearTimeout(timer);
+                timer = setTimeout(function() { st.w = el.offsetWidth; st.h = el.offsetHeight; floatSave(key, st); }, 300);
+            }).observe(el);
+        }
+    }
+    if (opts.minimizable && st.min) el.classList.add('min');
+    clampApply();
+    var drag = null;
+    el.addEventListener('pointerdown', function(e) {
+        e.stopPropagation(); // 不要让地图收到（平移 / 选择）
+        var h = e.target.closest('[data-drag]');
+        if (!h || e.button !== 0 || e.target.closest('button, input, select, [data-cact], [data-focus], [data-fw]')) return;
+        drag = { x: e.clientX, y: e.clientY, l: el.offsetLeft, t: el.offsetTop, id: e.pointerId };
+        if (opts.keepWidth && !st.w) st.w = el.offsetWidth;
+        try { el.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+        e.preventDefault();
+    });
+    el.addEventListener('pointermove', function(e) {
+        if (!drag || e.pointerId !== drag.id) return;
+        st.l = drag.l + e.clientX - drag.x; st.t = drag.t + e.clientY - drag.y;
+        clampApply();
+    });
+    function end(e) {
+        if (!drag || e.pointerId !== drag.id) return;
+        drag = null;
+        st.l = el.offsetLeft; st.t = el.offsetTop;
+        floatSave(key, st);
+    }
+    el.addEventListener('pointerup', end);
+    el.addEventListener('pointercancel', end);
+    el.addEventListener('dblclick', function(e) {
+        if (!e.target.closest('[data-drag]') || e.target.closest('button, [data-focus], [data-cact]')) return;
+        delete st.l; delete st.t; if (opts.keepWidth) delete st.w; floatSave(key, st); clampApply();
+    });
+    el.addEventListener('click', function(e) {
+        var b = e.target.closest('[data-fw="min"]');
+        if (!b) return;
+        el.classList.toggle('min');
+        st.min = el.classList.contains('min'); floatSave(key, st);
+        b.textContent = st.min ? '▸' : '▾';
+        if (!st.min && el.id === 'logWin') { var ll = $('logList'); ll.scrollTop = ll.scrollHeight; }
+    });
+    var mb = el.querySelector('[data-fw="min"]');
+    if (mb) mb.textContent = st.min ? '▸' : '▾';
+    window.addEventListener('resize', clampApply);
+    return { reclamp: clampApply };
+}
+
+var combatFloat = null, logFloat = null;
+function initFloatWins() {
+    logFloat = makeFloat($('logWin'), 'log', { resizable: true, minimizable: true });
+    combatFloat = makeFloat($('combatHud'), 'initiative', { keepWidth: true });
+}
+function reclampFloats() { if (logFloat) logFloat.reclamp(); if (combatFloat) combatFloat.reclamp(); }
+
+// 先攻条样式：带立绘（默认）/ 简化，只存在本机
+function initViewPortrait() { try { return localStorage.getItem('ttInitView') !== 'simple'; } catch (e) { return true; } }
+function toggleInitView() {
+    try { localStorage.setItem('ttInitView', initViewPortrait() ? 'simple' : 'portrait'); } catch (e) { /* ignore */ }
+    renderCombatHud();
 }

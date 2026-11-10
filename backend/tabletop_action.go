@@ -567,7 +567,7 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 			if !seen[a.Caster] {
 				undo = append(undo, ttSnapHP(sc, c))
 			}
-			ttAddStatus(c, map[string]interface{}{"id": "concentration", "name": "专注", "color": "#4682b4", "icon": "🧠"})
+			ttAddStatus(c, map[string]interface{}{"id": "concentration", "name": "专注", "color": "#4682b4", "icon": "🧠", "spell": a.Name})
 			changed = append(changed, c)
 			if ttConcealed(c) {
 				hidden = true // a hidden caster isn't revealed by the log

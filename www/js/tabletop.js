@@ -340,6 +340,7 @@ function stopRoomExtras() {
     itemQueue.order = [];
     undoStack = [];
     redoStack = [];
+    if ($('statusBar')) $('statusBar').style.display = 'none';
 }
 
 function copyRoomLink() {
@@ -419,6 +420,8 @@ function handleMsg(m) {
         renderSelPanel();
         lastTurn = null;
         onCombatChanged();
+        scheduleCombatUi(); // 状态栏等
+        setTimeout(reclampFloats, 0); // 画布刚显示：浮窗位置按实际大小校正
         break;
     case 'room':
         setRoomMeta(m.room);
@@ -587,6 +590,7 @@ function scheduleCombatUi() {
         renderCombat();
         renderCombatHud();
         renderBossBars();
+        renderStatusBar();
     }, 300);
 }
 
@@ -819,8 +823,9 @@ function hitItem(it, w) {
         var b = itemBBox(it);
         return w.x >= b.x0 && w.x <= b.x1 && w.y >= b.y0 && w.y <= b.y1;
     }
-    // 持续区域只有点到边框才算选中，点中间覆盖的范围当作空地
-    var solid = (it.fill && !it.zone) || it.kind === 'fog';
+    // 持续区域只有点到边框才算选中，点中间覆盖的范围当作空地；已经选中的区域点里面任意一点都能拖动
+    var solid = (it.fill && !it.zone) || it.kind === 'fog' || (it.zone && selected[it.id] && it.shape === 'circle');
+    if (it.zone && selected[it.id] && it.shape === 'poly') solid = true;
     if (it.zone) tol = 9 / view.s;
     if (it.shape === 'circle') {
         var d = Math.sqrt(lx * lx + ly * ly), r = it.r || 0;
@@ -835,6 +840,16 @@ function hitItem(it, w) {
     }
     if (closed && pts.length > 2 && distToSeg(lx, ly, pts[pts.length - 1][0], pts[pts.length - 1][1], pts[0][0], pts[0][1]) <= half) return true;
     return pts.length === 1 && Math.sqrt(lx * lx + ly * ly) <= half;
+}
+
+// 已选中的持续区域：点它覆盖的范围就是要拖动它（优先于区域里的棋子）
+function selectedZoneAt(w) {
+    var ids = selectedIds();
+    for (var i = 0; i < ids.length; i++) {
+        var z = scene.items[ids[i]];
+        if (z && z.zone && hitItem(z, w) && canMove(z)) return z;
+    }
+    return null;
 }
 
 // 命中测试：棋子优先，其次绘制；迷雾仅在迷雾选择模式下
@@ -859,6 +874,7 @@ function selectOnly(ids) {
     selected = {};
     ids.forEach(function(id) { selected[id] = true; });
     renderSelPanel();
+    if (me.gm) scheduleCombatUi(); // GM 的状态栏显示选中的棋子
     requestRender();
 }
 
@@ -1552,7 +1568,7 @@ function drawRuler(a, b, color, who) {
 }
 
 // ===== 棋子变换手柄 =====
-// 选中单个可编辑、未锁定的棋子：四角拖动 = 以中心等比缩放（吸附半格，Alt 自由），
+// 选中单个可编辑、未锁定的棋子：四角拖动 = 以中心等比缩放（自由缩放，Shift 吸附半格；只改图片，判定圆不变），
 // 顶部圆形手柄拖动 = 旋转（吸附 15°，Alt 自由）。手柄跟随棋子旋转。
 function tokenHandles() {
     var ids = selectedIds();
@@ -1627,7 +1643,7 @@ function scaleTokenTo(t, nw, ratio) {
     t.y = c.y - t.h / 2;
 }
 
-// 鼠标滚轮：Alt+滚轮旋转 15°，Shift+滚轮缩放半格（作用于鼠标下的棋子）
+// 鼠标滚轮：Alt+滚轮旋转 15°，Shift+滚轮缩放 10%（作用于鼠标下的棋子，不受格子限制）
 function wheelTransform(e, w) {
     if (!e.altKey && !e.shiftKey) return false;
     var it = hitTest(w, ['token']);
@@ -1638,10 +1654,12 @@ function wheelTransform(e, w) {
         patchItems([{ id: it.id, rot: rot || null }]);
     } else {
         var ratio = (it.h || g) / (it.w || g);
-        var nw = Math.max(0.5, Math.round((it.w || g) / g * 2) / 2 - d * 0.5) * g;
+        var nw = Math.max(g / 8, (it.w || g) * (d > 0 ? 1 / 1.1 : 1.1));
         var t = { x: it.x, y: it.y, w: it.w || g, h: it.h || g };
         scaleTokenTo(t, nw, ratio);
-        patchItems([{ id: it.id, w: t.w, h: t.h, x: t.x, y: t.y }]);
+        var wp = { id: it.id, w: t.w, h: t.h, x: t.x, y: t.y };
+        pinTokenCells(it, wp); // 只改图片大小，判定圆按原体型
+        patchItems([wp]);
     }
     if (selected[it.id]) { $('selPanel').dataset.ids = ''; renderSelPanel(); }
     return true;
@@ -2000,11 +2018,13 @@ function onPointerDown(e) {
         if (hh) {
             var t = scene.items[hh.h.id];
             var orig = { w: t.w || gridSize(), h: t.h || gridSize(), x: t.x, y: t.y, rot: t.rot || 0 };
-            gesture = { type: hh.kind === 'rot' ? 'rotate' : 'resize', start: start, id: t.id, ids: idSet([t.id]), orig: orig, lastSent: 0, snap: snapshotItems([t.id], ['x', 'y', 'w', 'h', 'rot']) };
+            gesture = { type: hh.kind === 'rot' ? 'rotate' : 'resize', start: start, id: t.id, ids: idSet([t.id]), orig: orig, lastSent: 0, snap: snapshotItems([t.id], ['x', 'y', 'w', 'h', 'rot', 'fp']) };
+            if (hh.kind !== 'rot') { var pp = {}; pinTokenCells(t, pp); gesture.pinFp = pp.fp || 0; } // 缩放图片不改判定圆
             canvas.style.cursor = hh.kind === 'rot' ? 'grabbing' : handleCursor(hh);
             return;
         }
-        var hit = hitTest(w, tool === 'fog' ? ['fog'] : tool === 'wall' ? ['wall'] : ['token', 'draw']);
+        var hit = tool === 'select' ? selectedZoneAt(w) : null;
+        if (!hit) hit = hitTest(w, tool === 'fog' ? ['fog'] : tool === 'wall' ? ['wall'] : ['token', 'draw']);
         if (!hit && tool === 'select') {
             var door = doorAt(w);
             if (door && (me.gm || (!door.locked && roomSetting('playerDoors', true) && !timeStopped()))) {
@@ -2106,7 +2126,7 @@ function onPointerMove(e) {
     if (!gesture) {
         if (tool === 'select' && !spaceDown && e.pointerType !== 'touch') {
             var hov = handleAt(w);
-            canvas.style.cursor = hov ? handleCursor(hov) : 'default';
+            canvas.style.cursor = hov ? handleCursor(hov) : selectedZoneAt(w) ? 'move' : 'default';
         }
         return;
     }
@@ -2157,8 +2177,8 @@ function onPointerMove(e) {
         var cx0 = gesture.orig.x + gesture.orig.w / 2, cy0 = gesture.orig.y + gesture.orig.h / 2;
         var px = w.x - cx0, py = w.y - cy0;
         var lx = px * Math.cos(a) + py * Math.sin(a), ly = -px * Math.sin(a) + py * Math.cos(a);
-        var nw = Math.max(gridSize() / 4, Math.abs(lx) * 2, Math.abs(ly) * 2 / ratio);
-        if (!e.altKey) nw = Math.max(0.5, Math.round(nw / gridSize() * 2) / 2) * gridSize();
+        var nw = Math.max(gridSize() / 8, Math.abs(lx) * 2, Math.abs(ly) * 2 / ratio);
+        if (e.shiftKey) nw = Math.max(0.5, Math.round(nw / gridSize() * 2) / 2) * gridSize(); // Shift：按半格吸附；默认自由缩放
         t.w = nw;
         t.h = nw * ratio;
         t.x = cx0 - t.w / 2;
@@ -2273,7 +2293,11 @@ function onPointerUp(e) {
         break;
     case 'resize':
         var t = scene.items[g.id];
-        if (t) queueItems([{ id: t.id, w: t.w, h: t.h, x: t.x, y: t.y }]);
+        if (t) {
+            var rp = { id: t.id, w: t.w, h: t.h, x: t.x, y: t.y };
+            if (g.pinFp) { rp.fp = g.pinFp; t.fp = g.pinFp; }
+            queueItems([rp]);
+        }
         $('selPanel').dataset.ids = '';
         renderSelPanel();
         updateCursor();
@@ -2534,12 +2558,15 @@ function renderSelPanel() {
     if (it.zone) {
         h += '<div class="tt-hint">' + escapeHtml(it.label || '') + (it.zone.conc ? ' · 专注（施放者失去专注时自动移除）' : '') + '</div>' +
             '<div class="prop-btns"><button class="tt-btn small primary" data-act="zoneGo" title="生物进入区域、在区域里开始 / 结束回合时">⚡ 对区域内结算</button>' +
-            '<button class="tt-btn small danger" data-act="zoneEnd">结束效果</button></div>' +
-            '<div class="tt-hint">拖动可以移动区域（如月华之光每回合可移动）</div>';
+            '<button class="tt-btn small danger" data-act="zoneEnd">结束效果</button></div>';
+        var zh = zoneHitsNow(it), zn = Object.keys(zh).map(function(id) { var t = scene.items[id]; return t ? (t.label || '?') + (zh[id] > 1 ? '×' + zh[id] : '') : ''; }).filter(Boolean);
+        h += '<div class="tt-hint">' + (turnKey() ? '本回合已结算：' + escapeHtml(zn.join('、') || '无') : '战斗外不限制结算次数') + '</div>';
+        if (canEdit(it)) h += '<label class="prop-row" style="font-size:12px;"><input type="checkbox" data-zoneonce' + (zoneOnce(it) ? ' checked' : '') + '> 每个生物每回合限结算一次</label>';
+        h += '<div class="tt-hint">选中后在区域里任意一点拖动即可移动（如月华之光每回合可移动）</div>';
     }
     if (it.kind === 'token') {
         h += row('名称', '<input class="tt-input" data-prop="label" maxlength="40" value="' + escapeHtml(it.label || '') + '">');
-        h += row('尺寸', '<input class="tt-input narrow" data-prop="size" type="number" min="0.25" step="0.5" value="' + (Math.round((it.w || g) / g * 100) / 100) + '"> 格');
+        h += row('尺寸', '<input class="tt-input narrow" data-prop="size" type="number" min="0.1" step="0.1" value="' + (Math.round((it.w || g) / g * 100) / 100) + '"> 格');
         h += row('HP', '<input class="tt-input narrow" data-prop="hp" inputmode="numeric" title="填 20 设为 20；+5 治疗、-3 伤害（先扣临时生命）；15+5 先算再设" value="' + (it.hp != null ? it.hp : '') + '"> / ' +
             '<input class="tt-input narrow" data-prop="hpMax" type="number" min="0" value="' + (it.hpMax || '') + '">');
         h += row('临时', '<input class="tt-input narrow" data-prop="hpTemp" type="number" min="0" value="' + (it.hpTemp || '') + '" placeholder="0">' +
@@ -2553,7 +2580,7 @@ function renderSelPanel() {
             '<label><input type="checkbox" data-prop="circle"' + (it.circle ? ' checked' : '') + '> 圆形</label>' +
             '<label><input type="checkbox" data-prop="flipX"' + (it.flipX ? ' checked' : '') + '> 翻转</label>');
         h += row('旋转', '<input type="range" data-prop="rot" min="0" max="359" step="1" value="' + (it.rot || 0) + '" style="flex:1;"><span class="tt-hint">' + (it.rot || 0) + '°</span>');
-        if (!it.locked) h += '<div class="tt-hint" style="margin:-4px 0 8px;">地图上拖四角缩放、拖顶部圆钮旋转（Alt 不吸附）；也可 Alt+滚轮旋转、Shift+滚轮缩放</div>';
+        if (!it.locked) h += '<div class="tt-hint" style="margin:-4px 0 8px;">地图上拖四角自由缩放（Shift 吸附半格）、拖顶部圆钮旋转（Alt 不吸附）；也可 Alt+滚轮旋转、Shift+滚轮缩放。缩放只改图片，判定圆按体型</div>';
         h += row('视野', '<input class="tt-input narrow" data-prop="sight" type="number" min="0" step="5" value="' + (it.sight || '') + '" placeholder="不限"> ' +
             escapeHtml(scene.props.gridUnit || 'ft') + '<span class="tt-hint">（动态视野用）</span>');
         h += combatPanelHtml(it, row);
@@ -2700,6 +2727,15 @@ function zeroHpStatus(it, hp, patch) {
 function onSelPanelChange(e) {
     var el = e.target, prop = el.dataset.prop;
     var ids = selectedIds();
+    if (el.dataset.zoneonce !== undefined && ids.length === 1) {
+        var zi = scene.items[ids[0]];
+        if (zi && zi.zone && zi.zone.act && canEdit(zi)) {
+            var zc = JSON.parse(JSON.stringify(zi.zone));
+            zc.act.oncePerTurn = el.checked;
+            patchItems([{ id: zi.id, zone: zc }]);
+        }
+        return;
+    }
     if (!prop || ids.length !== 1) return;
     var it = scene.items[ids[0]], g = gridSize(), patch = { id: it.id };
     if (el.type === 'checkbox') patch[prop] = el.checked || null;
@@ -2707,6 +2743,7 @@ function onSelPanelChange(e) {
         var cells = parseFloat(el.value);
         if (!(cells > 0)) return;
         var ratio = (it.h || g) / (it.w || g);
+        pinTokenCells(it, patch); // 改的是图片大小，判定圆按原来的体型
         patch.w = cells * g;
         patch.h = cells * g * ratio;
     } else if (prop === 'hpTemp') {

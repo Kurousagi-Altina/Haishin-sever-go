@@ -6,7 +6,7 @@
 
 var sheets = {};
 var sheetView = { mode: 'list', id: '', tokenId: '', tmp: null, back: null };
-var lookup = { q: '', filter: 'all', results: null, page: null, loading: false };
+var lookup = { q: '', filter: 'all', results: null, page: null, loading: false, monsters: null, mLoading: false, mMore: false };
 
 var ABILITY_NAMES = { str: '力量', dex: '敏捷', con: '体质', int: '智力', wis: '感知', cha: '魅力' };
 var ABILITY_KEYS = { '力量': 'str', '敏捷': 'dex', '体质': 'con', '智力': 'int', '感知': 'wis', '魅力': 'cha' };
@@ -110,6 +110,7 @@ function onSheetPaneClick(e) {
     case 'res': changeResource(sh, parseInt(b.dataset.idx, 10), parseInt(b.dataset.delta, 10)); break;
     case 'cast': e.preventDefault(); castFromSheet(sh, b.dataset); break;
     case 'search': runLookup(); break;
+    case 'deploy': deployMonster(b.dataset.key, b); break;
     case 'lkfilter': lookup.filter = b.dataset.filter; renderSheets(); break;
     case 'lkpage': loadLookupPage(b.dataset.path, b.dataset.title); break;
     case 'lkback': lookup.page = null; renderSheets(); break;
@@ -234,6 +235,8 @@ function sheetHtml(sh, preview) {
     var tok = sheetView.tokenId && scene.items[sheetView.tokenId];
     var h = '<div class="sheet-head"><button class="tt-btn small" data-act="back">←</button>' +
         '<div class="title"><div class="name">' + escapeHtml(sh.name) + '</div><div class="sub">' + escapeHtml(sheetSub(sh)) + '</div></div></div>';
+    if (sh.portrait) h += '<div class="sheet-portrait"><a href="' + escapeHtml(assetURL(sh.portrait)) + '" target="_blank" rel="noopener" title="查看大图">' +
+        '<img src="' + escapeHtml(assetURL(sh.portrait)) + '" alt="' + escapeHtml(sh.name) + '"></a></div>';
     if (preview) {
         h += '<div class="lobby-row" style="gap:6px;">' + (me.gm ? '<button class="tt-btn primary" data-act="import-tmp">导入到房间</button>' : '') +
             '<span class="tt-hint">预览（未保存）· 点击数值可直接掷骰</span></div>';
@@ -371,14 +374,16 @@ function sizeCells(sh) {
     return 1;
 }
 
-function placeSheetToken(sh) {
+function placeSheetToken(sh, asset) {
     if (!sh) return;
+    asset = asset || sh.tokenImg || '';
     var g = gridSize(), cells = sizeCells(sh), w = g * cells;
     var c = toWorld(canvas.clientWidth / 2, canvas.clientHeight / 2);
     var pos = snapToGrid(c.x - w / 2, c.y - w / 2);
     var same = sortedItems().filter(function(it) { return it.sheet === sh.id; }).length;
     var it = { id: genId(), kind: 'token', x: pos.x, y: pos.y, w: w, h: w, circle: true, sheet: sh.id, z: nextZ(),
         color: sh.kind === 'pc' ? '#1e88e5' : '#c62828', label: sh.name + (sh.kind !== 'pc' && same ? ' ' + (same + 1) : '') };
+    if (asset) { it.asset = asset; it.circle = false; } // 怪物图鉴的头像本身就是圆形棋子图
     sheetTokenExtras(sh, it);
     if (it.fp) { it.w = it.h = it.fp * g; it.x = pos.x + (w - it.w) / 2; it.y = pos.y + (w - it.h) / 2; }
     var max = sh.hp ? num(sh.hp.max, 0) : 0;
@@ -433,7 +438,7 @@ function openLookup(q) {
     var back = sheetView.mode === 'lookup' ? sheetView.back : JSON.parse(JSON.stringify({ mode: sheetView.mode, id: sheetView.id, tokenId: sheetView.tokenId }));
     sheetView = { mode: 'lookup', back: back.mode === 'preview' ? { mode: 'list' } : back };
     switchPane('sheets');
-    if (q) { lookup.q = q; lookup.page = null; runLookup(); }
+    if (q) { lookup.q = q; lookup.page = null; if ($('lkQ')) $('lkQ').value = q; runLookup(); } // 图鉴页已打开时输入框里是旧词
     renderSheets();
 }
 
@@ -453,6 +458,7 @@ function lookupHtml() {
     h += '<div class="filter-row">' + [['all', '全部'], ['monster', '怪物'], ['item', '物品'], ['spell', '法术']].map(function(f) {
         return '<button class="tt-btn small' + (lookup.filter === f[0] ? ' active' : '') + '" data-act="lkfilter" data-filter="' + f[0] + '">' + f[1] + '</button>';
     }).join('') + '</div>';
+    if (me.gm && (lookup.monsters || lookup.mLoading) && (lookup.filter === 'all' || lookup.filter === 'monster')) h += bestiaryHtml();
     if (lookup.loading) h += '<div class="tt-hint">加载中...</div>';
     else if (lookup.results) {
         var list = lookup.results.filter(function(r) { return lookup.filter === 'all' || lookupCategory(r.path) === lookup.filter; });
@@ -490,6 +496,7 @@ function runLookup() {
     lookup.page = null;
     renderSheets();
     var q = lookup.q;
+    if (me.gm) searchBestiary(q);
     api('/api/tabletop/5e/search?q=' + enc(q), 'GET').then(function(data) {
         var results = (data.results || []).map(function(r) { return { title: r.title || r.rawTitle, path: r.path }; })
             .filter(function(r) { return r.path && /^topics\//.test(r.path) && !is2014Core(r.path); });
@@ -504,6 +511,64 @@ function runLookup() {
         lookup.results = results || [];
         renderSheets();
     }).catch(function(e) { lookup.loading = false; renderSheets(); apiError(e); });
+}
+
+// ===== 怪物一键部署（5e.kiwee.top 中文 5etools，Owlbear 怪物图鉴插件同款数据）=====
+// 搜到后点「部署」：服务器把怪物转成怪物卡、下载棋子头像和立绘存进房间，棋子放到镜头中心（GM 默认对玩家隐藏）
+function searchBestiary(q) {
+    lookup.mLoading = true;
+    api('/api/tabletop/5e/bestiary?q=' + enc(q), 'GET').then(function(data) {
+        if (lookup.q !== q) return;
+        lookup.mLoading = false;
+        lookup.monsters = data.results || [];
+        lookup.mMore = !!data.loading;
+        renderSheets();
+    }).catch(function() { lookup.mLoading = false; lookup.monsters = []; renderSheets(); });
+}
+
+function bestiaryHtml() {
+    var h = '<div class="side-section bestiary-box"><h5>👹 怪物（一键部署到镜头中心' + (gmPref('ttPlaceHidden', true) ? '，默认对玩家隐藏' : '') + '）</h5>';
+    if (lookup.mLoading) return h + '<div class="tt-hint">正在查找怪物…</div></div>';
+    var list = lookup.monsters || [];
+    if (!list.length) h += '<div class="tt-hint">怪物图鉴里没有找到' + (lookup.mMore ? '（其他书目还在后台加载，稍后再搜一次）' : '') + '</div>';
+    h += list.slice(0, 12).map(function(m) {
+        var own = Object.keys(sheets).map(function(id) { return sheets[id]; }).filter(function(s) { return s.source === 'bestiary/' + m.key; })[0];
+        return '<div class="sheet-row"><div class="info"><div class="name">' + escapeHtml(m.name) + (m.en && m.en !== m.name ? ' <span class="tt-hint">' + escapeHtml(m.en) + '</span>' : '') + '</div>' +
+            '<div class="sub">' + escapeHtml([m.size, m.type, m.cr ? 'CR ' + m.cr : '', m.source].filter(Boolean).join(' · ')) + (m.token ? ' · 有头像' : '') + (m.art ? ' · 有立绘' : '') +
+            (own ? ' · 房间里已有怪物卡' : '') + '</div></div>' +
+            '<button class="tt-btn small primary" data-act="deploy" data-key="' + escapeHtml(m.key) + '" data-art="' + (m.art ? 1 : 0) + '" title="放到当前镜头中心' + (own ? '（沿用房间里已有的怪物卡）' : '') + '">部署</button></div>';
+    }).join('');
+    if (list.length > 12) h += '<div class="tt-hint">还有 ' + (list.length - 12) + ' 个结果，输入更完整的名字缩小范围</div>';
+    if (lookup.mMore && list.length) h += '<div class="tt-hint">其他书目还在后台加载，结果可能不全</div>';
+    return h + '</div>';
+}
+
+function deployMonster(key, btn) {
+    if (!me.gm || !key) return;
+    // 房间里已有这只怪的卡：直接再放一个棋子（不重复下载、不重复建卡）
+    var own = Object.keys(sheets).map(function(id) { return sheets[id]; }).filter(function(s) { return s.source === 'bestiary/' + key; })[0];
+    if (own && own.tokenImg && (own.portrait || !btn || btn.dataset.art !== '1')) { placeSheetToken(own); return; }
+    if (btn) { btn.disabled = true; btn.textContent = '部署中…'; }
+    api('/api/tabletop/5e/deploy?room=' + enc(roomId), 'POST', { key: key }).then(function(data) {
+        var sh = data.sheet;
+        if (!sh) throw new Error('没有拿到怪物数据');
+        if (own) { // 旧卡没有头像 / 立绘：补上
+            var upd = { id: own.id };
+            if (data.token) upd.tokenImg = data.token;
+            if (data.art && !own.portrait) upd.portrait = data.art;
+            op({ op: 'sheet', sheet: upd });
+            own.tokenImg = data.token || own.tokenImg; if (data.art && !own.portrait) own.portrait = data.art;
+            placeSheetToken(own, data.token);
+            return;
+        }
+        sh.id = genId();
+        return op({ op: 'sheet', sheet: sh }).then(function(ok) {
+            if (!ok) return;
+            if (!sheets[sh.id]) sheets[sh.id] = sh; // 等服务器回显前先用
+            placeSheetToken(sheets[sh.id], data.token);
+            renderSheets();
+        });
+    }).catch(apiError).then(function() { if (btn) { btn.disabled = false; btn.textContent = '部署'; } });
 }
 
 // ===== 法术 =====

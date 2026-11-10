@@ -94,20 +94,27 @@ function dropSpot(it, x, y, from, alt) {
 
 // ===== 判定圆 =====
 // 判定圆 = 生物身体在地面上实际占的范围（俯视的身体宽度），和图片大小无关。
-// 默认按体型取一个小圆（半径）：微型 0.5 尺、小型 0.75 尺、中型 1 尺（约两尺宽的成人肩宽）、
-// 大型 2.5 尺、巨型 4 尺、超巨型 6 尺；每个棋子都可以单独调整（item.hitR，单位尺）。
+// 默认按体型取一个小圆（半径）：微型 0.5 尺、小型 0.75 尺、中型 1 尺（约两尺宽的成人肩宽），
+// 更大的按占格边长等比放大：大型 2 尺、巨型 3 尺、超巨型 4 尺；每个棋子都可以单独调整（item.hitR，单位尺）。
+// 缩放棋子图片不影响判定圆：没定体型的棋子第一次缩放时会先把当时的体型记进 fp（pinTokenCells）。
 // 距离、触及、射程、掩护、范围是否波及都按判定圆计算。
 function feetToPx(ft) { return ft / num(scene.props.gridScale, 5) * gridSize(); }
 
 function defaultHitFt(it) {
     var c = tokenCells(it);
     if (c < 1) return 0.5;
-    if (c >= 4) return 6;
-    if (c >= 3) return 4;
-    if (c >= 2) return 2.5;
+    if (c >= 2) return c; // 按体型等比放大：大型 2 尺、巨型 3 尺、超巨型 4 尺（中型 1 尺 × 边长格数）
     var sh = it.sheet && sheets[it.sheet];
     if (sh && /小型/.test((sh.size || '') + ' ' + (sh.meta || ''))) return 0.75;
     return 1;
+}
+
+// 改图片大小前调用：体型还是从图片大小推出来的棋子，先把当前体型固定下来，判定圆就不会跟着图片变
+function pinTokenCells(it, patch) {
+    if (!it || it.kind !== 'token' || num(it.fp, 0) > 0) return;
+    var sh = it.sheet && sheets[it.sheet];
+    if (sh && sheetSizeCells(sh)) return;
+    patch.fp = tokenCells(it);
 }
 
 function hitFt(it) { var r = num(it.hitR, 0); return r > 0 ? r : defaultHitFt(it); }
@@ -734,25 +741,34 @@ function renderCombatHud() {
         var list = idx > 0 ? order.slice(idx).concat(order.slice(0, idx)) : order; // 从当前行动者开始
         var cur = c && scene.items[c.turn], curShown = cur && idx >= 0;
         var mine = cur && canEdit(cur);
+        var portrait = initViewPortrait();
         var chips = list.map(function(t) {
             var down = (t.hpMax > 0 && num(t.hp, t.hpMax) <= 0) || hasStatus(t, 'dead');
             var cls = 'init-chip' + (c && t.id === c.turn ? ' active' : '') + (t.owner && t.owner === me.name ? ' mine' : '') +
                 (t.hidden || initHiddenFor(t) ? ' hid' : '') + (down ? ' down' : '');
-            return '<span class="' + cls + '" data-focus="' + escapeHtml(t.id) + '" title="' + escapeHtml((t.label || '未命名') + ' · 先攻 ' + num(t.init, 0) +
-                (t.hidden ? ' · 地图上隐藏' : initHiddenFor(t) ? ' · 玩家看不到' : '')) + '">' +
+            var tip = escapeHtml((t.label || '未命名') + ' · 先攻 ' + num(t.init, 0) + (t.hidden ? ' · 地图上隐藏' : initHiddenFor(t) ? ' · 玩家看不到' : ''));
+            var col = escapeHtml(t.color || (t.owner ? '#1e88e5' : '#c62828'));
+            if (portrait) { // 带立绘：棋子图片 + 先攻值 + 名字
+                return '<span class="' + cls + ' pt" data-focus="' + escapeHtml(t.id) + '" title="' + tip + '"><span class="pt-img" style="border-color:' + col + '">' +
+                    (t.asset ? '<img src="' + escapeHtml(assetURL(t.asset)) + '" alt="" draggable="false">' : '<i style="background:' + col + '">' + escapeHtml((t.label || '?').slice(0, 1)) + '</i>') +
+                    '<b>' + num(t.init, 0) + '</b>' + (t.hidden || initHiddenFor(t) ? '<em>🙈</em>' : '') + '</span><span class="nm">' + escapeHtml(chipName(t.label)) + '</span></span>';
+            }
+            return '<span class="' + cls + '" data-focus="' + escapeHtml(t.id) + '" title="' + tip + '">' +
                 '<i style="background:' + escapeHtml(t.color || (t.owner ? '#1e88e5' : '#c62828')) + '">' + escapeHtml((t.label || '?').slice(0, 1)) + '</i>' +
                 '<span class="nm">' + escapeHtml(chipName(t.label)) + '</span><b>' + num(t.init, 0) + '</b>' +
                 (t.hidden || initHiddenFor(t) ? '🙈' : '') + '</span>';
         }).join('');
         // 每一行包在 .hud-line 里：外层容器不接收鼠标（不挡地图），行本身可点击
-        parts.push('<div class="hud-line init-strip"><span class="hud-round">' + (c ? '⚔ 第 ' + num(c.round, 1) + ' 轮' : '先攻') + '</span>' +
+        parts.push('<div class="hud-line init-strip' + (portrait ? ' portrait' : '') + '"><span class="hud-grip" data-drag title="拖动移动先攻条（双击恢复默认位置）">⠿</span>' +
+            '<span class="hud-round">' + (c ? '⚔ 第 ' + num(c.round, 1) + ' 轮' : '先攻') + '</span>' +
             (c && !curShown ? '<span class="init-chip active hid"><i>?</i><span class="nm">隐藏单位</span></span>' : '') +
             '<span class="init-chips">' + chips + '</span>' +
             (curShown && cur && isCreatureToken(cur) ? '<span class="hud-move" title="本回合已移动 / 速度">🏃 ' + fmtDist(movedThisTurn(cur)) + (tokenSpeed(cur) ? ' / ' + tokenSpeed(cur) : '') + '</span>' : '') +
             (curShown && cur.owner === me.name && cur.hpMax > 0 && num(cur.hp, cur.hpMax) <= 0 && !hasStatus(cur, 'dead') && !hasStatus(cur, 'stable') ?
                 '<button class="tt-btn small" data-cact="death" title="0 生命值：掷死亡豁免">💀 死亡豁免</button>' : '') +
             (c && (me.gm || (mine && curShown)) ? '<button class="tt-btn small primary" data-cact="next" title="快捷键 N">' + (me.gm ? '下一位' : '结束回合') + '</button>' : '') +
-            (c ? '<i class="hud-follow' + (gmPref('ttFollowTurn', true) ? ' on' : '') + '" data-cact="follow" title="镜头跟随当前行动者（点击开关）">🎥</i>' : '') + '</div>');
+            (c ? '<i class="hud-follow' + (gmPref('ttFollowTurn', true) ? ' on' : '') + '" data-cact="follow" title="镜头跟随当前行动者（点击开关）">🎥</i>' : '') +
+            '<i class="hud-follow on" data-cact="initview" title="' + (portrait ? '切换到简化先攻条' : '切换到带立绘的先攻条') + '">' + (portrait ? '≡' : '🖼') + '</i></div>');
     }
     var tgt = targetToken();
     if (tgt) {
@@ -762,7 +778,9 @@ function renderCombatHud() {
             ' <i data-cact="untarget" title="取消目标">✕</i></div>');
     }
     hud.innerHTML = parts.join('');
+    var wasHidden = hud.style.display === 'none';
     hud.style.display = parts.length ? '' : 'none';
+    if (wasHidden && parts.length && combatFloat) combatFloat.reclamp(); // 拖过的位置在显示出来后再校正一次
 }
 
 // 先攻条上的名字：太长时截短，但保留末尾编号（「狗头人武者 2」→「狗头人…2」）
@@ -784,6 +802,7 @@ function onCombatHudClick(e) {
     var b = e.target.closest('[data-cact]');
     if (!b) return;
     if (b.dataset.cact === 'untarget') setTarget('');
+    else if (b.dataset.cact === 'initview') toggleInitView();
     else combatAction(b.dataset.cact);
 }
 

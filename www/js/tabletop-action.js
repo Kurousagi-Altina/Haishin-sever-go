@@ -119,6 +119,8 @@ function parseActionText(name, text, meta) {
         });
     }
     a.conc = /专注/.test(String(meta || '')) || /持续时间[：:]\s*专注/.test(t);
+    // 「一名生物一回合只能受到一次」「每回合仅需进行一次该豁免」：同一个生物每回合只结算一次（持续区域用）
+    a.oncePerTurn = /(?:一|每)(?:个)?回合(?:中|内)?(?:只|仅)[^。；;\n，,]{0,16}?一次/.test(t);
     // 类型
     if (a.attack || a.spellAttack) a.kind = 'attack';
     else if (a.save) a.kind = 'save';
@@ -332,6 +334,7 @@ function openActionDialog(a, caster, sh) {
     } else f('acSlotRow').style.display = 'none';
     f('acScaleNote').textContent = a.scaleNote || '';
     f('acZone').checked = !!a.zone;
+    f('acOnce').checked = !!a.oncePerTurn;
     f('acSave').value = a.save || 'dex';
     f('acDC').value = a.dc || '';
     f('acHalf').checked = !!a.half;
@@ -362,6 +365,7 @@ function readActionDialog() {
     a.dtype = v('acDtype');
     if (a.spellLevel > 0) { a.slotLevel = parseInt(v('acSlot'), 10) || a.spellLevel; a.useSlot = $('acUseSlot').checked; }
     a.zone = $('acZone').checked;
+    a.oncePerTurn = $('acOnce').checked;
     a.save = v('acSave');
     a.dc = parseInt(v('acDC'), 10) || 0;
     a.half = $('acHalf').checked;
@@ -576,7 +580,9 @@ function actionPointerDown(w, e) {
             recomputeAreaTargets();
         }
     } else if (hit) {
+        var zz = m.zoneId && scene.items[m.zoneId];
         if (m.targets[hit.id]) delete m.targets[hit.id];
+        else if (zz && zoneOnce(zz) && zoneHitsNow(zz)[hit.id]) notice('「' + (hit.label || '') + '」本回合已经结算过「' + (zz.label || '') + '」（每回合限一次，可在区域属性里取消限制）', true);
         else if (!inActionRange(hit)) notice('「' + (hit.label || '') + '」超出射程 / 触及', true);
         else if (Object.keys(m.targets).length >= a.targets) notice('最多选择 ' + a.targets + ' 个目标', true);
         else m.targets[hit.id] = true;
@@ -745,8 +751,15 @@ function renderActionBar() {
     }
     if (m0.zoneMoved) hint = '「' + a.name + '」已移动：要对现在区域内的生物结算吗？（可点击生物增减）';
     var names = Object.keys(actionMode.targets).map(function(id) { return scene.items[id] && scene.items[id].label; }).filter(Boolean);
+    var zDone = '';
+    if (m0.zoneId && scene.items[m0.zoneId]) {
+        var zz0 = scene.items[m0.zoneId], hz = zoneHitsNow(zz0);
+        var dn = Object.keys(hz).map(function(id) { var t = scene.items[id]; return t ? (t.label || '?') + (hz[id] > 1 ? '×' + hz[id] : '') : ''; }).filter(Boolean);
+        if (dn.length) zDone = '<div class="ab-line tt-hint">本回合已结算：' + escapeHtml(dn.join('、')) + (zoneOnce(zz0) ? '（每回合限一次，已自动排除）' : '') + '</div>';
+        else if (zoneOnce(zz0)) zDone = '<div class="ab-line tt-hint">每个生物每回合只结算一次</div>';
+    }
     bar.innerHTML = '<div class="ab-line"><b>⚡ ' + escapeHtml(a.name) + '</b><span class="tt-hint">' + escapeHtml(hint) + '</span></div>' +
-        (sizeTxt ? '<div class="ab-line">' + sizeTxt + '</div>' : '') +
+        (sizeTxt ? '<div class="ab-line">' + sizeTxt + '</div>' : '') + zDone +
         '<div class="ab-line"><span>目标 ' + n + '：' + escapeHtml(names.join('、') || '—') + '</span>' +
         '<button class="tt-btn small primary" data-ab="go">' + (m0.zoneMoved ? '⚡ 结算（Enter）' : '结算（Enter）') + '</button>' +
         (a.zone && ar.shape && !m0.zoneId && (m0.locked || isPathShape(ar)) ? '<button class="tt-btn small" data-ab="place" title="只把区域放到地图上（施法、扣法术位、专注），现在不结算伤害">只放置，不结算</button>' : '') +
@@ -792,7 +805,8 @@ function confirmActionTargeting() {
     } };
     if (isPathShape(a.area) && !m.locked && m.pts && m.pts.length > 1) finishPathShape();
     if (a.conc && !m.zoneId && m.caster) endOldConcZones(m.caster.id);
-    if (a.zone && a.area && a.area.shape && !m.zoneId) createZone(a, actionShape(), m.caster);
+    if (a.zone && a.area && a.area.shape && !m.zoneId) createZone(a, actionShape(), m.caster, targets.map(function(o) { return o.id; }));
+    if (m.zoneId) recordZoneHits(m.zoneId, targets.map(function(o) { return o.id; }));
     if (!m.zoneId) consumeSlot(a, m.sheetId);
     cancelActionTargeting();
     op(body);
@@ -812,10 +826,33 @@ function endOldConcZones(casterId) {
 // 选中后可「对区域内结算」（生物进入 / 在其中结束回合时）；施放者失去专注时自动移除
 function zoneAct(a) {
     return { name: a.name, kind: a.kind, attack: a.attack || '', damage: a.damage || '', dtype: a.dtype || '', save: a.save || '', dc: a.dc || 0,
-        half: !!a.half, status: a.status || '', rounds: a.rounds || 0 };
+        half: !!a.half, status: a.status || '', rounds: a.rounds || 0, oncePerTurn: !!a.oncePerTurn };
 }
 
-function createZone(a, shp, caster) {
+// ===== 区域结算记录 =====
+// zone.hits = { k: 回合标识（round:行动者，战斗外为空）, ids: { 棋子 id: 本回合结算次数 } }
+// 换了回合就作废；每回合限一次的效果会自动排除本回合已结算过的生物
+function zoneHitsNow(z) {
+    var h = z && z.zone && z.zone.hits, k = turnKey();
+    return h && h.ids && h.k === k ? h.ids : {};
+}
+function zoneHitsAfter(z, ids) {
+    var cur = zoneHitsNow(z), next = {};
+    for (var id in cur) next[id] = cur[id];
+    ids.forEach(function(id) { next[id] = (next[id] || 0) + 1; });
+    return { k: turnKey(), ids: next };
+}
+function zoneOnce(z) { return !!(z && z.zone && z.zone.act && z.zone.act.oncePerTurn); }
+// 把这次结算的目标记到区域上（要能改这个区域；战斗外只记次数，不做限制）
+function recordZoneHits(zid, ids) {
+    var z = scene.items[zid];
+    if (!z || !z.zone || !ids.length || !canEdit(z)) return;
+    var zone = JSON.parse(JSON.stringify(z.zone));
+    zone.hits = zoneHitsAfter(z, ids);
+    patchItems([{ id: zid, zone: zone }]);
+}
+
+function createZone(a, shp, caster, hitIds) {
     if (!shp) return;
     if (!me.gm && !roomSetting('playerDraw', true)) { notice('GM 关闭了玩家绘制，区域没有保留在地图上', true); return; }
     var minZ = 0;
@@ -823,6 +860,7 @@ function createZone(a, shp, caster) {
     var good = a.kind === 'heal' || a.kind === 'temp';
     var it = { id: genId(), kind: 'draw', fill: true, width: 2, color: good ? '#66bb6a' : '#ff7043', z: minZ - 1, label: a.name,
         zone: { act: zoneAct(a), caster: caster ? caster.id : '', conc: a.conc && caster ? caster.id : '' } };
+    if (hitIds && hitIds.length) it.zone.hits = zoneHitsAfter(null, hitIds);
     if (shp.type === 'circle') { it.shape = 'circle'; it.x = shp.x; it.y = shp.y; it.r = shp.r; }
     else if (shp.type === 'ring') { it.shape = 'circle'; it.x = shp.x; it.y = shp.y; it.r = shp.r; it.width = Math.max(shp.w, 3); it.fill = false; it.zone.geom = 'ring'; }
     else if (shp.type === 'path') {
@@ -848,8 +886,13 @@ function zoneRetrigger(z, moved) {
     a.area = { shape: '', size: 0, width: 5, self: false };
     a.targets = 99; a.range = 0; a.rangeLong = 0; a.reach = 0;
     actionMode = { act: a, caster: scene.items[z.zone.caster] || null, targets: {}, aim: null, locked: false, zoneId: z.id, zoneMoved: !!moved };
-    var shp = zoneShapeOf(z);
-    actionCandidates().forEach(function(t) { if (tokenInShape(t, shp)) actionMode.targets[t.id] = true; });
+    var shp = zoneShapeOf(z), done = zoneHitsNow(z), once = zoneOnce(z);
+    actionMode.skipped = [];
+    actionCandidates().forEach(function(t) {
+        if (!tokenInShape(t, shp)) return;
+        if (once && done[t.id]) { actionMode.skipped.push(t.id); return; }
+        actionMode.targets[t.id] = true;
+    });
     setTool('select');
     selectOnly([]);
     renderActionBar();

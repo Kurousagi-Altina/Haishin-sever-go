@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css?v=2026111001">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026111004">
 </head>
 <body class="tt-body">
 
@@ -151,6 +151,22 @@
                 <div class="combat-hud" id="combatHud" style="display:none;"></div>
                 <div class="boss-bars" id="bossBars" style="display:none;"></div>
                 <div class="action-bar" id="actionBar" style="display:none;"></div>
+                <div class="status-bar" id="statusBar" style="display:none;"></div>
+
+                <!-- 历史记录：独立浮窗，默认右下角，可拖动、调大小、收起 -->
+                <div class="float-win" id="logWin">
+                    <div class="fw-head" data-drag title="拖动移动（双击标题恢复默认位置），右下角可调大小">
+                        <b>📜 历史记录</b>
+                        <span class="fw-btns"><button class="fw-btn" data-fw="min" title="收起 / 展开">▾</button></span>
+                    </div>
+                    <div class="fw-body">
+                        <div class="log-list" id="logList"></div>
+                        <div class="chat-row">
+                            <input class="tt-input" id="chatInput" maxlength="500" placeholder="聊天；/r 1d20+3 掷骰，/gr 暗骰" autocomplete="off">
+                            <button class="tt-btn" onclick="sendChat()">发送</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="banner-fx" id="bannerFx"></div>
                 <div class="timestop-fx" id="timeStopFx" style="display:none;"><i></i><i></i><span class="ts-text"></span></div>
                 <div class="music-bar" id="musicBar" style="display:none;">
@@ -221,11 +237,6 @@
                             <span class="group-label">快捷骰</span>
                             <span class="dice-macros" id="macroList"></span>
                         </div>
-                    </div>
-                    <div class="log-list" id="logList"></div>
-                    <div class="chat-row">
-                        <input class="tt-input" id="chatInput" maxlength="500" placeholder="聊天；/r 1d20+3 掷骰，/gr 暗骰" autocomplete="off">
-                        <button class="tt-btn" onclick="sendChat()">发送</button>
                     </div>
                 </div>
 
@@ -421,7 +432,8 @@
                     <span id="acWidthWrap">宽 / 厚 <input class="tt-input narrow" id="acWidth" type="number" min="1" step="1"> 尺</span>
                     <label id="acSelfLabel" title="从施放者自身展开（如锥形、直线、以自身为中心的光环）"><input type="checkbox" id="acSelf"> 从自身展开</label></span>
                 <span id="acTargetsWrap">目标数 <input class="tt-input narrow" id="acTargets" type="number" min="1" value="1"></span></div>
-            <div class="rd-row" id="acZoneRow"><span class="rd-key"></span><label title="持续性的范围法术（如月华之光、灵体卫士）：结算后在地图上保留区域，可移动、可再次对区域内结算，专注结束自动移除"><input type="checkbox" id="acZone"> 在地图上保留区域（持续效果）</label></div>
+            <div class="rd-row" id="acZoneRow"><span class="rd-key"></span><label title="持续性的范围法术（如月华之光、灵体卫士）：结算后在地图上保留区域，可移动、可再次对区域内结算，专注结束自动移除"><input type="checkbox" id="acZone"> 在地图上保留区域（持续效果）</label>
+                <label title="如月华之光、灵体卫士：同一个生物每回合只受一次影响；之后再对区域结算时会自动排除本回合已结算过的生物"><input type="checkbox" id="acOnce"> 每个生物每回合限一次</label></div>
             <div class="rd-row"><span class="rd-key">附加状态</span><select class="tt-select" id="acStatus"></select>
                 <input class="tt-input narrow" id="acRounds" type="number" min="0" placeholder="轮数"></div>
             <div class="rd-row"><span class="rd-key"></span><label><input type="checkbox" id="acConc"> 施放者进入专注</label>
@@ -436,11 +448,11 @@
     </div>
 
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js?v=2026111001"></script>
-    <script src="js/tabletop-combat.js?v=2026111001"></script>
-    <script src="js/tabletop-status.js?v=2026111001"></script>
-    <script src="js/tabletop-action.js?v=2026111001"></script>
-    <script src="js/tabletop-extra.js?v=2026111001"></script>
-    <script src="js/tabletop.js?v=2026111001"></script>
+    <script src="js/tabletop-sheets.js?v=2026111004"></script>
+    <script src="js/tabletop-combat.js?v=2026111004"></script>
+    <script src="js/tabletop-status.js?v=2026111004"></script>
+    <script src="js/tabletop-action.js?v=2026111004"></script>
+    <script src="js/tabletop-extra.js?v=2026111004"></script>
+    <script src="js/tabletop.js?v=2026111004"></script>
 </body>
 </html>
