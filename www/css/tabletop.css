@@ -425,7 +425,7 @@ details.feature summary { cursor: pointer; font-size: 13px; }
 
 .init-move { display: inline-flex; flex-direction: column; gap: 1px; }
 .init-move .tt-btn { padding: 0 4px !important; font-size: 9px; line-height: 12px; }
-.combat-hud { right: 330px; max-width: none; }
+.combat-hud { right: 350px; max-width: none; } /* 右边留给历史记录浮窗（宽 330 + 边距） */
 .init-strip { width: max-content; max-width: 100%; box-sizing: border-box; }
 .init-strip .hud-round { white-space: nowrap; flex: none; }
 .init-strip > .tt-btn { flex: none; }
@@ -477,3 +477,70 @@ details.feature summary { cursor: pointer; font-size: 13px; }
 .token-menu > button.tm-danger { color: #ef9a9a; }
 
 .action-bar .ab-size { display: inline-flex; align-items: center; gap: 4px; margin-right: 10px; white-space: nowrap; }
+
+/* ===== 角色状态栏 ===== */
+.status-bar { position: absolute; right: 10px; top: 10px; z-index: 6; width: 236px; max-height: calc(100% - 80px); overflow-y: auto; padding: 8px; border-radius: 10px;
+    background: rgba(28,30,36,0.93); border: 1px solid #333; font-size: 12px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; }
+.status-bar .sb-top { display: flex; justify-content: space-between; align-items: center; color: #ccc; }
+.status-bar .sb-min, .status-bar .sb-x { border: 1px solid #444; background: #2a2d35; color: #ccc; border-radius: 6px; cursor: pointer; font-size: 11px; padding: 0 6px; line-height: 18px; }
+.status-bar .sb-min:hover, .status-bar .sb-x:hover { color: #fff; border-color: #888; }
+.status-bar .sb-card { border: 1px solid #3a3e48; border-radius: 8px; padding: 6px 8px; background: #23262d; }
+.status-bar .sb-card.cur { border-color: #ffd54f; }
+.status-bar .sb-head { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+.status-bar .sb-name { font-weight: bold; color: #e0e0e0; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.status-bar .sb-name:hover { color: #fff; text-decoration: underline; }
+.status-bar .sb-hp { color: #bbb; white-space: nowrap; }
+.status-bar .sb-hp i { color: #64b5f6; font-style: normal; }
+.status-bar .sb-hpbar { height: 4px; background: #111; border-radius: 2px; margin: 4px 0 2px; overflow: hidden; }
+.status-bar .sb-hpbar i { display: block; height: 100%; }
+.status-bar .sb-conc { margin-top: 4px; color: #90caf9; }
+.status-bar .sb-conc a { color: #81d4fa; cursor: pointer; text-decoration: underline; }
+.status-bar .sb-conc a:hover { color: #fff; }
+.status-bar .sb-st { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px; }
+.status-bar .sb-chip { padding: 1px 6px; border-radius: 10px; font-size: 11px; cursor: default; }
+.status-bar .sb-chip.buff { background: rgba(67,160,71,0.25); border: 1px solid rgba(102,187,106,0.6); color: #c8e6c9; }
+.status-bar .sb-chip.debuff { background: rgba(229,57,53,0.2); border: 1px solid rgba(239,83,80,0.55); color: #ffcdd2; }
+.status-bar .sb-none { color: #777; }
+@media (max-width: 768px) {
+    .status-bar { width: 190px; max-height: 40%; }
+}
+
+/* ===== 可拖动浮窗：历史记录 ===== */
+.float-win { position: absolute; z-index: 6; display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box;
+    background: rgba(28,30,36,0.95); border: 1px solid #333; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.35); }
+.float-win .fw-head { display: flex; justify-content: space-between; align-items: center; gap: 6px; padding: 4px 8px; cursor: move; user-select: none;
+    background: #23262d; border-bottom: 1px solid #333; font-size: 12px; flex: none; touch-action: none; }
+.float-win .fw-btn { border: 1px solid #444; background: #2a2d35; color: #ccc; border-radius: 6px; cursor: pointer; font-size: 11px; padding: 0 6px; line-height: 18px; }
+.float-win .fw-btn:hover { color: #fff; border-color: #888; }
+.float-win .fw-body { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.float-win.min { height: auto !important; min-height: 0 !important; resize: none !important; }
+.float-win.min .fw-body { display: none; }
+#logWin { right: 10px; bottom: 52px; width: 330px; height: 320px; resize: both; min-width: 220px; min-height: 120px; max-width: calc(100% - 20px); max-height: calc(100% - 20px); }
+#logWin .log-list { padding: 6px 10px; }
+#logWin .chat-row { padding: 6px 8px; }
+.status-bar { max-height: max(140px, calc(100% - 420px)); }
+@media (max-width: 768px) {
+    #logWin { width: calc(100% - 20px); height: 30%; bottom: 168px; }
+}
+
+/* ===== 先攻条：拖动把手、带立绘版本 ===== */
+.combat-hud .hud-grip { cursor: move; color: #888; padding: 0 2px; user-select: none; touch-action: none; font-size: 14px; }
+.combat-hud .hud-grip:hover { color: #fff; }
+.init-strip.portrait { align-items: flex-end; }
+.init-strip.portrait .init-chips { gap: 6px; padding-top: 2px; }
+.init-chip.pt { flex-direction: column; gap: 2px; padding: 3px 3px 2px; border-radius: 8px; width: 58px; align-items: center; }
+.init-chip.pt .pt-img { position: relative; width: 46px; height: 46px; border-radius: 50%; border: 2px solid #555; overflow: hidden; background: #1b1d22; display: block; }
+.init-chip.pt .pt-img img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+.init-chip.pt .pt-img i { width: 100%; height: 100%; border-radius: 0; font-size: 18px; display: flex; align-items: center; justify-content: center; font-style: normal; }
+.init-chip.pt .pt-img b { position: absolute; right: 0; bottom: 0; min-width: 18px; padding: 0 3px; border-radius: 8px; background: rgba(0,0,0,0.75); color: #ffd54f; font-size: 11px; line-height: 16px; text-align: center; }
+.init-chip.pt .pt-img em { position: absolute; left: 0; top: 0; font-style: normal; font-size: 11px; }
+.init-chip.pt .nm { font-size: 11px; max-width: 54px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.init-chip.pt.active { background: #3d3520; border-color: #ffd54f; }
+.init-chip.pt.active .pt-img { border-color: #ffd54f !important; box-shadow: 0 0 8px rgba(255,213,79,0.6); }
+
+/* ===== 怪物一键部署 / 怪物卡立绘 ===== */
+.bestiary-box { margin: 8px 0 12px; }
+.bestiary-box .sheet-row { align-items: center; }
+.bestiary-box .sheet-row .info { min-width: 0; }
+.sheet-portrait { margin: 6px 0 10px; text-align: center; }
+.sheet-portrait img { max-width: 100%; max-height: 260px; border-radius: 8px; border: 1px solid #333; background: #111; object-fit: contain; }

@@ -67,6 +67,8 @@ func main() {
 	protected.HandleFunc("/api/tabletop/charsheet", tabletop.HandleCharSheet)
 	protected.HandleFunc("/api/tabletop/5e/search", tabletop.Handle5eSearch)
 	protected.HandleFunc("/api/tabletop/5e/page", tabletop.Handle5ePage)
+	protected.HandleFunc("/api/tabletop/5e/bestiary", tabletop.HandleBestiary)
+	protected.HandleFunc("/api/tabletop/5e/deploy", tabletop.HandleDeploy)
 	protected.HandleFunc("/api/dice/roll", handler.HandleDiceRoll)
 	protected.HandleFunc("/api/dice/rolls", handler.HandleDiceRolls)
 	protected.HandleFunc("/api/dice/clear", handler.HandleDiceClear)
