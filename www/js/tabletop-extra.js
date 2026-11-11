@@ -461,6 +461,8 @@ function uploadMusic(input) {
 
 // ===== 记录：重掷 =====
 function onLogClick(e) {
+    var tg = e.target.closest('[data-trigfocus],[data-trigact]');
+    if (tg) { dmLogClick(tg); return; } // 触发区域提示（tabletop-dm.js）
     var rb = e.target.closest('[data-react]');
     if (rb) { useReaction(rb); return; }
     var u = e.target.closest('[data-undo]');

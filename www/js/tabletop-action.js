@@ -461,6 +461,8 @@ function startActionTargeting() {
     closeActionDialog();
     actionMode = { act: a, caster: act.caster, targets: {}, aim: null, locked: false, sheetId: act.sheet ? act.sheet.id : '' };
     if (a.area.shape && a.area.self && act.caster) actionMode.aim = tokenCenter(act.caster);
+    (act.presetTargets || []).forEach(function(id) { if (scene.items[id]) actionMode.targets[id] = true; }); // 触发区域：预先选好走进去的棋子
+    act.presetTargets = null;
     setTool('select');
     selectOnly([]);
     renderActionBar();

@@ -526,7 +526,7 @@ function renderNotesPane() {
         } else {
             h += '<div class="tt-hint">把信件、告示、线索图、NPC 画像提前做成讲义，跑团时一键弹到全体或指定玩家的屏幕上，玩家之后可以在「线索」里反复看。</div>';
         }
-        h += '</div>';
+        h += '</div>' + dmPaneHtml();
     } else {
         h += '<div class="side-section"><h5>收到的讲义与线索</h5>';
         if (handouts.length) {
@@ -555,6 +555,7 @@ function noteListHtml() {
 }
 
 function onNotesPaneClick(e) {
+    if (dmPaneClick(e)) return; // 遭遇 / 随机表（tabletop-dm.js）
     var el = e.target.closest('[data-np],[data-note],[data-hoshow],[data-hoedit],[data-hodel],[data-hoview]');
     if (!el) return;
     if (el.dataset.np === 'newnote') { setTool('note'); notice('在地图上单击放置笔记'); return; }

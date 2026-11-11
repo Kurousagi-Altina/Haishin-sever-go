@@ -412,6 +412,7 @@ function handleMsg(m) {
         wallsVersion++;
         onSheetsState(m.sheets || []);
         onHandoutsState(m.handouts || []);
+        onTablesState(m.tables || []);
         logEntries = m.log || [];
         renderLog();
         users = m.users || [];
@@ -469,6 +470,7 @@ function handleMsg(m) {
         logEntries.push(m.entry);
         if (logEntries.length > 300) logEntries.shift();
         appendLog(m.entry, true);
+        onTrigLog(m.entry);
         break;
     case 'users':
         users = m.users;
@@ -477,6 +479,9 @@ function handleMsg(m) {
     case 'handout':
     case 'handoutdel':
         onHandoutMsg(m);
+        break;
+    case 'tables':
+        onTablesMsg(m);
         break;
     case 'fx':
         handleFx(m);
@@ -583,7 +588,8 @@ function onPropsChanged() {
     }
     $('mapInfo').textContent = p.mapAsset ? '当前地图：' + p.mapW + ' × ' + p.mapH + ' px，约 ' +
         Math.round(p.mapW / gridSize() * 10) / 10 + ' × ' + Math.round(p.mapH / gridSize() * 10) / 10 + ' 格' : '当前场景没有地图';
-    if (fitPending && (!p.mapAsset || getImg(p.mapAsset).complete)) { fitPending = false; fitView(); }
+    if (fitPending && (!p.mapAsset || getImg(p.mapAsset).complete)) { fitPending = false; startView(); }
+    renderSceneEnter();
     onCombatChanged();
     requestRender();
 }
@@ -651,7 +657,7 @@ function getImg(id) {
     if (!img) {
         img = imgCache[id] = new Image();
         img.onload = function() {
-            if (fitPending && scene.props.mapAsset === id) { fitPending = false; fitView(); }
+            if (fitPending && scene.props.mapAsset === id) { fitPending = false; startView(); }
             requestRender();
         };
         img.src = assetURL(id);
@@ -785,6 +791,7 @@ function itemBBox(it) {
     var x = it.x || 0, y = it.y || 0;
     if (it.kind === 'token') return { x0: x, y0: y, x1: x + (it.w || gridSize()), y1: y + (it.h || gridSize()) };
     if (it.kind === 'note') { var nr = noteRadius(); return { x0: x - nr, y0: y - nr, x1: x + nr, y1: y + nr }; }
+    if (it.kind === 'trigger') return trigRect(it);
     if (it.shape === 'text') return textBBox(it);
     if (it.shape === 'circle') { var r = it.r || 0; return { x0: x - r, y0: y - r, x1: x + r, y1: y + r }; }
     var pts = shapePoints(it), b = { x0: x, y0: y, x1: x, y1: y };
@@ -827,6 +834,7 @@ function pointInPoly(x, y, pts) {
 
 function hitItem(it, w) {
     if (it.kind === 'note') return Math.hypot(w.x - it.x, w.y - it.y) <= noteRadius() + 2 / view.s; // 房间笔记的编号圆
+    if (it.kind === 'trigger') return trigHit(it, w); // 触发区域：点边框选中
     var tol = 6 / view.s;
     var lx = w.x - (it.x || 0), ly = w.y - (it.y || 0);
     if (it.kind === 'token' || it.shape === 'text') {
@@ -1116,7 +1124,7 @@ function render() {
     if (vision) drawVision(vision);
     if (me.gm) drawWalls(items, true);
     if (me.gm) drawAutoWall();
-    if (me.gm) { drawDoorGaps(); drawNotes(items); }
+    if (me.gm) { drawDoorGaps(); drawFogRoomPreview(); drawTriggers(items); drawNotes(items); }
     drawOverlays();
 
     var animating = remote.pings.length || Object.keys(remote.pointers).length || Object.keys(remote.rulers).length;
@@ -2045,7 +2053,7 @@ function onPointerDown(e) {
             return;
         }
         var hit = tool === 'select' ? selectedZoneAt(w) : null;
-        if (!hit) hit = hitTest(w, tool === 'fog' ? ['fog'] : tool === 'wall' ? ['wall'] : tool === 'note' ? ['note'] : me.gm ? ['token', 'note', 'draw'] : ['token', 'draw']);
+        if (!hit) hit = hitTest(w, tool === 'fog' ? ['fog'] : tool === 'wall' ? ['wall'] : tool === 'note' ? ['note', 'trigger'] : me.gm ? ['token', 'note', 'trigger', 'draw'] : ['token', 'draw']);
         if (!hit && tool === 'select') {
             var door = doorAt(w);
             if (door && (me.gm || (!door.locked && roomSetting('playerDoors', true) && !timeStopped()))) {
@@ -2067,7 +2075,7 @@ function onPointerDown(e) {
                 gesture = { type: 'move', start: start, ids: idSet(movable), orig: orig, lastSent: 0, snap: snapshotItems(movable, ['x', 'y', 'moved', 'movedKey']) };
             }
         } else if (tool === 'note' && !e.shiftKey) {
-            createNoteAt(w); // 📌：单击空地放一个编号笔记
+            if (dmNoteMode === 'trigger') trigDown(w, start); else createNoteAt(w); // 📌：单击放笔记 / 拖出触发区域
         } else if (tool === 'select' && !e.shiftKey) {
             // 手：拖空白处 = 平移地图（Shift + 拖动 = 框选）
             gesture = { type: 'pan', start: start, view: { x: view.x, y: view.y }, clearSel: true };
@@ -2091,6 +2099,7 @@ function onPointerDown(e) {
         return;
     }
 
+    if (tool === 'fog' && fogOpts.shape === 'room') { fogRoomClick(w); return; } // 🏠 按房间揭示 / 遮盖
     if (tool === 'fog') {
         var cut = fogOpts.mode === 'reveal';
         if (fogOpts.shape === 'poly') {
@@ -2148,6 +2157,7 @@ function onPointerMove(e) {
     }
     if (!gesture) {
         if (tool === 'wall') doorGapHover(w);
+        if (tool === 'fog') fogRoomHover(w);
         if (tool === 'select' && !spaceDown && e.pointerType !== 'touch') {
             var hov = handleAt(w);
             canvas.style.cursor = hov ? handleCursor(hov) : selectedZoneAt(w) ? 'move' : 'default';
@@ -2223,6 +2233,9 @@ function onPointerMove(e) {
         break;
     case 'wvert':
         wallVertexMove(w, e);
+        break;
+    case 'trig':
+        gesture.b = w;
         break;
     case 'draw':
         var d = gesture.item, lx = w.x - d.x, ly = w.y - d.y;
@@ -2320,6 +2333,9 @@ function onPointerUp(e) {
         break;
     case 'wvert':
         wallVertexUp(g);
+        break;
+    case 'trig':
+        trigUp(g);
         break;
     case 'resize':
         var t = scene.items[g.id];
@@ -2443,7 +2459,7 @@ function onWheel(e) {
 function onKeyDown(e) {
     var tag = (e.target.tagName || '').toLowerCase();
     if (tag === 'input' || tag === 'textarea' || tag === 'select' || $('table').style.display === 'none') return;
-    if ($('rollDialog').style.display !== 'none' || $('actDialog').style.display !== 'none' || $('hoDialog').style.display !== 'none' || $('hoView').style.display !== 'none') return;
+    if ($('rollDialog').style.display !== 'none' || $('actDialog').style.display !== 'none' || $('hoDialog').style.display !== 'none' || $('hoView').style.display !== 'none' || $('tbDialog').style.display !== 'none') return;
     if (actionMode) {
         if (e.key === 'Escape') { cancelActionTargeting(); return; }
         var am = actionMode, pathOpen = isPathShape(am.act.area) && !am.locked && am.pts && am.pts.length;
@@ -2567,13 +2583,13 @@ function renderSelPanel() {
             (me.gm ? '<button class="tt-btn small" data-act="hideAll">隐藏</button><button class="tt-btn small" data-act="showAll">显示</button>' +
                 '<button class="tt-btn small" data-act="lockAll">锁定</button><button class="tt-btn small" data-act="unlockAll">解锁</button>' : '') +
             (editable.length ? '<button class="tt-btn small" data-act="dup">复制</button><button class="tt-btn small danger" data-act="del">删除</button>' : '') +
-            '</div>' + wallSelHtml(ids);
+            '</div>' + wallSelHtml(ids) + encSelHtml(ids);
         return;
     }
 
     var it = scene.items[ids[0]];
     var edit = canEdit(it), g = gridSize();
-    var title = it.zone ? '持续区域' : it.kind === 'note' ? '📌 笔记' : it.kind === 'token' ? '棋子' : it.kind === 'fog' ? (it.cut ? '揭示区域' : '迷雾') :
+    var title = it.zone ? '持续区域' : it.kind === 'note' ? '📌 笔记' : it.kind === 'trigger' ? '⚠ 触发区域' : it.kind === 'token' ? '棋子' : it.kind === 'fog' ? (it.cut ? '揭示区域' : '迷雾') :
         it.kind === 'wall' ? (WALL_STYLE[it.wtype] || WALL_STYLE.wall).name : '绘制';
     var h = '<h4>' + title + ' <button class="tt-btn small" data-act="close">✕</button></h4>';
     if (!edit) {
@@ -2650,10 +2666,13 @@ function renderSelPanel() {
         h += wallSelHtml([it.id]);
     } else if (it.kind === 'note') {
         h += noteSelHtml(it);
+    } else if (it.kind === 'trigger') {
+        h += trigSelHtml(it);
     } else if (it.kind === 'fog') {
         h += row('类型', '<label><input type="checkbox" data-prop="cut"' + (it.cut ? ' checked' : '') + '> 揭示（挖空迷雾）</label>');
     }
-    if (me.gm && it.kind !== 'fog' && it.kind !== 'wall' && it.kind !== 'note') {
+    if (me.gm && it.kind === 'token') h += encSelHtml([it.id]);
+    if (me.gm && it.kind !== 'fog' && it.kind !== 'wall' && it.kind !== 'note' && it.kind !== 'trigger') {
         h += row('', '<label><input type="checkbox" data-prop="hidden"' + (it.hidden ? ' checked' : '') + '> 对玩家隐藏</label>' +
             '<label><input type="checkbox" data-prop="locked"' + (it.locked ? ' checked' : '') + '> 锁定</label>');
         if (it.kind === 'token') {
@@ -2829,6 +2848,7 @@ function onSelPanelClick(e) {
     if (!b) return;
     var ids = selectedIds();
     if (prepSelAct(b.dataset.act, ids)) return; // 墙体编辑 / 笔记（tabletop-prep.js）
+    if (dmSelAct(b.dataset.act, ids)) return; // 遭遇 / 触发区域（tabletop-dm.js）
     if (b.dataset.act === 'zoneGo') { zoneRetrigger(scene.items[ids[0]]); return; }
     if (b.dataset.act === 'zoneEnd') { deleteItems(ids.slice(0, 1)); return; }
     var amountEl = $('selPanel').querySelector('[data-amount]');
@@ -3025,6 +3045,7 @@ function renderScenes() {
             (active ? '' : '<button class="tt-btn small primary" data-sact="activate" data-sid="' + escapeHtml(s.id) + '">切换</button>') +
             '<button class="tt-btn small" data-sact="rename" data-sid="' + escapeHtml(s.id) + '">改名</button>' +
             '<button class="tt-btn small" data-sact="duplicate" data-sid="' + escapeHtml(s.id) + '">复制</button>' +
+            '<button class="tt-btn small" data-sact="export" data-sid="' + escapeHtml(s.id) + '" title="导出成场景模板（含地图、墙、迷雾、棋子和关联的角色卡），可在任何房间导入">导出</button>' +
             '<button class="tt-btn small danger" data-sact="delete" data-sid="' + escapeHtml(s.id) + '">✕</button></li>';
     }).join('');
 }
@@ -3037,6 +3058,7 @@ function onSceneClick(e) {
     switch (b.dataset.sact) {
     case 'activate': op({ op: 'scene.activate', scene: s.id }); break;
     case 'duplicate': op({ op: 'scene.duplicate', scene: s.id }); break;
+    case 'export': exportScene(s.id); break;
     case 'rename':
         var name = prompt('新的场景名：', s.name);
         if (name && name.trim()) op({ op: 'scene.rename', scene: s.id, text: name.trim() });
@@ -3432,7 +3454,7 @@ function rollHtml(r) {
 function logHtml(e) {
     var time = '<span class="time">' + escapeHtml((e.t || '').slice(11, 16)) + '</span>';
     var who = '<span class="who" style="color:' + escapeHtml(userColor(e.who)) + '">' + escapeHtml(e.who) + '</span>';
-    if (e.kind === 'sys') return '<div class="log-entry sys">' + escapeHtml(e.who) + ' ' + escapeHtml(e.text) + time + '</div>';
+    if (e.kind === 'sys') return '<div class="log-entry sys">' + escapeHtml(e.who) + ' ' + escapeHtml(e.text) + time + trigLogBtns(e) + '</div>';
     if (e.kind === 'chat') return '<div class="log-entry">' + who + time + '<div>' + escapeHtml(e.text) + '</div></div>';
     var label = e.act && e.act.caster ? e.act.caster + ' · ' + (e.label || '') : e.label;
     var h = '<div class="log-entry">' + who + (label ? '<span class="label">' + escapeHtml(label) + '</span>' : '') +
@@ -3441,7 +3463,7 @@ function logHtml(e) {
     if (e.roll && e.text) h += '<div class="tt-hint">' + escapeHtml(e.text) + '</div>';
     if (e.kind === 'action' && me.gm && e.act && (e.act.targets || []).some(function(t) { return t.amount || t.status || t.note; })) h +=
         '<button class="reroll" data-undo="' + escapeHtml(e.id) + '" title="撤销这次结算：恢复目标的生命值、状态和死亡豁免">↶</button>';
-    if (e.kind === 'roll' && e.roll && e.who === me.name && !e.target && !/·(先攻|死亡豁免)$/.test(e.label || '')) h += '<button class="reroll" data-reroll="' + escapeHtml(e.roll.expr.replace(/\s/g, '')) +
+    if (e.kind === 'roll' && e.roll && e.who === me.name && !e.target && !/·(先攻|死亡豁免)$/.test(e.label || '') && !/^随机表·/.test(e.label || '')) h += '<button class="reroll" data-reroll="' + escapeHtml(e.roll.expr.replace(/\s/g, '')) +
         '" data-label="' + escapeHtml(e.label || '') + '" data-hidden="' + (e.hidden ? 1 : 0) + '" title="用同样的表达式再掷一次">↻</button>';
     if (e.target) {
         var HIT = { hit: ['命中', 'hit'], miss: ['未命中', 'miss'], crit: ['重击！', 'crit'], fumble: ['大失败', 'miss'] };
@@ -3622,6 +3644,7 @@ function init() {
     initExtra();
     initAutoWall();
     initPrep();
+    initDm();
     $('setHpStep').addEventListener('change', function() { setProps({ hpStep: parseFloat(this.value) }); });
     $('prefFollowTurn').checked = gmPref('ttFollowTurn', true);
     $('prefFollowTurn').addEventListener('change', function() { setGmPref('ttFollowTurn', this.checked); });

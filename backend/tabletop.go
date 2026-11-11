@@ -102,6 +102,8 @@ type TTRoom struct {
 	Settings map[string]interface{} `json:"settings"`
 	// 讲义：GM 推送给玩家的图片 / 文字（tabletop_prep.go）
 	Handouts []TTHandout `json:"handouts,omitempty"`
+	// 随机表（GM 专用，tabletop_dm.go）
+	Tables []TTTable `json:"tables,omitempty"`
 
 	mu      sync.Mutex
 	dirty   bool
@@ -149,6 +151,8 @@ type ttOpRequest struct {
 	Round int `json:"round"`
 	// handout: create / update a handout (tabletop_prep.go)
 	Handout *TTHandout `json:"handout"`
+	// table: create / update a random table (tabletop_dm.go)
+	Table *TTTable `json:"table"`
 }
 
 type Tabletop struct {
@@ -610,6 +614,7 @@ func (room *TTRoom) stateMsg(sub *ttSub) []byte {
 		"users":    room.userList(),
 		"sheets":   room.sheetsFor(sub),
 		"handouts": room.handoutsFor(sub),
+		"tables":   room.tablesFor(sub),
 	})
 }
 
@@ -763,6 +768,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		"scene.delete": true, "scene.activate": true, "room.rename": true, "room.settings": true,
 		"asset.delete": true, "log.clear": true, "action.undo": true,
 		"handout": true, "handout.show": true, "handout.delete": true,
+		"table": true, "table.delete": true, "table.roll": true,
 	}
 	if gmOnly[req.Op] && !gm {
 		return http.StatusForbidden, "仅 GM 可执行该操作"
@@ -793,7 +799,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 				continue
 			}
 			kind, _ := patch["kind"].(string)
-			if kind != "token" && kind != "draw" && !((kind == "fog" || kind == "wall" || kind == "note") && gm) {
+			if kind != "token" && kind != "draw" && !((kind == "fog" || kind == "wall" || kind == "note" || kind == "trigger") && gm) {
 				return http.StatusForbidden, "无权创建该物件"
 			}
 			if !gm && ((kind == "token" && !room.setting("playerTokens", true)) || (kind == "draw" && !room.setting("playerDraw", true))) {
@@ -863,14 +869,20 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 					item[k] = v
 				}
 			}
-			if item["kind"] == "note" { // GM 的房间笔记：永远不发给玩家
+			if item["kind"] == "note" || item["kind"] == "trigger" { // GM 的房间笔记 / 触发区域：永远不发给玩家
 				item["hidden"] = true
 			}
 			changed = append(changed, item)
 		}
 		changed = append(changed, sc.moveFollowers(moved, inBatch)...)
 		room.broadcastItems(changed)
+		room.checkTriggers(sc, moved)
 		room.logHPChanges(u, sc, hpChanges)
+
+	case "table", "table.delete", "table.roll":
+		if st, msg := room.applyTable(u, req); st != 0 {
+			return st, msg
+		}
 
 	case "handout", "handout.show", "handout.delete":
 		if st, msg := room.applyHandout(u, req); st != 0 {
@@ -988,6 +1000,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		e.Text = "切换到场景「" + target.Name + "」"
 		room.appendLog(e)
 		room.broadcastState()
+		room.sceneEnter(u, target) // 场景联动：换音乐、弹讲义
 
 	case "room.settings":
 		for k, v := range req.Props {
@@ -1509,9 +1522,24 @@ func (t *Tabletop) HandleExport(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error":"仅 GM 可导出房间"}`, http.StatusForbidden)
 		return
 	}
-	data, err := json.MarshalIndent(room, "", "  ")
-	refs := room.assetRefs()
+	jsonName := "room.json"
+	var data []byte
+	var err error
+	var refs []string
 	name := room.Name
+	if sid := r.URL.Query().Get("scene"); sid != "" { // 场景模板：只导出这个场景（连同关联的角色卡和图片）
+		pack, prefs := room.scenePack(sid)
+		if pack == nil {
+			room.mu.Unlock()
+			http.Error(w, `{"error":"scene not found"}`, http.StatusNotFound)
+			return
+		}
+		jsonName, refs, name = "scene.json", prefs, pack.Scene.Name
+		data, err = json.MarshalIndent(pack, "", "  ")
+	} else {
+		data, err = json.MarshalIndent(room, "", "  ")
+		refs = room.assetRefs()
+	}
 	room.mu.Unlock()
 	if err != nil {
 		http.Error(w, `{"error":"export failed"}`, http.StatusInternalServerError)
@@ -1519,9 +1547,9 @@ func (t *Tabletop) HandleExport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/zip")
-	w.Header().Set("Content-Disposition", "attachment; filename=\"room.zip\"; filename*=UTF-8''"+url.PathEscape(name)+".zip")
+	w.Header().Set("Content-Disposition", "attachment; filename=\""+strings.TrimSuffix(jsonName, ".json")+".zip\"; filename*=UTF-8''"+url.PathEscape(name)+".zip")
 	zw := zip.NewWriter(w)
-	if f, err := zw.Create("room.json"); err == nil {
+	if f, err := zw.Create(jsonName); err == nil {
 		f.Write(data)
 	}
 	for _, id := range refs {
@@ -1584,8 +1612,14 @@ func (t *Tabletop) HandleImport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var room *TTRoom
+	var scenePack []byte
 	for _, f := range zr.File {
 		switch {
+		case f.Name == "scene.json":
+			if rc, err := f.Open(); err == nil {
+				scenePack, _ = io.ReadAll(io.LimitReader(rc, 50<<20))
+				rc.Close()
+			}
 		case f.Name == "room.json":
 			rc, err := f.Open()
 			if err != nil {
@@ -1624,6 +1658,36 @@ func (t *Tabletop) HandleImport(w http.ResponseWriter, r *http.Request) {
 				log.Printf("[TABLETOP] import: skipped asset %s", id)
 			}
 		}
+	}
+	if room == nil && scenePack != nil { // 场景模板：加进当前房间
+		target := t.getRoom(r.URL.Query().Get("room"))
+		if target == nil {
+			writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "这是单个场景的模板，请进入房间后在「🗺 场景」里导入"})
+			return
+		}
+		pack := &ttScenePack{}
+		if err := json.Unmarshal(scenePack, pack); err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "scene.json 格式错误"})
+			return
+		}
+		target.mu.Lock()
+		if target.deleted || !target.isGM(t.userFrom(info, "")) {
+			target.mu.Unlock()
+			writeJSON(w, http.StatusForbidden, map[string]interface{}{"error": "仅 GM 可导入场景"})
+			return
+		}
+		sid, err := target.importScenePack(pack)
+		if err == nil {
+			target.touch()
+		}
+		target.mu.Unlock()
+		if err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+			return
+		}
+		t.db.RecordAction(getClientIP(r), info.Username, "tabletop_import_scene", pack.Scene.Name)
+		writeJSON(w, http.StatusOK, map[string]interface{}{"success": true, "scene": sid})
+		return
 	}
 	if room == nil {
 		writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": "压缩包中缺少 room.json"})
