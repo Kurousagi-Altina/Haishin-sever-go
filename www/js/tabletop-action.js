@@ -150,6 +150,92 @@ function parseDamageParts(t, mainDice, mainType) {
 }
 
 function partsText(parts) { return (parts || []).map(function(p) { return p.dice + ' ' + p.type; }).join('，'); }
+
+// ===== 行动框：附加伤害（每段 骰子 + 类型，最多 4 段）与快捷骰 =====
+var dmgFocus = null; // 快捷骰加到哪个伤害框：最近点过的，默认主伤害
+
+function dmgTypeOptions(sel) {
+    var types = DMG_TYPES.split('|').filter(function(t) { return t !== '暗蚀'; });
+    if (sel && types.indexOf(sel) < 0) types.push(sel);
+    return '<option value="">（无类型）</option>' + types.map(function(t) { return '<option value="' + escapeHtml(t) + '"' + (t === sel ? ' selected' : '') + '>' + escapeHtml(t) + '</option>'; }).join('');
+}
+
+function partRowHtml(p, first) {
+    return '<div class="rd-row ac-part"><span class="rd-key">' + (first ? '附加伤害' : '') + '</span>' +
+        '<input class="tt-input ac-pdice" placeholder="如 2d6（可留空）" value="' + escapeHtml(p.dice || '') + '" style="width:110px;flex:none;">' +
+        '<select class="tt-select ac-ptype" title="这段伤害的类型（单独结算抗性 / 免疫 / 易伤）" style="width:96px;flex:none;">' + dmgTypeOptions(p.type === '暗蚀' ? '黯蚀' : p.type || '') + '</select>' +
+        '<button class="tt-btn small" data-pdel title="删掉这一段">✕</button></div>';
+}
+
+function renderParts(parts) {
+    parts = (parts || []).slice(0, 4);
+    if (!parts.length) parts = [{ dice: '', type: '' }];
+    $('acPartList').innerHTML = parts.map(function(p, i) { return partRowHtml(p, i === 0); }).join('');
+    $('acPartAdd').style.display = parts.length >= 4 ? 'none' : '';
+}
+
+function readPartsUI() {
+    var out = [];
+    $('acPartList').querySelectorAll('.ac-part').forEach(function(row) {
+        var d = row.querySelector('.ac-pdice').value.replace(/\s/g, '').replace(/＋/g, '+').replace(/[－−]/g, '-');
+        if (d && out.length < 4) out.push({ dice: d, type: row.querySelector('.ac-ptype').value });
+    });
+    return out;
+}
+
+function onPartListClick(e) {
+    var del = e.target.closest('[data-pdel]');
+    if (!del) return;
+    var parts = [];
+    $('acPartList').querySelectorAll('.ac-part').forEach(function(row) {
+        if (row.contains(del)) return;
+        parts.push({ dice: row.querySelector('.ac-pdice').value, type: row.querySelector('.ac-ptype').value });
+    });
+    renderParts(parts);
+    dmgFocus = null;
+}
+
+function addPartRow() {
+    var parts = [];
+    $('acPartList').querySelectorAll('.ac-part').forEach(function(row) {
+        parts.push({ dice: row.querySelector('.ac-pdice').value, type: row.querySelector('.ac-ptype').value });
+    });
+    if (parts.length >= 4) return;
+    parts.push({ dice: '', type: '' });
+    renderParts(parts);
+    var inputs = $('acPartList').querySelectorAll('.ac-pdice');
+    dmgFocus = inputs[inputs.length - 1];
+    dmgFocus.focus();
+}
+
+// 往公式里加一项：±n 合并到末尾的常数，XdY 合并到同面数的骰子
+function addToDamage(expr, q) {
+    expr = String(expr || '').replace(/\s/g, '').replace(/＋/g, '+').replace(/[－−]/g, '-');
+    var dm = q.match(/^(\d+)d(\d+)$/);
+    if (dm) {
+        var re = new RegExp('(^|[+\\-])(\\d*)d' + dm[2] + '(?![\\d])');
+        var hit = expr.match(re);
+        if (hit && hit[1] !== '-') return expr.replace(re, function(all, sign, n) { return sign + ((parseInt(n, 10) || 1) + parseInt(dm[1], 10)) + 'd' + dm[2]; });
+        return expr ? expr + '+' + q : q;
+    }
+    var n = parseInt(q, 10);
+    var cm = expr.match(/([+\-]?)(\d+)$/);
+    if (cm && !/d$/i.test(expr.slice(0, expr.length - cm[0].length)) && !/d\d*$/i.test(expr.slice(0, expr.length - cm[2].length))) {
+        var head = expr.slice(0, expr.length - cm[0].length), val = (cm[1] === '-' ? -1 : 1) * parseInt(cm[2], 10) + n;
+        if (!head) return String(val);
+        return val === 0 ? head : head + (val > 0 ? '+' : '') + val;
+    }
+    if (!expr) return String(n);
+    return expr + (n > 0 ? '+' : '') + n;
+}
+
+function onDiceChip(e) {
+    var c = e.target.closest('[data-dq]');
+    if (!c) return;
+    var el = dmgFocus && document.body.contains(dmgFocus) ? dmgFocus : $('acDamage');
+    el.value = c.dataset.dq === 'clear' ? '' : addToDamage(el.value, c.dataset.dq);
+    el.focus();
+}
 function readParts(s) {
     var re = new RegExp('(\\d+d\\d+(?:[+\\-]\\d+)?)\\s*(' + DMG_TYPES + ')', 'g'), m, out = [];
     s = String(s || '').replace(/＋/g, '+').replace(/[－−]/g, '-');
@@ -357,7 +443,8 @@ function openActionDialog(a, caster, sh) {
     f('acDtype').innerHTML = '<option value="">（无类型）</option>' + types.map(function(t) { return '<option value="' + t + '">' + t + '</option>'; }).join('') +
         (a.dtype && types.indexOf(a.dtype) < 0 ? '<option value="' + escapeHtml(a.dtype) + '">' + escapeHtml(a.dtype) + '</option>' : '');
     f('acDtype').value = a.dtype || '';
-    f('acParts').value = partsText(a.parts);
+    renderParts(a.parts);
+    dmgFocus = null;
     f('acMagic').checked = !!(a.magic || a.isSpell);
     // 环阶（升环）
     if (a.spellLevel > 0) {
@@ -409,7 +496,7 @@ function readActionDialog() {
     a.attack = normBonus(v('acAttack')) || (a.kind === 'attack' ? '+0' : '');
     a.damage = v('acDamage').replace(/\s/g, '');
     a.dtype = v('acDtype');
-    a.parts = readParts(v('acParts'));
+    a.parts = readPartsUI();
     a.magic = $('acMagic').checked;
     if (a.spellLevel > 0) { a.slotLevel = parseInt(v('acSlot'), 10) || a.spellLevel; a.useSlot = $('acUseSlot').checked; }
     a.zone = $('acZone').checked;
@@ -440,6 +527,7 @@ function syncActionDialog() {
     $('acDamageLabel').textContent = k === 'heal' ? '治疗' : k === 'temp' ? '临时生命' : '伤害';
     $('acDtype').style.display = k === 'heal' || k === 'temp' ? 'none' : '';
     $('acPartsRow').style.display = k === 'attack' || k === 'save' || k === 'auto' ? '' : 'none';
+    $('acDiceRow').style.display = k === 'effect' ? 'none' : '';
     $('acSizeWrap').style.display = shape ? '' : 'none';
     $('acSizeLabel').textContent = AREA_SIZE_LABEL[shape] || '大小';
     $('acWidthWrap').style.display = hasWidth({ shape: shape }) ? '' : 'none';
@@ -1091,6 +1179,14 @@ function useReaction(b) {
 }
 
 function initAction() {
+    $('acPartList').addEventListener('click', onPartListClick);
+    $('acPartAdd').addEventListener('click', addPartRow);
+    $('acDiceChips').addEventListener('click', onDiceChip);
+    ['focusin', 'pointerdown', 'input'].forEach(function(ev) { // 快捷骰加到最近点过 / 改过的伤害框
+        $('actDialog').addEventListener(ev, function(e) {
+            if (e.target.id === 'acDamage' || (e.target.classList && e.target.classList.contains('ac-pdice'))) dmgFocus = e.target;
+        });
+    });
     $('actDialog').addEventListener('change', function(e) {
         if (e.target.id === 'acShape' && act) { // 换成环形墙时带出法术写的直径
             if (e.target.value === 'ring' && act.a.area && act.a.area.ringSize) $('acSize').value = act.a.area.ringSize;
