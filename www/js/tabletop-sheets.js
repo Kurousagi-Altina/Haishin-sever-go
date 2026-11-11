@@ -109,6 +109,7 @@ function onSheetPaneClick(e) {
     case 'slot': changeSlot(sh, parseInt(b.dataset.idx, 10), parseInt(b.dataset.delta, 10)); break;
     case 'res': changeResource(sh, parseInt(b.dataset.idx, 10), parseInt(b.dataset.delta, 10)); break;
     case 'cast': e.preventDefault(); castFromSheet(sh, b.dataset); break;
+    case 'multi': e.preventDefault(); openMultiattack(sh, +b.dataset.sec, +b.dataset.idx); break;
     case 'search': runLookup(); break;
     case 'deploy': deployMonster(b.dataset.key, b); break;
     case 'lkfilter': lookup.filter = b.dataset.filter; renderSheets(); break;
@@ -351,7 +352,8 @@ function sheetHtml(sh, preview) {
     (sh.sections || []).forEach(function(sec, si) {
         h += '<div class="side-section"><h5>' + escapeHtml(sec.title) + '</h5>' + sec.entries.map(function(en, ei) {
             var label = (en.name || sec.title).replace(/。$/, '');
-            return '<div class="entry">' + (entryActionable(en.text) ? '<button class="tt-btn small cast-btn" data-act="cast" data-kind="entry" data-sec="' + si + '" data-idx="' + ei + '" title="选择目标、显示范围并自动结算">⚡</button>' : '') +
+            var multiBtn = /多重攻击|multiattack/i.test(en.name || '') ? '<button class="tt-btn small cast-btn" data-act="multi" data-sec="' + si + '" data-idx="' + ei + '" title="列出这次多重攻击要做的攻击，逐个结算">⚡</button>' : '';
+            return '<div class="entry">' + (multiBtn || (entryActionable(en.text) ? '<button class="tt-btn small cast-btn" data-act="cast" data-kind="entry" data-sec="' + si + '" data-idx="' + ei + '" title="选择目标、显示范围并自动结算">⚡</button>' : '')) +
                 (en.name ? '<b>' + escapeHtml(en.name.replace(/。$/, '')) + '。</b>' : '') + rollify(en.text, label) + '</div>';
         }).join('') + '</div>';
     });

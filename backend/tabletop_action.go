@@ -79,6 +79,7 @@ type TTActionResult struct {
 	DC         int            `json:"dc,omitempty"`
 	Parts      []TTPartRoll   `json:"parts,omitempty"` // shared rolls of the extra damage components
 	Magic      bool           `json:"magic,omitempty"`
+	Half       bool           `json:"half,omitempty"` // save for half damage (Legendary Resistance re-resolves with it)
 	Targets    []*TTActionHit `json:"targets"`
 	Note       string         `json:"note,omitempty"`
 }
@@ -346,7 +347,7 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 		return http.StatusBadRequest, "无效的行动"
 	}
 	sc := room.activeScene()
-	res := &TTActionResult{Name: ttCleanName(a.Name, 40, "行动"), Kind: a.Kind, DamageType: ttCleanName(a.DamageType, 8, ""), Save: a.Save, DC: a.DC}
+	res := &TTActionResult{Name: ttCleanName(a.Name, 40, "行动"), Kind: a.Kind, DamageType: ttCleanName(a.DamageType, 8, ""), Save: a.Save, DC: a.DC, Half: a.Half}
 	if _, ok := ttAbilityCN[a.Save]; a.Kind == "save" && !ok {
 		return http.StatusBadRequest, "请选择豁免属性"
 	}
@@ -684,7 +685,7 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 				h.Amount = applied
 				changed = append(changed, it)
 				if hpBefore <= 0 && dmg > 0 {
-					if note := ttDamageAtZero(it, dmg, crit); note != "" {
+					if note := ttDamageAtZero(it, dmg, crit, room.isPC(it)); note != "" {
 						h.Note = strings.TrimSpace(h.Note + " " + note)
 					}
 				} else if note := room.dropToZero(it, hpBefore, dmg); note != "" {
@@ -866,12 +867,7 @@ func (room *TTRoom) dropToZero(it map[string]interface{}, hpBefore float64, dmg 
 		return ""
 	}
 	ttRemoveStatus(it, "concentration")
-	owner, _ := it["owner"].(string)
-	pc := owner != ""
-	if sh := room.tokenSheet(it); sh != nil && sh["kind"] == "pc" {
-		pc = true
-	}
-	if !pc {
+	if !room.isPC(it) { // 非玩家角色没有死亡豁免：直接死亡
 		ttAddStatus(it, ttDeadStatus)
 		return "倒下了"
 	}

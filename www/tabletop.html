@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css?v=2026111106">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026111204">
 </head>
 <body class="tt-body">
 
@@ -182,6 +182,7 @@
                 <div class="combat-hud" id="combatHud" style="display:none;"></div>
                 <div class="boss-bars" id="bossBars" style="display:none;"></div>
                 <div class="action-bar" id="actionBar" style="display:none;"></div>
+                <div class="multi-bar" id="multiBar" style="display:none;"></div>
                 <div class="status-bar" id="statusBar" style="display:none;"></div>
 
                 <!-- 历史记录：独立浮窗，默认右下角，可拖动、调大小、收起 -->
@@ -336,6 +337,7 @@
                             <div class="tt-hint">支持普通图片，以及 Dungeondraft / DungeonFog 等导出的 Universal VTT 文件（.dd2vtt / .uvtt / .df2vtt，自动读取网格）。</div>
                         </div>
                         <div class="side-section" id="sceneEnterBox"></div>
+                        <div class="side-section" id="fightHintBox"></div>
                         <div class="side-section">
                             <h5>网格</h5>
                             <div class="set-row"><label>显示网格</label><input type="checkbox" id="setGridShow"></div>
@@ -477,6 +479,10 @@
                 <label title="如月华之光、灵体卫士：同一个生物每回合只受一次影响；之后再对区域结算时会自动排除本回合已结算过的生物"><input type="checkbox" id="acOnce"> 每个生物每回合限一次</label></div>
             <div class="rd-row"><span class="rd-key">附加状态</span><select class="tt-select" id="acStatus"></select>
                 <input class="tt-input narrow" id="acRounds" type="number" min="0" placeholder="轮数"></div>
+            <div class="rd-row"><span class="rd-key"></span><label title="附加的状态在目标每个回合结束时重复豁免，成功则结束（如定身术）"><input type="checkbox" id="acRepeat"> 回合结束重复豁免</label>
+                <input class="tt-input" id="acDot" placeholder="回合开始伤害，如 1d4 火焰" title="附加的状态在目标每个回合开始时造成的伤害" style="width:150px;flex:none;"></div>
+            <div class="rd-row"><span class="rd-key">消耗</span><select class="tt-select" id="acCost" style="width:110px;flex:none;" title="战斗中结算后给施放者勾上（只是提示）">
+                <option value="a">动作</option><option value="b">附赠动作</option><option value="r">反应</option><option value="n">不消耗</option></select></div>
             <div class="rd-row"><span class="rd-key"></span><label><input type="checkbox" id="acConc"> 施放者进入专注</label>
                 <label title="魔法武器 / 法术 / 魔法效应：无视「非魔法攻击」的抗性，并触发魔法抗性（法术总是魔法）"><input type="checkbox" id="acMagic"> 魔法</label>
                 <label title="只有你和 GM 能看到结果"><input type="checkbox" id="acHidden"> 暗骰</label></div>
@@ -536,14 +542,15 @@
     </div>
 
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js?v=2026111106"></script>
-    <script src="js/tabletop-combat.js?v=2026111106"></script>
-    <script src="js/tabletop-status.js?v=2026111106"></script>
-    <script src="js/tabletop-action.js?v=2026111106"></script>
-    <script src="js/tabletop-extra.js?v=2026111106"></script>
-    <script src="js/tabletop-autowall.js?v=2026111106"></script>
-    <script src="js/tabletop-prep.js?v=2026111106"></script>
-    <script src="js/tabletop-dm.js?v=2026111106"></script>
-    <script src="js/tabletop.js?v=2026111106"></script>
+    <script src="js/tabletop-sheets.js?v=2026111204"></script>
+    <script src="js/tabletop-combat.js?v=2026111204"></script>
+    <script src="js/tabletop-status.js?v=2026111204"></script>
+    <script src="js/tabletop-action.js?v=2026111204"></script>
+    <script src="js/tabletop-extra.js?v=2026111204"></script>
+    <script src="js/tabletop-autowall.js?v=2026111204"></script>
+    <script src="js/tabletop-prep.js?v=2026111204"></script>
+    <script src="js/tabletop-dm.js?v=2026111204"></script>
+    <script src="js/tabletop-fight.js?v=2026111204"></script>
+    <script src="js/tabletop.js?v=2026111204"></script>
 </body>
 </html>

@@ -364,12 +364,15 @@ func (room *TTRoom) applyCombat(u ttUser, gm bool, req *ttOpRequest) (int, strin
 		}
 		sc.Props["combat"] = ttCombatState(1, order[0])
 		sys("开始了战斗 · 第 1 轮")
+		room.ensureCombatRes(order)
+		room.turnStart(sc, order[0])
 	case "next", "prev":
 		if state == nil || len(order) == 0 {
 			return http.StatusBadRequest, "战斗尚未开始"
 		}
 		if req.Action == "next" {
 			if idx >= 0 {
+				room.turnEnd(sc, order[idx], order) // 回合结束：重复豁免提示、撤离结束、传奇动作时机
 				// timed conditions count down at the END of the affected creature's turn,
 				// so "1 round" lasts through its next turn
 				room.tickStatus(order[idx])
@@ -388,6 +391,7 @@ func (room *TTRoom) applyCombat(u ttUser, gm bool, req *ttOpRequest) (int, strin
 					break
 				}
 			}
+			room.turnStart(sc, order[idx]) // 回合开始：恢复动作 / 反应、闪避结束、传奇动作恢复、充能
 		} else {
 			if gone {
 				idx = after
@@ -733,11 +737,26 @@ func ttSetDeathSaves(it map[string]interface{}, s, f int) string {
 	return ""
 }
 
-// ttDamageAtZero: a creature at 0 HP that takes damage fails a death save (two on a
-// critical hit); damage of at least its HP maximum kills it outright.
-func ttDamageAtZero(it map[string]interface{}, dmg int, crit bool) string {
+// isPC: a player character — controlled by a player or linked to a PC sheet. Only player
+// characters make death saving throws; everything else dies at 0 HP.
+func (room *TTRoom) isPC(it map[string]interface{}) bool {
+	if owner, _ := it["owner"].(string); owner != "" {
+		return true
+	}
+	sh := room.tokenSheet(it)
+	return sh != nil && sh["kind"] == "pc"
+}
+
+// ttDamageAtZero: a player character at 0 HP that takes damage fails a death save (two on a
+// critical hit); damage of at least its HP maximum kills it outright. Anyone else simply dies.
+func ttDamageAtZero(it map[string]interface{}, dmg int, crit, pc bool) string {
 	if ttStatusIDs(it)["dead"] {
 		return ""
+	}
+	if !pc {
+		delete(it, "ds")
+		ttAddStatus(it, ttDeadStatus)
+		return "倒下了"
 	}
 	max, _ := ttNum(it["hpMax"])
 	if max > 0 && float64(dmg) >= max {
@@ -773,7 +792,7 @@ func (room *TTRoom) applyDeath(u ttUser, gm bool, req *ttOpRequest) (int, string
 		hp, _ := ttNum(it["hp"])
 		max, _ := ttNum(it["hpMax"])
 		conds := ttStatusIDs(it)
-		if max <= 0 || hp > 0 || conds["dead"] || conds["stable"] {
+		if max <= 0 || hp > 0 || conds["dead"] || conds["stable"] || !room.isPC(it) { // 只有玩家角色做死亡豁免
 			continue
 		}
 		res, err := RollTabletopDice("1d20")
@@ -811,7 +830,7 @@ func (room *TTRoom) applyDeath(u ttUser, gm bool, req *ttOpRequest) (int, string
 		room.addLog(e)
 	}
 	if len(changed) == 0 {
-		return http.StatusBadRequest, "没有需要进行死亡豁免的棋子（需要 0 生命值）"
+		return http.StatusBadRequest, "没有需要进行死亡豁免的棋子（只有 0 生命值的玩家角色才做死亡豁免）"
 	}
 	room.broadcastItems(changed)
 	return 0, ""

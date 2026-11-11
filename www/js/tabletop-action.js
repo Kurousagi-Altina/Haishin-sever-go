@@ -129,6 +129,8 @@ function parseActionText(name, text, meta) {
     else if (a.temp) a.kind = 'temp';
     else if (a.damage) a.kind = 'auto';
     else if (a.status) a.kind = 'effect';
+    a.cost = guessCost(a, t);   // 动作 / 附赠动作 / 反应（tabletop-fight.js）
+    parseTurnEffects(a, t);     // 回合结束重复豁免 / 回合开始持续伤害
     return a;
 }
 
@@ -391,6 +393,9 @@ function openActionDialog(a, caster, sh) {
     f('acStatus').value = a.status || '';
     f('acRounds').value = a.rounds || '';
     f('acConc').checked = !!a.conc;
+    f('acCost').value = a.cost || 'a';
+    f('acRepeat').checked = !!a.repeatSave;
+    f('acDot').value = a.dot || '';
     f('acHidden').checked = $('diceHidden').checked;
     f('acCaster').textContent = caster ? (caster.label || '未命名棋子') : '（未指定：先在地图上选中你的棋子再打开，或不限距离）';
     syncActionDialog();
@@ -421,6 +426,9 @@ function readActionDialog() {
     a.rounds = parseInt(v('acRounds'), 10) || 0;
     a.conc = $('acConc').checked;
     a.hidden = $('acHidden').checked;
+    a.cost = v('acCost') || 'a';
+    a.repeatSave = $('acRepeat').checked;
+    a.dot = v('acDot');
     return a;
 }
 
@@ -447,6 +455,7 @@ function actionRollOnly() {
     var a = readActionDialog(), who = act.sheet ? act.sheet.name : (act.caster && act.caster.label) || '';
     closeActionDialog();
     consumeSlot(a, act.sheet && act.sheet.id);
+    econAfterAction(a, act.caster);
     if (a.kind === 'attack') openRollDialog({ who: who, label: a.name + ' 命中', bonus: a.attack, attack: true, range: { normal: a.range, long: a.rangeLong, reach: a.reach } });
     else if (a.damage) openRollDialog({ who: who, label: a.name + (a.kind === 'heal' ? ' 治疗' : a.kind === 'temp' ? ' 临时生命' : ' 伤害'), expr: a.damage });
     else notice('这个行动没有可以掷的骰子', true);
@@ -848,15 +857,17 @@ function confirmActionTargeting() {
         save: a.kind === 'save' ? a.save || '' : '', dc: a.kind === 'save' ? a.dc || 0 : 0, half: !!a.half,
         caster: m.caster && canEdit(m.caster) ? m.caster.id : '', concentration: !!a.conc, targets: targets, spell: !!a.isSpell,
         magic: !!(a.magic || a.isSpell), school: a.school || '', parts: a.parts || [],
-        status: def ? { id: def.id, name: def.name, color: def.color, icon: def.icon, rounds: a.rounds || 0 } : null
+        status: def ? statusWithTurnEffects({ id: def.id, name: def.name, color: def.color, icon: def.icon, rounds: a.rounds || 0 }, a) : null
     } };
     if (isPathShape(a.area) && !m.locked && m.pts && m.pts.length > 1) finishPathShape();
     if (a.conc && !m.zoneId && m.caster) endOldConcZones(m.caster.id);
     if (a.zone && a.area && a.area.shape && !m.zoneId) createZone(a, actionShape(), m.caster, targets.map(function(o) { return o.id; }));
     if (m.zoneId) recordZoneHits(m.zoneId, targets.map(function(o) { return o.id; }));
     if (!m.zoneId) consumeSlot(a, m.sheetId);
+    var caster = m.caster;
     cancelActionTargeting();
     op(body);
+    if (!m.zoneId) econAfterAction(a, caster); // 动作经济：记上这次的消耗
 }
 
 // 开始新的专注 = 结束旧的专注：先移除同一施放者之前留下的专注区域（服务器那边专注状态本来就只有一个）
@@ -1005,6 +1016,7 @@ function actionLogHtml(e) {
         if (t.status) parts.push('<span class="hit-tag crit">' + escapeHtml(t.status) + '</span>');
         if (t.note) parts.push('<span class="tt-hint">' + escapeHtml(t.note) + '</span>');
         if (r.kind === 'attack' && e.id) parts.push(reactButtons(e, t));
+        parts.push(fightTargetBtns(e, t, r)); // 专注豁免 / 传奇抗性（tabletop-fight.js）
         h += '<div class="act-target">' + (r.kind === 'react' ? '🛡 ' : '🎯 ') + escapeHtml(t.name) + ' ' + parts.join(' ') + '</div>';
     });
     if (r.note) h += '<div class="tt-hint">' + escapeHtml(r.note) + '</div>';

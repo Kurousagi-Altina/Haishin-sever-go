@@ -764,7 +764,8 @@ function renderCombatHud() {
             (c && !curShown ? '<span class="init-chip active hid"><i>?</i><span class="nm">隐藏单位</span></span>' : '') +
             '<span class="init-chips">' + chips + '</span>' +
             (curShown && cur && isCreatureToken(cur) ? '<span class="hud-move" title="本回合已移动 / 速度">🏃 ' + fmtDist(movedThisTurn(cur)) + (tokenSpeed(cur) ? ' / ' + tokenSpeed(cur) : '') + '</span>' : '') +
-            (curShown && cur.owner === me.name && cur.hpMax > 0 && num(cur.hp, cur.hpMax) <= 0 && !hasStatus(cur, 'dead') && !hasStatus(cur, 'stable') ?
+            (curShown ? econHudHtml(cur) : '') +
+            (curShown && cur.owner === me.name && isPC(cur) && cur.hpMax > 0 && num(cur.hp, cur.hpMax) <= 0 && !hasStatus(cur, 'dead') && !hasStatus(cur, 'stable') ?
                 '<button class="tt-btn small" data-cact="death" title="0 生命值：掷死亡豁免">💀 死亡豁免</button>' : '') +
             (c && (me.gm || (mine && curShown)) ? '<button class="tt-btn small primary" data-cact="next" title="快捷键 N">' + (me.gm ? '下一位' : '结束回合') + '</button>' : '') +
             (c ? '<i class="hud-follow' + (gmPref('ttFollowTurn', true) ? ' on' : '') + '" data-cact="follow" title="镜头跟随当前行动者（点击开关）">🎥</i>' : '') +
@@ -797,6 +798,8 @@ function onCombatHudDblClick(e) {
 }
 
 function onCombatHudClick(e) {
+    var ec = e.target.closest('[data-econ]');
+    if (ec) { toggleEcon(ec.dataset.econ); return; } // 动作经济（tabletop-fight.js）
     var f = e.target.closest('[data-focus]');
     if (f) { focusToken(f.dataset.focus); return; }
     var b = e.target.closest('[data-cact]');
@@ -914,6 +917,9 @@ function combatPanelHtml(it, row) {
     }).join('') + '</select>');
     h += row('速度', '<input class="tt-input narrow" data-prop="speed" type="number" min="0" step="5" value="' + (it.speed > 0 ? it.speed : '') + '" placeholder="' + (tokenSpeed(it) || '—') + '"> 尺' +
         (combatState() && combatState().turn === it.id ? '<span class="tt-hint">本回合已移动 ' + fmtDist(movedThisTurn(it)) + '</span>' : ''));
+    h += row('阵营', '<select class="tt-select" data-prop="side" title="借机攻击按阵营判断：自动 = 玩家控制的是友方，GM 控制的是敌方">' +
+        [['', '自动'], ['ally', '友方'], ['enemy', '敌方'], ['neutral', '中立']].map(function(o) { return '<option value="' + o[0] + '"' + ((it.side || '') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') +
+        '</select><span class="tt-hint">触及</span><input class="tt-input narrow" data-prop="reach" type="number" min="0" step="5" value="' + (it.reach > 0 ? it.reach : '') + '" placeholder="' + meleeReach(it) + '"> 尺');
     h += row('AC', '<input class="tt-input narrow" data-prop="ac" type="number" min="0" value="' + (it.ac != null ? escapeHtml(String(it.ac)) : '') + '" placeholder="—">' +
         '<span class="tt-hint">' + (it.owner ? '' : '玩家看不到') + '</span>');
     if (inInit(it)) {

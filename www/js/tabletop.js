@@ -516,6 +516,7 @@ function setRoomMeta(r) {
     renderAssets();
     renderScenes();
     applyRoomSettings();
+    renderFightHints();
 }
 
 function renderUsers() {
@@ -2330,6 +2331,7 @@ function onPointerUp(e) {
         if (movedZones.length === 1) { var mz = movedZones[0]; setTimeout(function() { if (!actionMode && scene.items[mz.id]) zoneRetrigger(scene.items[mz.id], true); }, 50); }
         queueItems(patches);
         if (!blocked) setTimeout(function() { checkPortals(Object.keys(g.orig)); }, 50);
+        Object.keys(g.orig).forEach(function(mid) { oaCheckMove(mid, g.orig[mid], g.trail); }); // 借机攻击提示
         break;
     case 'wvert':
         wallVertexUp(g);
@@ -2619,7 +2621,7 @@ function renderSelPanel() {
             '<input class="tt-input narrow" data-prop="hpMax" type="number" min="0" value="' + (it.hpMax || '') + '">');
         h += row('临时', '<input class="tt-input narrow" data-prop="hpTemp" type="number" min="0" value="' + (it.hpTemp || '') + '" placeholder="0">' +
             '<span class="tt-hint">受伤先扣临时生命</span>');
-        if (it.hpMax > 0 && num(it.hp, it.hpMax) <= 0) h += deathSaveRow(it, row);
+        if (it.hpMax > 0 && num(it.hp, it.hpMax) <= 0 && isPC(it)) h += deathSaveRow(it, row); // 只有玩家角色有死亡豁免
         h += row('', '<button class="tt-btn small" data-hp="-5">-5</button><button class="tt-btn small" data-hp="-1">-1</button>' +
             '<button class="tt-btn small" data-hp="1">+1</button><button class="tt-btn small" data-hp="5">+5</button>');
         h += row('', '<input class="tt-input narrow" data-amount type="number" min="0" placeholder="数值">' +
@@ -2759,11 +2761,14 @@ function tokenHpPatch(it, delta) {
 
 // 掉到 0 HP：玩家角色加「昏迷」（要做死亡豁免），GM 的怪物加「死亡」（先攻里自动跳过）；专注结束。
 // 从 0 恢复：去掉昏迷 / 死亡 / 稳定，清空死亡豁免
+// 玩家角色：玩家控制的棋子，或关联了人物卡。只有玩家角色在 0 生命值时做死亡豁免，其他直接死亡
+function isPC(it) { return !!it.owner || !!(it.sheet && sheets[it.sheet] && sheets[it.sheet].kind === 'pc'); }
+
 function zeroHpStatus(it, hp, patch) {
     if (it.kind !== 'token' || !(it.hpMax > 0) || it.hpPct) return;
     var before = num(it.hp, it.hpMax), list = statusList(it).slice(), changed = false;
     if (before > 0 && hp <= 0) {
-        var pc = !!it.owner || !!(it.sheet && sheets[it.sheet] && sheets[it.sheet].kind === 'pc');
+        var pc = isPC(it);
         var def = STATUS_BY_ID[pc ? 'unconscious' : 'dead'];
         list = list.filter(function(s) { return s.id !== 'concentration' && s.id !== def.id; });
         list.push({ id: def.id, name: def.name, color: def.color, icon: def.icon });
@@ -2809,7 +2814,7 @@ function onSelPanelChange(e) {
         var sum = /^\d+([+\-]\d+)+$/.test(rel) ? rel.match(/[+\-]?\d+/g).reduce(function(a, b) { return a + parseInt(b, 10); }, 0) : NaN;
         if (!isFinite(sum)) { notice('HP 只支持 20、+5、-3、15+5 这样的写法', true); return; }
         patch.hp = Math.max(0, it.hpMax > 0 ? Math.min(it.hpMax, sum) : sum);
-    } else if (prop === 'hp' || prop === 'hpMax' || prop === 'width' || prop === 'rot' || prop === 'sight' || prop === 'ac' || prop === 'initMod' || prop === 'init' || prop === 'hitR' || prop === 'size' || prop === 'speed') {
+    } else if (prop === 'hp' || prop === 'hpMax' || prop === 'width' || prop === 'rot' || prop === 'sight' || prop === 'ac' || prop === 'initMod' || prop === 'init' || prop === 'hitR' || prop === 'size' || prop === 'speed' || prop === 'reach') {
         var v = parseFloat(el.value);
         patch[prop] = el.value === '' || !isFinite(v) ? (prop === 'init' ? 0 : null) : v;
         if (prop === 'init') patch.initRolled = true;
@@ -3454,7 +3459,7 @@ function rollHtml(r) {
 function logHtml(e) {
     var time = '<span class="time">' + escapeHtml((e.t || '').slice(11, 16)) + '</span>';
     var who = '<span class="who" style="color:' + escapeHtml(userColor(e.who)) + '">' + escapeHtml(e.who) + '</span>';
-    if (e.kind === 'sys') return '<div class="log-entry sys">' + escapeHtml(e.who) + ' ' + escapeHtml(e.text) + time + trigLogBtns(e) + '</div>';
+    if (e.kind === 'sys') return '<div class="log-entry sys">' + escapeHtml(e.who) + ' ' + escapeHtml(e.text) + time + trigLogBtns(e) + fightLogBtns(e) + '</div>';
     if (e.kind === 'chat') return '<div class="log-entry">' + who + time + '<div>' + escapeHtml(e.text) + '</div></div>';
     var label = e.act && e.act.caster ? e.act.caster + ' · ' + (e.label || '') : e.label;
     var h = '<div class="log-entry">' + who + (label ? '<span class="label">' + escapeHtml(label) + '</span>' : '') +
@@ -3645,6 +3650,7 @@ function init() {
     initAutoWall();
     initPrep();
     initDm();
+    initFight();
     $('setHpStep').addEventListener('change', function() { setProps({ hpStep: parseFloat(this.value) }); });
     $('prefFollowTurn').checked = gmPref('ttFollowTurn', true);
     $('prefFollowTurn').addEventListener('change', function() { setGmPref('ttFollowTurn', this.checked); });

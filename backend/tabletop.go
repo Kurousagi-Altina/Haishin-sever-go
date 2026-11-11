@@ -153,6 +153,8 @@ type ttOpRequest struct {
 	Handout *TTHandout `json:"handout"`
 	// table: create / update a random table (tabletop_dm.go)
 	Table *TTTable `json:"table"`
+	// fight.save (concentration): the DC
+	DC int `json:"dc"`
 }
 
 type Tabletop struct {
@@ -878,6 +880,11 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		room.broadcastItems(changed)
 		room.checkTriggers(sc, moved)
 		room.logHPChanges(u, sc, hpChanges)
+
+	case "fight.save", "fight.dot", "oa.hint": // 战斗提示（tabletop_fight.go）
+		if st, msg := room.applyFight(u, gm, req); st != 0 {
+			return st, msg
+		}
 
 	case "table", "table.delete", "table.roll":
 		if st, msg := room.applyTable(u, req); st != 0 {
@@ -1769,6 +1776,8 @@ func ttCleanName(s string, max int, def string) string {
 var ttSettingKeys = map[string]bool{
 	"playerTokens": true, "playerDraw": true, "playerMoveOthers": true, "playerDoors": true,
 	"timeStop": true, "music": true,
+	// 战斗提示开关（tabletop_fight.go，默认开）
+	"hintOA": true, "hintEcon": true, "hintTurn": true, "hintLegend": true,
 }
 
 func ttRequestToken(r *http.Request) string {
