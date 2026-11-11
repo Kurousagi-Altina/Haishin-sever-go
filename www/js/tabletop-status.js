@@ -29,7 +29,8 @@ var STATUS_DEFS = [
     { id: 'baned', name: '灾祸', icon: '🌀', color: '#5e35b1', desc: '攻击检定和豁免检定额外 −1d4。' },
     { id: 'hexed', name: '侵扰', icon: '😈', color: '#7a1e9c', desc: '受到侵扰者攻击命中时额外受到伤害；所选属性的检定劣势。' },
     { id: 'hasted', name: '加速', icon: '⏩', color: '#26c6da', desc: '速度翻倍，AC +2，敏捷豁免优势，每回合多一个有限动作；结束时失去一回合。' },
-    { id: 'dodging', name: '闪避', icon: '🌪', color: '#4dd0e1', desc: '直到下回合开始：针对它的攻击检定劣势（能看见攻击者时），敏捷豁免优势。' },
+    { id: 'dodging', name: '闪避', icon: '🌪', color: '#4dd0e1', desc: '直到下回合开始：针对它的攻击检定劣势（能看见攻击者时），敏捷豁免优势。轮到它时自动去掉。' },
+    { id: 'disengaged', name: '撤离', icon: '🏃', color: '#80cbc4', desc: '执行了撤离动作：本回合的移动不会引发借机攻击。回合结束时自动去掉。' },
     { id: 'raging', name: '狂暴', icon: '😡', color: '#e53935', desc: '力量检定和豁免优势，近战伤害加值，对钝击、穿刺、挥砍伤害有抗性。' },
     { id: 'bardic', name: '诗人激励', icon: '🎵', color: '#7300ff', desc: '持有一枚诗人激励骰，可加到一次 d20 检定上。' },
     { id: 'guidance', name: '神导术', icon: '👍', color: '#fff59d', desc: '下一次属性检定可额外加 1d4。' },
@@ -129,7 +130,9 @@ function statusPanelHtml(it, row) {
     var h = '<div class="prop-sub">状态</div><div class="status-chips">' + statusList(it).map(function(s, i) {
         var def = STATUS_BY_ID[s.id];
         return '<span class="status-chip" style="border-color:' + escapeHtml(s.color || '#9e9e9e') + '" title="' + escapeHtml(def ? def.desc : '') + '">' +
-            escapeHtml(statusIcon(s) + ' ' + statusLabel(s)) + '<button class="st-x" data-stdel="' + i + '" title="移除">✕</button></span>';
+            escapeHtml(statusIcon(s) + ' ' + statusLabel(s)) + (statusTimerText(s) ? '<span class="tt-hint">（' + escapeHtml(statusTimerText(s)) + '）</span>' : '') +
+            '<button class="st-x" data-sttimer="' + i + '" title="回合效果：回合结束时重复豁免、回合开始时受到伤害">⏱</button>' +
+            '<button class="st-x" data-stdel="' + i + '" title="移除">✕</button></span>';
     }).join('') + (statusList(it).length ? '' : '<span class="tt-hint">无</span>') + '</div>';
     // 不带左侧标签，下拉框才有足够宽度
     h += '<div class="prop-row"><select class="tt-select" data-stsel style="flex:1;min-width:0;"><option value="">添加状态…</option>' +
@@ -146,6 +149,7 @@ function statusPanelHtml(it, row) {
 
 function onStatusPanelClick(b, it) {
     if (b.dataset.stdel != null) { removeStatus(it, parseInt(b.dataset.stdel, 10)); return true; }
+    if (b.dataset.sttimer != null) { editStatusTimer(it, parseInt(b.dataset.sttimer, 10)); return true; }
     if (b.dataset.act !== 'stadd') return false;
     var panel = $('selPanel'), id = panel.querySelector('[data-stsel]').value;
     var rounds = parseInt(panel.querySelector('[data-strounds]').value, 10) || 0;

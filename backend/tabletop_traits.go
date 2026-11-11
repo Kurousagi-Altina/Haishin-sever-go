@@ -490,6 +490,99 @@ func ttSheetHasSpell(sh map[string]interface{}, name string) bool {
 	return false
 }
 
+// reduceHit re-applies a hit as if it had dealt `left` damage instead of `taken`, starting from the
+// target's state right before the hit (kept in memory for GM undo): temporary HP absorbs first again,
+// and dropping to 0 HP, instant death, death-save failures and lost concentration are re-derived from
+// the reduced damage. Changes made to the token since the hit (healing, other damage) are kept.
+// ok = false when the state before the hit is no longer known.
+func (room *TTRoom) reduceHit(it map[string]interface{}, logID string, taken, left int, crit bool) (string, bool) {
+	var pre map[string]interface{}
+	for _, r := range room.actUndo[logID] {
+		if r.id == it["id"] {
+			pre = r.vals
+		}
+	}
+	if pre == nil {
+		return "", false
+	}
+	max, _ := ttNum(it["hpMax"])
+	if max <= 0 {
+		return "", false
+	}
+	hpBefore, ok := ttNum(pre["hp"])
+	if !ok {
+		hpBefore = max
+	}
+	tempBefore, _ := ttNum(pre["hpTemp"])
+	split := func(d int) (float64, float64) { // damage → (taken by temp HP, taken by HP)
+		t := float64(d)
+		if t > tempBefore {
+			t = tempBefore
+		}
+		h := float64(d) - t
+		if h > hpBefore {
+			h = hpBefore
+		}
+		return t, h
+	}
+	oldT, oldH := split(taken)
+	newT, newH := split(left)
+	hp, ok := ttNum(it["hp"])
+	if !ok {
+		hp = max
+	}
+	temp, _ := ttNum(it["hpTemp"])
+	hp += oldH - newH
+	if hp > max {
+		hp = max
+	}
+	temp += oldT - newT
+	it["hp"] = hp
+	if temp > 0 {
+		it["hpTemp"] = temp
+	} else {
+		delete(it, "hpTemp")
+	}
+	preStatus := map[string]map[string]interface{}{}
+	if list, ok := pre["status"].([]interface{}); ok {
+		for _, x := range list {
+			if m, ok := x.(map[string]interface{}); ok {
+				if id, _ := m["id"].(string); id != "" {
+					preStatus[id] = m
+				}
+			}
+		}
+	}
+	restoreDS := func() {
+		if ds, ok := pre["ds"].(map[string]interface{}); ok {
+			cp := map[string]interface{}{}
+			for k, v := range ds {
+				cp[k] = v
+			}
+			it["ds"] = cp
+		} else {
+			delete(it, "ds")
+		}
+	}
+	// undo what the hit's damage did at 0 HP, then redo it with the reduced damage
+	for _, id := range []string{"unconscious", "dead", "stable"} {
+		if preStatus[id] == nil {
+			ttRemoveStatus(it, id)
+		}
+	}
+	restoreDS()
+	if hpBefore > 0 {
+		if c := preStatus["concentration"]; c != nil && !ttStatusIDs(it)["concentration"] && hp > 0 {
+			ttAddStatus(it, c) // 不再倒地：专注也没有因为倒地而中断
+		}
+		return room.dropToZero(it, hpBefore, left-int(newT)), true // 溢出伤害 = 扣完临时生命后的伤害 − 原生命值
+	}
+	if left > 0 {
+		return ttDamageAtZero(it, left, crit, room.isPC(it)), true
+	}
+	return "", true
+}
+
 func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) (int, string) {
 	var e *TTLogEntry
 	for i := range room.Log {
@@ -497,8 +590,8 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) 
 			e = &room.Log[i]
 		}
 	}
-	if e == nil || e.Act == nil || e.Act.Kind != "attack" {
-		return http.StatusBadRequest, "找不到这次攻击（太久远的记录不能再反应）"
+	if e == nil || e.Act == nil || (e.Act.Kind != "attack" && !(mode == "legendary" && e.Act.Kind == "save")) {
+		return http.StatusBadRequest, "找不到这次结算（太久远的记录不能再反应）"
 	}
 	var h *TTActionHit
 	for _, x := range e.Act.Targets {
@@ -523,7 +616,7 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) 
 	if owner, _ := it["owner"].(string); !gm && (owner == "" || owner != u.name) {
 		return http.StatusForbidden, "只能替自己的棋子使用反应"
 	}
-	if h.Hit != "hit" && h.Hit != "crit" {
+	if mode != "legendary" && h.Hit != "hit" && h.Hit != "crit" {
 		return http.StatusBadRequest, "这次攻击没有命中"
 	}
 	sh := room.tokenSheet(it)
@@ -532,7 +625,7 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) 
 		taken = -h.Amount
 	}
 	var roll *TTDiceResult
-	name, note, back, removeStatus := "", "", 0, false
+	name, note, back, after, removeStatus := "", "", 0, 0, false
 	switch mode {
 	case "deflect":
 		if !ttSheetHas(sh, "拨挡攻击", "拨挡飞弹", "拨挡", "deflectattacks", "deflectmissiles") {
@@ -560,7 +653,7 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) 
 		if left < 0 {
 			left = 0
 		}
-		back = taken - left
+		back, after = taken-left, left
 		name = "拨挡攻击"
 		note = "减伤 " + strconv.Itoa(r.Total) + "：伤害 " + strconv.Itoa(taken) + " → " + strconv.Itoa(left)
 	case "uncanny":
@@ -571,7 +664,7 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) 
 			return http.StatusBadRequest, "这次攻击没有造成伤害"
 		}
 		left := taken / 2
-		back = taken - left
+		back, after = taken-left, left
 		name = "直觉闪避"
 		note = "伤害减半：" + strconv.Itoa(taken) + " → " + strconv.Itoa(left)
 	case "shield":
@@ -592,19 +685,72 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) 
 		if float64(h.Attack.Total) >= ac+float64(h.Cover) {
 			return http.StatusBadRequest, "加上盾牌术后 AC " + strconv.Itoa(int(ac)) + "，攻击 " + strconv.Itoa(h.Attack.Total) + " 仍然命中"
 		}
-		back = taken
+		back, after = taken, 0
 		removeStatus = h.Status != ""
 		name = "盾牌术"
 		note = "AC " + strconv.Itoa(int(ac)) + "（+5），攻击 " + strconv.Itoa(h.Attack.Total) + " 改为未命中"
+	case "legendary": // 传奇抗性：豁免失败改为成功
+		if h.Saved != "no" {
+			return http.StatusBadRequest, "只有豁免失败时才能用传奇抗性"
+		}
+		lr := ttLegendRes(it, "lr")
+		if lr == nil {
+			return http.StatusBadRequest, "这个棋子没有「传奇抗性」资源"
+		}
+		cur, _ := ttNum(lr["cur"])
+		if cur <= 0 {
+			return http.StatusBadRequest, "传奇抗性已经用完了"
+		}
+		lr["cur"] = cur - 1
+		left := 0
+		if e.Act.Half {
+			left = taken / 2
+		}
+		back, after = taken-left, left
+		removeStatus = h.Status != ""
+		name = "传奇抗性"
+		max, _ := ttNum(lr["max"])
+		note = "豁免改为成功（剩 " + strconv.Itoa(int(cur-1)) + "/" + strconv.Itoa(int(max)) + "）"
+		if taken > 0 {
+			note += "：伤害 " + strconv.Itoa(taken) + " → " + strconv.Itoa(left)
+		}
 	default:
 		return http.StatusBadRequest, "未知的反应"
 	}
+	if mode != "legendary" && room.setting("hintEcon", true) { // 记下反应已用（自己回合开始时恢复）
+		econ, _ := it["econ"].(map[string]interface{})
+		if econ == nil {
+			econ = map[string]interface{}{}
+		}
+		econ["r"] = true
+		it["econ"] = econ
+	}
 	snap := ttSnapHP(sc, it)
+	concBefore := ttStatusIDs(it)["concentration"]
 	if back > 0 {
-		ttApplyHP(it, back)
-		if hp, _ := ttNum(it["hp"]); hp > 0 { // the hit no longer drops it
-			delete(it, "ds")
-			ttRemoveStatus(it, "stable", "unconscious", "dead")
+		// 按减伤重新结算：从这次攻击之前的状态出发，用减少后的伤害重新扣一次
+		if extra, ok := room.reduceHit(it, logID, taken, after, h.Hit == "crit"); ok {
+			if extra != "" {
+				note += "；" + extra
+			}
+		} else { // 攻击前的状态已经不在内存里（服务器重启过 / 太久远）：直接把减免的生命值加回去
+			ttApplyHP(it, back)
+			if hp, _ := ttNum(it["hp"]); hp > 0 {
+				delete(it, "ds")
+				ttRemoveStatus(it, "stable", "unconscious", "dead")
+			}
+			note += "（攻击太久远，按回血处理，临时生命值没有恢复）"
+		}
+		if ttStatusIDs(it)["concentration"] || concBefore {
+			if after > 0 {
+				dc := after / 2
+				if dc < 10 {
+					dc = 10
+				}
+				note += "；专注豁免改为 DC " + strconv.Itoa(dc)
+			} else {
+				note += "；不用再做专注豁免"
+			}
 		}
 	}
 	if removeStatus { // the attack missed: its condition doesn't apply

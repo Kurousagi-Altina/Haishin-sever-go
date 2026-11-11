@@ -461,6 +461,8 @@ function uploadMusic(input) {
 
 // ===== 记录：重掷 =====
 function onLogClick(e) {
+    var fb = e.target.closest('[data-oa],[data-ssave],[data-dot],[data-concsave],[data-lause]');
+    if (fb && fightLogClick(fb)) return; // 战斗提示（tabletop-fight.js）
     var tg = e.target.closest('[data-trigfocus],[data-trigact]');
     if (tg) { dmLogClick(tg); return; } // 触发区域提示（tabletop-dm.js）
     var rb = e.target.closest('[data-react]');
