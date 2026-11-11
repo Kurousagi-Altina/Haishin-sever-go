@@ -461,6 +461,8 @@ function uploadMusic(input) {
 
 // ===== 记录：重掷 =====
 function onLogClick(e) {
+    var rb = e.target.closest('[data-react]');
+    if (rb) { useReaction(rb); return; }
     var u = e.target.closest('[data-undo]');
     if (u) {
         if (confirm('撤销这次结算？目标的生命值、临时生命、状态和死亡豁免会恢复到结算前。')) op({ op: 'action.undo', text: u.dataset.undo });

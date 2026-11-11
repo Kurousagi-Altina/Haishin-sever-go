@@ -462,6 +462,7 @@ function handleMsg(m) {
         renderSheetsRemote();
         break;
     case 'log':
+        if (m.entry.ref) document.querySelectorAll('[data-react-ref="' + m.entry.ref + '"]').forEach(function(el) { el.remove(); }); // 用过反应
         logEntries.push(m.entry);
         if (logEntries.length > 300) logEntries.shift();
         appendLog(m.entry, true);
@@ -1105,6 +1106,7 @@ function render() {
     drawFog(items);
     if (vision) drawVision(vision);
     if (me.gm) drawWalls(items, true);
+    if (me.gm) drawAutoWall();
     drawOverlays();
 
     var animating = remote.pings.length || Object.keys(remote.pointers).length || Object.keys(remote.rulers).length;
@@ -1915,6 +1917,7 @@ function doorAt(w) {
 function syncWallOpts() {
     document.querySelectorAll('[data-walltype]').forEach(function(b) { b.classList.toggle('active', b.dataset.walltype === wallOpts.type && wallOpts.mode === 'draw'); });
     document.querySelectorAll('[data-wallmode]').forEach(function(b) { b.classList.toggle('active', b.dataset.wallmode === wallOpts.mode); });
+    if (typeof autoWallSync === 'function') autoWallSync();
 }
 
 function clearWalls() {
@@ -1945,7 +1948,7 @@ function updateCursor() {
     var c = 'default';
     if (gesture && gesture.type === 'pan') c = 'grabbing';
     else if (spaceDown) c = 'grab';
-    else if (tool === 'draw' || tool === 'ruler' || (tool === 'fog' && fogOpts.shape !== 'select') || (tool === 'wall' && wallOpts.mode === 'draw')) c = 'crosshair';
+    else if (tool === 'draw' || tool === 'ruler' || (tool === 'fog' && fogOpts.shape !== 'select') || (tool === 'wall' && (wallOpts.mode === 'draw' || wallOpts.mode === 'auto'))) c = 'crosshair';
     canvas.style.cursor = c;
 }
 
@@ -2003,6 +2006,8 @@ function onPointerDown(e) {
     }
     if (e.button !== 0) return;
     if (actionMode) { actionPointerDown(w, e); return; } // 行动选目标
+
+    if (tool === 'wall' && wallOpts.mode === 'auto') { autoWallPointerDown(w, start); return; } // 自动画墙：拖框 / 点地板
 
     if (tool === 'wall' && wallOpts.mode === 'draw') {
         var wp = wallSnap(w, e.altKey);
@@ -2310,6 +2315,7 @@ function onPointerUp(e) {
         updateCursor();
         break;
     case 'marquee':
+        if (g.auto) { autoWallPointerUp(g); requestRender(); break; }
         if (!g.start.moved) break;
         var x0 = Math.min(g.a.x, g.b.x), y0 = Math.min(g.a.y, g.b.y), x1 = Math.max(g.a.x, g.b.x), y1 = Math.max(g.a.y, g.b.y);
         sortedItems().forEach(function(it) {
@@ -3583,6 +3589,7 @@ function init() {
     initStatus();
     initAction();
     initExtra();
+    initAutoWall();
     $('setHpStep').addEventListener('change', function() { setProps({ hpStep: parseFloat(this.value) }); });
     $('prefFollowTurn').checked = gmPref('ttFollowTurn', true);
     $('prefFollowTurn').addEventListener('change', function() { setGmPref('ttFollowTurn', this.checked); });

@@ -34,19 +34,39 @@ type TTActionReq struct {
 	Status        map[string]interface{} `json:"status"` // condition applied on hit / failed save / always
 	Caster        string                 `json:"caster"` // token id
 	Concentration bool                   `json:"concentration"`
+	Spell         bool                   `json:"spell"`  // a spell (Magic Resistance etc.)
+	Magic         bool                   `json:"magic"`  // a magical attack / effect (beats 非魔法 resistances; spells always are)
+	School        string                 `json:"school"` // spell school (防护 / 咒法 / … ) for school-specific save advantage
+	Parts         []TTDamagePart         `json:"parts"`  // extra damage of other types (weapon + 2d6 火焰, 冰风暴's 钝击 + 寒冷)
 	Targets       []TTActionTarget       `json:"targets"`
 }
 
+// TTDamagePart: one extra damage component, resisted separately.
+type TTDamagePart struct {
+	Dice string `json:"dice"`
+	Type string `json:"type"`
+}
+
+// TTPartRoll: a shared roll of an extra damage component (save / auto actions).
+type TTPartRoll struct {
+	Type string        `json:"type"`
+	Roll *TTDiceResult `json:"roll"`
+}
+
 type TTActionHit struct {
-	Name   string        `json:"name"`
-	Attack *TTDiceResult `json:"attack,omitempty"`
-	Hit    string        `json:"hit,omitempty"` // hit / miss / crit / fumble
-	Save   *TTDiceResult `json:"save,omitempty"`
-	Saved  string        `json:"saved,omitempty"` // yes / no / auto (automatic failure)
-	Damage *TTDiceResult `json:"damage,omitempty"`
-	Amount int           `json:"amount"` // HP change actually applied (−damage / +healing / temp HP)
-	Note   string        `json:"note,omitempty"`
-	Status string        `json:"status,omitempty"`
+	ID     string          `json:"id,omitempty"` // token id (reactions refer to it)
+	Name   string          `json:"name"`
+	Attack *TTDiceResult   `json:"attack,omitempty"`
+	Hit    string          `json:"hit,omitempty"` // hit / miss / crit / fumble
+	Save   *TTDiceResult   `json:"save,omitempty"`
+	Saved  string          `json:"saved,omitempty"` // yes / no / auto (automatic failure)
+	Damage *TTDiceResult   `json:"damage,omitempty"`
+	Parts  []*TTDiceResult `json:"parts,omitempty"` // extra damage components (attack rolls)
+	Phys   bool            `json:"phys,omitempty"`  // the damage included 钝击 / 穿刺 / 挥砍 (Deflect Attacks)
+	Cover  int             `json:"cover,omitempty"` // cover bonus used against the attack (Shield re-check)
+	Amount int             `json:"amount"`          // HP change actually applied (−damage / +healing / temp HP)
+	Note   string          `json:"note,omitempty"`
+	Status string          `json:"status,omitempty"`
 }
 
 type TTActionResult struct {
@@ -57,6 +77,8 @@ type TTActionResult struct {
 	DamageType string         `json:"damageType,omitempty"`
 	Save       string         `json:"save,omitempty"`
 	DC         int            `json:"dc,omitempty"`
+	Parts      []TTPartRoll   `json:"parts,omitempty"` // shared rolls of the extra damage components
+	Magic      bool           `json:"magic,omitempty"`
 	Targets    []*TTActionHit `json:"targets"`
 	Note       string         `json:"note,omitempty"`
 }
@@ -185,7 +207,9 @@ func ttHasDamageType(text, dtype string) bool {
 }
 
 // damageFactor reads 抗性 / 免疫 / 易伤 from the linked sheet's props for a damage type.
-func (room *TTRoom) damageFactor(it map[string]interface{}, dtype string) (float64, string) {
+// Qualified entries: 「非魔法攻击造成的钝击、穿刺和挥砍伤害」 apply only to non-magical attacks;
+// 「除力场、心灵外的所有伤害」 applies to every type it doesn't list.
+func (room *TTRoom) damageFactor(it map[string]interface{}, dtype string, magic bool) (float64, string) {
 	dtype = strings.TrimSuffix(strings.TrimSpace(dtype), "伤害")
 	sh := room.tokenSheet(it)
 	if sh == nil || dtype == "" {
@@ -200,7 +224,7 @@ func (room *TTRoom) damageFactor(it map[string]interface{}, dtype string) (float
 			props = append(props, m)
 		}
 	}
-	resist, vuln := false, false
+	resist, vuln, skipped := false, false, ""
 	for _, x := range props {
 		p, ok := x.(map[string]interface{})
 		if !ok {
@@ -211,11 +235,27 @@ func (room *TTRoom) damageFactor(it map[string]interface{}, dtype string) (float
 		if strings.Contains(label, "状态") {
 			continue
 		}
-		// only unconditional entries: skip the part after "；" / "（非魔法…）" style qualifiers
-		hit := false
+		hit, qual := false, ""
 		for _, part := range strings.FieldsFunc(value, func(r rune) bool { return r == '；' || r == ';' }) {
-			if ttHasDamageType(part, dtype) && !strings.Contains(part, "非魔法") && !strings.Contains(part, "未被") && !strings.Contains(part, "除") {
-				hit = true
+			nonmagic := strings.Contains(part, "非魔法") || strings.Contains(part, "未被魔法") || strings.Contains(part, "非魔化")
+			allExcept := (strings.Contains(part, "所有") || strings.Contains(part, "全部")) && strings.Contains(part, "除")
+			var match bool
+			if allExcept {
+				match = strings.Contains(part, "伤害") && !ttHasDamageType(part, dtype)
+			} else {
+				// 「…，镀银武器除外」 style qualifiers on a non-magic entry are ignored (weapon material isn't tracked)
+				match = ttHasDamageType(part, dtype) && (nonmagic || !strings.Contains(part, "除"))
+			}
+			if !match {
+				continue
+			}
+			if nonmagic && magic {
+				skipped = label
+				continue
+			}
+			hit = true
+			if nonmagic {
+				qual = "（非魔法）"
 			}
 		}
 		if !hit {
@@ -223,7 +263,7 @@ func (room *TTRoom) damageFactor(it map[string]interface{}, dtype string) (float
 		}
 		switch {
 		case strings.Contains(label, "免疫"):
-			return 0, "免疫" + dtype
+			return 0, "免疫" + dtype + qual
 		case strings.Contains(label, "抗性"):
 			resist = true
 		case strings.Contains(label, "易伤"):
@@ -237,8 +277,25 @@ func (room *TTRoom) damageFactor(it map[string]interface{}, dtype string) (float
 		return 0.5, "抗性"
 	case vuln:
 		return 2, "易伤"
+	case skipped != "":
+		return 1, "魔法攻击，无视非魔法" + skipped
 	}
 	return 1, ""
+}
+
+func ttScaleDmg(v int, s float64) int {
+	switch s {
+	case 0:
+		return 0
+	case 0.5:
+		return v / 2
+	}
+	return v
+}
+
+func ttPhysicalType(t string) bool {
+	t = strings.TrimSuffix(strings.TrimSpace(t), "伤害")
+	return t == "钝击" || t == "穿刺" || t == "挥砍"
 }
 
 // applyHP changes a token's HP (temp HP absorbs damage first; healing is capped at max).
@@ -312,6 +369,36 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 		}
 	}
 	bonus, _ := ttNum(a.Attack)
+	var parts []TTDamagePart
+	if a.Kind == "attack" || a.Kind == "save" || a.Kind == "auto" {
+		for _, p := range a.Parts {
+			d := strings.ReplaceAll(strings.TrimSpace(p.Dice), " ", "")
+			if d == "" || len(parts) >= 4 {
+				continue
+			}
+			test := d
+			if a.Kind == "attack" {
+				test = ttDoubleDice(d)
+			}
+			if _, err := RollTabletopDice(test); err != nil {
+				return http.StatusBadRequest, "附加伤害：" + err.Error()
+			}
+			parts = append(parts, TTDamagePart{Dice: d, Type: ttCleanName(strings.TrimSuffix(strings.TrimSpace(p.Type), "伤害"), 8, "")})
+		}
+	}
+	magic := a.Magic || a.Spell
+	res.Magic = magic
+	var sharedParts []*TTDiceResult
+	if a.Kind == "save" || a.Kind == "auto" {
+		for _, p := range parts {
+			r, err := RollTabletopDice(p.Dice)
+			if err != nil {
+				return http.StatusBadRequest, err.Error()
+			}
+			sharedParts = append(sharedParts, r)
+			res.Parts = append(res.Parts, TTPartRoll{Type: p.Type, Roll: r})
+		}
+	}
 
 	// one shared roll for area / save / healing effects
 	var shared *TTDiceResult
@@ -358,11 +445,22 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 			hpBefore, _ = ttNum(it["hpMax"])
 		}
 		crit := false
-		h := &TTActionHit{Name: ttCleanName(ttItemLabel(it), 40, "目标")}
+		h := &TTActionHit{ID: t.ID, Name: ttCleanName(ttItemLabel(it), 40, "目标")}
 		res.Targets = append(res.Targets, h)
 		conds := ttStatusIDs(it)
+		tr := room.traitsOf(it)
+		addNote := func(s string) {
+			if s != "" {
+				h.Note = strings.TrimSpace(h.Note + " " + s)
+			}
+		}
 		landed := false // the effect applies (hit / failed save / always)
 		dmg := 0
+		var extra []int // amounts of the extra damage parts (same order as parts)
+		statusID := ""
+		if status != nil {
+			statusID, _ = status["id"].(string)
+		}
 
 		switch a.Kind {
 		case "attack":
@@ -392,10 +490,15 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 			if hasAC && conds["hasted"] {
 				ac += 2
 			}
+			if hasAC && tr.ac != 0 {
+				ac += float64(tr.ac)
+				addNote("AC " + ttJoinNotes(tr.acSrc))
+			}
 			cover := 0
 			if t.Cover == 2 || t.Cover == 5 {
 				cover = t.Cover
 			}
+			h.Cover = cover
 			switch {
 			case nat == 20:
 				h.Hit = "crit"
@@ -426,6 +529,20 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 				h.Damage = d
 				dmg = d.Total
 			}
+			if landed {
+				for _, p := range parts {
+					expr := p.Dice
+					if crit {
+						expr = ttDoubleDice(expr)
+					}
+					d, err := RollTabletopDice(expr)
+					if err != nil {
+						return http.StatusBadRequest, err.Error()
+					}
+					h.Parts = append(h.Parts, d)
+					extra = append(extra, d.Total)
+				}
+			}
 
 		case "save":
 			sb := room.saveBonus(it, a.Save)
@@ -436,9 +553,17 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 			if autoFail {
 				h.Saved = "auto"
 			} else {
-				// advantage / disadvantage from the target's conditions (they cancel out)
-				adv := a.Save == "dex" && (conds["hasted"] || conds["dodging"])
+				// advantage / disadvantage from the target's conditions and traits (they cancel out)
+				more, bonusNotes, advSrc := tr.saveMods(a.Save, a.Spell, magic, a.School, statusID, conds)
+				sb += more
+				adv := a.Save == "dex" && (conds["hasted"] || conds["dodging"]) || len(advSrc) > 0
 				dis := a.Save == "dex" && conds["restrained"]
+				if len(bonusNotes) > 0 {
+					addNote("豁免 " + ttJoinNotes(bonusNotes))
+				}
+				if len(advSrc) > 0 {
+					addNote("优势：" + ttJoinNotes(advSrc))
+				}
 				expr := "1d20"
 				if adv && !dis {
 					expr = "2d20kh1"
@@ -468,21 +593,43 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 				}
 			}
 			landed = h.Saved != "yes"
-			if shared != nil {
-				dmg = shared.Total
-				if !landed {
-					if a.Half {
-						dmg /= 2
-					} else {
-						dmg = 0
-					}
+			if h.Saved == "no" && tr.legendary {
+				addNote("可用传奇抗性改为成功（GM 撤销后手动结算）")
+			}
+			// Evasion: a Dex save for half damage → no damage on a success, half on a failure
+			evasion := tr.evasion != "" && a.Save == "dex" && a.Half && !ttIncapacitated(conds)
+			hasDmg := shared != nil || len(sharedParts) > 0
+			scale := 1.0 // applies to every damage part
+			switch {
+			case evasion && !landed:
+				scale = 0
+				if hasDmg {
+					addNote(tr.evasion + "：成功不受伤害")
 				}
+			case evasion:
+				scale = 0.5
+				if hasDmg {
+					addNote(tr.evasion + "：失败只受一半")
+				}
+			case !landed && a.Half:
+				scale = 0.5
+			case !landed:
+				scale = 0
+			}
+			if shared != nil {
+				dmg = ttScaleDmg(shared.Total, scale)
+			}
+			for _, r := range sharedParts {
+				extra = append(extra, ttScaleDmg(r.Total, scale))
 			}
 
 		case "auto":
 			landed = true
 			if shared != nil {
 				dmg = shared.Total
+			}
+			for _, r := range sharedParts {
+				extra = append(extra, r.Total)
 			}
 
 		case "heal", "temp", "effect":
@@ -492,17 +639,47 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 			return http.StatusBadRequest, "未知的行动类型"
 		}
 
-		// damage → resistances → HP
+		// damage → resistances (each part by its own type) → HP
+		if dmg > 0 || len(extra) > 0 {
+			types := []string{a.DamageType}
+			amts := []int{dmg}
+			for i, v := range extra {
+				types = append(types, parts[i].Type)
+				amts = append(amts, v)
+			}
+			total, noted := 0, map[string]bool{}
+			for i, amt := range amts {
+				if amt <= 0 {
+					continue
+				}
+				if ttPhysicalType(types[i]) {
+					h.Phys = true
+				}
+				f, note := room.damageFactor(it, types[i], magic)
+				f, note = tr.damageMod(f, note, types[i], magic)
+				if f == -1 {
+					amt = (amt / 2) * 2
+				} else if f != 1 {
+					amt = int(float64(amt) * f)
+				}
+				if note != "" {
+					if ty := strings.TrimSuffix(types[i], "伤害"); len(amts) > 1 && ty != "" && !strings.Contains(note, ty) {
+						if strings.HasPrefix(note, "抗性") || strings.HasPrefix(note, "易伤") {
+							note = ty + note // 「挥砍抗性」
+						} else {
+							note = ty + "：" + note // 「挥砍：魔法攻击，无视非魔法抗性」
+						}
+					}
+					if !noted[note] {
+						noted[note] = true
+						addNote(note)
+					}
+				}
+				total += amt
+			}
+			dmg = total
+		}
 		if dmg > 0 {
-			f, note := room.damageFactor(it, a.DamageType)
-			if f == -1 {
-				dmg = (dmg / 2) * 2
-			} else if f != 1 {
-				dmg = int(float64(dmg) * f)
-			}
-			if note != "" {
-				h.Note = strings.TrimSpace(h.Note + " " + note)
-			}
 			if applied, ok := ttApplyHP(it, -dmg); ok {
 				h.Amount = applied
 				changed = append(changed, it)
@@ -554,7 +731,10 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 				h.Note = "已有更多临时生命，不叠加"
 			}
 		}
-		if landed && status != nil {
+		if landed && status != nil && tr.condImmune[statusID] != "" {
+			name, _ := status["name"].(string)
+			addNote("免疫" + name + ttSrcTag(tr.condImmune[statusID]))
+		} else if landed && status != nil {
 			ttAddStatus(it, status)
 			h.Status, _ = status["name"].(string)
 			changed = append(changed, it)
