@@ -124,7 +124,7 @@ function autoWallCommit() {
         }
     });
     createItems(items);
-    notice('已生成 ' + items.length + ' 段墙体（Ctrl+Z 可撤销）；门窗请在「选择」里删掉对应墙段后用「门」「窗」补画', false, 5000);
+    notice('已生成 ' + items.length + ' 段墙体（Ctrl+Z 可撤销）；门洞可以用「🚪 找门洞」一键补门，多余的墙在「选择」里框选删除', false, 6000);
     autoWallClear();
 }
 

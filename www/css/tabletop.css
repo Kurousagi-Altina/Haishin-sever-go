@@ -563,3 +563,28 @@ details.feature summary { cursor: pointer; font-size: 13px; }
 
 /* ===== 被命中后的反应按钮（拨挡攻击 / 直觉闪避 / 盾牌术）===== */
 .react-btn { font-size: 11px; padding: 0 6px; margin-left: 4px; border-color: #5c6bc0; color: #c5cae9; }
+
+/* ===== DM 备团：笔记 / 讲义 ===== */
+.note-field { margin: 6px 0; }
+.note-field label { display: block; color: #999; font-size: 12px; margin-bottom: 3px; }
+.note-field textarea { width: 100%; box-sizing: border-box; resize: vertical; font-size: 13px; line-height: 1.5; }
+.note-list, .ho-list { list-style: none; margin: 0; padding: 0; }
+.note-list li, .ho-list li { display: flex; align-items: flex-start; gap: 8px; padding: 6px; border-radius: 6px; cursor: pointer; }
+.note-list li:hover, .ho-list li:hover, .note-list li.active { background: #2a2e38; }
+.note-num { flex: none; min-width: 22px; height: 22px; padding: 0 4px; box-sizing: border-box; border-radius: 11px; color: #1b1d22; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+.ho-list li { align-items: center; }
+.ho-list img, .ho-icon { flex: none; width: 40px; height: 40px; object-fit: cover; border-radius: 4px; background: #15171b; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.ho-main { flex: 1; min-width: 0; }
+.ho-main > div:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ho-btns { flex: none; display: flex; gap: 3px; }
+.side-tab.has-new { position: relative; }
+.side-tab.has-new::after { content: ''; position: absolute; top: 4px; right: 4px; width: 7px; height: 7px; border-radius: 50%; background: #ff7043; }
+.ho-box { width: min(520px, calc(100% - 32px)); }
+.ho-box textarea { width: 100%; box-sizing: border-box; resize: vertical; margin-bottom: 8px; line-height: 1.5; }
+.ho-img-prev img { max-width: 100%; max-height: 180px; border-radius: 6px; margin-bottom: 8px; display: block; }
+.ho-to { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.ho-view { width: min(760px, calc(100% - 32px)); max-height: calc(100vh - 40px); overflow: auto; }
+.ho-view-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 16px; }
+.ho-view-head b { flex: 1; }
+.ho-view-img img { display: block; max-width: 100%; max-height: 68vh; margin: 0 auto 10px; border-radius: 6px; }
+.ho-view-text { white-space: pre-wrap; line-height: 1.7; font-size: 14px; background: #15171b; border-radius: 8px; padding: 10px 12px; }

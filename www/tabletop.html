@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css?v=2026111102">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026111104">
 </head>
 <body class="tt-body">
 
@@ -91,6 +91,7 @@
                 <button class="tool-btn" data-tool="ruler" title="测距 (M)">📏</button>
                 <button class="tool-btn gm-only" data-tool="fog" title="迷雾 (F)">☁</button>
                 <button class="tool-btn gm-only" data-tool="wall" title="墙体 / 门窗 (W)">🧱</button>
+                <button class="tool-btn gm-only" data-tool="note" title="房间笔记 (B)：单击地图放置编号笔记，只有 GM 看得到">📌</button>
                 <div class="tool-sep"></div>
                 <button class="tool-btn" onclick="fitView()" title="适配视图 (0)">⛶</button>
             </div>
@@ -135,6 +136,12 @@
                     <label style="font-size:12px;"><input type="checkbox" id="fogPreview" onchange="requestRender()"> 玩家视角</label>
                 </div>
 
+                <!-- 笔记选项 -->
+                <div class="tool-opts" id="optsNote">
+                    <span class="tt-hint">单击地图放置编号笔记（只有 GM 看得到）；点已有的笔记可以拖动、编辑</span>
+                    <button class="tt-btn small" onclick="switchPane('notes')">笔记与讲义</button>
+                </div>
+
                 <!-- 墙体选项 -->
                 <div class="tool-opts" id="optsWall">
                     <button class="tt-btn small" data-walltype="wall" title="挡视线、挡移动">墙</button>
@@ -143,6 +150,7 @@
                     <button class="tt-btn small" data-walltype="secret" title="暗门：玩家看不到也打不开，GM 点击打开后才通行">暗门</button>
                     <button class="tt-btn small" data-wallmode="select" title="选择、移动、删除墙体">选择</button>
                     <button class="tt-btn small" data-wallmode="auto" title="根据地图图片自动识别墙：拖框识别墙线，或拖框后点地板围出房间">🪄 自动</button>
+                    <button class="tt-btn small" data-wallmode="doors" title="找出墙线之间一格左右的缺口，点一下补成门">🚪 找门洞</button>
                     <span class="sep"></span>
                     <span class="tt-hint">单击逐点画墙（吸附半格，Alt 自由），双击 / 右键 / Enter 结束</span>
                     <button class="tt-btn small danger" onclick="clearWalls()">清除墙体</button>
@@ -157,6 +165,13 @@
                         <button class="tt-btn small primary" id="awGo">生成墙体</button>
                         <button class="tt-btn small" id="awClear" title="清空预览（Esc）">清空</button>
                         <span class="tt-hint" id="awInfo"></span>
+                    </div>
+                    <div class="aw-panel" id="doorGapPanel" style="display:none;">
+                        <label title="比这个宽的缺口不算门洞">最宽 <select class="tt-select" id="dgMax"><option value="1">1 格</option><option value="1.5">1.5 格</option><option value="2">2 格</option><option value="3">3 格</option></select></label>
+                        <label>补成 <select class="tt-select" id="dgType"><option value="door">门</option><option value="window">窗</option><option value="secret">暗门</option><option value="wall">墙（封上缺口）</option></select></label>
+                        <button class="tt-btn small primary" id="dgAll">全部补上</button>
+                        <button class="tt-btn small" id="dgReset" title="把 Shift+点 忽略掉的缺口找回来">恢复忽略</button>
+                        <span class="tt-hint" id="dgInfo"></span>
                     </div>
                 </div>
 
@@ -209,6 +224,7 @@
                     <div class="side-tab active" data-pane="dice">🎲 骰子</div>
                     <div class="side-tab" data-pane="combat">⚔ 战斗</div>
                     <div class="side-tab" data-pane="sheets">📜 角色</div>
+                    <div class="side-tab" data-pane="notes">📌 线索</div>
                     <div class="side-tab" data-pane="assets">🖼 资产</div>
                     <div class="side-tab gm-only" data-pane="scenes">🗺 场景</div>
                     <div class="side-tab gm-only" data-pane="settings">⚙ 设置</div>
@@ -262,6 +278,11 @@
                 <div class="side-pane" id="pane-sheets">
                     <div class="side-scroll" id="sheetPane"></div>
                     <input type="file" id="xlsxFile" accept=".xlsx,.json" style="display:none;" onchange="importXlsx(this)">
+                </div>
+
+                <!-- 团本（GM：房间笔记、讲义）/ 线索（玩家：收到的讲义） -->
+                <div class="side-pane" id="pane-notes">
+                    <div class="side-scroll" id="notesPane"></div>
                 </div>
 
                 <!-- 资产 -->
@@ -462,13 +483,46 @@
         </div>
     </div>
 
+    <!-- 讲义：编辑（GM） -->
+    <div class="roll-dialog" id="hoDialog" style="display:none;">
+        <div class="roll-box ho-box">
+            <div class="rd-who">📜 讲义 · 推给玩家的图片 / 文字</div>
+            <input class="tt-input rd-label" id="hoTitle" maxlength="60" placeholder="标题（如：酒馆告示、密信）">
+            <textarea class="tt-input" id="hoText" rows="6" maxlength="4000" placeholder="文字内容（可选）"></textarea>
+            <div class="rd-row"><span class="rd-key">图片</span>
+                <button class="tt-btn small" id="hoPick">上传图片</button>
+                <select class="tt-select" id="hoLib" style="width:150px;flex:none;"></select>
+                <button class="tt-btn small" id="hoNoImg">移除图片</button>
+                <input type="file" id="hoFile" accept="image/*" style="display:none;">
+            </div>
+            <div class="ho-img-prev" id="hoImgPrev"></div>
+            <div class="rd-row"><span class="rd-key">给</span><span class="ho-to" id="hoTo"></span></div>
+            <div class="tt-hint">上传的图片不会进资产库，展示之前玩家看不到。</div>
+            <div class="rd-btns">
+                <button class="tt-btn" id="hoCancel">取消</button>
+                <button class="tt-btn" id="hoSave" title="先存着，跑团时再展示">只保存</button>
+                <button class="tt-btn primary" id="hoShow">展示给玩家</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 讲义：查看 -->
+    <div class="roll-dialog" id="hoView" style="display:none;">
+        <div class="roll-box ho-view">
+            <div class="ho-view-head"><b id="hvTitle"></b><span class="tt-hint" id="hvMeta"></span><button class="tt-btn small" data-hvclose>✕</button></div>
+            <div class="ho-view-img" id="hvImg"></div>
+            <div class="ho-view-text" id="hvText"></div>
+        </div>
+    </div>
+
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js?v=2026111102"></script>
-    <script src="js/tabletop-combat.js?v=2026111102"></script>
-    <script src="js/tabletop-status.js?v=2026111102"></script>
-    <script src="js/tabletop-action.js?v=2026111102"></script>
-    <script src="js/tabletop-extra.js?v=2026111102"></script>
-    <script src="js/tabletop-autowall.js?v=2026111102"></script>
-    <script src="js/tabletop.js?v=2026111102"></script>
+    <script src="js/tabletop-sheets.js?v=2026111104"></script>
+    <script src="js/tabletop-combat.js?v=2026111104"></script>
+    <script src="js/tabletop-status.js?v=2026111104"></script>
+    <script src="js/tabletop-action.js?v=2026111104"></script>
+    <script src="js/tabletop-extra.js?v=2026111104"></script>
+    <script src="js/tabletop-autowall.js?v=2026111104"></script>
+    <script src="js/tabletop-prep.js?v=2026111104"></script>
+    <script src="js/tabletop.js?v=2026111104"></script>
 </body>
 </html>

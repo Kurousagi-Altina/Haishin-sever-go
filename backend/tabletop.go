@@ -100,6 +100,8 @@ type TTRoom struct {
 	// room-wide settings: player permissions (playerTokens / playerDraw / playerMoveOthers /
 	// playerDoors), timeStop, music — see ttSettingKeys
 	Settings map[string]interface{} `json:"settings"`
+	// 讲义：GM 推送给玩家的图片 / 文字（tabletop_prep.go）
+	Handouts []TTHandout `json:"handouts,omitempty"`
 
 	mu      sync.Mutex
 	dirty   bool
@@ -145,6 +147,8 @@ type ttOpRequest struct {
 	Act *TTActionReq `json:"act"`
 	// combat "round": the round number to set
 	Round int `json:"round"`
+	// handout: create / update a handout (tabletop_prep.go)
+	Handout *TTHandout `json:"handout"`
 }
 
 type Tabletop struct {
@@ -436,6 +440,11 @@ func (room *TTRoom) assetRefs() []string {
 			}
 		}
 	}
+	for _, h := range room.Handouts {
+		if h.Img != "" {
+			set[h.Img] = true
+		}
+	}
 	refs := make([]string, 0, len(set))
 	for id := range set {
 		if ttAssetRe.MatchString(id) {
@@ -593,13 +602,14 @@ func (room *TTRoom) stateMsg(sub *ttSub) []byte {
 		entries = append(entries, logEntryFor(sub, e))
 	}
 	return ttMsg(map[string]interface{}{
-		"type":   "state",
-		"me":     map[string]interface{}{"name": sub.name, "color": sub.color, "gm": sub.gm},
-		"room":   room.meta(),
-		"scene":  room.sceneView(room.activeScene(), sub.gm, sub.name),
-		"log":    entries,
-		"users":  room.userList(),
-		"sheets": room.sheetsFor(sub),
+		"type":     "state",
+		"me":       map[string]interface{}{"name": sub.name, "color": sub.color, "gm": sub.gm},
+		"room":     room.meta(),
+		"scene":    room.sceneView(room.activeScene(), sub.gm, sub.name),
+		"log":      entries,
+		"users":    room.userList(),
+		"sheets":   room.sheetsFor(sub),
+		"handouts": room.handoutsFor(sub),
 	})
 }
 
@@ -752,6 +762,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		"props": true, "scene.add": true, "scene.duplicate": true, "scene.rename": true,
 		"scene.delete": true, "scene.activate": true, "room.rename": true, "room.settings": true,
 		"asset.delete": true, "log.clear": true, "action.undo": true,
+		"handout": true, "handout.show": true, "handout.delete": true,
 	}
 	if gmOnly[req.Op] && !gm {
 		return http.StatusForbidden, "仅 GM 可执行该操作"
@@ -782,7 +793,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 				continue
 			}
 			kind, _ := patch["kind"].(string)
-			if kind != "token" && kind != "draw" && !((kind == "fog" || kind == "wall") && gm) {
+			if kind != "token" && kind != "draw" && !((kind == "fog" || kind == "wall" || kind == "note") && gm) {
 				return http.StatusForbidden, "无权创建该物件"
 			}
 			if !gm && ((kind == "token" && !room.setting("playerTokens", true)) || (kind == "draw" && !room.setting("playerDraw", true))) {
@@ -852,11 +863,19 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 					item[k] = v
 				}
 			}
+			if item["kind"] == "note" { // GM 的房间笔记：永远不发给玩家
+				item["hidden"] = true
+			}
 			changed = append(changed, item)
 		}
 		changed = append(changed, sc.moveFollowers(moved, inBatch)...)
 		room.broadcastItems(changed)
 		room.logHPChanges(u, sc, hpChanges)
+
+	case "handout", "handout.show", "handout.delete":
+		if st, msg := room.applyHandout(u, req); st != 0 {
+			return st, msg
+		}
 
 	case "action.undo":
 		if st, msg := room.undoAction(u, req.Text); st != 0 {
@@ -1387,7 +1406,7 @@ func (t *Tabletop) HandleUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	kind := r.URL.Query().Get("kind")
-	if kind != "map" && kind != "audio" {
+	if kind != "map" && kind != "audio" && kind != "handout" {
 		kind = "token"
 	}
 	u, nerr := t.guestUser(info, ttRequestToken(r), r.URL.Query().Get("name"))
@@ -1432,6 +1451,10 @@ func (t *Tabletop) HandleUpload(w http.ResponseWriter, r *http.Request) {
 
 	name := ttCleanName(strings.TrimSuffix(header.Filename, filepath.Ext(header.Filename)), 60, "未命名")
 	asset := TTAsset{ID: id, Name: name, Kind: kind, By: u.name}
+	if kind == "handout" { // 讲义图片不进资产库：GM 展示之前玩家看不到
+		writeJSON(w, http.StatusOK, map[string]interface{}{"success": true, "asset": asset})
+		return
+	}
 	room.mu.Lock()
 	exists := false
 	for _, a := range room.Assets {
