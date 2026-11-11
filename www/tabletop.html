@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css?v=2026111104">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026111106">
 </head>
 <body class="tt-body">
 
@@ -126,6 +126,7 @@
                     <button class="tt-btn small" data-fogshape="rect">矩形</button>
                     <button class="tt-btn small" data-fogshape="poly" title="逐点单击，双击或点击起点闭合，Esc 取消">多边形</button>
                     <button class="tt-btn small" data-fogshape="brush">笔刷</button>
+                    <button class="tt-btn small" data-fogshape="room" title="点房间里任意一点：沿墙围出的整个房间一次揭开（或盖上）">🏠 房间</button>
                     <button class="tt-btn small" data-fogshape="select" title="选择、移动、删除迷雾块">选择</button>
                     <select class="tt-select" id="fogBrush" title="笔刷大小（格）">
                         <option value="0.5">0.5 格</option><option value="1" selected>1 格</option><option value="2">2 格</option><option value="4">4 格</option>
@@ -138,7 +139,9 @@
 
                 <!-- 笔记选项 -->
                 <div class="tool-opts" id="optsNote">
-                    <span class="tt-hint">单击地图放置编号笔记（只有 GM 看得到）；点已有的笔记可以拖动、编辑</span>
+                    <button class="tt-btn small" data-notemode="note">笔记</button>
+                    <button class="tt-btn small" data-notemode="trigger" title="玩家棋子走进去时提醒 GM">⚠ 触发区域</button>
+                    <span class="tt-hint" id="noteHint"></span>
                     <button class="tt-btn small" onclick="switchPane('notes')">笔记与讲义</button>
                 </div>
 
@@ -310,6 +313,8 @@
                         <div class="lobby-row" style="gap:6px;">
                             <input class="tt-input" id="newSceneName" maxlength="40" placeholder="新场景名">
                             <button class="tt-btn primary" onclick="addScene()">新建</button>
+                            <button class="tt-btn" onclick="$('sceneFile').click()" title="导入其他房间导出的场景模板（.zip）">导入场景</button>
+                            <input type="file" id="sceneFile" accept=".zip" style="display:none;" onchange="importSceneFile(this)">
                         </div>
                         <ul class="scene-list" id="sceneList"></ul>
                         <p class="tt-hint">玩家只能看到当前激活的场景。可以提前准备好多个场景，跑团时一键切换。</p>
@@ -330,6 +335,7 @@
                             <div class="set-row"><label>横向格数</label><input class="tt-input" id="setCells" type="number" min="1" step="1" placeholder="按地图宽度自动算格子大小"></div>
                             <div class="tt-hint">支持普通图片，以及 Dungeondraft / DungeonFog 等导出的 Universal VTT 文件（.dd2vtt / .uvtt / .df2vtt，自动读取网格）。</div>
                         </div>
+                        <div class="side-section" id="sceneEnterBox"></div>
                         <div class="side-section">
                             <h5>网格</h5>
                             <div class="set-row"><label>显示网格</label><input type="checkbox" id="setGridShow"></div>
@@ -506,6 +512,20 @@
         </div>
     </div>
 
+    <!-- 随机表编辑（GM） -->
+    <div class="roll-dialog" id="tbDialog" style="display:none;">
+        <div class="roll-box ho-box">
+            <div class="rd-who">🎲 随机表</div>
+            <input class="tt-input rd-label" id="tbName" maxlength="40" placeholder="表名（如：森林随机遭遇）">
+            <div class="rd-row"><span class="rd-key">骰子</span><input class="tt-input" id="tbDice" maxlength="20" placeholder="留空 = 按条目数自动（1dN）；有范围时如 1d20、2d6" style="flex:1;"></div>
+            <textarea class="tt-input" id="tbRows" rows="10" maxlength="8000" placeholder="每行一个条目，例如：&#10;1-3 [[1d4]] 只狼&#10;4-5 一队商人&#10;6 一头枭熊&#10;&#10;不写范围则每行概率相同；[[2d6]] 会掷出结果"></textarea>
+            <div class="rd-btns">
+                <button class="tt-btn" id="tbCancel">取消</button>
+                <button class="tt-btn primary" id="tbSave">保存</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 讲义：查看 -->
     <div class="roll-dialog" id="hoView" style="display:none;">
         <div class="roll-box ho-view">
@@ -516,13 +536,14 @@
     </div>
 
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js?v=2026111104"></script>
-    <script src="js/tabletop-combat.js?v=2026111104"></script>
-    <script src="js/tabletop-status.js?v=2026111104"></script>
-    <script src="js/tabletop-action.js?v=2026111104"></script>
-    <script src="js/tabletop-extra.js?v=2026111104"></script>
-    <script src="js/tabletop-autowall.js?v=2026111104"></script>
-    <script src="js/tabletop-prep.js?v=2026111104"></script>
-    <script src="js/tabletop.js?v=2026111104"></script>
+    <script src="js/tabletop-sheets.js?v=2026111106"></script>
+    <script src="js/tabletop-combat.js?v=2026111106"></script>
+    <script src="js/tabletop-status.js?v=2026111106"></script>
+    <script src="js/tabletop-action.js?v=2026111106"></script>
+    <script src="js/tabletop-extra.js?v=2026111106"></script>
+    <script src="js/tabletop-autowall.js?v=2026111106"></script>
+    <script src="js/tabletop-prep.js?v=2026111106"></script>
+    <script src="js/tabletop-dm.js?v=2026111106"></script>
+    <script src="js/tabletop.js?v=2026111106"></script>
 </body>
 </html>

@@ -588,3 +588,15 @@ details.feature summary { cursor: pointer; font-size: 13px; }
 .ho-view-head b { flex: 1; }
 .ho-view-img img { display: block; max-width: 100%; max-height: 68vh; margin: 0 auto 10px; border-radius: 6px; }
 .ho-view-text { white-space: pre-wrap; line-height: 1.7; font-size: 14px; background: #15171b; border-radius: 8px; padding: 10px 12px; }
+
+/* ===== DM 备团：遭遇 ===== */
+.enc-list { list-style: none; margin: 0; padding: 0; }
+.enc-list li { display: flex; align-items: center; gap: 6px; padding: 6px; border-radius: 6px; }
+.enc-list li:hover { background: #2a2e38; }
+.enc-main { flex: 1; min-width: 0; }
+.enc-diff { font-size: 11px; padding: 1px 6px; border-radius: 8px; background: #455a64; color: #fff; }
+.enc-diff.low { background: #388e3c; }
+.enc-diff.mid { background: #f9a825; color: #222; }
+.enc-diff.high { background: #e65100; }
+.enc-diff.deadly { background: #b71c1c; }
+.log-entry.sys .tt-btn.small { margin-left: 4px; padding: 1px 6px; font-size: 11px; }

@@ -105,13 +105,15 @@ func ttPlayerItem(it map[string]interface{}, hpStep float64) map[string]interfac
 	_, hasForms := it["forms"]
 	_, hasObr := it["obr"]
 	stripExtra := owner == "" && it["kind"] == "token" && (hasForms || hasObr)
-	if !stripAC && !stripInit && !coarseHP && !stripExtra {
+	_, hasEnc := it["enc"] // 遭遇编组名（GM 备团用）
+	stripEnc := hasEnc && owner == ""
+	if !stripAC && !stripInit && !coarseHP && !stripExtra && !stripEnc {
 		return it
 	}
 	cp := make(map[string]interface{}, len(it))
 	for k, v := range it {
 		if (stripAC && k == "ac") || (stripInit && ttInitKeys[k]) || (coarseHP && (k == "hpTemp" || k == "hp" || k == "hpMax")) ||
-			(stripExtra && (k == "forms" || k == "obr")) {
+			(stripExtra && (k == "forms" || k == "obr")) || (stripEnc && k == "enc") {
 			continue
 		}
 		cp[k] = v
