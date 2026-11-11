@@ -610,3 +610,5 @@ details.feature summary { cursor: pointer; font-size: 13px; }
 .multi-bar { position: absolute; left: 50%; transform: translateX(-50%); bottom: 120px; z-index: 30; display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
     max-width: calc(100% - 32px); padding: 8px 10px; background: rgba(31,34,41,0.96); border: 1px solid #3a3f4d; border-radius: 10px; box-shadow: 0 6px 24px rgba(0,0,0,0.5); font-size: 13px; }
 .status-chip .st-x + .st-x { margin-left: 0; }
+
+#acDiceRow .quick-chips { flex: 1; min-width: 0; }
