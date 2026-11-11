@@ -38,6 +38,7 @@ function parseActionText(name, text, meta) {
     }
     if (a.damage) a.damage = a.damage.replace(/\s/g, '').replace(/＋/g, '+').replace(/[－−]/g, '-');
     if (a.dtype === '暗蚀') a.dtype = '黯蚀'; // 2024 版译作「暗蚀」
+    a.parts = parseDamageParts(t, a.damage, a.dtype);
     // 治疗 / 临时生命
     var heal = t.match(/(?:恢复|回复)[^。\n]{0,30}?(\d+d\d+(?:\s*[+＋]\s*\d+)?)([^。\n]{0,20})/);
     if (heal && /生命/.test(heal[0] + heal[2])) { a.heal = heal[1].replace(/\s|＋/g, function(c) { return c === '＋' ? '+' : ''; }); a.healMod = /施法属性调整值/.test(heal[2]); }
@@ -131,6 +132,29 @@ function parseActionText(name, text, meta) {
     return a;
 }
 
+// 附加伤害：「2d10 点钝击伤害和 4d6 点寒冷伤害」「外加 7（2d6）点毒素伤害」——和主伤害类型不同的另算一段，各自结算抗性。
+// 升环 / 戏法强化之后的骰子不算；「或」「改为」后面的是替代说法（双手、换类型），也不算
+function parseDamageParts(t, mainDice, mainType) {
+    var up = t.search(/升环|更高环位|更高的法术位|戏法强化/), body = up > 0 ? t.slice(0, up) : t;
+    var re = new RegExp('(\\d+d\\d+(?:\\s*[+＋\\-－]\\s*\\d+)?)\\s*[)）]?\\s*(?:点|的)?\\s*(' + DMG_TYPES + ')\\s*伤害', 'g'), m, out = [];
+    while ((m = re.exec(body))) {
+        var d = m[1].replace(/\s/g, '').replace(/＋/g, '+').replace(/[－−]/g, '-'), ty = m[2] === '暗蚀' ? '黯蚀' : m[2];
+        if (!mainType || ty === mainType) continue;
+        if (/(?:或|或者|改为|而非|替代)[^。；;，,]{0,8}$/.test(body.slice(Math.max(0, m.index - 10), m.index))) continue;
+        if (out.some(function(p) { return p.type === ty; })) continue;
+        if (out.length < 3) out.push({ dice: d, type: ty });
+    }
+    return out;
+}
+
+function partsText(parts) { return (parts || []).map(function(p) { return p.dice + ' ' + p.type; }).join('，'); }
+function readParts(s) {
+    var re = new RegExp('(\\d+d\\d+(?:[+\\-]\\d+)?)\\s*(' + DMG_TYPES + ')', 'g'), m, out = [];
+    s = String(s || '').replace(/＋/g, '+').replace(/[－−]/g, '-');
+    while ((m = re.exec(s)) && out.length < 4) out.push({ dice: m[1], type: m[2] === '暗蚀' ? '黯蚀' : m[2] });
+    return out;
+}
+
 function sheetCasting(sh) { return sh && sh.casting && sh.casting[0] || null; }
 
 function castingMod(sh) {
@@ -213,6 +237,10 @@ function addDice(expr, inc, n) {
 function applySpellScaling(a, sp, text, meta, sh) {
     var sc = parseScaling(text);
     a.spellLevel = parseInt(sp.level, 10) || 0;
+    a.isSpell = true; // 魔法抗性等「对抗法术的豁免优势」看这个
+    a.magic = true;   // 法术总是魔法：无视「非魔法攻击」的抗性
+    var sm = (String(meta || '') + ' ' + String(text || '').slice(0, 80)).match(/(防护|咒法|预言|附魔|塑能|幻术|死灵|变化)/);
+    if (sm) a.school = sm[1];
     if (a.spellLevel === 0 && sc.cantrip && a.damage) {
         var lv = parseInt(sh && sh.level, 10) || 1, pick = null;
         sc.cantrip.forEach(function(t) { if (lv >= t[0]) pick = t[1]; });
@@ -260,7 +288,9 @@ function consumeSlot(a, sheetId) {
 
 function actionFromAttack(sh, at) {
     var r = parseAttackRange((at.props || '') + ' ' + (at.range || ''));
-    return { name: at.name, kind: 'attack', attack: normBonus(at.atk) || '+0', damage: String(at.damage || '').replace(/\s/g, ''), dtype: at.type || '',
+    var dmgStr = String(at.damage || '').replace(/\s/g, '');
+    var magic = /[+＋]\s*[1-3](?!\d)|魔法/.test((at.name || '') + ' ' + (at.props || ''));
+    return { name: at.name, kind: 'attack', attack: normBonus(at.atk) || '+0', damage: dmgStr, dtype: at.type || '', magic: magic,
         range: r.normal || 0, rangeLong: r.long || 0, reach: r.reach || 0, area: { shape: '', size: 0, width: 5, self: false }, targets: 1 };
 }
 
@@ -292,7 +322,16 @@ function castFromSheet(sh, ds) {
     }
     var en = ds.kind === 'entry' ? sh.sections[+ds.sec].entries[+ds.idx] : sh.features[+ds.idx];
     var name = (en.name || '').replace(/。$/, '');
-    openActionDialog(finishAction(parseActionText(name, en.text, ''), sh), caster, sh);
+    var ea = finishAction(parseActionText(name, en.text, ''), sh);
+    if (ea.kind === 'attack' && sheetHasEntry(sh, /魔法武器|magicweapons/i)) ea.magic = true;
+    openActionDialog(ea, caster, sh);
+}
+
+function sheetHasEntry(sh, re) {
+    var names = [];
+    (sh && sh.features || []).forEach(function(f) { names.push(f.name || ''); });
+    (sh && sh.sections || []).forEach(function(sec) { (sec.entries || []).forEach(function(e) { names.push(e.name || ''); }); });
+    return names.some(function(n) { return re.test(String(n).replace(/\s/g, '')); });
 }
 
 // 动作条目是否值得显示 ⚡ 按钮
@@ -316,6 +355,8 @@ function openActionDialog(a, caster, sh) {
     f('acDtype').innerHTML = '<option value="">（无类型）</option>' + types.map(function(t) { return '<option value="' + t + '">' + t + '</option>'; }).join('') +
         (a.dtype && types.indexOf(a.dtype) < 0 ? '<option value="' + escapeHtml(a.dtype) + '">' + escapeHtml(a.dtype) + '</option>' : '');
     f('acDtype').value = a.dtype || '';
+    f('acParts').value = partsText(a.parts);
+    f('acMagic').checked = !!(a.magic || a.isSpell);
     // 环阶（升环）
     if (a.spellLevel > 0) {
         var top = 9;
@@ -363,6 +404,8 @@ function readActionDialog() {
     a.attack = normBonus(v('acAttack')) || (a.kind === 'attack' ? '+0' : '');
     a.damage = v('acDamage').replace(/\s/g, '');
     a.dtype = v('acDtype');
+    a.parts = readParts(v('acParts'));
+    a.magic = $('acMagic').checked;
     if (a.spellLevel > 0) { a.slotLevel = parseInt(v('acSlot'), 10) || a.spellLevel; a.useSlot = $('acUseSlot').checked; }
     a.zone = $('acZone').checked;
     a.oncePerTurn = $('acOnce').checked;
@@ -388,6 +431,7 @@ function syncActionDialog() {
     $('acDamageRow').style.display = k === 'effect' ? 'none' : '';
     $('acDamageLabel').textContent = k === 'heal' ? '治疗' : k === 'temp' ? '临时生命' : '伤害';
     $('acDtype').style.display = k === 'heal' || k === 'temp' ? 'none' : '';
+    $('acPartsRow').style.display = k === 'attack' || k === 'save' || k === 'auto' ? '' : 'none';
     $('acSizeWrap').style.display = shape ? '' : 'none';
     $('acSizeLabel').textContent = AREA_SIZE_LABEL[shape] || '大小';
     $('acWidthWrap').style.display = hasWidth({ shape: shape }) ? '' : 'none';
@@ -800,7 +844,8 @@ function confirmActionTargeting() {
     var body = { op: 'action', hidden: !!a.hidden, act: {
         name: a.name, kind: a.kind, attack: a.attack || '', damage: a.damage || '', damageType: a.dtype || '',
         save: a.kind === 'save' ? a.save || '' : '', dc: a.kind === 'save' ? a.dc || 0 : 0, half: !!a.half,
-        caster: m.caster && canEdit(m.caster) ? m.caster.id : '', concentration: !!a.conc, targets: targets,
+        caster: m.caster && canEdit(m.caster) ? m.caster.id : '', concentration: !!a.conc, targets: targets, spell: !!a.isSpell,
+        magic: !!(a.magic || a.isSpell), school: a.school || '', parts: a.parts || [],
         status: def ? { id: def.id, name: def.name, color: def.color, icon: def.icon, rounds: a.rounds || 0 } : null
     } };
     if (isPathShape(a.area) && !m.locked && m.pts && m.pts.length > 1) finishPathShape();
@@ -826,7 +871,8 @@ function endOldConcZones(casterId) {
 // 选中后可「对区域内结算」（生物进入 / 在其中结束回合时）；施放者失去专注时自动移除
 function zoneAct(a) {
     return { name: a.name, kind: a.kind, attack: a.attack || '', damage: a.damage || '', dtype: a.dtype || '', save: a.save || '', dc: a.dc || 0,
-        half: !!a.half, status: a.status || '', rounds: a.rounds || 0, oncePerTurn: !!a.oncePerTurn };
+        half: !!a.half, status: a.status || '', rounds: a.rounds || 0, oncePerTurn: !!a.oncePerTurn, isSpell: !!a.isSpell,
+        magic: !!a.magic, school: a.school || '', parts: a.parts || [] };
 }
 
 // ===== 区域结算记录 =====
@@ -936,8 +982,11 @@ function onActionBarClick(e) {
 // ===== 记录 =====
 function actionLogHtml(e) {
     var r = e.act, h = '<div class="act-log">';
-    var KIND = { attack: '攻击', save: '豁免', auto: '伤害', heal: '治疗', temp: '临时生命', effect: '效果' };
-    if (r.roll) h += '<div class="act-roll">' + (KIND[r.kind] || '') + (r.damageType ? '（' + escapeHtml(r.damageType) + '）' : '') + rollHtml(r.roll).replace(/^<div class="log-roll">|<\/div>$/g, '') + '</div>';
+    var KIND = { attack: '攻击', save: '豁免', auto: '伤害', heal: '治疗', temp: '临时生命', effect: '效果', react: '反应' };
+    var strip = function(x) { return rollHtml(x).replace(/^<div class="log-roll">|<\/div>$/g, ''); };
+    if (r.roll) h += '<div class="act-roll">' + (KIND[r.kind] || '') + (r.damageType ? '（' + escapeHtml(r.damageType) + '）' : '') + strip(r.roll) + '</div>';
+    (r.parts || []).forEach(function(p) { h += '<div class="act-roll">＋（' + escapeHtml(p.type || '') + '）' + strip(p.roll) + '</div>'; });
+    if (r.magic && r.kind !== 'react') h += '<div class="tt-hint">魔法</div>';
     if (r.save && r.kind === 'save') h += '<div class="tt-hint">' + ({ str: '力量', dex: '敏捷', con: '体质', int: '智力', wis: '感知', cha: '魅力' }[r.save] || r.save) + '豁免 DC ' + r.dc + '</div>';
     (r.targets || []).forEach(function(t) {
         var parts = [];
@@ -948,13 +997,53 @@ function actionLogHtml(e) {
         if (t.saved) parts.push(t.saved === 'auto' ? '<span class="hit-tag hit">豁免自动失败</span>' :
             '<span class="tt-hint">豁免</span> <b>' + (t.save ? t.save.total : '') + '</b> <span class="hit-tag ' + (t.saved === 'yes' ? 'miss">成功' : 'hit">失败') + '</span>');
         if (t.damage) parts.push('<span class="tt-hint">伤害 ' + escapeHtml(t.damage.expr) + '</span>');
-        if (t.amount) parts.push('<b class="' + (t.amount < 0 ? 'amt-dmg' : 'amt-heal') + '">' + (t.amount < 0 ? t.amount : '+' + t.amount) + (r.kind === 'temp' ? ' 临时' : '') + '</b>');
+        (t.parts || []).forEach(function(p) { parts.push('<span class="tt-hint">＋ ' + escapeHtml(p.expr) + '</span>'); });
+        if (t.amount && r.kind === 'react') parts.push('<b class="amt-heal">减免 ' + t.amount + '</b>');
+        else if (t.amount) parts.push('<b class="' + (t.amount < 0 ? 'amt-dmg' : 'amt-heal') + '">' + (t.amount < 0 ? t.amount : '+' + t.amount) + (r.kind === 'temp' ? ' 临时' : '') + '</b>');
         if (t.status) parts.push('<span class="hit-tag crit">' + escapeHtml(t.status) + '</span>');
         if (t.note) parts.push('<span class="tt-hint">' + escapeHtml(t.note) + '</span>');
-        h += '<div class="act-target">🎯 ' + escapeHtml(t.name) + ' ' + parts.join(' ') + '</div>';
+        if (r.kind === 'attack' && e.id) parts.push(reactButtons(e, t));
+        h += '<div class="act-target">' + (r.kind === 'react' ? '🛡 ' : '🎯 ') + escapeHtml(t.name) + ' ' + parts.join(' ') + '</div>';
     });
     if (r.note) h += '<div class="tt-hint">' + escapeHtml(r.note) + '</div>';
     return h + '</div>';
+}
+
+// 被命中后的反应：拨挡攻击（伤害含钝穿挥时减免整次攻击的伤害）、直觉闪避（减半）、盾牌术（AC+5 重新判定）
+// 只给能控制这个棋子的人（GM / 棋子主人）看，并且角色卡上要有对应的特性 / 法术；每次攻击每个目标限一次
+function reactOptions(tok, t) {
+    var sh = tok && tok.sheet && sheets[tok.sheet];
+    if (!sh || !(t.hit === 'hit' || t.hit === 'crit')) return [];
+    var out = [];
+    if (t.phys && t.amount < 0 && sheetHasEntry(sh, /拨挡|deflect/i)) out.push(['deflect', '拨挡攻击', '用反应减少这次攻击的全部伤害（含魔法部分）：1d10 + 敏捷调整值 + 武僧等级']);
+    if (t.amount < 0 && sheetHasEntry(sh, /直觉闪避|uncannydodge/i)) out.push(['uncanny', '直觉闪避', '用反应让这次攻击的伤害减半']);
+    if (t.hit === 'hit' && ((sh.spells || []).some(function(s) { return /盾牌术/.test(s.name || ''); }) || sheetHasEntry(sh, /盾牌术/)))
+        out.push(['shield', '盾牌术', '用反应施放盾牌术：AC +5，攻击不再命中则这次伤害和状态作废（消耗 1 个一环法术位）']);
+    return out;
+}
+
+function reactButtons(e, t) {
+    if (!t.id) return '';
+    var tok = scene.items[t.id];
+    if (!tok || !(me.gm || (tok.owner && tok.owner === me.name))) return '';
+    var ref = e.id + ':' + t.id;
+    if (logEntries.some(function(x) { return x.ref === ref; })) return '';
+    return reactOptions(tok, t).map(function(o) {
+        return '<button class="tt-btn small react-btn" data-react="' + o[0] + '" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) +
+            '" data-react-ref="' + escapeHtml(ref) + '" title="' + escapeHtml(o[2]) + '">' + o[1] + '</button>';
+    }).join('');
+}
+
+function useReaction(b) {
+    var mode = b.dataset.react, tok = scene.items[b.dataset.tok];
+    op({ op: 'action.react', text: b.dataset.log, target: b.dataset.tok, mode: mode }).then(function(ok) {
+        if (!ok || mode !== 'shield' || !tok) return;
+        var sh = tok.sheet && sheets[tok.sheet];
+        if (!sh || !canEditSheet(sh)) return;
+        var s = slotOf(sh, 1);
+        if (s && s.cur > 0) { changeSlot(sh, s.idx, -1); notice('盾牌术：已消耗 1 个一环法术位（剩 ' + (s.cur - 1) + '）'); }
+        else notice('没有剩余的一环法术位（仍然施放了，可在角色卡上调整）', true);
+    });
 }
 
 function initAction() {

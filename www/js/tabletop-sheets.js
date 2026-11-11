@@ -118,6 +118,10 @@ function onSheetPaneClick(e) {
     case 'lkimport': importEntry(parseInt(b.dataset.idx, 10)); break;
     case 'lkpaste': parsePasted(); break;
     case 'import-tmp': importSheet(sheetView.tmp); break;
+    case 'modadd': addSheetMod(sh); break;
+    case 'moddel': delSheetMod(sh, parseInt(b.dataset.idx, 10)); break;
+    case 'modoff': toggleAutoMod(sh, b.dataset.name, true); break;
+    case 'modon': toggleAutoMod(sh, b.dataset.name, false); break;
     }
 }
 
@@ -342,6 +346,8 @@ function sheetHtml(sh, preview) {
         }).join('') + '</div>';
     }
 
+    h += modsHtml(sh, edit);
+
     (sh.sections || []).forEach(function(sec, si) {
         h += '<div class="side-section"><h5>' + escapeHtml(sec.title) + '</h5>' + sec.entries.map(function(en, ei) {
             var label = (en.name || sec.title).replace(/。$/, '');
@@ -511,6 +517,164 @@ function runLookup() {
         lookup.results = results || [];
         renderSheets();
     }).catch(function(e) { lookup.loading = false; renderSheets(); apiError(e); });
+}
+
+// ===== 判定修正（反射闪避、豁免加值 / 优势、额外抗性免疫、状态免疫、额外 AC）=====
+// 服务器结算行动时用（backend/tabletop_traits.go）：角色卡上按名字自动识别的特性 + 这里手动加的修正 + 狂暴 / 石化等状态。
+// AUTO_TRAITS 要和 tabletop_traits.go 的 ttAutoTraits 保持一致（这里只用来显示）。
+var MOD_TYPES = { evasion: '反射闪避', save: '豁免加值', saveAdv: '豁免优势', resist: '伤害抗性', immune: '伤害免疫', vuln: '伤害易伤', condImmune: '状态免疫', ac: '额外 AC' };
+var MOD_FIELDS = { evasion: [], save: ['ab', 'v'], saveAdv: ['ab', 'vs'], resist: ['dt', 'nm'], immune: ['dt', 'nm'], vuln: ['dt'], condImmune: ['id'], ac: ['v'] };
+var SPELL_SCHOOLS = ['防护', '咒法', '预言', '附魔', '塑能', '幻术', '死灵', '变化'];
+var COND_IDS = ['blinded', 'charmed', 'deafened', 'exhaustion', 'frightened', 'grappled', 'incapacitated', 'paralyzed', 'petrified', 'poisoned', 'prone', 'restrained', 'stunned', 'unconscious'];
+var COND_CN = { '目盲': 'blinded', '魅惑': 'charmed', '耳聋': 'deafened', '力竭': 'exhaustion', '恐慌': 'frightened', '恐惧': 'frightened', '受擒': 'grappled', '擒抱': 'grappled',
+    '失能': 'incapacitated', '隐形': 'invisible', '麻痹': 'paralyzed', '石化': 'petrified', '中毒': 'poisoned', '倒地': 'prone', '束缚': 'restrained', '震慑': 'stunned', '昏迷': 'unconscious' };
+var AUTO_TRAITS = [
+    { names: ['反射闪避', '引导闪避', 'evasion', 'leadingevasion'], skip: ['戒指', 'ring'], desc: '敏捷豁免的半伤效果：成功不受伤害，失败只受一半（失能时无效）' },
+    { names: ['闪避'], exact: true, desc: '敏捷豁免的半伤效果：成功不受伤害，失败只受一半（失能时无效）' },
+    { names: ['侏儒魔法抗性', '侏儒狡黠', 'gnomishcunning', 'gnomishmagicresistance'], desc: '智力、感知、魅力豁免优势（正文写了「对抗魔法」等就只在那时）', scope: true },
+    { names: ['魔法抗性', 'magicresistance'], skip: ['侏儒', 'gnomish'], desc: '豁免优势，按正文识别范围（默认：对抗法术和魔法效应）', scope: true },
+    { names: ['危机感应', 'dangersense'], desc: '敏捷豁免优势（失能时无效）' },
+    { names: ['矮人体魄', '矮人抗性', '矮人韧性', 'dwarvenresilience'], desc: '毒素抗性；避免中毒的豁免优势' },
+    { names: ['妖精血统', '精类血统', 'feyancestry'], desc: '避免魅惑的豁免优势' },
+    { names: ['勇气', 'brave'], exact: true, desc: '避免恐慌的豁免优势' },
+    { names: ['勇气灵光', '勇气光环', 'auraofcourage'], desc: '免疫恐慌' },
+    { names: ['守护灵光', '守护光环', 'auraofprotection'], desc: '自己的豁免 + 魅力调整值（至少 +1）' },
+    { names: ['传奇抗性', 'legendaryresistance'], desc: '豁免失败时提示可用传奇抗性' }
+];
+
+function traitKey(name) {
+    return String(name || '').replace(/[（(\[【].*?[）)\]】]|[\s·・。．.，,：:0-9\/／]+/g, '').toLowerCase();
+}
+function traitMatch(key, names, exact) {
+    return (names || []).some(function(n) {
+        if (exact) return key === n || key.replace(/[\x00-\x7f]+$/, '') === n;
+        return key.indexOf(n) >= 0;
+    });
+}
+
+// 自动识别：[{name, desc, off, fixed}]
+function autoMods(sh) {
+    var out = [], names = [];
+    (sh.features || []).forEach(function(f) { if (f.name) names.push(f.name); });
+    (sh.sections || []).forEach(function(sec) { (sec.entries || []).forEach(function(e) { if (e.name) names.push(e.name); }); });
+    var off = {};
+    (sh.modsOff || []).forEach(function(n) { off[traitKey(n)] = true; });
+    names.forEach(function(n) {
+        var key = traitKey(n);
+        AUTO_TRAITS.forEach(function(r) {
+            if (traitMatch(key, r.names, r.exact) && !traitMatch(key, r.skip, false))
+                out.push({ name: n.replace(/。$/, '').trim(), desc: r.desc, off: !!off[key] });
+        });
+    });
+    (sh.props || []).forEach(function(p) {
+        var label = p.label || '', value = p.value || '';
+        if (label.indexOf('免疫') >= 0) {
+            var cs = Object.keys(COND_CN).filter(function(cn) { return value.indexOf(cn) >= 0; });
+            if (cs.length) out.push({ name: '免疫栏', desc: '状态免疫：' + cs.join('、'), fixed: true });
+        } else if (label === '优势') {
+            value.split(/[、，,；;]/).forEach(function(part) {
+                if (part.indexOf('豁免') >= 0) out.push({ name: '优势栏', desc: part.trim(), fixed: true });
+            });
+        }
+    });
+    return out;
+}
+
+function modDesc(m) {
+    var ab = m.ab && ABILITY_NAMES[m.ab] ? ABILITY_NAMES[m.ab] : '所有';
+    var cond = function(id) { return (STATUS_BY_ID[id] || {}).name || id; };
+    switch (m.t) {
+    case 'evasion': return '反射闪避';
+    case 'save': return ab + '豁免 ' + (m.v >= 0 ? '+' : '') + m.v;
+    case 'saveAdv': return ab + '豁免优势' + (m.vs === 'spell' ? '（对抗法术）' : m.vs === 'magic' ? '（对抗法术和魔法效应）' :
+        /^school:/.test(m.vs || '') ? '（对抗' + m.vs.slice(7) + '学派法术）' : m.vs ? '（避免' + cond(m.vs) + '）' : '');
+    case 'resist': case 'immune': case 'vuln': return (m.nm ? '非魔法' : '') + (m.dt || '?') + MOD_TYPES[m.t].replace('伤害', '');
+    case 'condImmune': return '免疫' + cond(m.id);
+    case 'ac': return 'AC ' + (m.v >= 0 ? '+' : '') + m.v;
+    }
+    return m.t;
+}
+
+function modsHtml(sh, edit) {
+    var auto = autoMods(sh), mods = Array.isArray(sh.mods) ? sh.mods : [];
+    if (!auto.length && !mods.length && !edit) return '';
+    var h = '<div class="side-section mods-box"><h5>判定修正 <span class="tt-hint">结算攻击 / 豁免 / 伤害时自动生效，日志里会注明</span></h5>';
+    auto.forEach(function(m) {
+        h += '<div class="mod-row' + (m.off ? ' off' : '') + '"><span class="mod-tag auto">自动</span><b>' + escapeHtml(m.name) + '</b> <span class="tt-hint">' + escapeHtml(m.desc) + '</span>' +
+            (edit && !m.fixed ? '<button class="tt-btn small" data-act="' + (m.off ? 'modon' : 'modoff') + '" data-name="' + escapeHtml(m.name) + '" title="' +
+                (m.off ? '重新启用' : '停用（角色卡上的数值已经算进去了 / 识别错了）') + '">' + (m.off ? '启用' : '停用') + '</button>' : '') + '</div>';
+    });
+    mods.forEach(function(m, i) {
+        h += '<div class="mod-row"><span class="mod-tag">手动</span><b>' + escapeHtml(modDesc(m)) + '</b>' + (m.name ? ' <span class="tt-hint">' + escapeHtml(m.name) + '</span>' : '') +
+            (edit ? '<button class="tt-btn small" data-act="moddel" data-idx="' + i + '" title="删除">✕</button>' : '') + '</div>';
+    });
+    if (edit) {
+        var abOpts = '<option value="">所有</option>' + Object.keys(ABILITY_NAMES).map(function(k) { return '<option value="' + k + '">' + ABILITY_NAMES[k] + '</option>'; }).join('');
+        var condName = function(id) { return escapeHtml((STATUS_BY_ID[id] || {}).name || id); };
+        var dts = ['物理', '全部'].concat(DMG_TYPES.split('|').filter(function(d, i, arr) { return d !== '暗蚀' && arr.indexOf(d) === i; }));
+        h += '<div class="mod-form" id="mdForm"><select class="tt-select" id="mdT">' + Object.keys(MOD_TYPES).map(function(k) { return '<option value="' + k + '">' + MOD_TYPES[k] + '</option>'; }).join('') + '</select>' +
+            '<select class="tt-select" id="mdAb" data-f="ab" title="哪个属性的豁免" style="display:none">' + abOpts + '</select>' +
+            '<select class="tt-select" id="mdVs" data-f="vs" title="什么时候有优势" style="display:none"><option value="">总是</option><option value="spell">对抗法术</option><option value="magic">对抗法术和魔法效应</option>' +
+                SPELL_SCHOOLS.map(function(s) { return '<option value="school:' + s + '">对抗' + s + '学派法术</option>'; }).join('') +
+                COND_IDS.map(function(id) { return '<option value="' + id + '">避免' + condName(id) + '</option>'; }).join('') + '</select>' +
+            '<input class="tt-input narrow" id="mdV" data-f="v" type="number" min="-10" max="10" value="1" title="加值" style="display:none">' +
+            '<select class="tt-select" id="mdDt" data-f="dt" title="伤害类型（物理 = 钝击、穿刺、挥砍）" style="display:none">' + dts.map(function(d) { return '<option>' + d + '</option>'; }).join('') + '</select>' +
+            '<label data-f="nm" style="display:none" title="只对非魔法攻击有效（如「非魔法攻击造成的钝击、穿刺、挥砍伤害」）"><input type="checkbox" id="mdNm"> 仅非魔法</label>' +
+            '<select class="tt-select" id="mdId" data-f="id" style="display:none">' + COND_IDS.map(function(id) { return '<option value="' + id + '">' + condName(id) + '</option>'; }).join('') + '</select>' +
+            '<input class="tt-input" id="mdName" placeholder="来源（如 防护斗篷）" maxlength="20">' +
+            '<button class="tt-btn small primary" data-act="modadd">添加</button></div>' +
+            '<div class="tt-hint">装备 / 天赋 / 法术给的修正：只加角色卡数值里还没算进去的（比如人物卡的豁免已经含防护斗篷 +1，就别再加）</div>';
+    }
+    return h + '</div>';
+}
+
+function syncModForm() {
+    var t = $('mdT'), form = $('mdForm');
+    if (!t || !form) return;
+    var need = MOD_FIELDS[t.value] || [];
+    form.querySelectorAll('[data-f]').forEach(function(el) { el.style.display = need.indexOf(el.dataset.f) >= 0 ? '' : 'none'; });
+}
+
+function saveSheetMods(sh, mods, modsOff) {
+    var upd = { id: sh.id };
+    if (mods) { sh.mods = mods; upd.mods = mods.length ? mods : null; }
+    if (modsOff) { sh.modsOff = modsOff; upd.modsOff = modsOff.length ? modsOff : null; }
+    op({ op: 'sheet', sheet: upd });
+    renderSheets();
+}
+
+function addSheetMod(sh) {
+    if (!sh || !canEditSheet(sh) || !$('mdT')) return;
+    var t = $('mdT').value, m = { t: t }, need = MOD_FIELDS[t] || [];
+    if (need.indexOf('ab') >= 0 && $('mdAb').value) m.ab = $('mdAb').value;
+    if (need.indexOf('vs') >= 0 && $('mdVs').value) m.vs = $('mdVs').value;
+    if (need.indexOf('v') >= 0) {
+        m.v = Math.max(-10, Math.min(10, parseInt($('mdV').value, 10) || 0));
+        if (!m.v) { notice('加值不能是 0', true); return; }
+    }
+    if (need.indexOf('dt') >= 0) m.dt = $('mdDt').value;
+    if (need.indexOf('nm') >= 0 && $('mdNm').checked) m.nm = true;
+    if (need.indexOf('id') >= 0) m.id = $('mdId').value;
+    var name = $('mdName').value.trim().slice(0, 20);
+    if (name) m.name = name;
+    var list = (Array.isArray(sh.mods) ? sh.mods : []).slice(0, 29);
+    list.push(m);
+    saveSheetMods(sh, list);
+}
+
+function delSheetMod(sh, idx) {
+    if (!sh || !canEditSheet(sh) || !Array.isArray(sh.mods)) return;
+    var list = sh.mods.slice();
+    list.splice(idx, 1);
+    saveSheetMods(sh, list);
+}
+
+function toggleAutoMod(sh, name, off) {
+    if (!sh || !canEditSheet(sh) || !name) return;
+    var key = traitKey(name);
+    var list = (Array.isArray(sh.modsOff) ? sh.modsOff : []).filter(function(n) { return traitKey(n) !== key; });
+    if (off) list.push(name);
+    saveSheetMods(sh, null, list);
 }
 
 // ===== 怪物一键部署（5e.kiwee.top 中文 5etools，Owlbear 怪物图鉴插件同款数据）=====
@@ -883,6 +1047,7 @@ function initSheets() {
     $('sheetPane').addEventListener('click', onSheetPaneClick);
     $('sheetPane').addEventListener('change', function(e) {
         if (e.target.dataset.temp != null) setTempHp(currentSheet(), e.target.value);
+        if (e.target.id === 'mdT') syncModForm();
     });
     $('sheetPane').addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && e.target.id === 'lkQ') runLookup();

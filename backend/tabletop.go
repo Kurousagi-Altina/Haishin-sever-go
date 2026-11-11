@@ -59,6 +59,7 @@ type TTLogEntry struct {
 	Label  string        `json:"label,omitempty"`
 	Roll   *TTDiceResult `json:"roll,omitempty"`
 	Hidden bool          `json:"hidden,omitempty"`
+	Ref    string        `json:"ref,omitempty"` // reaction entries: "<action log id>:<token id>" they answer
 	// attack rolls aimed at a token: target name, result vs its AC (hit/miss/crit/fumble), cover
 	Target string `json:"target,omitempty"`
 	Hit    string `json:"hit,omitempty"`
@@ -859,6 +860,11 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 
 	case "action.undo":
 		if st, msg := room.undoAction(u, req.Text); st != 0 {
+			return st, msg
+		}
+
+	case "action.react": // 拨挡攻击 / 直觉闪避 / 盾牌术 after being hit (tabletop_traits.go)
+		if st, msg := room.reactAction(u, gm, req.Text, req.Target, req.Mode); st != 0 {
 			return st, msg
 		}
 
