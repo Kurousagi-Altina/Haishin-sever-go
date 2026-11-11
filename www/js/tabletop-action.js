@@ -662,6 +662,35 @@ function finishPathShape() {
     requestRender();
 }
 
+// 选目标时右键（不拖动）：撤一步，方便重选。
+// 自由路径 / 直墙撤掉上一个点；已放好的范围回到跟着鼠标瞄准；点选的目标去掉最后选的那个；
+// 什么都没选时取消这次行动
+function actionRightClick() {
+    var m = actionMode;
+    if (!m) return;
+    var a = m.act;
+    if (isPathShape(a.area) && m.pts && m.pts.length) { undoPathPoint(); return; }
+    if (a.area.shape && m.locked && !m.zoneId) {
+        m.locked = false;
+        recomputeAreaTargets();
+        renderActionBar();
+        requestRender();
+        notice('重新放置范围（再右键取消这次行动）');
+        return;
+    }
+    var ids = Object.keys(m.targets);
+    if (ids.length && (!a.area.shape || m.zoneId)) {
+        var last = scene.items[ids[ids.length - 1]];
+        delete m.targets[ids[ids.length - 1]];
+        renderActionBar();
+        requestRender();
+        notice('已取消目标「' + ((last && last.label) || '目标') + '」' + (ids.length > 1 ? '' : '（再右键取消这次行动）'));
+        return;
+    }
+    cancelActionTargeting();
+    notice('已取消「' + (a.name || '行动') + '」');
+}
+
 // 撤销上一个点（画完后也可以，回到继续画的状态）
 function undoPathPoint() {
     var m = actionMode;
@@ -819,7 +848,8 @@ function renderActionBar() {
         '<button class="tt-btn small primary" data-ab="go">' + (m0.zoneMoved ? '⚡ 结算（Enter）' : '结算（Enter）') + '</button>' +
         (a.zone && ar.shape && !m0.zoneId && (m0.locked || isPathShape(ar)) ? '<button class="tt-btn small" data-ab="place" title="只把区域放到地图上（施法、扣法术位、专注），现在不结算伤害">只放置，不结算</button>' : '') +
         (m0.zoneId ? '' : '<button class="tt-btn small" data-ab="edit">修改</button>') +
-        '<button class="tt-btn small" data-ab="cancel">' + (m0.zoneMoved ? '不结算（Esc）' : '取消（Esc）') + '</button></div>';
+        '<button class="tt-btn small" data-ab="cancel" title="右键：撤销上一个目标 / 点，没有可撤的时候取消">' + (m0.zoneMoved ? '不结算（Esc）' : '取消（Esc）') + '</button>' +
+        '<span class="tt-hint">右键撤销上一个</span></div>';
     bar.style.display = '';
 }
 

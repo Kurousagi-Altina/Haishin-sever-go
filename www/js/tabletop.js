@@ -2022,6 +2022,11 @@ function onPointerDown(e) {
         gesture = { type: 'rpointer', start: start };
         return;
     }
+    if (e.button === 2 && actionMode && !spaceDown) { // 选目标时：右键轻点 = 撤销上一个目标 / 取消，右键拖动仍是平移
+        gesture = { type: 'pan', start: start, view: { x: view.x, y: view.y }, button: 2, actionUndo: true };
+        updateCursor();
+        return;
+    }
     if (e.button === 1 || e.button === 2 || spaceDown) {
         gesture = { type: 'pan', start: start, view: { x: view.x, y: view.y }, button: e.button };
         updateCursor();
@@ -2286,6 +2291,7 @@ function onPointerUp(e) {
     switch (g.type) {
     case 'pan':
         updateCursor();
+        if (g.actionUndo && !g.start.moved) actionRightClick(); // 选目标时右键轻点
         if (g.clearSel && !g.start.moved && !e.shiftKey) selectOnly([]); // 点空地：取消选择
         break;
     case 'move':
@@ -3304,10 +3310,18 @@ function doubleDice(expr) {
     return expr.replace(/(\d*)d(\d+)/gi, function(m, n, s) { return ((parseInt(n, 10) || 1) * 2) + 'd' + s; });
 }
 
+// 优势 / 劣势 / 普通：改写公式里的第一个 d20（1d20、d20、2d20kh1、2d20kl1 都认）；mode 为 null 表示不动
+function applyD20Mode(expr, mode) {
+    if (mode == null) return expr;
+    var d = mode === 'adv' ? '2d20kh1' : mode === 'dis' ? '2d20kl1' : '1d20';
+    return expr.replace(/\b\d*d20(?:k[hl]1)?(?!\d)/i, d);
+}
+
+// 最终公式 = 基础公式（可在「将投掷」里直接改）+ 优势 / 劣势 + 暴击翻倍 + 祝福 / 灾祸 + 调整值
 function rollDialogExpr() {
-    var base;
-    if (rd.d20) base = (rd.mode === 'adv' ? '2d20kh1' : rd.mode === 'dis' ? '2d20kl1' : '1d20') + (normBonus(rd.bonus) || '');
-    else base = rd.crit ? doubleDice(rd.expr) : rd.expr;
+    var base = rd.base;
+    if (/d20/i.test(base)) base = applyD20Mode(base, rd.mode);
+    if (rd.crit) base = doubleDice(base);
     return base + rd.extra + signed(rd.adj);
 }
 
@@ -3332,9 +3346,11 @@ function normalizeRollReq(o) {
     if (o.bonus != null || m) {
         r.d20 = true;
         r.bonus = o.bonus != null ? o.bonus : (m[1] || '');
+        r.base = '1d20' + (normBonus(r.bonus) || '');
     } else {
         r.d20 = false;
         r.expr = String(o.expr).replace(/\s/g, '');
+        r.base = r.expr;
     }
     return r;
 }
@@ -3377,7 +3393,21 @@ function syncRollDialog() {
     rd.crit = $('rdCrit').checked;
     document.querySelectorAll('#rdModeSeg [data-mode]').forEach(function(b) { b.classList.toggle('active', b.dataset.mode === rd.mode); });
     document.querySelectorAll('#rdDiceRow [data-extra]').forEach(function(c) { c.classList.toggle('active', c.dataset.extra === rd.extra); });
-    $('rdPreview').textContent = rollDialogExpr();
+    if (document.activeElement !== $('rdExpr')) $('rdExpr').value = rollDialogExpr(); // 正在手动改公式时不覆盖
+}
+
+// 手动改了「将投掷」的公式：改过的公式成为新的基础，上面的按钮在它的基础上继续生效
+function onRollExprInput() {
+    if (!rd) return;
+    rd.base = $('rdExpr').value.replace(/\s/g, '');
+    rd.mode = null;
+    rd.extra = '';
+    rd.adj = 0;
+    rd.crit = false;
+    $('rdAdj').value = 0;
+    $('rdCrit').checked = false;
+    document.querySelectorAll('#rdModeSeg [data-mode]').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('#rdDiceRow [data-extra]').forEach(function(c) { c.classList.remove('active'); });
 }
 
 function onRollDialogClick(e) {
@@ -3393,6 +3423,7 @@ function onRollDialogClick(e) {
 function confirmRollDialog() {
     if (!rd) return;
     syncRollDialog();
+    if (!rollDialogExpr().replace(/[+\-]0$/, '')) { notice('公式是空的', true); return; }
     var label = $('rdLabel').value.trim();
     var vs = rd.ctx && $('rdVs').checked ? { target: rd.ctx.target.id, cover: rd.ctx.cover, autoCrit: rd.ctx.autoCrit } : null;
     roll(rollDialogExpr(), (rd.who ? rd.who + '·' : '') + label, $('rdHidden').checked, vs);
@@ -3422,6 +3453,7 @@ function initDiceTray() {
     });
     $('rollDialog').addEventListener('click', onRollDialogClick);
     $('rdAdj').addEventListener('input', syncRollDialog);
+    $('rdExpr').addEventListener('input', onRollExprInput);
     $('rdCrit').addEventListener('change', syncRollDialog);
     $('rollDialog').addEventListener('keydown', function(e) {
         if (e.key === 'Escape') { e.preventDefault(); closeRollDialog(); }

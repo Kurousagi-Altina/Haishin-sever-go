@@ -309,7 +309,8 @@ details.feature summary { cursor: pointer; font-size: 13px; }
 .rd-key { width: 34px; color: #888; flex: none; }
 .rd-row .tt-input.narrow { width: 56px; text-align: center; }
 .rd-preview { margin: 12px 0; padding: 8px 10px; background: #15171b; border-radius: 8px; color: #aaa; }
-.rd-preview b { color: #ffd54f; font-size: 16px; margin-left: 6px; }
+.rd-preview { display: flex; align-items: center; gap: 6px; }
+.rd-preview .rd-expr { flex: 1; min-width: 0; color: #ffd54f; font-size: 16px; font-weight: bold; background: #1f2229; }
 .rd-btns { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
 .rd-btns .tt-hint { flex: 1; }
 
