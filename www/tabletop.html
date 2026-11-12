@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css?v=2026111212">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026111302">
 </head>
 <body class="tt-body">
 
@@ -460,6 +460,9 @@
                 <span class="tt-hint">每个目标单独掷，按目标状态自动优劣势</span></div>
             <div class="rd-row" id="acDamageRow"><span class="rd-key" id="acDamageLabel">伤害</span><input class="tt-input" id="acDamage" placeholder="2d6+3" style="width:110px;flex:none;">
                 <select class="tt-select" id="acDtype" title="伤害类型（结算抗性 / 免疫 / 易伤）" style="width:96px;flex:none;"></select></div>
+            <div class="rd-row" id="acMasteryRow"><span class="rd-key">武器精通</span><select class="tt-select" id="acMastery" style="width:96px;flex:none;" title="2024 武器精通：命中 / 失手后在记录里给出对应的后续按钮">
+                <option value="">（无）</option><option>侵扰</option><option>削弱</option><option>失衡</option><option>推离</option><option>擦掠</option><option>横扫</option><option>缓速</option><option>迅击</option></select>
+                <span class="tt-hint" id="acMasteryHint"></span></div>
             <div id="acPartsRow" title="主伤害之外其他类型的伤害；每段按自己的类型结算抗性 / 免疫 / 易伤，暴击时一起翻倍">
                 <div id="acPartList"></div>
                 <div class="rd-row"><span class="rd-key"></span><button class="tt-btn small" id="acPartAdd" title="最多 4 段">＋ 再加一段附加伤害</button></div>
@@ -472,7 +475,7 @@
                 <label><input type="checkbox" id="acUseSlot"> 消耗法术位</label> <span class="tt-hint" id="acUpHint"></span></div>
             <div class="tt-hint" id="acScaleNote"></div>
             <div class="rd-row" id="acSaveRow"><span class="rd-key">豁免</span>
-                <select class="tt-select" id="acSave"><option value="str">力量</option><option value="dex">敏捷</option><option value="con">体质</option><option value="int">智力</option><option value="wis">感知</option><option value="cha">魅力</option></select>
+                <select class="tt-select" id="acSave"><option value="str">力量</option><option value="dex">敏捷</option><option value="con">体质</option><option value="int">智力</option><option value="wis">感知</option><option value="cha">魅力</option><option value="strdex">力量或敏捷（目标取高）</option></select>
                 DC <input class="tt-input narrow" id="acDC" type="number" min="1">
                 <label><input type="checkbox" id="acHalf"> 成功减半</label></div>
             <div class="rd-row"><span class="rd-key">射程</span><input class="tt-input narrow" id="acRange" type="number" min="0" placeholder="不限"> /
@@ -549,15 +552,15 @@
     </div>
 
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js?v=2026111212"></script>
-    <script src="js/tabletop-combat.js?v=2026111212"></script>
-    <script src="js/tabletop-status.js?v=2026111212"></script>
-    <script src="js/tabletop-action.js?v=2026111212"></script>
-    <script src="js/tabletop-extra.js?v=2026111212"></script>
-    <script src="js/tabletop-autowall.js?v=2026111212"></script>
-    <script src="js/tabletop-prep.js?v=2026111212"></script>
-    <script src="js/tabletop-dm.js?v=2026111212"></script>
-    <script src="js/tabletop-fight.js?v=2026111212"></script>
-    <script src="js/tabletop.js?v=2026111212"></script>
+    <script src="js/tabletop-sheets.js?v=2026111302"></script>
+    <script src="js/tabletop-combat.js?v=2026111302"></script>
+    <script src="js/tabletop-status.js?v=2026111302"></script>
+    <script src="js/tabletop-action.js?v=2026111302"></script>
+    <script src="js/tabletop-extra.js?v=2026111302"></script>
+    <script src="js/tabletop-autowall.js?v=2026111302"></script>
+    <script src="js/tabletop-prep.js?v=2026111302"></script>
+    <script src="js/tabletop-dm.js?v=2026111302"></script>
+    <script src="js/tabletop-fight.js?v=2026111302"></script>
+    <script src="js/tabletop.js?v=2026111302"></script>
 </body>
 </html>

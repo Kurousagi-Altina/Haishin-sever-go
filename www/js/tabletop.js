@@ -2889,6 +2889,7 @@ function onSelPanelClick(e) {
     var ids = selectedIds();
     if (prepSelAct(b.dataset.act, ids)) return; // 墙体编辑 / 笔记（tabletop-prep.js）
     if (dmSelAct(b.dataset.act, ids)) return; // 遭遇 / 触发区域（tabletop-dm.js）
+    if (fightSelAct(b.dataset.act, ids)) return; // 徒手打击 / 擒抱 / 推撞（tabletop-fight.js）
     if (b.dataset.act === 'zoneGo') { zoneRetrigger(scene.items[ids[0]]); return; }
     if (b.dataset.act === 'zoneEnd') { deleteItems(ids.slice(0, 1)); return; }
     var amountEl = $('selPanel').querySelector('[data-amount]');

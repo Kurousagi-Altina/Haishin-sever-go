@@ -478,6 +478,71 @@ func (room *TTRoom) applyFight(u ttUser, gm bool, req *ttOpRequest) (int, string
 		return room.applyAction(u, true, &ttOpRequest{Act: &TTActionReq{Name: req.Text + "（持续伤害）", Kind: "auto", Damage: dice, DamageType: typ,
 			Targets: []TTActionTarget{{ID: req.IDs[0]}}}})
 
+	case "fight.escape": // 挣脱擒抱：力量（运动）或敏捷（特技）检定，取高的，对抗擒抱时的 DC
+		if !mine {
+			return http.StatusForbidden, "只能替自己的棋子挣脱"
+		}
+		var st map[string]interface{}
+		for _, m := range ttStatusMaps(it) {
+			if m["id"] == "grappled" {
+				st = m
+			}
+		}
+		if st == nil {
+			return http.StatusBadRequest, label + " 没有被擒抱"
+		}
+		dc := 0
+		if v, ok := ttNum(st["dc"]); ok {
+			dc = int(v)
+		}
+		if dc <= 0 && req.DC > 0 {
+			dc = req.DC
+		}
+		if dc <= 0 {
+			return http.StatusBadRequest, "不知道这次擒抱的 DC（在状态的 ⏱ 里设置，或由 GM 处理）"
+		}
+		sh := room.tokenSheet(it)
+		best, how := -99, ""
+		for _, c := range []struct{ skill, ab string }{{"运动", "str"}, {"特技", "dex"}} {
+			v, found := 0, false
+			for _, sk := range ttSheetList(sh, "skills") {
+				if n, _ := sk["name"].(string); strings.Contains(n, c.skill) {
+					if b, ok := ttNum(strings.ReplaceAll(ttStr(sk["bonus"]), "+", "")); ok {
+						v, found = int(b), true
+					}
+				}
+			}
+			if !found {
+				v = ttSheetAbilityMod(sh, c.ab)
+			}
+			if v > best {
+				best, how = v, c.skill
+			}
+		}
+		expr := "1d20"
+		if lv := ttStatusLevel(it, "exhaustion"); lv > 0 {
+			best -= 2 * lv
+		}
+		if best != 0 {
+			expr += ttSigned(best)
+		}
+		r, err := RollTabletopDice(expr)
+		if err != nil {
+			return http.StatusBadRequest, err.Error()
+		}
+		e := newLogEntry("roll", u.name)
+		e.Label = ttCleanName(label+"·挣脱擒抱（"+how+"）DC "+strconv.Itoa(dc), 50, "挣脱擒抱")
+		e.Roll = r
+		e.Hidden = ttConcealed(it)
+		if r.Total >= dc {
+			ttRemoveStatus(it, "grappled")
+			room.broadcastItems([]map[string]interface{}{it})
+			e.Text = "成功，挣脱了擒抱"
+		} else {
+			e.Text = "失败，仍被擒抱"
+		}
+		room.addLog(e)
+
 	case "oa.hint":
 		if len(req.IDs) < 2 || !room.setting("hintOA", true) {
 			return 0, ""
