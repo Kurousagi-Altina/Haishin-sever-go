@@ -904,7 +904,11 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		}
 
 	case "action.react": // 拨挡攻击 / 直觉闪避 / 盾牌术 after being hit (tabletop_traits.go)
-		if st, msg := room.reactAction(u, gm, req.Text, req.Target, req.Mode); st != 0 {
+		rid := "" // 拦截：用反应的是目标旁边的另一个棋子
+		if len(req.IDs) > 0 {
+			rid = req.IDs[0]
+		}
+		if st, msg := room.reactAction(u, gm, req.Text, req.Target, req.Mode, rid); st != 0 {
 			return st, msg
 		}
 
@@ -1779,7 +1783,7 @@ var ttSettingKeys = map[string]bool{
 	"playerTokens": true, "playerDraw": true, "playerMoveOthers": true, "playerDoors": true,
 	"timeStop": true, "music": true,
 	// 战斗提示开关（tabletop_fight.go，默认开）
-	"hintOA": true, "hintEcon": true, "hintTurn": true, "hintLegend": true, "hintMastery": true, "hintClass": true, "hintReact": true,
+	"hintOA": true, "hintEcon": true, "hintTurn": true, "hintLegend": true, "hintMastery": true, "hintClass": true, "hintReact": true, "hintFeat": true,
 }
 
 func ttRequestToken(r *http.Request) string {

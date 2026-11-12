@@ -380,7 +380,7 @@ function actionFromAttack(sh, at) {
     var r = parseAttackRange((at.props || '') + ' ' + (at.range || ''));
     var dmgStr = String(at.damage || '').replace(/\s/g, '');
     var magic = /[+＋]\s*[1-3](?!\d)|魔法/.test((at.name || '') + ' ' + (at.props || ''));
-    return { name: at.name, kind: 'attack', attack: normBonus(at.atk) || '+0', damage: dmgStr, dtype: at.type || '', magic: magic, mastery: normMastery(at.mastery),
+    return { name: at.name, kind: 'attack', attack: normBonus(at.atk) || '+0', damage: dmgStr, dtype: at.type || '', magic: magic, mastery: normMastery(at.mastery), props: at.props || '',
         range: r.normal || 0, rangeLong: r.long || 0, reach: r.reach || 0, area: { shape: '', size: 0, width: 5, self: false }, targets: 1 };
 }
 
@@ -600,7 +600,8 @@ function openActionDialog(a, caster, sh) {
     f('acCaster').textContent = caster ? (caster.label || '未命名棋子') : '（未指定：先在地图上选中你的棋子再打开，或不限距离）';
     syncActionDialog();
     classDialogSync(a, caster, sh); // 狂暴伤害（tabletop-fight.js）
-    applyActPreset(); // 反应法术：施放者 / 预选目标 / 消耗
+    applyActPreset(); // 反应法术 / 附赠攻击：施放者 / 预选目标 / 消耗
+    featDialogSync(act.a, act.caster, sh); // 巨武器大师（附赠攻击不算攻击动作，默认不勾）
     $('actDialog').style.display = 'flex';
 }
 
@@ -630,6 +631,7 @@ function readActionDialog() {
     a.hidden = $('acHidden').checked;
     a.mastery = a.kind === 'attack' ? v('acMastery') : '';
     classDialogApply(a); // 勾了狂暴伤害：伤害加上
+    featDialogApply(a);  // 勾了巨武器大师：伤害加熟练加值
     a.cost = v('acCost') || 'a';
     a.repeatSave = $('acRepeat').checked;
     a.dot = v('acDot');
@@ -1067,17 +1069,25 @@ function confirmActionTargeting() {
     if (m.caster) m.caster = scene.items[m.caster.id] || null; // 用最新的棋子数据（状态可能变了）
     var a = m.act, ids = Object.keys(m.targets).filter(function(id) { return scene.items[id]; });
     if (!ids.length && !a.conc) { notice('还没有选择目标', true); return; }
+    var melee = a.kind === 'attack' && !(a.range > 0 && !a.reach); // 近战攻击（防御式决斗、顺势斩）
     var targets = ids.map(function(id) {
         var t = scene.items[id], o = { id: id, cover: 0, mode: '', autoCrit: false };
         if (!m.caster || t.id === m.caster.id || m.zoneId) return o;
         var ci = coverInfo(m.caster, t);
         if (a.kind === 'attack') {
             if (ci.level < 0) return null; // 完全掩护：无法被直接攻击
+            var fx = featAttackAdjust(a, m.caster, t, ci.dist), fn = []; // 神射手 / 强弩专家 / 擒抱者（tabletop-fight.js）
             o.cover = ci.level > 0 ? ci.level : 0;
+            if (o.cover && fx.noCover) { o.cover = 0; fn.push(fx.noCover + '：无视掩护'); }
             var sm = statusAttackMods(m.caster, t, ci.dist), adv = sm.adv.length > 0, dis = sm.dis.length > 0;
+            if (fx.adv) { adv = true; fn.push(fx.adv); }
             var v = rangeVerdict({ normal: a.range, long: a.rangeLong, reach: a.reach }, ci.dist);
-            if (v && v.dis) dis = true;
-            if (a.range && !(a.reach && ci.dist <= a.reach) && hostileAdjacent(m.caster)) dis = true; // 近身有敌人：远程劣势
+            if (v && v.dis) { if (fx.noLong) fn.push(fx.noLong + '：远距离不劣势'); else dis = true; }
+            if (a.range && !(a.reach && ci.dist <= a.reach)) {
+                melee = false;
+                if (hostileAdjacent(m.caster)) { if (fx.noAdj) fn.push(fx.noAdj + '：近身射击不劣势'); else dis = true; } // 近身有敌人：远程劣势
+            }
+            o.note = fn.join('；');
             o.extra = sm.extra || '';   // 祝福 / 灾祸
             o.adj = sm.adj || 0;        // 力竭
             o.mode = adv && dis ? '' : adv ? 'adv' : dis ? 'dis' : '';
@@ -1093,7 +1103,7 @@ function confirmActionTargeting() {
         name: a.name, kind: a.kind, attack: a.attack || '', damage: a.damage || '', damageType: a.dtype || '',
         save: a.kind === 'save' ? a.save || '' : '', dc: a.kind === 'save' ? a.dc || 0 : 0, half: !!a.half,
         caster: m.caster && canEdit(m.caster) ? m.caster.id : '', concentration: !!a.conc, targets: targets, spell: !!a.isSpell,
-        magic: !!(a.magic || a.isSpell), school: a.school || '', parts: a.parts || [], mastery: a.kind === 'attack' ? a.mastery || '' : '', slotLevel: a.useSlot && a.slotLevel > 0 ? a.slotLevel : 0,
+        magic: !!(a.magic || a.isSpell), school: a.school || '', parts: a.parts || [], mastery: a.kind === 'attack' ? a.mastery || '' : '', slotLevel: a.useSlot && a.slotLevel > 0 ? a.slotLevel : 0, melee: melee,
         status: def ? statusWithTurnEffects({ id: def.id, name: def.name, color: def.color, icon: def.icon, rounds: a.rounds || 0 }, a) : null
     } };
     if (isPathShape(a.area) && !m.locked && m.pts && m.pts.length > 1) finishPathShape();
@@ -1257,7 +1267,7 @@ function actionLogHtml(e) {
         parts.push(fightTargetBtns(e, t, r)); // 专注豁免 / 传奇抗性（tabletop-fight.js）
         h += '<div class="act-target">' + (r.kind === 'react' ? '🛡 ' : '🎯 ') + escapeHtml(t.name) + ' ' + parts.join(' ') + '</div>';
     });
-    h += counterBtns(e, r); // 法术反制（tabletop-fight.js）
+    h += counterBtns(e, r) + featActBtns(e, r); // 法术反制 / 长柄打击 / 哨兵（tabletop-fight.js）
     if (r.note) h += '<div class="tt-hint">' + escapeHtml(r.note) + '</div>';
     return h + '</div>';
 }
@@ -1289,7 +1299,7 @@ function reactButtons(e, t) {
 
 function useReaction(b) {
     var mode = b.dataset.react, tok = scene.items[b.dataset.tok];
-    op({ op: 'action.react', text: b.dataset.log, target: b.dataset.tok, mode: mode }).then(function(ok) {
+    op({ op: 'action.react', text: b.dataset.log, target: b.dataset.tok, mode: mode, ids: b.dataset.by ? [b.dataset.by] : [] }).then(function(ok) {
         if (ok && mode === 'absorb' && tok) { spendSlotAtLeast(tok, 1); return; } // 吸收元素：一环法术位
         if (!ok || mode !== 'shield' || !tok) return;
         var sh = tok.sheet && sheets[tok.sheet];

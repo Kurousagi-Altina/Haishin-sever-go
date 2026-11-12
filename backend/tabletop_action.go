@@ -20,6 +20,7 @@ type TTActionTarget struct {
 	AutoCrit bool   `json:"autoCrit"` // paralysed / unconscious target within 5 ft
 	Extra    string `json:"extra"`    // attacker's +1d4 (bless) / -1d4 (bane)
 	Adj      int    `json:"adj"`      // attacker's flat adjustment (exhaustion)
+	Note     string `json:"note"`     // judgement notes from the client (神射手 ignoring cover etc.)
 }
 
 type TTActionReq struct {
@@ -40,6 +41,7 @@ type TTActionReq struct {
 	Parts         []TTDamagePart         `json:"parts"`     // extra damage of other types (weapon + 2d6 火焰, 冰风暴's 钝击 + 寒冷)
 	Mastery       string                 `json:"mastery"`   // weapon mastery (2024): 侵扰 / 削弱 / 失衡 / 推离 / 擦掠 / 横扫 / 缓速 / 迅击
 	SlotLevel     int                    `json:"slotLevel"` // spell slot spent on it (法术反制 gives it back)
+	Melee         bool                   `json:"melee"`     // a melee attack (防御式决斗, 顺势斩)
 	Targets       []TTActionTarget       `json:"targets"`
 }
 
@@ -87,6 +89,7 @@ type TTActionResult struct {
 	CasterID   string         `json:"casterId,omitempty"`  // acting token id (push direction, Vex)
 	Spell      bool           `json:"spell,omitempty"`     // a spell (法术反制 can answer it)
 	SlotLevel  int            `json:"slotLevel,omitempty"` // slot level spent on the spell
+	Melee      bool           `json:"melee,omitempty"`     // a melee attack
 	Targets    []*TTActionHit `json:"targets"`
 	Note       string         `json:"note,omitempty"`
 }
@@ -355,7 +358,7 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 	}
 	sc := room.activeScene()
 	res := &TTActionResult{Name: ttCleanName(a.Name, 40, "行动"), Kind: a.Kind, DamageType: ttCleanName(a.DamageType, 8, ""), Save: a.Save, DC: a.DC, Half: a.Half,
-		Mastery: ttCleanName(a.Mastery, 8, ""), Spell: a.Spell}
+		Mastery: ttCleanName(a.Mastery, 8, ""), Spell: a.Spell, Melee: a.Kind == "attack" && a.Melee}
 	if a.Spell && a.SlotLevel >= 1 && a.SlotLevel <= 9 {
 		res.SlotLevel = a.SlotLevel
 	}
@@ -440,6 +443,12 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 		}
 	}
 
+	mageSlayer := false // 巫师杀手：被它伤害的专注者，专注豁免劣势
+	if a.Caster != "" {
+		if c := sc.Items[a.Caster]; c != nil {
+			mageSlayer = ttSheetHas(room.tokenSheet(c), "巫师杀手", "法师杀手", "mageslayer")
+		}
+	}
 	hidden := req.Hidden
 	var changed []map[string]interface{}
 	var undo []ttUndoRec
@@ -468,6 +477,7 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 				h.Note = strings.TrimSpace(h.Note + " " + s)
 			}
 		}
+		addNote(ttCleanName(t.Note, 80, ""))
 		landed := false // the effect applies (hit / failed save / always)
 		dmg := 0
 		var extra []int // amounts of the extra damage parts (same order as parts)
@@ -578,6 +588,11 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 				// advantage / disadvantage from the target's conditions and traits (they cancel out)
 				more, bonusNotes, advSrc := tr.saveMods(ab, a.Spell, magic, a.School, statusID, conds)
 				sb += more
+				if conds["lucky"] { // 幸运：用掉一个幸运点换来的优势
+					advSrc = append(advSrc, "幸运")
+					ttRemoveStatus(it, "lucky")
+					changed = append(changed, it)
+				}
 				adv := ab == "dex" && (conds["hasted"] || conds["dodging"]) || len(advSrc) > 0
 				dis := ab == "dex" && conds["restrained"]
 				if len(bonusNotes) > 0 {
@@ -735,6 +750,9 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 					dc = 30
 				}
 				h.Note = strings.TrimSpace(h.Note + " 需专注豁免 DC " + strconv.Itoa(dc))
+				if mageSlayer {
+					h.Note += "（巫师杀手：劣势）"
+				}
 			}
 		}
 		switch {

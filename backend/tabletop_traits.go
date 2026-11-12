@@ -595,14 +595,14 @@ func (room *TTRoom) reduceHit(it map[string]interface{}, logID string, taken, le
 	return "", true
 }
 
-func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) (int, string) {
+func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactorID string) (int, string) {
 	var e *TTLogEntry
 	for i := range room.Log {
 		if room.Log[i].ID == logID {
 			e = &room.Log[i]
 		}
 	}
-	if e == nil || e.Act == nil || (e.Act.Kind != "attack" && !(mode == "legendary" && e.Act.Kind == "save") && mode != "absorb") {
+	if e == nil || e.Act == nil || (e.Act.Kind != "attack" && !((mode == "legendary" || mode == "interpose") && e.Act.Kind == "save") && mode != "absorb") {
 		return http.StatusBadRequest, "找不到这次结算（太久远的记录不能再反应）"
 	}
 	var h *TTActionHit
@@ -615,6 +615,9 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) 
 		return http.StatusBadRequest, "这次攻击没有打到这个棋子"
 	}
 	ref := logID + ":" + tokenID
+	if mode == "intercept" { // 拦截是别人的反应，和目标自己的反应互不影响
+		ref += ":ic"
+	}
 	for _, x := range room.Log {
 		if x.Ref == ref {
 			return http.StatusBadRequest, "这次攻击已经用过反应了"
@@ -625,10 +628,17 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) 
 	if it == nil {
 		return http.StatusBadRequest, "目标不在当前场景"
 	}
-	if owner, _ := it["owner"].(string); !gm && (owner == "" || owner != u.name) {
+	rx := it // the token spending its reaction (拦截: an ally next to the target)
+	if mode == "intercept" {
+		rx = sc.Items[reactorID]
+		if rx == nil || rx["kind"] != "token" || reactorID == tokenID {
+			return http.StatusBadRequest, "找不到拦截的棋子"
+		}
+	}
+	if owner, _ := rx["owner"].(string); !gm && (owner == "" || owner != u.name) {
 		return http.StatusForbidden, "只能替自己的棋子使用反应"
 	}
-	if mode != "legendary" && mode != "absorb" && h.Hit != "hit" && h.Hit != "crit" {
+	if mode != "legendary" && mode != "absorb" && mode != "interpose" && h.Hit != "hit" && h.Hit != "crit" {
 		return http.StatusBadRequest, "这次攻击没有命中"
 	}
 	sh := room.tokenSheet(it)
@@ -702,6 +712,65 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) 
 		removeStatus = h.Status != ""
 		name = "盾牌术"
 		note = "AC " + strconv.Itoa(int(ac)) + "（+5），攻击 " + strconv.Itoa(h.Attack.Total) + " 改为未命中"
+	case "parry": // 防御式决斗：持灵巧武器被近战攻击命中时，AC + 熟练加值
+		if !ttSheetHas(sh, "防御式决斗", "防御决斗", "defensiveduelist") {
+			return http.StatusBadRequest, "角色卡上没有「防御式决斗」"
+		}
+		if !e.Act.Melee {
+			return http.StatusBadRequest, "防御式决斗只能对近战攻击使用"
+		}
+		if h.Attack == nil || ttNaturalD20(h.Attack) == 20 {
+			return http.StatusBadRequest, "天然 20 必定命中，招架挡不住"
+		}
+		ac, ok := ttNum(it["ac"])
+		if !ok || ac <= 0 {
+			return http.StatusBadRequest, "棋子没有 AC"
+		}
+		if ttStatusIDs(it)["hasted"] {
+			ac += 2
+		}
+		pb := ttSheetProf(sh)
+		ac += float64(room.traitsOf(it).ac + pb)
+		if float64(h.Attack.Total) >= ac+float64(h.Cover) {
+			return http.StatusBadRequest, "加上熟练加值后 AC " + strconv.Itoa(int(ac)) + "，攻击 " + strconv.Itoa(h.Attack.Total) + " 仍然命中"
+		}
+		back, after = taken, 0
+		removeStatus = h.Status != ""
+		name = "防御式决斗"
+		note = "AC " + strconv.Itoa(int(ac)) + "（+" + strconv.Itoa(pb) + "），攻击 " + strconv.Itoa(h.Attack.Total) + " 改为未命中"
+	case "intercept": // 拦截（战斗风格）：5 尺内的盟友被命中时，减伤 1d10 + 熟练加值
+		rsh := room.tokenSheet(rx)
+		if !ttSheetHas(rsh, "拦截", "interception") {
+			return http.StatusBadRequest, "角色卡上没有「拦截」"
+		}
+		if taken <= 0 {
+			return http.StatusBadRequest, "这次攻击没有造成伤害"
+		}
+		r, err := RollTabletopDice("1d10" + ttSigned(ttSheetProf(rsh)))
+		if err != nil {
+			return http.StatusBadRequest, err.Error()
+		}
+		roll = r
+		left := taken - r.Total
+		if left < 0 {
+			left = 0
+		}
+		back, after = taken-left, left
+		name = "拦截"
+		note = ttItemLabel(rx) + " 拦截，减伤 " + strconv.Itoa(r.Total) + "：伤害 " + strconv.Itoa(taken) + " → " + strconv.Itoa(left)
+	case "interpose": // 盾牌大师·介入盾牌：敏捷豁免成功、本该受一半伤害时改为不受伤害
+		if !ttSheetHas(sh, "盾牌大师", "介入盾牌", "shieldmaster") {
+			return http.StatusBadRequest, "角色卡上没有「盾牌大师」"
+		}
+		if e.Act.Save != "dex" || !e.Act.Half || h.Saved != "yes" {
+			return http.StatusBadRequest, "只有敏捷豁免成功、本该受一半伤害时才能用介入盾牌"
+		}
+		if taken <= 0 {
+			return http.StatusBadRequest, "这次没有受到伤害"
+		}
+		back, after = taken, 0
+		name = "介入盾牌"
+		note = "敏捷豁免成功，伤害 " + strconv.Itoa(taken) + " → 0"
 	case "absorb": // 吸收元素：这次的强酸 / 寒冷 / 火焰 / 闪电 / 雷鸣伤害减半，并抗性到下回合开始
 		if !ttSheetHasSpell(sh, "吸收元素") && !ttSheetHas(sh, "吸收元素", "absorbelements") {
 			return http.StatusBadRequest, "角色卡上没有「吸收元素」"
@@ -749,12 +818,15 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) 
 		return http.StatusBadRequest, "未知的反应"
 	}
 	if mode != "legendary" && room.setting("hintEcon", true) { // 记下反应已用（自己回合开始时恢复）
-		econ, _ := it["econ"].(map[string]interface{})
+		econ, _ := rx["econ"].(map[string]interface{})
 		if econ == nil {
 			econ = map[string]interface{}{}
 		}
 		econ["r"] = true
-		it["econ"] = econ
+		rx["econ"] = econ
+		if mode == "intercept" {
+			room.broadcastItems([]map[string]interface{}{rx})
+		}
 	}
 	snap := ttSnapHP(sc, it)
 	concBefore := ttStatusIDs(it)["concentration"]
@@ -812,6 +884,24 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) 
 	room.addLog(ne)
 	room.rememberUndo(ne.ID, []ttUndoRec{snap})
 	return 0, ""
+}
+
+// ttSheetProf: the sheet's proficiency bonus (written on the sheet, else from level / CR).
+func ttSheetProf(sh map[string]interface{}) int {
+	if sh == nil {
+		return 2
+	}
+	if v, ok := ttNum(sh["prof"]); ok && v > 0 {
+		return int(v)
+	}
+	if cr, ok := ttNum(sh["cr"]); ok && sh["kind"] != "pc" && cr >= 1 {
+		return 2 + (int(cr)-1)/4
+	}
+	lv := 1
+	if v, ok := ttNum(sh["level"]); ok && v > 1 {
+		lv = int(v)
+	}
+	return 2 + (lv-1)/4
 }
 
 // ttElemental: the damage types 吸收元素 can absorb.

@@ -77,16 +77,12 @@ function meleeReach(t) {
     return best || 5;
 }
 
-function noOA(t) {
-    var sh = t.sheet && sheets[t.sheet];
-    return hasStatus(t, 'disengaged') || (sh && sheetHasEntry(sh, /飞掠|flyby/i));
-}
-
 // 一次拖动结束：按实际路线检查有没有离开某个敌人的触及范围
 function oaCheckMove(id, orig, trail) {
     if (!hintOn('hintOA') || !combatState()) return;
     var t = scene.items[id];
-    if (!t || t.kind !== 'token' || !isCreatureToken(t) || noOA(t) || tokenSide(t) === 'neutral') return;
+    if (!t || t.kind !== 'token' || !isCreatureToken(t) || tokenSide(t) === 'neutral') return;
+    var tsh = t.sheet && sheets[t.sheet], flyby = !!(tsh && sheetHasEntry(tsh, /飞掠|flyby/i)), dis = hasStatus(t, 'disengaged');
     var g = gridSize(), hw = (t.w || g) / 2, hh = (t.h || g) / 2;
     var pts = [{ x: orig.x + hw, y: orig.y + hh }];
     (trail || []).forEach(function(p) { pts.push({ x: orig.x + hw + p.x, y: orig.y + hh + p.y }); });
@@ -97,13 +93,16 @@ function oaCheckMove(id, orig, trail) {
         if (en.kind !== 'token' || en.id === t.id || !isCreatureToken(en) || !canReact(en) || invisible) return;
         var es = tokenSide(en);
         if (es === 'neutral' || es === side) return;
-        var reach = meleeReach(en), inside = false, left = false;
-        for (var i = 0; i < pts.length && !left; i++) {
+        var sent = dis && tokenFeat(en, 'sentinel'), canOA = !flyby && (!dis || sent), pam = tokenFeat(en, 'pam') && polearmHeld(en);
+        if (!canOA && !pam) return;
+        var reach = meleeReach(en), inside = false, left = false, out = false, entered = false;
+        for (var i = 0; i < pts.length; i++) {
             var d = creatureDist(en, t, null, pts[i]);
-            if (d <= reach) inside = true;
-            else if (inside) left = true;
+            if (d <= reach) { inside = true; if (out) entered = true; }
+            else { out = true; if (inside) left = true; }
         }
-        if (left) op({ op: 'oa.hint', ids: [en.id, t.id] });
+        if (canOA && left) op({ op: 'oa.hint', ids: [en.id, t.id], mode: sent ? 'sentinel' : '' });
+        else if (pam && entered) op({ op: 'oa.hint', ids: [en.id, t.id], mode: 'enter' });
     });
 }
 
@@ -152,7 +151,7 @@ function fightLogBtns(e) {
     var p = e.ref.split(':');
     var mine = function(id) { var t = scene.items[id]; return t && (me.gm || (t.owner && t.owner === me.name)); };
     if (p[0] === 'oa' && mine(p[1])) return ' <button class="tt-btn small primary" data-oa="' + escapeHtml(p[1] + ':' + p[2]) + '">⚔ 借机攻击</button>' +
-        '<button class="tt-btn small" data-trigfocus="' + escapeHtml(p[2]) + '">定位</button>';
+        warCasterBtn(p[1], p[2]) + '<button class="tt-btn small" data-trigfocus="' + escapeHtml(p[2]) + '">定位</button>';
     if (p[0] === 'ssave' && mine(p[1])) return ' <button class="tt-btn small primary" data-ssave="' + escapeHtml(p[1]) + '" data-st="' + escapeHtml(p.slice(2).join(':')) + '">🎲 豁免</button>';
     if (p[0] === 'dot' && mine(p[1])) return ' <button class="tt-btn small primary" data-dot="' + escapeHtml(p[1]) + '" data-st="' + escapeHtml(p.slice(2).join(':')) + '">🔥 结算伤害</button>';
     if (p[0] === 'la' && me.gm) return ' ' + p[1].split(',').map(function(id) {
@@ -165,10 +164,9 @@ function fightLogBtns(e) {
 // 行动记录里每个目标后面的按钮：专注豁免、传奇抗性
 function fightTargetBtns(e, t, r) {
     if (!t.id || !e.id) return '';
-    var mb = masteryBtns(e, t, r) + sneakBtns(e, t, r) + shoveBtns(e, t, r); // 武器精通 / 偷袭 / 推撞（出手的人看得到）
-    var tok = scene.items[t.id];
-    if (mb && !(tok && (me.gm || (tok.owner && tok.owner === me.name)))) return mb;
-    if (!tok || !(me.gm || (tok.owner && tok.owner === me.name))) return '';
+    var mb = masteryBtns(e, t, r) + sneakBtns(e, t, r) + shoveBtns(e, t, r) + featAtkBtns(e, t, r); // 武器精通 / 偷袭 / 推撞 / 顺势斩 / 阻拦（出手的人看得到）
+    var tok = scene.items[t.id], ic = interceptBtns(e, t, r); // 拦截（旁边盟友的控制者看得到）
+    if (!tok || !(me.gm || (tok.owner && tok.owner === me.name))) return mb + ic;
     var h = '', m = String(t.note || '').match(/(?:需专注豁免|专注豁免改为) DC (\d+)/);
     if (m && hasStatus(tok, 'concentration') && !logEntries.some(function(x) { return x.ref === 'conc:' + e.id + ':' + t.id; }))
         h += '<button class="tt-btn small react-btn" data-concsave="' + escapeHtml(t.id) + '" data-dc="' + m[1] + '" data-log="' + escapeHtml(e.id) + '" title="由服务器掷体质豁免，失败自动结束专注">🎲 专注豁免</button>';
@@ -178,7 +176,7 @@ function fightTargetBtns(e, t, r) {
             h += '<button class="tt-btn small react-btn" data-react="legendary" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) +
                 '" data-react-ref="' + escapeHtml(e.id + ':' + t.id) + '" title="扣一次传奇抗性，把这次豁免改为成功并重新结算伤害和状态">传奇抗性（剩 ' + num(lr.cur, 0) + '）</button>';
     }
-    return mb + h + reactSpellBtns(e, t, r, tok); // 炼狱叱喝 / 吸收元素
+    return mb + h + reactSpellBtns(e, t, r, tok) + featDefBtns(e, t, r, tok) + ic; // 炼狱叱喝 / 吸收元素 / 招架 / 介入盾牌 / 拦截
 }
 
 function fightLogClick(el) {
@@ -189,6 +187,8 @@ function fightLogClick(el) {
     if (d.concsave) { op({ op: 'fight.save', ids: [d.concsave], mode: 'conc', dc: parseInt(d.dc, 10) || 10, text: d.log || '' }); el.remove(); return true; }
     if (d.mst) return masteryClick(el);
     if (d.cs || d.hr) return reactSpellClick(el);
+    if (d.ft) return featClick(el);
+    if (d.oaspell) return warCasterClick(el);
     if (d.sa) return sneakClick(el);
     if (d.shove) { masteryDone[d.log + ':' + d.shove + ':push'] = true; el.remove(); pushToken(d.shove, d.from, 5); return true; }
     if (d.lause) {
@@ -331,7 +331,8 @@ var HINT_KEYS = [['hintOA', '借机攻击提示', '拖动棋子离开敌人触�
     ['hintTurn', '回合开始 / 结束效果', '闪避 / 撤离自动结束，重复豁免和持续伤害提示'], ['hintLegend', '传奇动作与充能', '传奇动作提示与恢复、传奇抗性按钮、充能自动掷骰'],
     ['hintMastery', '武器精通', '攻击命中 / 失手后按武器精通给出后续按钮（侵扰、削弱、失衡、推离、擦掠、横扫、缓速）'],
     ['hintClass', '职业特性', '偷袭按钮、狂暴伤害自动加值、属性面板里的狂暴 / 回气 / 动作如潮 / 诗人激励'],
-    ['hintReact', '反应法术', '施法后的法术反制按钮，受伤后的炼狱叱喝 / 吸收元素按钮']];
+    ['hintReact', '反应法术', '施法后的法术反制按钮，受伤后的炼狱叱喝 / 吸收元素按钮'],
+    ['hintFeat', '专长', '巨武器大师加伤 / 顺势斩、长柄打击、哨兵、神射手 / 强弩专家 / 擒抱者的判定修正、战地施法者、幸运、防御式决斗、拦截、介入盾牌']];
 
 function renderFightHints() {
     var box = $('fightHintBox');
@@ -492,7 +493,7 @@ function masteryClick(el) {
 // 攻击之后：用掉施放者身上的「侵扰」（对这些目标）和「削弱」
 function masteryAfterAttack(a, caster, ids) {
     if (a.kind !== 'attack' || !caster) return;
-    var list = statusList(caster), keep = list.filter(function(s) { return !(s.id === 'vex' && ids.indexOf(s.vs) >= 0) && s.id !== 'sapped'; });
+    var list = statusList(caster), keep = list.filter(function(s) { return !(s.id === 'vex' && ids.indexOf(s.vs) >= 0) && s.id !== 'sapped' && s.id !== 'lucky'; });
     if (keep.length !== list.length) patchItems([{ id: caster.id, status: keep.length ? keep : null }]);
 }
 
@@ -505,7 +506,7 @@ function unarmedRowHtml(it) {
 }
 
 function fightSelAct(act0, ids) {
-    if (classSelAct(act0, ids)) return true; // 职业特性一键
+    if (classSelAct(act0, ids) || featSelAct(act0, ids)) return true; // 职业特性 / 专长一键
     if (act0 !== 'unarmed' && act0 !== 'grapple' && act0 !== 'shove') return false;
     var it = scene.items[ids[0]];
     if (!it) return true;
@@ -514,8 +515,11 @@ function fightSelAct(act0, ids) {
     if (act0 === 'unarmed') {
         var ui = sh && (sh.attacks || []).findIndex(function(x) { return /徒手/.test(x.name || ''); });
         if (sh && ui >= 0) { castFromSheet(sh, { kind: 'atk', idx: String(ui) }); return true; }
-        openActionDialog(Object.assign(base, { name: '徒手打击', kind: 'attack', attack: signed(str + pb) || '+0', damage: String(Math.max(1, 1 + str)), dtype: '钝击',
-            scaleNote: '徒手打击：命中 = 力量调整值 + 熟练加值，伤害 = 1 + 力量调整值（武僧等可在这里改成武艺骰）' }), it, sh || null);
+        var ufs = sheetFeat(sh, 'unarmedFS'), tb = sheetFeat(sh, 'brawler');
+        openActionDialog(Object.assign(base, { name: '徒手打击', kind: 'attack', attack: signed(str + pb) || '+0', dtype: '钝击',
+            damage: ufs ? '1d6' + signed(str) : tb ? '1d4' + signed(str) : String(Math.max(1, 1 + str)),
+            scaleNote: ufs ? '徒手战斗：伤害 1d6 + 力量调整值（没拿武器和盾牌时可以改成 1d8）' : tb ? '酒馆斗殴者：伤害 1d4 + 力量调整值，伤害骰掷出 1 可以重掷；命中后可以把目标推开 5 尺' :
+                '徒手打击：命中 = 力量调整值 + 熟练加值，伤害 = 1 + 力量调整值（武僧等可在这里改成武艺骰）' }), it, sh || null);
     } else {
         var g = act0 === 'grapple';
         openActionDialog(Object.assign(base, { name: g ? '擒抱' : '推撞', kind: 'save', save: 'strdex', dc: dc, status: g ? 'grappled' : 'prone', grapple: g, casterId: it.id,
@@ -760,7 +764,212 @@ function applyActPreset() {
     if (!actPreset || !act) return;
     var p = actPreset;
     actPreset = null;
+    if (p.at && Date.now() - p.at > 180000) return; // 太久之前的预设（打开角色卡后没有施法）
     if (p.caster) { act.caster = p.caster; $('acCaster').textContent = p.caster.label || '未命名棋子'; }
     if (p.targets) act.presetTargets = p.targets.slice();
     if (p.cost) { act.a.cost = p.cost; $('acCost').value = p.cost; }
+}
+
+// ===================== 9. 专长（2024 玩家手册） =====================
+// 巨武器大师（重型武器加熟练加值伤害、顺势斩）、长柄武器大师（长柄打击、进入触及时反击）、
+// 哨兵（撤离也能借机、打别人时借机、阻拦）、神射手 / 强弩专家（掩护、远距离、近身射击）、擒抱者、
+// 战地施法者（用法术代替借机攻击）、幸运、防御式决斗、拦截、盾牌大师（介入盾牌）、酒馆斗殴者 / 徒手战斗。
+// 都看角色卡上有没有这个专长（特性 / 条目名字）；战斗风格的固定加值（箭术、对决、防御）默认已经算在卡上的数字里。
+var FEAT = {
+    gwm: /巨武器大师|greatweaponmaster/i,
+    pam: /长柄武器大师|polearmmaster/i,
+    sentinel: /哨兵|sentinel/i,
+    sharp: /神射手|sharpshooter/i,
+    xbow: /强弩专家|弩炮专家|crossbowexpert/i,
+    grappler: /擒抱者|擒抱手|grappler/i,
+    warcaster: /战地施法者|战争施法者|warcaster/i,
+    lucky: /^(专长[：:·]?)?幸运(专长)?$|^lucky$/i,
+    duelist: /防御式决斗|防御决斗|defensiveduelist/i,
+    intercept: /拦截|interception/i,
+    shieldmaster: /盾牌大师|介入盾牌|shieldmaster/i,
+    brawler: /酒馆斗殴者|酒馆斗士|tavernbrawler/i,
+    unarmedFS: /徒手战斗|unarmedfighting/i
+};
+var POLEARM = /长棍|矛|戟|长柄刀|骑枪|quarterstaff|spear|halberd|glaive|pike|lance/i;
+var HEAVY_WEAPON = /巨斧|巨剑|巨锤|重弩|长弓|戟|长柄刀|长矛|骑枪|greataxe|greatsword|maul|heavycrossbow|longbow|halberd|glaive|pike|lance/i;
+
+function tokenFeat(t, key) {
+    var sh = t && t.sheet && sheets[t.sheet];
+    return !!sh && hintOn('hintFeat') && sheetHasEntry(sh, FEAT[key]);
+}
+function sheetFeat(sh, key) { return !!sh && hintOn('hintFeat') && sheetHasEntry(sh, FEAT[key]); }
+function mineTok(t) { return t && (me.gm || (t.owner && t.owner === me.name)); }
+function polearmHeld(t) {
+    var sh = t && t.sheet && sheets[t.sheet];
+    return !!sh && (sh.attacks || []).some(function(at) { return POLEARM.test(at.name || ''); });
+}
+function isHeavyAttack(a) { return /重型|heavy/i.test(a.props || '') || HEAVY_WEAPON.test(String(a.name || '').replace(/\s/g, '')); }
+
+// 行动框：巨武器大师——重型武器命中加熟练加值伤害（攻击动作的一部分，默认在消耗为「动作」时勾上）
+function featDialogSync(a, caster, sh) {
+    var row = $('acFeatRow');
+    if (!row) return;
+    row.style.display = 'none';
+    $('acGwm').checked = false;
+    var s = sh || (caster && caster.sheet && sheets[caster.sheet]);
+    if (!caster || a.kind !== 'attack' || a.gwmAdded || a.isSpell || !sheetFeat(s, 'gwm') || !isHeavyAttack(a)) return;
+    var pb = sheetProf(s);
+    $('acGwmN').textContent = '+' + pb;
+    $('acGwm').dataset.n = pb;
+    $('acGwm').checked = (a.cost || 'a') === 'a';
+    row.style.display = '';
+}
+function featDialogApply(a) {
+    if ($('acFeatRow').style.display === 'none' || !$('acGwm').checked || a.gwmAdded) return;
+    a.damage = addToDamage(a.damage || '', '+' + $('acGwm').dataset.n);
+    a.gwmAdded = true;
+}
+
+// 确认目标时：神射手 / 强弩专家 / 擒抱者对掩护、优劣势的修正（只在这次真的改了判定时写进记录）
+function featAttackAdjust(a, caster, tgt, dist) {
+    var fx = { noCover: '', noLong: '', noAdj: '', adv: '' };
+    var sh = caster && caster.sheet && sheets[caster.sheet];
+    if (!sh || a.kind !== 'attack' || !hintOn('hintFeat')) return fx;
+    var ranged = a.range > 0 && !a.isSpell && !(a.reach && dist <= a.reach);
+    if (ranged && sheetHasEntry(sh, FEAT.sharp)) fx.noCover = fx.noLong = fx.noAdj = '神射手';
+    else if (ranged && /弩|crossbow/i.test(a.name || '') && sheetHasEntry(sh, FEAT.xbow)) fx.noAdj = '强弩专家';
+    if (sheetHasEntry(sh, FEAT.grappler) && statusList(tgt).some(function(s) { return s.id === 'grappled' && s.by === caster.id; })) fx.adv = '擒抱者：攻击自己擒住的目标有优势';
+    return fx;
+}
+
+// 记录里整次行动后面：长柄打击、哨兵（打了别人）
+function featActBtns(e, r) {
+    if (r.kind !== 'attack' || !e.id || !r.casterId || !hintOn('hintFeat')) return '';
+    var c = scene.items[r.casterId];
+    if (!c) return '';
+    var h = '', hitIds = (r.targets || []).filter(function(t) { return t.hit === 'hit' || t.hit === 'crit'; }).map(function(t) { return t.id; });
+    if ((me.gm || e.who === me.name) && POLEARM.test(r.name || '') && !/长柄打击/.test(r.name || '') && tokenFeat(c, 'pam') && !masteryDone[e.id + ':pam'])
+        h += '<button class="tt-btn small react-btn" data-ft="pam" data-log="' + escapeHtml(e.id) + '" title="长柄武器大师：攻击动作用长柄武器攻击后，附赠动作用另一端再攻击一次，伤害 1d4 钝击">长柄打击（附赠）</button>';
+    if (hitIds.length) sortedItems().forEach(function(t) {
+        if (t.kind !== 'token' || t.id === c.id || !mineTok(t) || !isCreatureToken(t) || !canReact(t) || hitIds.every(function(id) { return id === t.id; })) return;
+        var side = tokenSide(t);
+        if (side === 'neutral' || side === tokenSide(c) || creatureDist(t, c) > 5 || !tokenFeat(t, 'sentinel') || masteryDone[e.id + ':guard:' + t.id]) return;
+        h += '<button class="tt-btn small react-btn" data-ft="guard" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) + '" title="哨兵·守护者：5 尺内的生物攻击命中了你以外的目标，你可以用反应对它借机攻击">哨兵：借机（' + escapeHtml(chipName(t.label)) + '）</button>';
+    });
+    return h ? '<div class="act-target">🛡 ' + h + '</div>' : '';
+}
+
+// 记录里每个目标后面（出手的一方）：顺势斩、阻拦
+function featAtkBtns(e, t, r) {
+    if (r.kind !== 'attack' || !t.id || !r.casterId || !(me.gm || e.who === me.name) || !hintOn('hintFeat')) return '';
+    var c = scene.items[r.casterId], tok = scene.items[t.id], h = '';
+    if (!c || !tok) return '';
+    var hit = t.hit === 'hit' || t.hit === 'crit', down = tok.hpMax > 0 && num(tok.hp, tok.hpMax) <= 0 && t.amount < 0;
+    if (r.melee && (t.hit === 'crit' || down) && tokenFeat(c, 'gwm') && !masteryDone[e.id + ':cleave'] && !(c.econ && c.econ.gwmKey && c.econ.gwmKey === turnKey()))
+        h += '<button class="tt-btn small react-btn" data-ft="cleave" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) + '" title="巨武器大师·顺势斩：近战重击或把目标打到 0 生命值后，附赠动作再用这把武器攻击一次（每回合一次）">顺势斩（附赠攻击）</button>';
+    if (hit && /（借机）/.test(r.name || '') && tokenFeat(c, 'sentinel') && !hasStatus(tok, 'halted') && !masteryDone[e.id + ':' + t.id + ':halt'])
+        h += '<button class="tt-btn small react-btn" data-ft="halt" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) + '" title="哨兵·阻拦：借机攻击命中后，目标本回合剩余时间速度变为 0">阻拦：速度 0</button>';
+    return h;
+}
+
+// 记录里每个目标后面（被打的一方）：防御式决斗、介入盾牌
+function featDefBtns(e, t, r, tok) {
+    if (!tok || !hintOn('hintFeat') || !canReact(tok)) return '';
+    var ref = e.id + ':' + t.id;
+    if (logEntries.some(function(x) { return x.ref === ref; })) return '';
+    var btn = function(mode, label, title) {
+        return '<button class="tt-btn small react-btn" data-react="' + mode + '" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) + '" data-react-ref="' + escapeHtml(ref) + '" title="' + escapeHtml(title) + '">' + label + '</button>';
+    };
+    if (r.kind === 'attack' && r.melee && t.hit === 'hit' && tokenFeat(tok, 'duelist'))
+        return btn('parry', '招架（防御式决斗）', '防御式决斗：持灵巧武器被近战攻击命中时用反应，AC 加熟练加值重新判定，不再命中则这次伤害和状态作废');
+    if (r.kind === 'save' && r.save === 'dex' && r.half && t.saved === 'yes' && t.amount < 0 && tokenFeat(tok, 'shieldmaster'))
+        return btn('interpose', '介入盾牌', '盾牌大师·介入盾牌：持盾、敏捷豁免成功本该受一半伤害时用反应，改为不受伤害');
+    return '';
+}
+
+// 记录里每个目标后面（旁边的盟友）：拦截
+function interceptBtns(e, t, r) {
+    if (r.kind !== 'attack' || !(t.hit === 'hit' || t.hit === 'crit') || !(t.amount < 0) || !t.id || !e.id || !hintOn('hintFeat')) return '';
+    var tok = scene.items[t.id], ref = e.id + ':' + t.id + ':ic';
+    if (!tok || logEntries.some(function(x) { return x.ref === ref; })) return '';
+    return sortedItems().filter(function(o) {
+        return o.kind === 'token' && o.id !== t.id && o.id !== r.casterId && mineTok(o) && isCreatureToken(o) && tokenSide(o) === tokenSide(tok) &&
+            canReact(o) && creatureDist(o, tok) <= 5 && tokenFeat(o, 'intercept');
+    }).map(function(o) {
+        return '<button class="tt-btn small react-btn" data-react="intercept" data-by="' + escapeHtml(o.id) + '" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) +
+            '" data-react-ref="' + escapeHtml(ref) + '" title="拦截（战斗风格）：持盾或武器，5 尺内的另一个生物被命中时用反应，减伤 1d10 + 熟练加值">拦截（' + escapeHtml(chipName(o.label)) + '）</button>';
+    }).join('');
+}
+
+function featClick(el) {
+    var d = el.dataset, ent = logEntries.filter(function(x) { return x.id === d.log; })[0];
+    if (!ent || !ent.act) return true;
+    var r = ent.act, c = r.casterId && scene.items[r.casterId], tgt = d.tok && scene.items[d.tok];
+    var sh = c && c.sheet && sheets[c.sheet];
+    if (d.ft === 'guard') {
+        masteryDone[d.log + ':guard:' + d.tok] = true;
+        el.remove();
+        if (c) startOA(d.tok, c.id);
+        return true;
+    }
+    if (!c) { notice('出手的棋子不在当前场景', true); return true; }
+    var t = (r.targets || []).filter(function(x) { return x.id === d.tok; })[0] || {};
+    var name = String(r.name || '').replace(/（[^）]*）$/, '');
+    var base = { area: { shape: '', size: 0, width: 5 }, targets: 1, reach: meleeReach(c), cost: 'b', mastery: '' };
+    if (d.ft === 'pam') {
+        masteryDone[d.log + ':pam'] = true;
+        el.remove();
+        var bonus = (r.targets || []).map(attackBonusOf).filter(function(x) { return x; })[0] || 0;
+        var sa = sh && (sh.attacks || []).filter(function(x) { return x.name === name; })[0], dt = (r.targets || []).filter(function(x) { return x.damage; })[0];
+        var dm = String(sa ? sa.damage || '' : dt ? dt.damage.expr || '' : '').replace(/\s/g, '').match(/([+\-]\d+)$/); // 卡上武器伤害的固定加值（不含巨武器大师等）
+        openActionDialog(Object.assign(base, { name: '长柄打击（' + name + '）', kind: 'attack', attack: signed(bonus) || '+0', damage: '1d4' + (dm ? dm[1] : ''), dtype: '钝击',
+            scaleNote: '长柄武器大师：用武器的另一端攻击，伤害 1d4 钝击 + 属性调整值（默认取角色卡上这把武器伤害的固定加值）' }), c, sh || null);
+    } else if (d.ft === 'cleave') {
+        masteryDone[d.log + ':cleave'] = true;
+        el.remove();
+        var e2 = JSON.parse(JSON.stringify(c.econ || {}));
+        e2.gwmKey = turnKey() || ('t' + Date.now());
+        patchItems([{ id: c.id, econ: e2 }]);
+        var ai = sh ? (sh.attacks || []).findIndex(function(x) { return x.name === name; }) : -1;
+        actPreset = { caster: c, cost: 'b', at: Date.now() };
+        if (ai >= 0) castFromSheet(sh, { kind: 'atk', idx: String(ai) });
+        else {
+            actPreset = null;
+            openActionDialog(Object.assign(base, { name: name + '（顺势斩）', kind: 'attack', attack: signed(attackBonusOf(t)) || '+0', damage: '', dtype: r.damageType || '',
+                scaleNote: '顺势斩：再用这把武器攻击一次；角色卡上没找到同名攻击，伤害请自己填' }), c, sh || null);
+        }
+    } else if (d.ft === 'halt') {
+        masteryDone[d.log + ':' + d.tok + ':halt'] = true;
+        el.remove();
+        if (tgt) addStatusTo(tgt, { id: 'halted', name: '阻拦', icon: '⛔', color: '#b71c1c', until: 'end' });
+    }
+    return true;
+}
+
+// 借机提示后面：战地施法者可以用法术代替借机攻击
+function warCasterBtn(enId, moverId) {
+    var en = scene.items[enId];
+    if (!en || !tokenFeat(en, 'warcaster')) return '';
+    return '<button class="tt-btn small" data-oaspell="' + escapeHtml(enId + ':' + moverId) + '" title="战地施法者：用反应施放一道施法时间为一个动作、只以这个生物为目标的法术，代替借机攻击">🪄 用法术</button>';
+}
+function warCasterClick(el) {
+    var p = el.dataset.oaspell.split(':'), en = scene.items[p[0]];
+    if (!en || !en.sheet || !sheets[en.sheet]) { notice('找不到施法者的角色卡', true); return true; }
+    actPreset = { caster: en, targets: scene.items[p[1]] ? [p[1]] : [], cost: 'r', at: Date.now() };
+    openSheet(en.sheet, en.id);
+    notice('在角色卡上选一道法术（施法时间一个动作、只指定这个生物）：打开时会自动设为反应并预选目标', false, 5000);
+    return true;
+}
+
+// 属性面板「专长」：幸运
+function featRowHtml(it) {
+    var sh = it.sheet && sheets[it.sheet];
+    if (!sh || !canEdit(it) || !sheetFeat(sh, 'lucky')) return '';
+    var pb = sheetProf(sh), b = hasStatus(it, 'lucky') ? '<button class="tt-btn small" disabled title="下一次攻击检定 / 豁免自动取优势">🍀 幸运已备好</button>' :
+        '<button class="tt-btn small" data-act="ft-lucky" title="幸运：花一个幸运点，下一次 D20 检定具有优势（攻击、由服务器掷的豁免会自动取优势；属性检定请在掷骰框选优势）。也可以在被攻击时花一点让攻击者劣势（由 GM 处理）">🍀 幸运（' + featLeft(it, '幸运点', pb) + '）</button>';
+    return '<div class="prop-row"><label>专长</label><span class="prop-btns" style="margin:0;">' + b + '</span></div>';
+}
+function featSelAct(act0, ids) {
+    if (act0 !== 'ft-lucky') return false;
+    var it = scene.items[ids[0]], sh = it && it.sheet && sheets[it.sheet];
+    if (!it || !sh) return true;
+    if (spendFeat(it, '幸运点', sheetProf(sh))) addStatusTo(it, { id: 'lucky', name: '幸运', icon: '🍀', color: '#66bb6a' });
+    $('selPanel').dataset.ids = '';
+    renderSelPanel();
+    return true;
 }
