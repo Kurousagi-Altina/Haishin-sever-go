@@ -11,5 +11,6 @@
   "video_dir":      "../userdata/videos",
   "cloud_upload_min_role": "user",
   "notify_sendkey": "",
-  "tabletop_dir":   "../userdata/tabletop"
+  "tabletop_dir":   "../userdata/tabletop",
+  "rules_dir":      "../data/5e"
 }

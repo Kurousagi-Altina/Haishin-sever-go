@@ -1,0 +1,532 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "毁灭亲王",
+ "generated": "2026-11-09",
+ "count": 14,
+ "entries": [
+  {
+   "id": "item:兽人肢解者",
+   "name": "兽人肢解者",
+   "en": "Orcsplitter",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/毁灭亲王/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（巨斧），传说。DC17体质豁免；涉及失能；词条：感官、个性",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "巨斧",
+   "rarity": "传说",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 17,
+    "ability": "con"
+   },
+   "conditions": [
+    "incapacitated"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:异水诡罐",
+   "name": "异水诡罐",
+   "en": "Weird Tank",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/毁灭亲王/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。免疫毒素/心灵",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [
+    "毒素",
+    "心灵"
+   ],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:掘土巨怪之爪",
+   "name": "掘土巨怪之爪",
+   "en": "Claws of the Umber Hulk",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/毁灭亲王/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": "挥砍"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:毁灭法球",
+   "name": "毁灭法球",
+   "en": "Devastation Orb",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/毁灭亲王/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀。免疫毒素/心灵；DC18体质豁免；词条：狂风法球、震地法球、烈火法球、激雨法球",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d4",
+     "type": "钝击"
+    },
+    {
+     "dice": "3d6",
+     "type": "火焰"
+    }
+   ],
+   "resist": [],
+   "immune": [
+    "毒素",
+    "心灵"
+   ],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 18,
+    "ability": "con"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:气球背包",
+   "name": "气球背包",
+   "en": "Balloon Pack",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/毁灭亲王/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:水溺",
+   "name": "水溺",
+   "en": "Drown",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/毁灭亲王/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（三叉戟），传说，需同调。攻击+1、伤害+1；DC17豁免；词条：水元素掌控、无尽痛苦之泪、缺陷",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "武器",
+   "baseItem": "三叉戟",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": "寒冷"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 17,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:焰袭",
+   "name": "焰袭",
+   "en": "Tinders trike",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/毁灭亲王/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（匕首），传说，需同调。攻击+2、伤害+2；DC17豁免；词条：火元素掌控、焚世烈焰之舞、缺陷",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "武器",
+   "baseItem": "匕首",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 2,
+    "damage": 2
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "火焰"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 17,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:瓶装吐息",
+   "name": "瓶装吐息",
+   "en": "Bottled Breath",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/毁灭亲王/魔法物品.html",
+   "alsoIn": [],
+   "summary": "药水，非普通。消耗品",
+   "uncertain": [],
+   "itemType": "药水",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:索敌飞镖",
+   "name": "索敌飞镖",
+   "en": "Seeker Dart",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/毁灭亲王/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（飞镖），非普通。DC16敏捷豁免",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "飞镖",
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d4",
+     "type": "穿刺"
+    },
+    {
+     "dice": "3d4",
+     "type": "闪电"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 16,
+    "ability": "dex"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:贝希默之失落王冠",
+   "name": "贝希默之失落王冠",
+   "en": "Lost Grown of Besilmer",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/毁灭亲王/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，传说，需同调。3充能，1d3 每日黎明恢复；抗心灵",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [
+    "心灵"
+   ],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:铁牙",
+   "name": "铁牙",
+   "en": "Ironfang",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/毁灭亲王/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（战镐），传说，需同调。攻击+2、伤害+2；3充能，1d3 每日黎明恢复；DC17豁免；词条：土元素掌控、粉碎、穿云裂石之音、缺陷",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "武器",
+   "baseItem": "战镐",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 2,
+    "damage": 2
+   },
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": "雷鸣"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 17,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:风暴回力标",
+   "name": "风暴回力标",
+   "en": "Storm Boomerang",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/毁灭亲王/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器，非普通。DC10体质豁免；涉及震慑",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d4",
+     "type": "钝击"
+    },
+    {
+     "dice": "3d4",
+     "type": "雷鸣"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 10,
+    "ability": "con"
+   },
+   "conditions": [
+    "stunned"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:风标",
+   "name": "风标",
+   "en": "Windvane",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/毁灭亲王/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（矛），传说，需同调。攻击+2、伤害+2；DC17豁免；词条：风元素掌控、四重龙卷之歌、缺陷",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "武器",
+   "baseItem": "矛",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 2,
+    "damage": 2
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "闪电"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 17,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:飞翼服",
+   "name": "飞翼服",
+   "en": "Wingwear",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/毁灭亲王/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需同调。3充能",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": null
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

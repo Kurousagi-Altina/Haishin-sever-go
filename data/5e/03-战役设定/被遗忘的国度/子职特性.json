@@ -1,0 +1,1020 @@
+{
+ "category": "feature",
+ "type": "子职特性",
+ "source": "被遗忘的国度",
+ "generated": "2026-11-09",
+ "count": 42,
+ "entries": [
+  {
+   "id": "feature:巨灵贵族之誓·元素叱喝",
+   "name": "元素叱喝",
+   "en": "Elemental Rebuke",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/圣武士-巨灵贵族之誓.htm",
+   "alsoIn": [],
+   "summary": "被命中时反应使该次伤害减半，并令攻击者敏捷豁免，失败受2d10+魅力调整值元素伤害，成功减半。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "巨灵贵族之誓"
+   },
+   "level": 15,
+   "action": "reaction",
+   "mechanics": "被命中时反应使该次伤害减半，并令攻击者敏捷豁免，失败受2d10+魅力调整值元素伤害，成功减半。",
+   "uses": {
+    "count": "魅力调整值(至少1)",
+    "recharge": "long"
+   },
+   "save": {
+    "ability": "dex",
+    "dc": "法术豁免DC"
+   },
+   "damage": [
+    {
+     "dice": "2d10+魅力调整值",
+     "type": "火焰"
+    }
+   ]
+  },
+  {
+   "id": "feature:巨灵贵族之誓·元素守御灵光",
+   "name": "元素守御灵光",
+   "en": "Aura of Elemental Shielding",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/圣武士-巨灵贵族之誓.htm",
+   "alsoIn": [],
+   "summary": "你和灵光内盟友对所选强酸/寒冷/火焰/闪电/雷鸣之一有抗性，每回合开始可更换。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "巨灵贵族之誓"
+   },
+   "level": 7,
+   "action": "passive",
+   "mechanics": "你和灵光内盟友对所选强酸/寒冷/火焰/闪电/雷鸣之一有抗性，每回合开始可更换。"
+  },
+  {
+   "id": "feature:巨灵贵族之誓·元素斩",
+   "name": "元素斩",
+   "en": "Elemental Smite",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/圣武士-巨灵贵族之誓.htm",
+   "alsoIn": [],
+   "summary": "至圣斩后消耗引导神力：土(目标受擒束缚)、气(传送并化半虚体)、火(额外2d4火焰并弹射)、水(寒冷伤害并减速)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "巨灵贵族之誓"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "至圣斩后消耗引导神力：土(目标受擒束缚)、气(传送并化半虚体)、火(额外2d4火焰并弹射)、水(寒冷伤害并减速)。",
+   "damage": [
+    {
+     "dice": "2d4",
+     "type": "火焰"
+    }
+   ],
+   "conditions": [
+    "grappled",
+    "restrained"
+   ],
+   "resource": "引导神力"
+  },
+  {
+   "id": "feature:凛冬行者·冬猎霜寒",
+   "name": "冬猎霜寒",
+   "en": "Hunter's Rime",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/游侠-凛冬行者.htm",
+   "alsoIn": [],
+   "summary": "施放猎人印记时获得1d10+游侠等级临时生命值；被标记者不能执行撤离。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "凛冬行者"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "施放猎人印记时获得1d10+游侠等级临时生命值；被标记者不能执行撤离。",
+   "heal": "1d10+游侠等级(临时)"
+  },
+  {
+   "id": "feature:凛冬行者·冰结恶灵",
+   "name": "冰结恶灵",
+   "en": "Frozen Haunt",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/游侠-凛冬行者.htm",
+   "alsoIn": [],
+   "summary": "施放猎人印记时化为冰雪幽灵至法术结束：寒冷免疫，15尺光环2d4寒冷，免疫擒抱倒地束缚并可穿过生物。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "凛冬行者"
+   },
+   "level": 15,
+   "action": "special",
+   "mechanics": "施放猎人印记时化为冰雪幽灵至法术结束：寒冷免疫，15尺光环2d4寒冷，免疫擒抱倒地束缚并可穿过生物。",
+   "uses": {
+    "count": "1(耗高于四环法术位可再用)",
+    "recharge": "long"
+   },
+   "damage": [
+    {
+     "dice": "2d4",
+     "type": "寒冷"
+    }
+   ],
+   "conditions": [
+    "grappled",
+    "prone",
+    "restrained"
+   ]
+  },
+  {
+   "id": "feature:凛冬行者·冻原探索者",
+   "name": "冻原探索者",
+   "en": "Frigid Explorer",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/游侠-凛冬行者.htm",
+   "alsoIn": [],
+   "summary": "伤害无视寒冷抗性；自身寒冷抗性；武器命中额外1d4寒冷伤害(11级1d6)，每目标每回合一次。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "凛冬行者"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "伤害无视寒冷抗性；自身寒冷抗性；武器命中额外1d4寒冷伤害(11级1d6)，每目标每回合一次。",
+   "dice": [
+    [
+     3,
+     "1d4"
+    ],
+    [
+     11,
+     "1d6"
+    ]
+   ],
+   "damage": [
+    {
+     "dice": "1d4",
+     "type": "寒冷"
+    }
+   ]
+  },
+  {
+   "id": "feature:凛冬行者·凛冬行者法术",
+   "name": "凛冬行者法术",
+   "en": "Winter Walker Spells",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/游侠-凛冬行者.htm",
+   "alsoIn": [],
+   "summary": "恒备法术：冰刃、定身类人、移除诅咒、冰风暴、寒冰锥。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "凛冬行者"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "恒备法术：冰刃、定身类人、移除诅咒、冰风暴、寒冰锥。"
+  },
+  {
+   "id": "feature:凛冬行者·凝冻之魂",
+   "name": "凝冻之魂",
+   "en": "Fortifying Soul",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/游侠-凛冬行者.htm",
+   "alsoIn": [],
+   "summary": "魔法动作使感知调整值个生物恢复1d10+游侠等级生命值，1小时内抵抗恐慌豁免有优势。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "凛冬行者"
+   },
+   "level": 7,
+   "action": "action",
+   "mechanics": "魔法动作使感知调整值个生物恢复1d10+游侠等级生命值，1小时内抵抗恐慌豁免有优势。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   },
+   "heal": "1d10+游侠等级"
+  },
+  {
+   "id": "feature:剑咏者·剑歌",
+   "name": "剑歌",
+   "en": "Bladesong",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/法师-剑咏者.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "未穿护甲和盾牌时附赠动作启动1分钟：AC+智力调整值，速度+10尺，特技优势，可用智力攻击与伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "剑咏者"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "未穿护甲和盾牌时附赠动作启动1分钟：AC+智力调整值，速度+10尺，特技优势，可用智力攻击与伤害。",
+   "uses": {
+    "count": "智力调整值(至少1)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:皓月学院·原初学识",
+   "name": "原初学识",
+   "en": "Primal Lore",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/吟游诗人-皓月学院.htm",
+   "alsoIn": [],
+   "summary": "学会德鲁伊语与一个德鲁伊戏法(不占戏法数)，并在驯兽、洞悉、医药、自然、察觉、求生中选一项熟练。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "皓月学院"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "学会德鲁伊语与一个德鲁伊戏法(不占戏法数)，并在驯兽、洞悉、医药、自然、察觉、求生中选一项熟练。"
+  },
+  {
+   "id": "feature:旗将·同筑坚城",
+   "name": "同筑坚城",
+   "en": "Shared Resilience",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/战士-旗将.htm",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "60尺内盟友豁免失败时，反应消耗一次不屈，让其重骰并加战士等级。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "旗将",
+    "subclassAliases": [
+     "紫龙骑士"
+    ]
+   },
+   "level": 15,
+   "action": "reaction",
+   "mechanics": "60尺内盟友豁免失败时，反应消耗一次不屈，让其重骰并加战士等级。"
+  },
+  {
+   "id": "feature:咒火术法·咒火冠冕",
+   "name": "咒火冠冕",
+   "en": "Crown of Spellfire",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/术士-咒火术法.htm",
+   "alsoIn": [],
+   "summary": "将先天术法转化为咒火：燃尽生命骰减伤，获得60尺飞行，法术豁免成功不受伤失败减半。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "咒火术法"
+   },
+   "level": 18,
+   "action": "special",
+   "mechanics": "将先天术法转化为咒火：燃尽生命骰减伤，获得60尺飞行，法术豁免成功不受伤失败减半。",
+   "uses": {
+    "count": "1(耗5术法点可再用)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:咒火术法·咒火法术",
+   "name": "咒火法术",
+   "en": "Spellfire Spells",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/术士-咒火术法.htm",
+   "alsoIn": [],
+   "summary": "恒备法术：疗伤术、光导箭、次等复原术、灼热射线、活力灵光、解除魔法、火焰护盾、火墙术等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "咒火术法"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "恒备法术：疗伤术、光导箭、次等复原术、灼热射线、活力灵光、解除魔法、火焰护盾、火墙术等。"
+  },
+  {
+   "id": "feature:咒火术法·咒火迸发",
+   "name": "咒火迸发",
+   "en": "Spellfire Burst",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/术士-咒火术法.htm",
+   "alsoIn": [],
+   "summary": "回合中消耗至少1术法点后，每回合一次选：给30尺内一生物1d4+魅力临时生命值，或造成1d4火焰或光耀伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "咒火术法"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "回合中消耗至少1术法点后，每回合一次选：给30尺内一生物1d4+魅力临时生命值，或造成1d4火焰或光耀伤害。",
+   "damage": [
+    {
+     "dice": "1d4",
+     "type": "火焰"
+    },
+    {
+     "dice": "1d4",
+     "type": "光耀"
+    }
+   ],
+   "resource": "术法点"
+  },
+  {
+   "id": "feature:三神门徒·嗜血",
+   "name": "嗜血",
+   "en": "Bloodthirst",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/游荡者-三神门徒.htm",
+   "alsoIn": [],
+   "summary": "30尺内敌人受伤后处于浴血未死时，反应传送到其5尺内并近战攻击一次。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "三神门徒"
+   },
+   "level": 3,
+   "action": "reaction",
+   "mechanics": "30尺内敌人受伤后处于浴血未死时，反应传送到其5尺内并近战攻击一次。",
+   "uses": {
+    "count": "智力调整值(至少1)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:旗将·团体战术",
+   "name": "团体战术",
+   "en": "Team Tactics",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/战士-旗将.htm",
+   "alsoIn": [],
+   "summary": "群体恢复影响的盟友D20检定有优势，持续到你下回合开始。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "旗将",
+    "subclassAliases": [
+     "紫龙骑士"
+    ]
+   },
+   "level": 7,
+   "action": "passive",
+   "mechanics": "群体恢复影响的盟友D20检定有优势，持续到你下回合开始。"
+  },
+  {
+   "id": "feature:剑咏者·守御之歌",
+   "name": "守御之歌",
+   "en": "Song of Defense",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/法师-剑咏者.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚",
+    "剑湾冒险者指南"
+   ],
+   "summary": "剑歌期间受伤时反应消耗法术位，伤害减少5×法术位环阶。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "剑咏者"
+   },
+   "level": 10,
+   "action": "reaction",
+   "mechanics": "剑歌期间受伤时反应消耗法术位，伤害减少5×法术位环阶。",
+   "resource": "法术位"
+  },
+  {
+   "id": "feature:凛冬行者·寒心复仇",
+   "name": "寒心复仇",
+   "en": "Chilling Retribution",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/游侠-凛冬行者.htm",
+   "alsoIn": [],
+   "summary": "被命中时反应令攻击者感知豁免，失败震慑到你下回合结束且速度为0。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "凛冬行者"
+   },
+   "level": 11,
+   "action": "reaction",
+   "mechanics": "被命中时反应令攻击者感知豁免，失败震慑到你下回合结束且速度为0。",
+   "uses": {
+    "count": "感知调整值(至少1)",
+    "recharge": "long"
+   },
+   "save": {
+    "ability": "wis",
+    "dc": "法术豁免DC"
+   },
+   "conditions": [
+    "stunned"
+   ]
+  },
+  {
+   "id": "feature:巨灵贵族之誓·巨灵法术",
+   "name": "巨灵法术",
+   "en": "Genie Spells",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/圣武士-巨灵贵族之誓.htm",
+   "alsoIn": [],
+   "summary": "恒备法术：四象法门、繁彩球、雷鸣斩、镜影术、魅影之力、飞行术、气化形体、咒唤微元素群等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "巨灵贵族之誓"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "恒备法术：四象法门、繁彩球、雷鸣斩、镜影术、魅影之力、飞行术、气化形体、咒唤微元素群等。"
+  },
+  {
+   "id": "feature:巨灵贵族之誓·巨灵流光",
+   "name": "巨灵流光",
+   "en": "Genie's Splendor",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/圣武士-巨灵贵族之誓.htm",
+   "alsoIn": [],
+   "summary": "未着甲时基础AC为10+敏捷+魅力，可用盾牌；获得特技、威吓、表演或游说熟练之一。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "巨灵贵族之誓"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "未着甲时基础AC为10+敏捷+魅力，可用盾牌；获得特技、威吓、表演或游说熟练之一。"
+  },
+  {
+   "id": "feature:巨灵贵族之誓·巨灵贵胄",
+   "name": "巨灵贵胄",
+   "en": "Noble Scion",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/圣武士-巨灵贵族之誓.htm",
+   "alsoIn": [],
+   "summary": "附赠动作10分钟：60尺飞行并悬浮；灵光内盟友D20检定失败时可反应改为成功。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "巨灵贵族之誓"
+   },
+   "level": 20,
+   "action": "bonus",
+   "mechanics": "附赠动作10分钟：60尺飞行并悬浮；灵光内盟友D20检定失败时可反应改为成功。",
+   "uses": {
+    "count": "1(耗5环法术位可再用)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:知识领域·思维魔法",
+   "name": "思维魔法",
+   "en": "Mind Magic",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/牧师-知识领域.htm",
+   "alsoIn": [],
+   "summary": "魔法动作消耗一次引导神力，免费施放一道已准备的预言学派领域法术，无需材料。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "知识领域"
+   },
+   "level": 3,
+   "action": "action",
+   "mechanics": "魔法动作消耗一次引导神力，免费施放一道已准备的预言学派领域法术，无需材料。",
+   "resource": "引导神力"
+  },
+  {
+   "id": "feature:三神门徒·恐怖化身",
+   "name": "恐怖化身",
+   "en": "Dread Incarnate",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/游荡者-三神门徒.htm",
+   "alsoIn": [],
+   "summary": "短休恢复一次嗜血；偷袭伤害骰的1和2视为3。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "三神门徒"
+   },
+   "level": 17,
+   "action": "passive",
+   "mechanics": "短休恢复一次嗜血；偷袭伤害骰的1和2视为3。"
+  },
+  {
+   "id": "feature:三神门徒·恶毒灵光",
+   "name": "恶毒灵光",
+   "en": "Aura of Malevolence",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/游荡者-三神门徒.htm",
+   "alsoIn": [],
+   "summary": "嗜血传送时，出发点或落点10尺内所选生物承受等于智力调整值的伤害(类型同抗性，无视抗性)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "三神门徒"
+   },
+   "level": 13,
+   "action": "passive",
+   "mechanics": "嗜血传送时，出发点或落点10尺内所选生物承受等于智力调整值的伤害(类型同抗性，无视抗性)。"
+  },
+  {
+   "id": "feature:剑咏者·战歌训练",
+   "name": "战歌训练",
+   "en": "Training in War and Song",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/法师-剑咏者.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "获得非双手非重型近战军用武器熟练，熟练近战武器可作法器，并获得一项技能熟练。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "剑咏者"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "获得非双手非重型近战军用武器熟练，熟练近战武器可作法器，并获得一项技能熟练。"
+  },
+  {
+   "id": "feature:旗将·振军将帅",
+   "name": "振军将帅",
+   "en": "Inspiring Commander",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/战士-旗将.htm",
+   "alsoIn": [],
+   "summary": "群体恢复与集结如潮光环扩大到60尺；免疫魅惑与恐慌。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "旗将",
+    "subclassAliases": [
+     "紫龙骑士"
+    ]
+   },
+   "level": 18,
+   "action": "passive",
+   "mechanics": "群体恢复与集结如潮光环扩大到60尺；免疫魅惑与恐慌。",
+   "conditions": [
+    "charmed",
+    "frightened"
+   ]
+  },
+  {
+   "id": "feature:三神门徒·敬怖之忠",
+   "name": "敬怖之忠",
+   "en": "Dread Allegiance",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/游荡者-三神门徒.htm",
+   "alsoIn": [],
+   "summary": "选班恩(心灵抗性、次级幻象)、巴尔(毒素抗性、剑刃防护)或米尔寇(黯蚀抗性、颤栗之触)，长休可改。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "三神门徒"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "选班恩(心灵抗性、次级幻象)、巴尔(毒素抗性、剑刃防护)或米尔寇(黯蚀抗性、颤栗之触)，长休可改。"
+  },
+  {
+   "id": "feature:知识领域·无拘心智",
+   "name": "无拘心智",
+   "en": "Unfettered Mind",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/牧师-知识领域.htm",
+   "alsoIn": [],
+   "summary": "获得60尺心灵感应(可联结感知调整值个生物)与智力豁免熟练。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "知识领域"
+   },
+   "level": 6,
+   "action": "passive",
+   "mechanics": "获得60尺心灵感应(可联结感知调整值个生物)与智力豁免熟练。"
+  },
+  {
+   "id": "feature:皓月学院·明月激励",
+   "name": "明月激励",
+   "en": "Moon Inspiration",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/吟游诗人-皓月学院.htm",
+   "alsoIn": [],
+   "summary": "给予激励骰时可隐形并传送30尺(月隐启迪)；用法术治疗时可消耗激励骰加骰值并给目标速度+10尺(月辉活力)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "皓月学院"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "给予激励骰时可隐形并传送30尺(月隐启迪)；用法术治疗时可消耗激励骰加骰值并给目标速度+10尺(月辉活力)。",
+   "dice": "吟游激励骰",
+   "resource": "吟游激励"
+  },
+  {
+   "id": "feature:皓月学院·暮色辉光",
+   "name": "暮色辉光",
+   "en": "Eventide's Splendor",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/吟游诗人-皓月学院.htm",
+   "alsoIn": [],
+   "summary": "明月激励增强：激励骰获得者也可隐形并传送；月辉活力可改掷1d6代替消耗激励骰。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "皓月学院"
+   },
+   "level": 14,
+   "action": "passive",
+   "mechanics": "明月激励增强：激励骰获得者也可隐形并传送；月辉活力可改掷1d6代替消耗激励骰。",
+   "dice": "1d6"
+  },
+  {
+   "id": "feature:皓月学院·月光祝福",
+   "name": "月光祝福",
+   "en": "Blessing of the Moonlights",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/吟游诗人-皓月学院.htm",
+   "alsoIn": [],
+   "summary": "恒备月华之光；施放时可令身体发光，目标豁免失败时你可让60尺内一名生物恢复2d4生命值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "皓月学院"
+   },
+   "level": 6,
+   "action": "special",
+   "mechanics": "恒备月华之光；施放时可令身体发光，目标豁免失败时你可让60尺内一名生物恢复2d4生命值。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   },
+   "heal": "2d4"
+  },
+  {
+   "id": "feature:咒火术法·汲纳法术",
+   "name": "汲纳法术",
+   "en": "Absorb Spells",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/术士-咒火术法.htm",
+   "alsoIn": [],
+   "summary": "恒备法术反制；目标对法术反制豁免失败时，你恢复1d4术法点。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "咒火术法"
+   },
+   "level": 6,
+   "action": "passive",
+   "mechanics": "恒备法术反制；目标对法术反制豁免失败时，你恢复1d4术法点。",
+   "dice": "1d4",
+   "resource": "术法点"
+  },
+  {
+   "id": "feature:知识领域·知识祝福",
+   "name": "知识祝福",
+   "en": "Blessing of Knowledge",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/牧师-知识领域.htm",
+   "alsoIn": [],
+   "summary": "获得一种工匠工具熟练，并在奥秘、历史、自然、宗教中选两项获得熟练与专精。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "知识领域"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "获得一种工匠工具熟练，并在奥秘、历史、自然、宗教中选两项获得熟练与专精。"
+  },
+  {
+   "id": "feature:知识领域·知识领域法术",
+   "name": "知识领域法术",
+   "en": "Knowledge Domain Spells",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/牧师-知识领域.htm",
+   "alsoIn": [],
+   "summary": "恒备法术：命令术、侦测魔法、鉴定术、侦测思想、解除魔法、回避侦测、巧言术、秘法眼、放逐术、探知术、突触静止等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "知识领域"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "恒备法术：命令术、侦测魔法、鉴定术、侦测思想、解除魔法、回避侦测、巧言术、秘法眼、放逐术、探知术、突触静止等。"
+  },
+  {
+   "id": "feature:咒火术法·砥砺咒火",
+   "name": "砥砺咒火",
+   "en": "Honed Spellfire",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/术士-咒火术法.htm",
+   "alsoIn": [],
+   "summary": "炽焰鼓舞临时生命值加术士等级；辉耀之火伤害升为1d8。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "咒火术法"
+   },
+   "level": 14,
+   "action": "passive",
+   "mechanics": "炽焰鼓舞临时生命值加术士等级；辉耀之火伤害升为1d8。",
+   "dice": "1d8"
+  },
+  {
+   "id": "feature:知识领域·神圣预知",
+   "name": "神圣预知",
+   "en": "Divine Foreknowledge",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/牧师-知识领域.htm",
+   "alsoIn": [],
+   "summary": "附赠动作1小时内D20检定有优势。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "知识领域"
+   },
+   "level": 17,
+   "action": "bonus",
+   "mechanics": "附赠动作1小时内D20检定有优势。",
+   "uses": {
+    "count": "1(耗六环以上法术位可再用)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:旗将·群体恢复",
+   "name": "群体恢复",
+   "en": "Group Recovery",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/战士-旗将.htm",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "使用回气时，可让30尺光环内魅力调整值数量的盟友各恢复1d4+战士等级生命值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "旗将",
+    "subclassAliases": [
+     "紫龙骑士"
+    ]
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "使用回气时，可让30尺光环内魅力调整值数量的盟友各恢复1d4+战士等级生命值。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   },
+   "heal": "1d4+战士等级"
+  },
+  {
+   "id": "feature:剑咏者·胜利之歌",
+   "name": "胜利之歌",
+   "en": "Song of Victory",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/法师-剑咏者.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚",
+    "剑湾冒险者指南"
+   ],
+   "summary": "剑歌期间施放动作法术后，可附赠动作用武器攻击一次。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "剑咏者"
+   },
+   "level": 14,
+   "action": "bonus",
+   "mechanics": "剑歌期间施放动作法术后，可附赠动作用武器攻击一次。"
+  },
+  {
+   "id": "feature:三神门徒·袭杀恐惧",
+   "name": "袭杀恐惧",
+   "en": "Strike Fear",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/游荡者-三神门徒.htm",
+   "alsoIn": [],
+   "summary": "获得诡诈打击选项震怖(1d6)：目标感知豁免失败恐慌1分钟，你对其攻击有优势。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "三神门徒"
+   },
+   "level": 9,
+   "action": "special",
+   "mechanics": "获得诡诈打击选项震怖(1d6)：目标感知豁免失败恐慌1分钟，你对其攻击有优势。",
+   "dice": "1d6",
+   "save": {
+    "ability": "wis",
+    "dc": "诡诈打击DC"
+   },
+   "conditions": [
+    "frightened"
+   ]
+  },
+  {
+   "id": "feature:旗将·集结如潮",
+   "name": "集结如潮",
+   "en": "Rallying Surge",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/战士-旗将.htm",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "使用动作如潮时，30尺内魅力调整值数量的盟友可各用反应攻击或移动一半速度。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "旗将",
+    "subclassAliases": [
+     "紫龙骑士"
+    ]
+   },
+   "level": 10,
+   "action": "special",
+   "mechanics": "使用动作如潮时，30尺内魅力调整值数量的盟友可各用反应攻击或移动一半速度。"
+  },
+  {
+   "id": "feature:剑咏者·额外攻击",
+   "name": "额外攻击",
+   "en": "Extra Attack",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/法师-剑咏者.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚",
+    "剑湾冒险者指南"
+   ],
+   "summary": "攻击动作可攻击两次，其中一次可换为施放动作戏法。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "剑咏者"
+   },
+   "level": 6,
+   "action": "passive",
+   "mechanics": "攻击动作可攻击两次，其中一次可换为施放动作戏法。"
+  },
+  {
+   "id": "feature:旗将·骑士礼节",
+   "name": "骑士礼节",
+   "en": "Knightly Envoy",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第一章/子职/战士-旗将.htm",
+   "alsoIn": [],
+   "summary": "可免费仪式施放通晓语言(魅力为属性)，学一门语言，并在洞悉、威吓、表演、游说中选一项熟练。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "旗将",
+    "subclassAliases": [
+     "紫龙骑士"
+    ]
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "可免费仪式施放通晓语言(魅力为属性)，学一门语言，并在洞悉、威吓、表演、游说中选一项熟练。"
+  }
+ ]
+}

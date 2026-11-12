@@ -1,0 +1,296 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "艾伯伦：奇械锻炉",
+ "generated": "2026-11-09",
+ "count": 9,
+ "entries": [
+  {
+   "id": "item:回力武器",
+   "name": "回力武器",
+   "en": "Returning Weapon",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/附录A：魔法物品.htm",
+   "alsoIn": [],
+   "summary": "武器（具有投掷词条的任意简易或军用），非普通。攻击+1、伤害+1",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "具有投掷词条的任意简易或军用",
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:思维砥戒",
+   "name": "思维砥戒",
+   "en": "Mind Sharpener",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/附录A：魔法物品.htm",
+   "alsoIn": [],
+   "summary": "戒指，非普通，需同调。4充能，1d4 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "戒指",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "4",
+    "regain": "1d4 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:折返之靴",
+   "name": "折返之靴",
+   "en": "Boots of the Winding Path",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/附录A：魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:斥力之盾",
+   "name": "斥力之盾",
+   "en": "Repulsion Shield",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/附录A：魔法物品.htm",
+   "alsoIn": [],
+   "summary": "护甲（盾牌），非普通。AC+1；4充能，1d4 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "盾牌",
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "ac": 1
+   },
+   "charges": {
+    "max": "4",
+    "regain": "1d4 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:法力恢复戒指",
+   "name": "法力恢复戒指",
+   "en": "Spell-Refueling Ring",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/附录A：魔法物品.htm",
+   "alsoIn": [],
+   "summary": "戒指，非普通，需施法者同调。",
+   "uncertain": [],
+   "itemType": "戒指",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true,
+    "by": "施法者"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:百变工具",
+   "name": "百变工具",
+   "en": "Manifold Tool",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/附录A：魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，普通，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:眩目武器",
+   "name": "眩目武器",
+   "en": "Dazzling Weapon",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/附录A：魔法物品.htm",
+   "alsoIn": [],
+   "summary": "武器（任意简易或军用），珍稀，需同调。攻击+1、伤害+1；4充能，1d4 每日黎明恢复；DC15体质豁免；涉及目盲",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意简易或军用",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": {
+    "max": "4",
+    "regain": "1d4 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "con"
+   },
+   "conditions": [
+    "blinded"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:警觉之盔",
+   "name": "警觉之盔",
+   "en": "Helm of Awareness",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/附录A：魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:连射武器",
+   "name": "连射武器",
+   "en": "Repeating Shot",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/附录A：魔法物品.htm",
+   "alsoIn": [],
+   "summary": "武器（具有弹药词条的任意简易或军用），非普通，需同调。攻击+1、伤害+1",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "具有弹药词条的任意简易或军用",
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

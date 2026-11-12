@@ -1,0 +1,431 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "矿坑方尖碑",
+ "generated": "2026-11-09",
+ "count": 12,
+ "entries": [
+  {
+   "id": "item:变巨斗篷",
+   "name": "变巨斗篷",
+   "en": "Cape of Enlargement",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/矿坑方尖碑/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。3充能，1d3 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:弑灵者",
+   "name": "弑灵者",
+   "en": "Flayer Slayer",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/矿坑方尖碑/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "武器（巨斧），珍稀，需同调。攻击+1、伤害+1；额外1d12挥砍；DC15力量豁免",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "巨斧",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "1d12",
+     "type": "挥砍",
+     "when": "额外"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "str"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:心灵守卫王冠",
+   "name": "心灵守卫王冠",
+   "en": "Mindguard Crown",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/矿坑方尖碑/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:心灵晶体",
+   "name": "心灵晶体",
+   "en": "Mind Crystal",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/矿坑方尖碑/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，稀有度多种。消耗品",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "多种",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true,
+   "rarityList": []
+  },
+  {
+   "id": "item:心灵震爆小圆帽",
+   "name": "心灵震爆小圆帽",
+   "en": "Mindblasting Cap",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/矿坑方尖碑/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。DC15智力豁免；涉及震慑",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "5d8",
+     "type": "心灵"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "int"
+   },
+   "conditions": [
+    "stunned"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:泥岩高塔",
+   "name": "泥岩高塔",
+   "en": "Mudslick Tower",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/矿坑方尖碑/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀。可施放敲击术、祈愿术；DC15敏捷豁免",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "敲击术",
+     "level": 2,
+     "cost": null
+    },
+    {
+     "name": "祈愿术",
+     "level": 8,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "10d10",
+     "type": "钝击"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "dex"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:演说家戒指",
+   "name": "演说家戒指",
+   "en": "Ring of the Orator",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/矿坑方尖碑/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "戒指，非普通，需同调。6充能，1d6 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "戒指",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "6",
+    "regain": "1d6 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:灵能坚韧药水",
+   "name": "灵能坚韧药水",
+   "en": "Potion of Psionic Fortitude",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/矿坑方尖碑/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "药水，非普通。消耗品",
+   "uncertain": [],
+   "itemType": "药水",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:荧光战镐",
+   "name": "荧光战镐",
+   "en": "Luminous War Pick",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/矿坑方尖碑/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "武器（战镐），珍稀，需同调。攻击+1、伤害+1；可施放昼明术",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "战镐",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [
+    {
+     "name": "昼明术",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:蜘蛛法杖",
+   "name": "蜘蛛法杖",
+   "en": "Spider Staff",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/矿坑方尖碑/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "法杖，珍稀。10充能；额外1d6毒素；DC15豁免；词条：法术",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "法杖",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": {
+    "max": "10",
+    "regain": null
+   },
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "1d6",
+     "type": "毒素",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:迅捷手镯",
+   "name": "迅捷手镯",
+   "en": "Bracers of Celerity",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/矿坑方尖碑/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:防护法杖",
+   "name": "防护法杖",
+   "en": "Staff of Defense",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/矿坑方尖碑/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "法杖，珍稀。10充能，1d6+4 每日黎明恢复；词条：法术",
+   "uncertain": [],
+   "itemType": "法杖",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": {
+    "max": "10",
+    "regain": "1d6+4 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

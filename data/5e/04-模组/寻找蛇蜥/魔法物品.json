@@ -1,0 +1,38 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "寻找蛇蜥",
+ "generated": "2026-11-09",
+ "count": 1,
+ "entries": [
+  {
+   "id": "item:凛冬暗蚀",
+   "name": "凛冬暗蚀",
+   "en": "Winter's Dark Bite",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/寻找蛇蜥/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（巨剑），非普通。",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "巨剑",
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

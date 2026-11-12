@@ -1,0 +1,61 @@
+{
+ "category": "feature",
+ "type": "种族与背景",
+ "source": "巨人之荣耀",
+ "generated": "2026-11-09",
+ "count": 2,
+ "entries": [
+  {
+   "id": "background:巨人养子",
+   "type": "background",
+   "name": "巨人养子",
+   "en": "Giant Foundling",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/角色选项/背景_巨人养子.htm",
+   "alsoIn": [],
+   "summary": "巨人养子背景：起源专长巨人打击(from-feature)；技能威吓、求生；特性巨人打击",
+   "uncertain": [],
+   "abilityScores": null,
+   "feat": "巨人打击",
+   "featParam": "from-feature",
+   "skills": [
+    "威吓",
+    "求生"
+   ],
+   "skillsNote": null,
+   "tool": null,
+   "languages": "巨人语与另一项你自选的语言",
+   "equipment": "一个背包，一套旅行服装，一块可以令你回忆起家乡的小石头或小树枝，以及一个装有10gp的小包",
+   "featureName": "巨人打击",
+   "edition": "2014"
+  },
+  {
+   "id": "background:符文雕刻者",
+   "type": "background",
+   "name": "符文雕刻者",
+   "en": "Rune Carver",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/角色选项/背景_符文雕刻者.htm",
+   "alsoIn": [],
+   "summary": "符文雕刻者背景：起源专长符文塑形者(from-feature)；技能历史、察觉；工具一套工匠工具；特性符文塑形者",
+   "uncertain": [],
+   "abilityScores": null,
+   "feat": "符文塑形者",
+   "featParam": "from-feature",
+   "skills": [
+    "历史",
+    "察觉"
+   ],
+   "skillsNote": null,
+   "tool": "一套工匠工具",
+   "languages": "巨人语",
+   "equipment": "一套工匠工具（由你选择的一套），一把小刀，一块打磨石，一套普通服装，以及一个装有10gp的小包",
+   "featureName": "符文塑形者",
+   "edition": "2014"
+  }
+ ]
+}

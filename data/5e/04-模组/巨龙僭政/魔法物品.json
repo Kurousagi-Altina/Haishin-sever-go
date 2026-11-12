@@ -1,0 +1,232 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "巨龙僭政",
+ "generated": "2026-11-09",
+ "count": 6,
+ "entries": [
+  {
+   "id": "item:丰足酒杯",
+   "name": "丰足酒杯",
+   "en": "Tankard of Plenty",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/巨龙僭政/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，普通。3充能，全部 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "全部 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:凛冬魔杖",
+   "name": "凛冬魔杖",
+   "en": "Wand of Winter",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/巨龙僭政/魔法物品.html",
+   "alsoIn": [],
+   "summary": "魔杖，珍稀，需同调。7充能，1d6+1 每日黎明恢复；DC15豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "魔杖",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "7",
+    "regain": "1d6+1 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:利爪徽章",
+   "name": "利爪徽章",
+   "en": "Insignia of Claws",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/巨龙僭政/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通。攻击+1、伤害+1",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:哈兹瑞恩",
+   "name": "哈兹瑞恩",
+   "en": "Hazirawn",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/巨龙僭政/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（巨剑），传说，需同调。攻击+1、伤害+1；4充能，1d4 每日午夜恢复；可施放侦测魔法；DC15体质豁免；词条：提升效能、法术、致伤",
+   "uncertain": [
+    "spells"
+   ],
+   "itemType": "武器",
+   "baseItem": "巨剑",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": {
+    "max": "4",
+    "regain": "1d4 每日午夜"
+   },
+   "spells": [
+    {
+     "name": "侦测魔法",
+     "level": 1,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "con"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:龙后面具",
+   "name": "龙后面具",
+   "en": "Mask of the Dragon Queen",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/巨龙僭政/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，神器，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "火焰"
+    },
+    {
+     "dice": "1d8",
+     "type": "寒冷"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:龙牙匕首",
+   "name": "龙牙匕首",
+   "en": "Dragontooth Dagger",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/巨龙僭政/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（匕首），珍稀。攻击+1、伤害+1；额外1d6强酸",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "匕首",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "1d6",
+     "type": "强酸",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

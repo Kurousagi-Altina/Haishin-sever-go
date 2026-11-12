@@ -1,0 +1,133 @@
+{
+ "category": "feature",
+ "type": "子职特性",
+ "source": "巨人之荣耀",
+ "generated": "2026-11-09",
+ "count": 5,
+ "entries": [
+  {
+   "id": "feature:巨人道途·伟力推动",
+   "name": "伟力推动",
+   "en": "Mighty Impel",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/角色选项/子职业选项_野蛮人_巨人道途.htm",
+   "alsoIn": [],
+   "summary": "狂暴时附赠动作把触及内中型以下生物抛到30尺内空位，非自愿者力量豁免。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "巨人道途"
+   },
+   "level": 10,
+   "action": "bonus",
+   "mechanics": "狂暴时附赠动作把触及内中型以下生物抛到30尺内空位，非自愿者力量豁免。",
+   "save": {
+    "ability": "str",
+    "dc": "8+熟练+力量"
+   },
+   "conditions": [
+    "prone"
+   ]
+  },
+  {
+   "id": "feature:巨人道途·元素战刃",
+   "name": "元素战刃",
+   "en": "Elemental Cleaver",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/角色选项/子职业选项_野蛮人_巨人道途.htm",
+   "alsoIn": [],
+   "summary": "进入狂暴时给持握武器注入强酸/寒冷/火焰/雷鸣/闪电：改为该类型并额外1d6，获得投掷属性并自动回手。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "巨人道途"
+   },
+   "level": 6,
+   "action": "special",
+   "mechanics": "进入狂暴时给持握武器注入强酸/寒冷/火焰/雷鸣/闪电：改为该类型并额外1d6，获得投掷属性并自动回手。",
+   "dice": [
+    [
+     6,
+     "1d6"
+    ],
+    [
+     14,
+     "2d6"
+    ]
+   ],
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "火焰"
+    }
+   ]
+  },
+  {
+   "id": "feature:巨人道途·创世巨像",
+   "name": "创世巨像",
+   "en": "Demiurgic Colossus",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/角色选项/子职业选项_野蛮人_巨人道途.htm",
+   "alsoIn": [],
+   "summary": "狂暴时触及再+10尺，体型可为大型或巨型，可投掷大型生物；元素战刃额外伤害升为2d6。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "巨人道途"
+   },
+   "level": 14,
+   "action": "passive",
+   "mechanics": "狂暴时触及再+10尺，体型可为大型或巨型，可投掷大型生物；元素战刃额外伤害升为2d6。",
+   "dice": "2d6"
+  },
+  {
+   "id": "feature:巨人道途·巨人之力",
+   "name": "巨人之力",
+   "en": "Giant's Power",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/角色选项/子职业选项_野蛮人_巨人道途.htm",
+   "alsoIn": [],
+   "summary": "学会巨人语，并学会德鲁伊伎俩或奇术戏法(感知为属性)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "巨人道途"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "学会巨人语，并学会德鲁伊伎俩或奇术戏法(感知为属性)。"
+  },
+  {
+   "id": "feature:巨人道途·巨人之灾",
+   "name": "巨人之灾",
+   "en": "Giant's Havoc",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/角色选项/子职业选项_野蛮人_巨人道途.htm",
+   "alsoIn": [],
+   "summary": "狂暴期间：力量投掷武器命中加狂暴伤害；触及+5尺并变大型。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "巨人道途"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "狂暴期间：力量投掷武器命中加狂暴伤害；触及+5尺并变大型。"
+  }
+ ]
+}

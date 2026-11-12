@@ -1,0 +1,53 @@
+{
+ "category": "feat",
+ "type": "专长",
+ "source": "万象无常书",
+ "generated": "2026-11-09",
+ "count": 1,
+ "entries": [
+  {
+   "id": "feat:卡牌占卜师",
+   "name": "卡牌占卜师",
+   "en": "Cartomancer",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/贤者/专长：卡牌占卜师.htm",
+   "alsoIn": [],
+   "summary": "纸牌作法器，得魔法伎俩；长休时把一个法术注入卡牌，8小时内可附赠动作打出（具体法术位规则有争议）。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "施法特性"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:魔法伎俩",
+    "附赠动作"
+   ],
+   "mechanics": [
+    {
+     "name": "卡牌诈术",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:魔法伎俩",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "隐藏王牌",
+     "trigger": "当你完成一次长休时",
+     "action": "bonus",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  }
+ ]
+}

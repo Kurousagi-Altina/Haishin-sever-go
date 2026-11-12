@@ -1,0 +1,869 @@
+{
+ "category": "spell",
+ "type": "法术",
+ "source": "塔莎的万事坩埚",
+ "generated": "2026-11-09",
+ "count": 12,
+ "entries": [
+  {
+   "id": "spell:剑刃爆发",
+   "name": "剑刃爆发",
+   "en": "Sword Burst",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/法术/法术详述/戏法.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "周围5尺内的生物进行敏捷豁免，失败受1d6力场伤害，成功不受伤",
+   "uncertain": [],
+   "level": 0,
+   "school": "咒法",
+   "classes": [
+    "奇械师",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "none",
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "emanation",
+    "size": 5,
+    "width": null,
+    "height": null,
+    "origin": "self"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": [
+    [
+     5,
+     "2d6"
+    ],
+    [
+     11,
+     "3d6"
+    ],
+    [
+     17,
+     "4d6"
+    ]
+   ],
+   "lasting": false
+  },
+  {
+   "id": "spell:塔莎心灵鞭",
+   "name": "塔莎心灵鞭",
+   "en": "Tasha's Mind Whip",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/法术/法术详述/2环.html",
+   "alsoIn": [],
+   "summary": "目标进行智力豁免，失败受3d6心灵伤害，成功减半",
+   "uncertain": [],
+   "level": 2,
+   "school": "惑控",
+   "classes": [
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 90
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "1轮",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": "int",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "3d6",
+     "type": "心灵"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 1,
+    "text": "每高1环：目标/数量+1",
+    "step": 1,
+    "from": 2
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:塔莎超凡形态",
+   "name": "塔莎超凡形态",
+   "en": "Tasha's Otherworldly Guise",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/法术/法术详述/6环.html",
+   "alsoIn": [],
+   "summary": "专注：选上位/下位面形态，免疫对应伤害与状态，AC+2、获得飞行与魔法攻击。",
+   "uncertain": [],
+   "level": 6,
+   "school": "变化",
+   "classes": [
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "bonus",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一件的镶嵌有外层位面标记的物件，价值至少500gp",
+    "mCost": 500,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:塔莎酸蚀酿",
+   "name": "塔莎酸蚀酿",
+   "en": "Tasha's Caustic Brew",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/法术/法术详述/1环.html",
+   "alsoIn": [],
+   "summary": "30尺长直线内的生物进行敏捷豁免，失败受2d4强酸伤害，成功不受伤；需专注",
+   "uncertain": [],
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "奇械师",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一点腐烂的食物",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "none",
+   "damage": [
+    {
+     "dice": "2d4",
+     "type": "强酸"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "line",
+    "size": 30,
+    "width": null,
+    "height": null,
+    "origin": "self"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "2d4",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+2d4",
+    "step": 1,
+    "from": 1
+   },
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:智能壁垒",
+   "name": "智能壁垒",
+   "en": "Intellect Fortress",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/法术/法术详述/3环.html",
+   "alsoIn": [],
+   "summary": "专注：目标获得心灵伤害抗性，智力、感知、魅力豁免优势。",
+   "uncertain": [],
+   "level": 3,
+   "school": "防护",
+   "classes": [
+    "奇械师",
+    "吟游诗人",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 30
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，最长1小时",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 1,
+    "text": "每高1环：目标/数量+1",
+    "step": 1,
+    "from": 3
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:暗影衍体召唤术",
+   "name": "暗影衍体召唤术",
+   "en": "Summon Shadowspawn",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/法术/法术详述/3环.html",
+   "alsoIn": [],
+   "summary": "专注：召唤暗影灵魄（暴怒/绝望/恐惧），随升环强化。",
+   "uncertain": [],
+   "level": 3,
+   "school": "咒法",
+   "classes": [
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 90
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "包有眼泪的宝石，价值至少300gp",
+    "mCost": 300,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1小时",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 0,
+    "summonScales": true,
+    "text": "召唤物数据按所用法术位环阶计算",
+    "from": 3,
+    "step": 1
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:灾厄之刃",
+   "name": "灾厄之刃",
+   "en": "Blade of Disaster",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/法术/法术详述/9环.html",
+   "alsoIn": [
+    "被遗忘的国度"
+   ],
+   "summary": "专注：召出空间裂隙之刃，附赠动作攻击两次，每次近战法术攻击命中4d12力场伤害。",
+   "uncertain": [],
+   "level": 9,
+   "school": "咒法",
+   "classes": [
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "bonus",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": "melee",
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "4d12",
+     "type": "力场"
+    },
+    {
+     "dice": "8d12",
+     "type": "力场"
+    },
+    {
+     "dice": "12d12",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false,
+   "legacy": true
+  },
+  {
+   "id": "spell:翠炎剑",
+   "name": "翠炎剑",
+   "en": "Green-Flame Blade",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/法术/法术详述/戏法.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "近战武器攻击，命中则火焰跳至第二个目标，造成施法调整值火焰伤害，随等级增加。",
+   "uncertain": [
+    "damage"
+   ],
+   "level": 0,
+   "school": "塑能",
+   "classes": [
+    "奇械师",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": "一把价值至少1sp的近战武器",
+    "mCost": 0.1,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": "melee",
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "0",
+     "type": "火焰",
+     "addsMod": true,
+     "when": "跳到第二个目标，伤害为施法属性调整值"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "emanation",
+    "size": 5,
+    "width": null,
+    "height": null,
+    "origin": "self"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "cantripExtraOnHit": [
+    [
+     5,
+     "1d8"
+    ],
+    [
+     11,
+     "2d8"
+    ],
+    [
+     17,
+     "3d8"
+    ]
+   ],
+   "cantripSecondary": [
+    [
+     5,
+     "1d8"
+    ],
+    [
+     11,
+     "2d8"
+    ],
+    [
+     17,
+     "3d8"
+    ]
+   ],
+   "lasting": false
+  },
+  {
+   "id": "spell:蓝纱一梦",
+   "name": "蓝纱一梦",
+   "en": "Dream of the Blue Veil",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/法术/法术详述/7环.html",
+   "alsoIn": [],
+   "summary": "至多八人进入昏迷并被传送到另一个物质位面的世界。",
+   "uncertain": [],
+   "level": 7,
+   "school": "咒法",
+   "classes": [
+    "吟游诗人",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 10,
+    "unit": "minute",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 20
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "来自目标世界的一个魔法物品或一个自愿生物",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "6小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [
+    "unconscious"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:轰雷剑",
+   "name": "轰雷剑",
+   "en": "Booming Blade",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/法术/法术详述/戏法.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "近战武器攻击，命中则目标在你下回合前移动5尺以上会受雷鸣伤害，随等级增加。",
+   "uncertain": [
+    "damage"
+   ],
+   "level": 0,
+   "school": "塑能",
+   "classes": [
+    "奇械师",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": "一把至少价值1sp的近战武器",
+    "mCost": 0.1,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "1轮",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": "melee",
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": "雷鸣",
+     "when": "目标在你下回合前自愿移动5尺以上时"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "emanation",
+    "size": 5,
+    "width": null,
+    "height": null,
+    "origin": "self"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": [
+    [
+     5,
+     "2d8"
+    ],
+    [
+     11,
+     "3d8"
+    ],
+    [
+     17,
+     "4d8"
+    ]
+   ],
+   "cantripExtraOnHit": [
+    [
+     5,
+     "1d8"
+    ],
+    [
+     11,
+     "2d8"
+    ],
+    [
+     17,
+     "3d8"
+    ]
+   ],
+   "lasting": false
+  },
+  {
+   "id": "spell:闪电牵引",
+   "name": "闪电牵引",
+   "en": "Lightning Lure",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/法术/法术详述/戏法.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "目标进行力量豁免，失败受1d8闪电伤害，成功不受伤",
+   "uncertain": [],
+   "level": 0,
+   "school": "塑能",
+   "classes": [
+    "奇械师",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "str",
+   "onSave": "none",
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": "闪电"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": [
+    [
+     5,
+     "2d8"
+    ],
+    [
+     11,
+     "3d8"
+    ],
+    [
+     17,
+     "4d8"
+    ]
+   ],
+   "lasting": false
+  },
+  {
+   "id": "spell:魂灵环绕",
+   "name": "魂灵环绕",
+   "en": "Spirit Shroud",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/法术/法术详述/3环.html",
+   "alsoIn": [],
+   "summary": "专注：10尺内命中的攻击额外1d8（光耀/黯蚀/寒冷）并阻止回复，敌人减速。",
+   "uncertain": [
+    "damage"
+   ],
+   "level": 3,
+   "school": "死灵",
+   "classes": [
+    "牧师",
+    "圣武士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "bonus",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": ""
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d8",
+    "perLevelTargets": 0,
+    "text": "每高2环：伤害/效果骰+1d8",
+    "step": 2,
+    "from": 3
+   },
+   "cantripScaling": null,
+   "lasting": false
+  }
+ ]
+}

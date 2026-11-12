@@ -1,0 +1,533 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "塞洛斯之神话奥德赛",
+ "generated": "2026-11-09",
+ "count": 13,
+ "entries": [
+  {
+   "id": "item:一石二鸟投石索",
+   "name": "一石二鸟投石索",
+   "en": "Two-Birds Sling",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/宝藏/珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（投石索），珍稀。攻击+1、伤害+1",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "投石索",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:克鲁索尔，赫利欧德之矛",
+   "name": "克鲁索尔，赫利欧德之矛",
+   "en": "Khrusor, Spear of Heliod",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/宝藏/克鲁索尔赫利欧德之矛.htm",
+   "alsoIn": [],
+   "summary": "武器（矛），神器，需同调。攻击+3、伤害+3；10充能，1d6+4 每日黎明恢复；DC18豁免；词条：阳炎之矛、太阳之祝福、发光、烈阳复仇",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "武器",
+   "baseItem": "矛",
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 3,
+    "damage": 3
+   },
+   "charges": {
+    "max": "10",
+    "regain": "1d6+4 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "2d8",
+     "type": "光耀"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 18,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:塞壬之歌里拉琴",
+   "name": "塞壬之歌里拉琴",
+   "en": "Siren Song Lyre",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/宝藏/珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:戴刻拉，塔萨之双叉戟",
+   "name": "戴刻拉，塔萨之双叉戟",
+   "en": "Dekella，Bident of Thassa",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/宝藏/戴刻拉塔萨之双叉戟.htm",
+   "alsoIn": [],
+   "summary": "武器（三叉戟），神器，需同调。攻击+3、伤害+3；可施放完全变形术；DC18豁免；词条：深海之戟、深渊之祝福、支配深渊、水生变形术",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "武器",
+   "baseItem": "三叉戟",
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 3,
+    "damage": 3
+   },
+   "charges": null,
+   "spells": [
+    {
+     "name": "完全变形术",
+     "level": 9,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "2d10",
+     "type": "寒冷"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 18,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:水形药水",
+   "name": "水形药水",
+   "en": "Potion of Aqueous Form",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/宝藏/珍稀.htm",
+   "alsoIn": [],
+   "summary": "药水，珍稀。词条：液态行动、水之柔韧、限制；消耗品",
+   "uncertain": [],
+   "itemType": "药水",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:熔铜皮肤",
+   "name": "熔铜皮肤",
+   "en": "Molten Bronze Skin",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/宝藏/珍稀.htm",
+   "alsoIn": [],
+   "summary": "护甲（胸甲、半身板甲或板甲），珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "胸甲、半身板甲或板甲",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:艾菲西斯，倪勒娅之弓",
+   "name": "艾菲西斯，倪勒娅之弓",
+   "en": "Ephixis，Bow of Nylea",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/宝藏/艾菲西斯倪勒娅之弓.htm",
+   "alsoIn": [],
+   "summary": "武器（短弓），神器，需同调。攻击+3、伤害+3；可施放棘墙术、冰风暴；词条：荒野之弓、荒野之祝福、四季之箭、摧毁神弓；消耗品",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "短弓",
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 3,
+    "damage": 3
+   },
+   "charges": null,
+   "spells": [
+    {
+     "name": "棘墙术",
+     "level": 6,
+     "cost": null
+    },
+    {
+     "name": "冰风暴",
+     "level": 4,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:诸神之盔",
+   "name": "诸神之盔",
+   "en": "Helm of the Gods",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/宝藏/珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。3充能，1d3 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:阿克曼，普罗烽斯之锤",
+   "name": "阿克曼，普罗烽斯之锤",
+   "en": "Akmon, Hammer of Purphoros",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/宝藏/阿克曼普罗烽斯之锤.htm",
+   "alsoIn": [],
+   "summary": "武器（战锤），神器，需同调。攻击+3、伤害+3；DC18豁免；词条：锻造之锤、锻造之祝福、重新锻造、法术",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "武器",
+   "baseItem": "战锤",
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 3,
+    "damage": 3
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "3d10",
+     "type": "火焰"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 18,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:阿瑟蒙妮之弹丸",
+   "name": "阿瑟蒙妮之弹丸",
+   "en": "Sling Bullets of Althemone",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/宝藏/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（投石索弹丸），极珍稀。攻击+2、伤害+2；可施放放逐术；额外2d8闪电、1d10力场；DC15魅力豁免",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "投石索弹丸",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "attack": 2,
+    "damage": 2
+   },
+   "charges": null,
+   "spells": [
+    {
+     "name": "放逐术",
+     "level": 4,
+     "cost": null
+    }
+   ],
+   "extraDamage": [
+    {
+     "dice": "2d8",
+     "type": "闪电",
+     "when": "命中时"
+    },
+    {
+     "dice": "1d10",
+     "type": "力场",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "cha"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:飞行战车",
+   "name": "飞行战车",
+   "en": "Flying Chariot",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/宝藏/珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀。AC+1",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "ac": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:马斯提刻斯，厄睿柏斯之鞭",
+   "name": "马斯提刻斯，厄睿柏斯之鞭",
+   "en": "Mastix, Whip of Erebos",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/宝藏/马斯提刻斯厄睿柏斯之鞭.htm",
+   "alsoIn": [],
+   "summary": "武器（鞭），神器，需同调。攻击+3、伤害+3；可施放死亡法阵；额外2d8黯蚀；词条：逝者之鞭、逝者之祝福、厄睿柏斯之索求、摧毁神鞭",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "鞭",
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 3,
+    "damage": 3
+   },
+   "charges": null,
+   "spells": [
+    {
+     "name": "死亡法阵",
+     "level": 6,
+     "cost": null
+    }
+   ],
+   "extraDamage": [
+    {
+     "dice": "2d8",
+     "type": "黯蚀",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:魔异盒",
+   "name": "魔异盒",
+   "en": "Pyxis of Pandemonium",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/宝藏/传说.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说。可施放祝福术、重伤术、海啸术、石化术；DC17感知豁免；词条：诅咒",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "祝福术",
+     "level": 1,
+     "cost": null
+    },
+    {
+     "name": "重伤术",
+     "level": 6,
+     "cost": null
+    },
+    {
+     "name": "海啸术",
+     "level": 8,
+     "cost": null
+    },
+    {
+     "name": "石化术",
+     "level": 6,
+     "cost": null
+    },
+    {
+     "name": "迷宫术",
+     "level": 8,
+     "cost": null
+    },
+    {
+     "name": "疫病虫群",
+     "level": 5,
+     "cost": null
+    },
+    {
+     "name": "奥图迷舞",
+     "level": 6,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 17,
+    "ability": "wis"
+   },
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

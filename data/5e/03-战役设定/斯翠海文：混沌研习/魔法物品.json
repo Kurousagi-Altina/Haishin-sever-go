@@ -1,0 +1,273 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "斯翠海文：混沌研习",
+ "generated": "2026-11-09",
+ "count": 8,
+ "entries": [
+  {
+   "id": "item:斯翠海文三角旗",
+   "name": "斯翠海文三角旗",
+   "en": "Strixhaven Pennant",
+   "aliases": [],
+   "source": "斯翠海文：混沌研习",
+   "section": "setting",
+   "path": "topics/斯翠海文：混沌研习/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:斯翠海文可爱抱偶",
+   "name": "斯翠海文可爱抱偶",
+   "en": "Cuddly Strixhaven Mascot",
+   "aliases": [],
+   "source": "斯翠海文：混沌研习",
+   "section": "setting",
+   "path": "topics/斯翠海文：混沌研习/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，普通。涉及恐慌",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [
+    "frightened"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:无尽咖啡瓶",
+   "name": "无尽咖啡瓶",
+   "en": "Bottle of Boundless Coffee",
+   "aliases": [],
+   "source": "斯翠海文：混沌研习",
+   "section": "setting",
+   "path": "topics/斯翠海文：混沌研习/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:粹丽入门书",
+   "name": "粹丽入门书",
+   "en": "Prismari Primer",
+   "aliases": [],
+   "source": "斯翠海文：混沌研习",
+   "section": "setting",
+   "path": "topics/斯翠海文：混沌研习/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需施法者同调。有充能，1d3 每日黎明恢复",
+   "uncertain": [
+    "charges"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true,
+    "by": "施法者"
+   },
+   "bonus": null,
+   "charges": {
+    "max": null,
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:衡鉴入门书",
+   "name": "衡鉴入门书",
+   "en": "Lorehold Primer",
+   "aliases": [],
+   "source": "斯翠海文：混沌研习",
+   "section": "setting",
+   "path": "topics/斯翠海文：混沌研习/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需施法者同调。有充能，1d3 每日黎明恢复",
+   "uncertain": [
+    "charges"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true,
+    "by": "施法者"
+   },
+   "bonus": null,
+   "charges": {
+    "max": null,
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:量析入门书",
+   "name": "量析入门书",
+   "en": "Quandrix Primer",
+   "aliases": [],
+   "source": "斯翠海文：混沌研习",
+   "section": "setting",
+   "path": "topics/斯翠海文：混沌研习/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需施法者同调。有充能，1d3 每日黎明恢复",
+   "uncertain": [
+    "charges"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true,
+    "by": "施法者"
+   },
+   "bonus": null,
+   "charges": {
+    "max": null,
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:银毫入门书",
+   "name": "银毫入门书",
+   "en": "Silverquill Primer",
+   "aliases": [],
+   "source": "斯翠海文：混沌研习",
+   "section": "setting",
+   "path": "topics/斯翠海文：混沌研习/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需施法者同调。有充能，1d3 每日黎明恢复",
+   "uncertain": [
+    "charges"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true,
+    "by": "施法者"
+   },
+   "bonus": null,
+   "charges": {
+    "max": null,
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:靡华入门书",
+   "name": "靡华入门书",
+   "en": "Witherbloom Primer",
+   "aliases": [],
+   "source": "斯翠海文：混沌研习",
+   "section": "setting",
+   "path": "topics/斯翠海文：混沌研习/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需施法者同调。有充能，1d3 每日黎明恢复",
+   "uncertain": [
+    "charges"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true,
+    "by": "施法者"
+   },
+   "bonus": null,
+   "charges": {
+    "max": null,
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

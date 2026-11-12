@@ -1,0 +1,5255 @@
+{
+ "category": "spell",
+ "type": "法术",
+ "source": "珊娜萨的万事指南",
+ "generated": "2026-11-09",
+ "count": 85,
+ "entries": [
+  {
+   "id": "spell:举目皆敌",
+   "name": "举目皆敌",
+   "en": "Enemies Abound",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/3环.html",
+   "alsoIn": [],
+   "summary": "专注：智力豁免失败者把所有可见生物当敌人，随机选目标。",
+   "uncertain": [],
+   "level": 3,
+   "school": "惑控",
+   "classes": [
+    "吟游诗人",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 120
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "int",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:亚比达奇凋死术",
+   "name": "亚比达奇凋死术",
+   "en": "Abi-Dalzim's Horrid Wilting",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/8环.html",
+   "alsoIn": [],
+   "summary": "30尺立方内的生物进行体质豁免，失败受12d8黯蚀伤害，成功减半",
+   "uncertain": [],
+   "level": 8,
+   "school": "死灵",
+   "classes": [
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 150
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一小块海绵",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "12d8",
+     "type": "黯蚀"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "cube",
+    "size": 30,
+    "width": null,
+    "height": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:众星冠冕",
+   "name": "众星冠冕",
+   "en": "Crown of Stars",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/7环.html",
+   "alsoIn": [],
+   "summary": "七颗光点环绕你，附赠动作消耗一颗发动远程法术攻击，命中4d12光耀伤害。",
+   "uncertain": [],
+   "level": 7,
+   "school": "塑能",
+   "classes": [
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "1小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": "ranged",
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "4d12",
+     "type": "光耀"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 2,
+    "text": "每高1环：目标/数量+2",
+    "step": 1,
+    "from": 7
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:低阶恶魔召唤术",
+   "name": "低阶恶魔召唤术",
+   "en": "Summon Lesser Demon",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/3环.html",
+   "alsoIn": [],
+   "summary": "专注：按掷骰召唤多只低CR恶魔，但它们可能敌视你。",
+   "uncertain": [],
+   "level": 3,
+   "school": "咒法",
+   "classes": [
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "来自一个于24小时之内被杀的类人生物身上的一剂血液",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1小时",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 0,
+    "text": "6-7环恶魔数量翻倍，8-9环变为三倍",
+    "step": 1,
+    "from": 3
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:假寐术",
+   "name": "假寐术",
+   "en": "Catnap",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/3环.html",
+   "alsoIn": [],
+   "summary": "至多三名自愿生物昏迷10分钟，获得短休益处。",
+   "uncertain": [],
+   "level": 3,
+   "school": "惑控",
+   "classes": [
+    "吟游诗人",
+    "术士",
+    "法师",
+    "奇械师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 30
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": "一撮沙子",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "10分钟",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [
+    "unconscious"
+   ],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 1,
+    "text": "每高1环：目标/数量+1",
+    "step": 1,
+    "from": 3
+   },
+   "cantripScaling": null,
+   "lasting": false,
+   "legacy": true
+  },
+  {
+   "id": "spell:元素灾厄",
+   "name": "元素灾厄",
+   "en": "Elemental Bane",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/4环.html",
+   "alsoIn": [],
+   "summary": "专注：体质豁免失败者受所选元素伤害时额外2d6，并失去该抗性。",
+   "uncertain": [
+    "damage"
+   ],
+   "level": 4,
+   "school": "变化",
+   "classes": [
+    "德鲁伊",
+    "魔契师",
+    "法师",
+    "奇械师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 90
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "none",
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": ""
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 1,
+    "text": "每高1环：目标/数量+1",
+    "step": 1,
+    "from": 4
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:光墙术",
+   "name": "光墙术",
+   "en": "Wall of Light",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/5环.html",
+   "alsoIn": [],
+   "summary": "专注：光墙使过墙者目盲（体质豁免），每回合可射出光线造成4d8光耀伤害。",
+   "uncertain": [],
+   "level": 5,
+   "school": "塑能",
+   "classes": [
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 120
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一面手镜",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多10分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": "ranged",
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "4d8",
+     "type": "光耀"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "wall",
+    "size": 60,
+    "width": 5,
+    "height": 10,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [
+    "blinded"
+   ],
+   "upcast": {
+    "perLevelDice": "1d8",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d8",
+    "step": 1,
+    "from": 5
+   },
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:典礼术",
+   "name": "典礼术",
+   "en": "Ceremony",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/1环.html",
+   "alsoIn": [],
+   "summary": "进行宗教仪式：赎罪、圣水、成年礼、献身、婚礼或葬礼等，并给予相应小益处。",
+   "uncertain": [
+    "conditions"
+   ],
+   "level": 1,
+   "school": "防护",
+   "classes": [
+    "仪式；牧师",
+    "圣武士"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "hour",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "touch",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "价值25gp的银粉，作为该法术的耗材",
+    "mCost": 25,
+    "mConsumed": true
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:兽之联结",
+   "name": "兽之联结",
+   "en": "Beast Bond",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/1环.html",
+   "alsoIn": [],
+   "summary": "专注：与一只友好野兽心灵联结，攻击它时你们互相优势。",
+   "uncertain": [],
+   "level": 1,
+   "school": "预言",
+   "classes": [
+    "德鲁伊",
+    "游侠"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "touch",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一小块被布包裹的毛皮",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多10分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:写入空中",
+   "name": "写入空中",
+   "en": "Skywrite",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/2环.html",
+   "alsoIn": [],
+   "summary": "仪式、专注：在天空写出至多10个单词。",
+   "uncertain": [],
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "仪式；吟游诗人",
+    "德鲁伊",
+    "法师",
+    "奇械师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "sight",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1小时",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:创造人工生命体",
+   "name": "创造人工生命体",
+   "en": "Create Homunculus",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/6环.html",
+   "alsoIn": [],
+   "summary": "你受2d4穿刺伤害，造出一只人工生命体仆从。",
+   "uncertain": [],
+   "level": 6,
+   "school": "变化",
+   "classes": [
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "hour",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "touch",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "黏土，灰尘，曼德拉草根，以上材料作为该法术的耗材，以及价值1000gp的镶嵌宝石的匕首",
+    "mCost": 1000,
+    "mConsumed": true
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "2d4",
+     "type": "穿刺"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:创造篝火",
+   "name": "创造篝火",
+   "en": "Create Bonfire",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/戏法.html",
+   "alsoIn": [],
+   "summary": "目标进行敏捷豁免，失败受1d8火焰伤害，成功不受伤；需专注",
+   "uncertain": [],
+   "level": 0,
+   "school": "咒法",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "魔契师",
+    "法师",
+    "奇械师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "none",
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": "火焰"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": [
+    [
+     5,
+     "2d8"
+    ],
+    [
+     11,
+     "3d8"
+    ],
+    [
+     17,
+     "4d8"
+    ]
+   ],
+   "lasting": false
+  },
+  {
+   "id": "spell:原初守护",
+   "name": "原初守护",
+   "en": "Primordial Ward",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/6环.html",
+   "alsoIn": [],
+   "summary": "专注：获得五元素抗性，可用反应将一种抗性转为免疫。",
+   "uncertain": [],
+   "level": 6,
+   "school": "防护",
+   "classes": [
+    "德鲁伊"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:原初蛮击",
+   "name": "原初蛮击",
+   "en": "Primal Savagery",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/戏法.html",
+   "alsoIn": [],
+   "summary": "对目标进行近战法术攻击，命中受1d10强酸伤害",
+   "uncertain": [],
+   "level": 0,
+   "school": "变化",
+   "classes": [
+    "德鲁伊"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": "melee",
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "1d10",
+     "type": "强酸"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": [
+    [
+     5,
+     "2d10"
+    ],
+    [
+     11,
+     "3d10"
+    ],
+    [
+     17,
+     "4d10"
+    ]
+   ],
+   "lasting": false
+  },
+  {
+   "id": "spell:史尼洛雪球群",
+   "name": "史尼洛雪球群",
+   "en": "Snilloc's Snowball Swarm",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/2环.html",
+   "alsoIn": [],
+   "summary": "半径5尺球形内的生物进行敏捷豁免，失败受3d6寒冷伤害，成功减半",
+   "uncertain": [],
+   "level": 2,
+   "school": "塑能",
+   "classes": [
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 90
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一块冰或一小块白色岩石碎片",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "3d6",
+     "type": "寒冷"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "sphere",
+    "size": 5,
+    "height": null,
+    "width": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d6",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d6",
+    "step": 1,
+    "from": 2
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:吸收元素",
+   "name": "吸收元素",
+   "en": "Absorb Elements",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/1环.html",
+   "alsoIn": [],
+   "summary": "反应：对触发的元素伤害获得抗性，下次近战攻击追加1d6同类型伤害。",
+   "uncertain": [
+    "damage"
+   ],
+   "level": 1,
+   "school": "防护",
+   "classes": [
+    "德鲁伊",
+    "游侠",
+    "术士",
+    "法师",
+    "奇械师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "reaction",
+    "reactionTrigger": "当你受到强酸、寒冷、火焰、闪电、或雷鸣伤害时执行"
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "1轮",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": ""
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d6",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d6",
+    "step": 1,
+    "from": 1
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:圈套术",
+   "name": "圈套术",
+   "en": "Snare",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/1环.html",
+   "alsoIn": [],
+   "summary": "半径5尺柱形内的生物进行敏捷豁免，失败陷入束缚",
+   "uncertain": [
+    "conditions"
+   ],
+   "level": 1,
+   "school": "防护",
+   "classes": [
+    "奇械师",
+    "德鲁伊",
+    "游侠",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "minute",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "touch",
+    "ft": null
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": "25尺的线绳，作为该法术的耗材",
+    "mCost": 0,
+    "mConsumed": true
+   },
+   "duration": {
+    "text": "8小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "cylinder",
+    "size": 5,
+    "height": null,
+    "width": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [
+    "restrained"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:土石喷发",
+   "name": "土石喷发",
+   "en": "Erupting Earth",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/3环.html",
+   "alsoIn": [],
+   "summary": "20尺立方内的生物进行敏捷豁免，失败受3d12钝击伤害，成功减半",
+   "uncertain": [],
+   "level": 3,
+   "school": "变化",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 120
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一块黑曜石",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "3d12",
+     "type": "钝击"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "cube",
+    "size": 20,
+    "width": null,
+    "height": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d12",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d12",
+    "step": 1,
+    "from": 3
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:地之骨",
+   "name": "地之骨",
+   "en": "Bones of the Earth",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/6环.html",
+   "alsoIn": [],
+   "summary": "半径10尺球形内的生物进行敏捷豁免，失败受6d6钝击伤害并陷入束缚，成功不受伤",
+   "uncertain": [
+    "area"
+   ],
+   "level": 6,
+   "school": "变化",
+   "classes": [
+    "德鲁伊"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 120
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "none",
+   "damage": [
+    {
+     "dice": "6d6",
+     "type": "钝击"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "sphere",
+    "size": 10,
+    "height": null,
+    "width": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [
+    "restrained"
+   ],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 2,
+    "text": "每高1环：多升起2根石柱",
+    "step": 1,
+    "from": 6
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:地狱呼唤",
+   "name": "地狱呼唤",
+   "en": "Infernal Calling",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/5环.html",
+   "alsoIn": [],
+   "summary": "专注：召唤CR6以下魔鬼，它可能挣脱你的控制。",
+   "uncertain": [],
+   "level": 5,
+   "school": "咒法",
+   "classes": [
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "minute",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 90
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一块至少价值999gp的红宝石",
+    "mCost": 999,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1小时",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 0,
+    "text": "每高1环：魔鬼CR上限+1",
+    "step": 1,
+    "from": 5
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:地缚",
+   "name": "地缚",
+   "en": "Earthbind",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/2环.html",
+   "alsoIn": [],
+   "summary": "专注：力量豁免失败的飞行生物飞行速度降为0并缓降。",
+   "uncertain": [],
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 300
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "str",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:地颤",
+   "name": "地颤",
+   "en": "Earth Tremor",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/1环.html",
+   "alsoIn": [],
+   "summary": "目标进行敏捷豁免，失败受1d6钝击伤害并陷入倒地，成功不受伤",
+   "uncertain": [],
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "吟游诗人",
+    "德鲁伊",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 10
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "none",
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "钝击"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [
+    "prone"
+   ],
+   "upcast": {
+    "perLevelDice": "1d6",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d6",
+    "step": 1,
+    "from": 1
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:坚固堡垒",
+   "name": "坚固堡垒",
+   "en": "Mighty Fortress",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/8环.html",
+   "alsoIn": [],
+   "summary": "从地面升起120尺见方的石质堡垒与城堡，并附带100名隐形仆从，永久存在。",
+   "uncertain": [
+    "conditions"
+   ],
+   "level": 8,
+   "school": "咒法",
+   "classes": [
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "minute",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 5280
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一颗价值至少500gp的钻石，作为该法术的耗材",
+    "mCost": 500,
+    "mConsumed": true
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:塑土术",
+   "name": "塑土术",
+   "en": "Mold Earth",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/戏法.html",
+   "alsoIn": [],
+   "summary": "改造5立方尺的泥土或岩石：挖开、改变外观或造成困难地形。",
+   "uncertain": [],
+   "level": 0,
+   "school": "变化",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 30
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即或1个小时（见下文）",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "cube",
+    "size": 5,
+    "width": null,
+    "height": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:大漩涡",
+   "name": "大漩涡",
+   "en": "Maelstrom",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/5环.html",
+   "alsoIn": [],
+   "summary": "目标进行力量豁免，失败受6d6钝击伤害，成功不受伤；需专注",
+   "uncertain": [],
+   "level": 5,
+   "school": "塑能",
+   "classes": [
+    "德鲁伊"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 120
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "折成漏斗状的纸张或叶片",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "str",
+   "onSave": "none",
+   "damage": [
+    {
+     "dice": "6d6",
+     "type": "钝击"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:守护之风",
+   "name": "守护之风",
+   "en": "Warding Wind",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/2环.html",
+   "alsoIn": [],
+   "summary": "专注：10尺半径强风围绕你，使区内耳聋、灭火、加劲远程攻击劣势。",
+   "uncertain": [
+    "conditions"
+   ],
+   "level": 2,
+   "school": "塑能",
+   "classes": [
+    "吟游诗人",
+    "德鲁伊",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多10分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "emanation",
+    "size": 10,
+    "height": null,
+    "width": null,
+    "origin": "self"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:寒冰赋权",
+   "name": "寒冰赋权",
+   "en": "Investiture of Ice",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/6环.html",
+   "alsoIn": [],
+   "summary": "专注：免疫寒冷、抗火焰，周围冻结为困难地形，可用动作放出15尺寒风锥4d6寒冷。",
+   "uncertain": [],
+   "level": 6,
+   "school": "变化",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多10分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "4d6",
+     "type": "寒冷"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "emanation",
+    "size": 10,
+    "height": null,
+    "width": null,
+    "origin": "self"
+   },
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:寻获高等坐骑",
+   "name": "寻获高等坐骑",
+   "en": "Find Greater Steed",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/4环.html",
+   "alsoIn": [],
+   "summary": "召唤高等坐骑（狮鹫、天马等），可飞行。",
+   "uncertain": [],
+   "level": 4,
+   "school": "咒法",
+   "classes": [
+    "圣武士"
+   ],
+   "castingTime": {
+    "amount": 10,
+    "unit": "minute",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 30
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:幻影巨龙",
+   "name": "幻影巨龙",
+   "en": "Illusory Dragon",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/8环.html",
+   "alsoIn": [],
+   "summary": "专注：造出巨型阴影龙，敌人感知豁免失败恐慌，可吐息造成伤害。",
+   "uncertain": [
+    "damage"
+   ],
+   "level": 8,
+   "school": "幻术",
+   "classes": [
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 120
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "wis",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "7d6",
+     "type": ""
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "cone",
+    "size": 60,
+    "width": null,
+    "height": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true,
+   "legacy": true
+  },
+  {
+   "id": "spell:幽影刃",
+   "name": "幽影刃",
+   "en": "Shadow Blade",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/2环.html",
+   "alsoIn": [],
+   "summary": "专注：召出幽影剑，命中2d8心灵伤害，在暗处攻击优势，可投掷。",
+   "uncertain": [],
+   "level": 2,
+   "school": "幻术",
+   "classes": [
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "bonus",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "2d8",
+     "type": "心灵"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 0,
+    "text": "3-4环伤害3d8，5-6环4d8，7环起5d8",
+    "step": 1,
+    "from": 2
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:弹射术",
+   "name": "弹射术",
+   "en": "Catapult",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/1环.html",
+   "alsoIn": [],
+   "summary": "目标进行敏捷豁免，失败受3d8钝击伤害，成功不受伤",
+   "uncertain": [],
+   "level": 1,
+   "school": "变化",
+   "classes": [
+    "术士",
+    "法师",
+    "奇械师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "none",
+   "damage": [
+    {
+     "dice": "3d8",
+     "type": "钝击"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d8",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d8",
+    "step": 1,
+    "from": 1
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:律令痛苦",
+   "name": "律令痛苦",
+   "en": "Power Word Pain",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/7环.html",
+   "alsoIn": [],
+   "summary": "生命值100以下的目标受剧痛，限制速度与检定，施法需体质豁免。",
+   "uncertain": [],
+   "level": 7,
+   "school": "惑控",
+   "classes": [
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false,
+   "legacy": true
+  },
+  {
+   "id": "spell:德鲁伊林地",
+   "name": "德鲁伊林地",
+   "en": "Druid Grove",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/6环.html",
+   "alsoIn": [],
+   "summary": "守护户外区域，可设置陷阱和防护，持续24小时。",
+   "uncertain": [],
+   "level": 6,
+   "school": "防护",
+   "classes": [
+    "德鲁伊"
+   ],
+   "castingTime": {
+    "amount": 10,
+    "unit": "minute",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "touch",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一个在满月之光下以黄金镰刀收割的槲寄生，作为该法术的耗材",
+    "mCost": 0,
+    "mConsumed": true
+   },
+   "duration": {
+    "text": "24小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "cube",
+    "size": 30,
+    "width": null,
+    "height": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:心灵尖啸",
+   "name": "心灵尖啸",
+   "en": "Psychic Scream",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/9环.html",
+   "alsoIn": [],
+   "summary": "目标进行智力豁免，失败受14d6心灵伤害并陷入震慑，成功减半",
+   "uncertain": [],
+   "level": 9,
+   "school": "惑控",
+   "classes": [
+    "吟游诗人",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 90
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "int",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "14d6",
+     "type": "心灵"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 10,
+   "conditions": [
+    "stunned"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:拂晓",
+   "name": "拂晓",
+   "en": "Dawn",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/5环.html",
+   "alsoIn": [],
+   "summary": "半径30尺柱形内的生物进行体质豁免，失败受4d10光耀伤害，成功减半；需专注",
+   "uncertain": [],
+   "level": 5,
+   "school": "塑能",
+   "classes": [
+    "牧师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "价值至少100gp的旭日坠饰",
+    "mCost": 100,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "4d10",
+     "type": "光耀"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "cylinder",
+    "size": 30,
+    "height": 40,
+    "width": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:授予技能",
+   "name": "授予技能",
+   "en": "Skill Empowerment",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/5环.html",
+   "alsoIn": [],
+   "summary": "触碰生物，其一项已熟练技能的检定获得专精。",
+   "uncertain": [],
+   "level": 5,
+   "school": "变化",
+   "classes": [
+    "吟游诗人",
+    "术士",
+    "法师",
+    "奇械师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "touch",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1小时",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:控火术",
+   "name": "控火术",
+   "en": "Control Flames",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/戏法.html",
+   "alsoIn": [],
+   "summary": "操控5立方尺内的非魔法火焰：蔓延、熄灭、改变光照或造出形状。",
+   "uncertain": [],
+   "level": 0,
+   "school": "变化",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即或1小时（见下文）",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:操控风力",
+   "name": "操控风力",
+   "en": "Control Winds",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/5环.html",
+   "alsoIn": [],
+   "summary": "专注：操控100尺立方内的风向与强度（狂风、下击风、上升气流）。",
+   "uncertain": [
+    "conditions"
+   ],
+   "level": 5,
+   "school": "变化",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 300
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1小时",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "str",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "cube",
+    "size": 100,
+    "width": null,
+    "height": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:操水术",
+   "name": "操水术",
+   "en": "Shape Water",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/戏法.html",
+   "alsoIn": [],
+   "summary": "操控5立方尺的水：改变流向、成形、变色或冻结。",
+   "uncertain": [],
+   "level": 0,
+   "school": "变化",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 30
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即或1个小时（见下文）",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:散射术",
+   "name": "散射术",
+   "en": "Scatter",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/6环.html",
+   "alsoIn": [],
+   "summary": "至多5名生物感知豁免，失败者被传送到120尺内其他位置。",
+   "uncertain": [],
+   "level": 6,
+   "school": "咒法",
+   "classes": [
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 30
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "wis",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:旋风术",
+   "name": "旋风术",
+   "en": "Whirlwind",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/7环.html",
+   "alsoIn": [],
+   "summary": "目标进行敏捷豁免，失败受10d6钝击伤害并陷入束缚，成功减半；需专注",
+   "uncertain": [],
+   "level": 7,
+   "school": "塑能",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 300
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": "一根稻草",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "10d6",
+     "type": "钝击"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [
+    "restrained"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:无敌术",
+   "name": "无敌术",
+   "en": "Invulnerability",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/9环.html",
+   "alsoIn": [],
+   "summary": "专注：免疫所有伤害，最长10分钟。",
+   "uncertain": [],
+   "level": 9,
+   "school": "防护",
+   "classes": [
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一小块价值至少500gp的精金，作为该法术的耗材",
+    "mCost": 500,
+    "mConsumed": true
+   },
+   "duration": {
+    "text": "专注，至多10分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false,
+   "legacy": true
+  },
+  {
+   "id": "spell:水墙术",
+   "name": "水墙术",
+   "en": "Wall of Water",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/3环.html",
+   "alsoIn": [],
+   "summary": "专注：30尺长水墙，阻挡视线、使火焰受阻并让远程攻击劣势。",
+   "uncertain": [],
+   "level": 3,
+   "school": "塑能",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一滴水",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多10分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "wall",
+    "size": 30,
+    "width": 1,
+    "height": 10,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:汲能术",
+   "name": "汲能术",
+   "en": "Enervation",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/5环.html",
+   "alsoIn": [],
+   "summary": "专注：敏捷豁免失败者受4d8黯蚀伤害，之后可每回合用动作再次吸取并回复你生命。",
+   "uncertain": [],
+   "level": 5,
+   "school": "死灵",
+   "classes": [
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "2d8",
+     "type": "黯蚀"
+    },
+    {
+     "dice": "4d8",
+     "type": "黯蚀"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d8",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d8",
+    "step": 1,
+    "from": 5
+   },
+   "cantripScaling": null,
+   "lasting": false,
+   "legacy": true
+  },
+  {
+   "id": "spell:沙墙术",
+   "name": "沙墙术",
+   "en": "Wall of Sand",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/3环.html",
+   "alsoIn": [],
+   "summary": "专注：30尺长沙墙阻挡视线，墙内生物目盲、移动代价三倍。",
+   "uncertain": [],
+   "level": 3,
+   "school": "塑能",
+   "classes": [
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 90
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一捧沙",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多10分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "wall",
+    "size": 30,
+    "width": 10,
+    "height": 10,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [
+    "blinded"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:治愈之魂",
+   "name": "治愈之魂",
+   "en": "Healing Spirit",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/2环.html",
+   "alsoIn": [],
+   "summary": "专注：造出治愈灵体，进入或回合开始于其内者恢复1d6生命值。",
+   "uncertain": [],
+   "level": 2,
+   "school": "咒法",
+   "classes": [
+    "德鲁伊",
+    "游侠"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "bonus",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": "1d6",
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "cube",
+    "size": 5,
+    "width": null,
+    "height": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d6",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d6",
+    "step": 1,
+    "from": 2
+   },
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:混乱箭",
+   "name": "混乱箭",
+   "en": "Chaos Bolt",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/1环.html",
+   "alsoIn": [],
+   "summary": "远程法术攻击，命中受2d8伤害，类型由骰面决定，骰出相同点数可弹射。",
+   "uncertain": [
+    "damage"
+   ],
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "术士"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 120
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": "ranged",
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": ""
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d6",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d6",
+    "step": 1,
+    "from": 1
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:清风赋权",
+   "name": "清风赋权",
+   "en": "Investiture of Wind",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/6环.html",
+   "alsoIn": [],
+   "summary": "专注：远程攻击你时劣势，获得60尺飞行，可用动作造15尺立方狂风，体质豁免2d10钝击并推开。",
+   "uncertain": [],
+   "level": 6,
+   "school": "变化",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多10分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "2d10",
+     "type": "钝击"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:渺远步",
+   "name": "渺远步",
+   "en": "Far Step",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/5环.html",
+   "alsoIn": [],
+   "summary": "专注：传送60尺，之后每回合可用附赠动作再传送。",
+   "uncertain": [],
+   "level": 5,
+   "school": "咒法",
+   "classes": [
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "bonus",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:潮涌",
+   "name": "潮涌",
+   "en": "Tidal Wave",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/3环.html",
+   "alsoIn": [],
+   "summary": "目标进行敏捷豁免，失败受4d8钝击伤害并陷入倒地，成功减半",
+   "uncertain": [],
+   "level": 3,
+   "school": "咒法",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 120
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一滴水",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "4d8",
+     "type": "钝击"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [
+    "prone"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:灵魂牢笼",
+   "name": "灵魂牢笼",
+   "en": "Soul Cage",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/6环.html",
+   "alsoIn": [],
+   "summary": "反应：困住死去类人生物的灵魂，之后可多种方式利用。",
+   "uncertain": [
+    "conditions"
+   ],
+   "level": 6,
+   "school": "死灵",
+   "classes": [
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "reaction",
+    "reactionTrigger": "当你看见60尺内类人生物死去时采取"
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一个价值100gp的银笼子",
+    "mCost": 100,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "8小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": "2d8",
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:炽焰赋权",
+   "name": "炽焰赋权",
+   "en": "Investiture of Flame",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/6环.html",
+   "alsoIn": [],
+   "summary": "专注：免疫火焰、抗寒冷，靠近者受1d10火焰，可用动作喷15尺火线4d8火焰。",
+   "uncertain": [],
+   "level": 6,
+   "school": "变化",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多10分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "1d10",
+     "type": "火焰"
+    },
+    {
+     "dice": "4d8",
+     "type": "火焰"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "emanation",
+    "size": 30,
+    "height": null,
+    "width": null,
+    "origin": "self"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:烈焰箭矢",
+   "name": "烈焰箭矢",
+   "en": "Flame Arrows",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/3环.html",
+   "alsoIn": [],
+   "summary": "专注：箭袋中12发弹药命中额外1d6火焰伤害。",
+   "uncertain": [],
+   "level": 3,
+   "school": "变化",
+   "classes": [
+    "德鲁伊",
+    "游侠",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "touch",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1小时",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "火焰"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 2,
+    "text": "每高1环：可影响弹药+2发",
+    "step": 1,
+    "from": 3
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:烟火术",
+   "name": "烟火术",
+   "en": "Pyrotechnics",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/2环.html",
+   "alsoIn": [],
+   "summary": "5尺立方内的生物进行体质豁免，失败陷入目盲",
+   "uncertain": [],
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "吟游诗人",
+    "术士",
+    "法师",
+    "奇械师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "cube",
+    "size": 5,
+    "width": null,
+    "height": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [
+    "blinded"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:焚烧术",
+   "name": "焚烧术",
+   "en": "Immolation",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/5环.html",
+   "alsoIn": [],
+   "summary": "专注：目标敏捷豁免失败受8d6火焰并起火，每回合结束重复豁免受4d6火焰。",
+   "uncertain": [],
+   "level": 5,
+   "school": "塑能",
+   "classes": [
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 90
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "8d6",
+     "type": "火焰"
+    },
+    {
+     "dice": "4d6",
+     "type": "火焰"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:生命转换",
+   "name": "生命转换",
+   "en": "Life Transference",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/3环.html",
+   "alsoIn": [],
+   "summary": "你受4d8黯蚀伤害，另一名生物恢复其两倍生命值。",
+   "uncertain": [],
+   "level": 3,
+   "school": "死灵",
+   "classes": [
+    "牧师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 30
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "4d8",
+     "type": "黯蚀"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d8",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d8",
+    "step": 1,
+    "from": 3
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:疯狂之暗",
+   "name": "疯狂之暗",
+   "en": "Maddening Darkness",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/8环.html",
+   "alsoIn": [],
+   "summary": "半径60尺球形内的生物进行感知豁免，失败受8d8心灵伤害，成功减半；需专注",
+   "uncertain": [],
+   "level": 8,
+   "school": "塑能",
+   "classes": [
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 150
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": "一滴沥青与一滴水银的混合物",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多10分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "wis",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "8d8",
+     "type": "心灵"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "sphere",
+    "size": 60,
+    "height": null,
+    "width": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:碧水法球",
+   "name": "碧水法球",
+   "en": "Watery Sphere",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/4环.html",
+   "alsoIn": [],
+   "summary": "半径5尺球形内的生物进行力量豁免，失败陷入束缚、倒地；需专注",
+   "uncertain": [],
+   "level": 4,
+   "school": "咒法",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 90
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一滴水",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "str",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "sphere",
+    "size": 5,
+    "height": null,
+    "width": null,
+    "origin": "point"
+   },
+   "targets": 4,
+   "conditions": [
+    "restrained",
+    "prone"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:磐石赋权",
+   "name": "磐石赋权",
+   "en": "Investiture of Stone",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/6环.html",
+   "alsoIn": [],
+   "summary": "专注：非魔法物理伤害抗性，可用动作震地让周围生物敏捷豁免否则倒地，可穿岩石。",
+   "uncertain": [],
+   "level": 6,
+   "school": "变化",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多10分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "emanation",
+    "size": 15,
+    "height": null,
+    "width": null,
+    "origin": "self"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:神圣武器",
+   "name": "神圣武器",
+   "en": "Holy Weapon",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/5环.html",
+   "alsoIn": [],
+   "summary": "专注：武器获得+光耀伤害并可引爆，释放光耀伤害并令敌人体质豁免否则目盲。",
+   "uncertain": [],
+   "level": 5,
+   "school": "塑能",
+   "classes": [
+    "牧师",
+    "圣武士"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "bonus",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "touch",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1小时",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "2d8",
+     "type": "光耀"
+    },
+    {
+     "dice": "4d8",
+     "type": "光耀"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [
+    "blinded"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:神庙术",
+   "name": "神庙术",
+   "en": "Temple of the Gods",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/7环.html",
+   "alsoIn": [],
+   "summary": "造出120尺见方的神庙，内含祭坛与护佑效应，持续24小时。",
+   "uncertain": [],
+   "level": 7,
+   "school": "咒法",
+   "classes": [
+    "牧师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "hour",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 120
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一个价值至少5gp的圣徽",
+    "mCost": 5,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "24小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": "cha",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:精神监狱",
+   "name": "精神监狱",
+   "en": "Mental Prison",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/6环.html",
+   "alsoIn": [],
+   "summary": "专注：目标智力豁免失败受5d10心灵并被幻象囚禁，离开幻象边界会受10d10心灵伤害。",
+   "uncertain": [],
+   "level": 6,
+   "school": "幻术",
+   "classes": [
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "int",
+   "onSave": "none",
+   "damage": [
+    {
+     "dice": "5d10",
+     "type": "心灵"
+    },
+    {
+     "dice": "10d10",
+     "type": "心灵"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [
+    "restrained"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:群体变形术",
+   "name": "群体变形术",
+   "en": "Mass Polymorph",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/9环.html",
+   "alsoIn": [],
+   "summary": "专注：至多十个生物变成野兽，非自愿者感知豁免。",
+   "uncertain": [],
+   "level": 9,
+   "school": "变化",
+   "classes": [
+    "吟游诗人",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 120
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一个毛毛虫的茧",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1小时",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "wis",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:自然之怒",
+   "name": "自然之怒",
+   "en": "Wrath of Nature",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/5环.html",
+   "alsoIn": [],
+   "summary": "60尺立方内的生物进行敏捷豁免，失败受4d6挥砍伤害并陷入束缚，成功不受伤；需专注",
+   "uncertain": [],
+   "level": 5,
+   "school": "塑能",
+   "classes": [
+    "德鲁伊",
+    "游侠"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 120
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "none",
+   "damage": [
+    {
+     "dice": "4d6",
+     "type": "挥砍"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "cube",
+    "size": 60,
+    "width": null,
+    "height": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [
+    "restrained"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:自然守卫",
+   "name": "自然守卫",
+   "en": "Guardian of Nature",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/4环.html",
+   "alsoIn": [],
+   "summary": "专注：附赠动作化为野兽或树木形态，获得攻击优势与额外伤害及其它增益。",
+   "uncertain": [],
+   "level": 4,
+   "school": "变化",
+   "classes": [
+    "德鲁伊",
+    "游侠"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "bonus",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": "melee",
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:致病辐射",
+   "name": "致病辐射",
+   "en": "Sickening Radiance",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/4环.html",
+   "alsoIn": [],
+   "summary": "半径30尺球形内的生物进行体质豁免，失败受4d10光耀伤害，成功不受伤；需专注",
+   "uncertain": [
+    "conditions"
+   ],
+   "level": 4,
+   "school": "塑能",
+   "classes": [
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 120
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多10分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "none",
+   "damage": [
+    {
+     "dice": "4d10",
+     "type": "光耀"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "sphere",
+    "size": 30,
+    "height": null,
+    "width": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:舞风术",
+   "name": "舞风术",
+   "en": "Gust",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/戏法.html",
+   "alsoIn": [],
+   "summary": "小风戏法：力量豁免失败的中型以下生物被推5尺，或吹动5磅内物件。",
+   "uncertain": [],
+   "level": 0,
+   "school": "变化",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 30
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "str",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:莫伊之影",
+   "name": "莫伊之影",
+   "en": "Shadow of Moil",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/4环.html",
+   "alsoIn": [],
+   "summary": "专注：暗影缠身，你重度遮蔽，近战命中你的敌人受2d8黯蚀伤害。",
+   "uncertain": [],
+   "level": 4,
+   "school": "死灵",
+   "classes": [
+    "魔契师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "镶嵌在宝石里的亡灵的眼睛，价值至少150GP",
+    "mCost": 150,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "2d8",
+     "type": "黯蚀"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:虫群孳生",
+   "name": "虫群孳生",
+   "en": "Infestation",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/戏法.html",
+   "alsoIn": [],
+   "summary": "目标进行体质豁免，失败受1d6毒素伤害，成功不受伤",
+   "uncertain": [],
+   "level": 0,
+   "school": "咒法",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 30
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一只活跳蚤",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "none",
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "毒素"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": [
+    [
+     5,
+     "2d6"
+    ],
+    [
+     11,
+     "3d6"
+    ],
+    [
+     17,
+     "4d6"
+    ]
+   ],
+   "lasting": false
+  },
+  {
+   "id": "spell:西风打击",
+   "name": "西风打击",
+   "en": "Zephyr Strike",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/1环.html",
+   "alsoIn": [],
+   "summary": "专注：移动不引发借机；一次武器攻击获得优势并追加1d8力场伤害，并提速。",
+   "uncertain": [],
+   "level": 1,
+   "school": "变化",
+   "classes": [
+    "游侠"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "bonus",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:谭森变形术",
+   "name": "谭森变形术",
+   "en": "Tenser's Transformation",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/6环.html",
+   "alsoIn": [],
+   "summary": "专注：获得临时生命、武器熟练、近战攻击额外伤害与多次攻击，结束时力竭风险。",
+   "uncertain": [
+    "conditions"
+   ],
+   "level": 6,
+   "school": "变化",
+   "classes": [
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一缕公牛毛发",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，直至10分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "str",
+   "onSave": "none",
+   "damage": [
+    {
+     "dice": "2d12",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:负能量洪流",
+   "name": "负能量洪流",
+   "en": "Negative Energy Flood",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/5环.html",
+   "alsoIn": [],
+   "summary": "目标进行体质豁免，失败受5d12黯蚀伤害，成功减半",
+   "uncertain": [],
+   "level": 5,
+   "school": "死灵",
+   "classes": [
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": "一块破碎的骨头和一块方形的黑色丝绸",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "5d12",
+     "type": "黯蚀"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false,
+   "legacy": true
+  },
+  {
+   "id": "spell:转化岩石",
+   "name": "转化岩石",
+   "en": "Transmute Rock",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/5环.html",
+   "alsoIn": [],
+   "summary": "目标进行力量豁免，失败受4d8钝击伤害并陷入束缚，成功减半",
+   "uncertain": [],
+   "level": 5,
+   "school": "变化",
+   "classes": [
+    "德鲁伊",
+    "法师",
+    "奇械师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 120
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "陶土和水",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "直至被解除",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": "str",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "4d8",
+     "type": "钝击"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [
+    "restrained"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:迷你仆役",
+   "name": "迷你仆役",
+   "en": "Tiny Servant",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/3环.html",
+   "alsoIn": [],
+   "summary": "把微型物件活化为受你控制的小生物，可战斗。",
+   "uncertain": [],
+   "level": 3,
+   "school": "变化",
+   "classes": [
+    "法师",
+    "奇械师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "minute",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "touch",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "8小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 2,
+    "text": "每高1环：目标/数量+2",
+    "step": 1,
+    "from": 3
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:造成恐惧",
+   "name": "造成恐惧",
+   "en": "Cause Fear",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/1环.html",
+   "alsoIn": [],
+   "summary": "目标进行感知豁免，失败陷入恐慌；需专注",
+   "uncertain": [],
+   "level": 1,
+   "school": "死灵",
+   "classes": [
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "wis",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [
+    "frightened"
+   ],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 1,
+    "text": "每高1环：目标/数量+1",
+    "step": 1,
+    "from": 1
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:阿迦纳萨喷火术",
+   "name": "阿迦纳萨喷火术",
+   "en": "Aganazzar's Scorcher",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/2环.html",
+   "alsoIn": [],
+   "summary": "目标进行敏捷豁免，失败受3d8火焰伤害，成功减半",
+   "uncertain": [],
+   "level": 2,
+   "school": "塑能",
+   "classes": [
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 30
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一片红龙的鳞片",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "3d8",
+     "type": "火焰"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d8",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d8",
+    "step": 1,
+    "from": 2
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:雷霆步",
+   "name": "雷霆步",
+   "en": "Thunder Step",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/3环.html",
+   "alsoIn": [],
+   "summary": "目标进行体质豁免，失败受3d10雷鸣伤害，成功减半",
+   "uncertain": [],
+   "level": 3,
+   "school": "咒法",
+   "classes": [
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 90
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "3d10",
+     "type": "雷鸣"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d10",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d10",
+    "step": 1,
+    "from": 3
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:霜噬",
+   "name": "霜噬",
+   "en": "Frostbite",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/戏法.html",
+   "alsoIn": [],
+   "summary": "目标进行体质豁免，失败受1d6寒冷伤害，成功不受伤",
+   "uncertain": [],
+   "level": 0,
+   "school": "塑能",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "none",
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "寒冷"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": [
+    [
+     5,
+     "2d6"
+    ],
+    [
+     11,
+     "3d6"
+    ],
+    [
+     17,
+     "4d6"
+    ]
+   ],
+   "lasting": false
+  },
+  {
+   "id": "spell:风暴法球",
+   "name": "风暴法球",
+   "en": "Storm Sphere",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/4环.html",
+   "alsoIn": [],
+   "summary": "专注：造出20尺半径风暴球，进入者力量豁免失败受2d6钝击，可附赠动作放电4d6闪电。",
+   "uncertain": [],
+   "level": 4,
+   "school": "塑能",
+   "classes": [
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 150
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": "ranged",
+   "save": "str",
+   "onSave": "none",
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "钝击"
+    },
+    {
+     "dice": "4d6",
+     "type": "闪电"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "sphere",
+    "size": 20,
+    "height": null,
+    "width": null,
+    "origin": "point"
+   },
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d6",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d6",
+    "step": 1,
+    "from": 4
+   },
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:马友夫微流星",
+   "name": "马友夫微流星",
+   "en": "Melf's Minute Meteors",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/3环.html",
+   "alsoIn": [],
+   "summary": "专注：生成六颗流星，附赠动作投出，敏捷豁免失败受2d6火焰伤害。",
+   "uncertain": [],
+   "level": 3,
+   "school": "塑能",
+   "classes": [
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "由松木盛着的硝石和硫磺，外形为小珠子",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多10分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "火焰"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 2,
+    "text": "每高1环：流星+2颗",
+    "step": 1,
+    "from": 3
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:骷髅之舞",
+   "name": "骷髅之舞",
+   "en": "Danse Macabre",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/5环.html",
+   "alsoIn": [],
+   "summary": "专注：令至多5具尸体变骷髅/丧尸受你控制，攻击伤害加施法调整值。",
+   "uncertain": [],
+   "level": 5,
+   "school": "死灵",
+   "classes": [
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1小时",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 2,
+    "text": "每高1环：可多活化2具尸体",
+    "step": 1,
+    "from": 5
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:高阶恶魔召唤术",
+   "name": "高阶恶魔召唤术",
+   "en": "Summon Greater Demon",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/4环.html",
+   "alsoIn": [],
+   "summary": "专注：召唤CR5以下恶魔，可能反噬；随升环提升CR。",
+   "uncertain": [],
+   "level": 4,
+   "school": "咒法",
+   "classes": [
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "来自一个于24小时之内被杀的类人生物身上的一剂血液",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1小时",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "cha",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 0,
+    "text": "每高1环：可召唤的恶魔CR上限+1",
+    "step": 1,
+    "from": 4
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:魔石术",
+   "name": "魔石术",
+   "en": "Magic Stone",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/戏法.html",
+   "alsoIn": [],
+   "summary": "附赠动作：给三颗石子附魔，可用施法属性远程攻击，命中1d6+调整值钝击伤害。",
+   "uncertain": [],
+   "level": 0,
+   "school": "变化",
+   "classes": [
+    "德鲁伊",
+    "魔契师",
+    "奇械师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "bonus",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "touch",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "1分钟",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": "ranged",
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:麦克斯米利安的地之攫",
+   "name": "麦克斯米利安的地之攫",
+   "en": "Maximilian's Earthen Grasp",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/2环.html",
+   "alsoIn": [],
+   "summary": "目标进行力量豁免，失败受2d6钝击伤害并陷入束缚，成功减半；需专注",
+   "uncertain": [],
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 30
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一个由陶土雕塑成的手的模型",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "str",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "钝击"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [
+    "restrained"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:龙卷尘暴",
+   "name": "龙卷尘暴",
+   "en": "Dust Devil",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/法术/法术详述/2环.html",
+   "alsoIn": [],
+   "summary": "5尺立方内的生物进行力量豁免，失败受1d8钝击伤害，成功减半；需专注",
+   "uncertain": [],
+   "level": 2,
+   "school": "咒法",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一捧尘土",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "str",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": "钝击"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "cube",
+    "size": 5,
+    "width": null,
+    "height": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d8",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d8",
+    "step": 1,
+    "from": 2
+   },
+   "cantripScaling": null,
+   "lasting": true
+  }
+ ]
+}

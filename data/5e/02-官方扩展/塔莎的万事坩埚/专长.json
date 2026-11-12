@@ -1,0 +1,225 @@
+{
+ "category": "feat",
+ "type": "专长",
+ "source": "塔莎的万事坩埚",
+ "generated": "2026-11-09",
+ "count": 5,
+ "entries": [
+  {
+   "id": "feat:奇械学徒",
+   "name": "奇械学徒",
+   "en": "Artificer Initiate",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/专长.html",
+   "alsoIn": [],
+   "summary": "得奇械师一个戏法和一个1环法术（可免费施放一次），工匠工具熟练并可作法器。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "工具熟练",
+    "戏法"
+   ],
+   "mechanics": [
+    {
+     "name": "奇械学徒",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "奇械学徒",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": "long"
+    },
+    {
+     "name": "奇械学徒",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:战斗学徒",
+   "name": "战斗学徒",
+   "en": "Fighting Initiate",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/专长.html",
+   "alsoIn": [],
+   "summary": "从战士职业选一种战斗风格，随等级可替换；需军用武器熟练。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "熟练于一种军用武器"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "战斗学徒",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:枪手",
+   "name": "枪手",
+   "en": "Gunner",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/专长.html",
+   "alsoIn": [],
+   "summary": "敏捷+1；枪械熟练；无视装填；近距离远程攻击无劣势。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "熟练"
+   ],
+   "mechanics": [
+    {
+     "name": "枪手",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "枪手",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "枪手",
+     "trigger": "",
+     "action": "passive",
+     "effect": "劣势",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:超魔法导师",
+   "name": "超魔法导师",
+   "en": "Metamagic Adept",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/专长.html",
+   "alsoIn": [],
+   "summary": "选2项超魔法并获2点术法点用于超魔；需施法或契约魔法特性。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "施法或契约魔法特性"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "超魔法导师",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "超魔法导师",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:魔能导师",
+   "name": "魔能导师",
+   "en": "Eldritch Adept",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/专长.html",
+   "alsoIn": [],
+   "summary": "从魔契师中选一项魔能祈唤，升级可换；需施法或契约魔法特性。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "施法或契约魔法特性"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "魔能导师",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  }
+ ]
+}

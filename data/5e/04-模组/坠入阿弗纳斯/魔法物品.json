@@ -1,0 +1,434 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "坠入阿弗纳斯",
+ "generated": "2026-11-09",
+ "count": 12,
+ "entries": [
+  {
+   "id": "item:地狱之力战旗",
+   "name": "地狱之力战旗",
+   "en": "Battle Standard of Infernal Power",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/坠入阿弗纳斯/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。免疫力场",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [
+    "力场"
+   ],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:地狱火武器",
+   "name": "地狱火武器",
+   "en": "Hellfire Weapon",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/坠入阿弗纳斯/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（任意），非普通。",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意",
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:地狱鞍辔",
+   "name": "地狱鞍辔",
+   "en": "Infernal Tack",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/坠入阿弗纳斯/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，传说，需邪恶阵营生物同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true,
+    "by": "邪恶阵营生物"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:扎瑞尔之剑",
+   "name": "扎瑞尔之剑",
+   "en": "Sword of Zariel",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/坠入阿弗纳斯/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（长剑），神器，需由一名此剑认为值得之生物同调。DC17体质豁免；涉及目盲；词条：同调、天使语言、天界抗性、神圣存在",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "长剑",
+   "rarity": "神器",
+   "attunement": {
+    "required": true,
+    "by": "由一名此剑认为值得之生物"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 17,
+    "ability": "con"
+   },
+   "conditions": [
+    "blinded"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:灵魂币",
+   "name": "灵魂币",
+   "en": "Soul Coin",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/坠入阿弗纳斯/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通。词条：持有灵魂币、使用灵魂币、吸取生命、质询",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:炼狱谜盒",
+   "name": "炼狱谜盒",
+   "en": "Infernal Puzzle Box",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/坠入阿弗纳斯/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通。DC18感知豁免",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 18,
+    "ability": "wis"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:燃烧怒火之护手",
+   "name": "燃烧怒火之护手",
+   "en": "Gauntlets of Flaming Fury",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/坠入阿弗纳斯/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "火焰"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:玛塔洛托克",
+   "name": "玛塔洛托克",
+   "en": "Matalotok",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/坠入阿弗纳斯/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（战锤），传说，需同调。免疫寒冷",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "战锤",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [
+    "寒冷"
+   ],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:神殿吞食者",
+   "name": "神殿吞食者",
+   "en": "Fane-Eater",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/坠入阿弗纳斯/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（战斧），传说，需一名邪恶牧师或圣武士同调。攻击+3、伤害+3",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "战斧",
+   "rarity": "传说",
+   "attunement": {
+    "required": true,
+    "by": "一名邪恶牧师或圣武士"
+   },
+   "bonus": {
+    "attack": 3,
+    "damage": 3
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "2d8",
+     "type": "黯蚀"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:隐藏领主之盾",
+   "name": "隐藏领主之盾",
+   "en": "Shield of the Hidden Lord",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/坠入阿弗纳斯/魔法物品.html",
+   "alsoIn": [],
+   "summary": "护甲（盾牌），传说，需同调。AC+2；3充能，全部 每日黎明恢复；可施放火球术、火墙术、驱逐善恶；抗火焰；DC18感知豁免；涉及恐慌；词条：智能、加葛斯的性格、",
+   "uncertain": [
+    "spells"
+   ],
+   "itemType": "护甲",
+   "baseItem": "盾牌",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "ac": 2
+   },
+   "charges": {
+    "max": "3",
+    "regain": "全部 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "火球术",
+     "level": 3,
+     "cost": null
+    },
+    {
+     "name": "火墙术",
+     "level": 4,
+     "cost": null
+    },
+    {
+     "name": "驱逐善恶",
+     "level": 5,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [
+    "火焰"
+   ],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 18,
+    "ability": "wis"
+   },
+   "conditions": [
+    "frightened"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:魔鬼指挥官头盔",
+   "name": "魔鬼指挥官头盔",
+   "en": "Helm of Devil Command",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/坠入阿弗纳斯/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需会说炼狱语的生物同调。3充能；可施放支配怪物；DC21豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true,
+    "by": "会说炼狱语的生物"
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": null
+   },
+   "spells": [
+    {
+     "name": "支配怪物",
+     "level": 8,
+     "cost": 1
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 21,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:黑曜燧石龙板甲",
+   "name": "黑曜燧石龙板甲",
+   "en": "Obsidian Flint Dragon Plate",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/坠入阿弗纳斯/魔法物品.html",
+   "alsoIn": [],
+   "summary": "护甲（板甲），传说。AC+2；涉及受擒",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "板甲",
+   "rarity": "传说",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "ac": 2
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [
+    "grappled"
+   ],
+   "consumable": false
+  }
+ ]
+}

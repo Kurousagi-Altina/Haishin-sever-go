@@ -1,0 +1,129 @@
+{
+ "category": "spell",
+ "type": "法术",
+ "source": "印记城与外域",
+ "generated": "2026-11-09",
+ "count": 2,
+ "entries": [
+  {
+   "id": "spell:侦测扭曲",
+   "name": "侦测扭曲",
+   "en": "Warp Sense",
+   "aliases": [],
+   "source": "印记城与外域",
+   "section": "setting",
+   "path": "topics/印记城与外域/第一章/新法术.htm",
+   "alsoIn": [],
+   "summary": "专注：感知30尺内的传送门并可分析其去向与钥匙。",
+   "uncertain": [],
+   "level": 2,
+   "school": "预言",
+   "classes": [
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "刃藤的一片叶子",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:界门封锁",
+   "name": "界门封锁",
+   "en": "Gate Seal",
+   "aliases": [],
+   "source": "印记城与外域",
+   "section": "setting",
+   "path": "topics/印记城与外域/第一章/新法术.htm",
+   "alsoIn": [],
+   "summary": "关闭30尺立方内所有传送门并阻止位面旅行，24小时。",
+   "uncertain": [],
+   "level": 4,
+   "school": "防护",
+   "classes": [
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "minute",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一把损坏的传送门钥匙，作为本法术的耗材",
+    "mCost": 0,
+    "mConsumed": true
+   },
+   "duration": {
+    "text": "24小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "cube",
+    "size": 30,
+    "width": null,
+    "height": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 0,
+    "text": "6环起持续至被解除",
+    "step": 1,
+    "from": 4
+   },
+   "cantripScaling": null,
+   "lasting": true
+  }
+ ]
+}

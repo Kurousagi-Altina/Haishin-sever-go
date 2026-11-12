@@ -1,0 +1,108 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "珊娜萨的万事指南",
+ "generated": "2026-11-09",
+ "count": 3,
+ "entries": [
+  {
+   "id": "item:不破箭矢",
+   "name": "不破箭矢",
+   "en": "Unbreakable Arrow",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/地下城主工具/奖励魔法物品/普通魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（箭矢），普通。",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "箭矢",
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:愁苦魔杖",
+   "name": "愁苦魔杖",
+   "en": "Wand of Scowls",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/地下城主工具/奖励魔法物品/普通魔法物品.html",
+   "alsoIn": [],
+   "summary": "魔杖，普通。3充能，全部 每日黎明恢复；DC10魅力豁免",
+   "uncertain": [],
+   "itemType": "魔杖",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "全部 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 10,
+    "ability": "cha"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:欢笑魔杖",
+   "name": "欢笑魔杖",
+   "en": "Wand of Smiles",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/地下城主工具/奖励魔法物品/普通魔法物品.html",
+   "alsoIn": [],
+   "summary": "魔杖，普通。3充能，全部 每日黎明恢复；DC10魅力豁免",
+   "uncertain": [],
+   "itemType": "魔杖",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "全部 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 10,
+    "ability": "cha"
+   },
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

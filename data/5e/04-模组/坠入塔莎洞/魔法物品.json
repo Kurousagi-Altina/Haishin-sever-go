@@ -1,0 +1,129 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "坠入塔莎洞",
+ "generated": "2026-11-09",
+ "count": 4,
+ "entries": [
+  {
+   "id": "item:伊格薇尔伏的号角",
+   "name": "伊格薇尔伏的号角",
+   "en": "Iggwilv's Horn",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/坠入塔莎洞/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:塔莎的伏行龙骨船",
+   "name": "塔莎的伏行龙骨船",
+   "en": "Tasha's Creeping Keelboat",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/坠入塔莎洞/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。AC+1",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "ac": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:彩绘药水",
+   "name": "彩绘药水",
+   "en": "Potion of Polychromy",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/坠入塔莎洞/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "药水，非普通。消耗品",
+   "uncertain": [],
+   "itemType": "药水",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:恶魔皮肤",
+   "name": "恶魔皮肤",
+   "en": "Demon Skin",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/坠入塔莎洞/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "护甲（任意重甲），珍稀，需同调。抗毒素",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "任意重甲",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [
+    "毒素"
+   ],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

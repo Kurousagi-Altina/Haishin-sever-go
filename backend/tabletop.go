@@ -166,6 +166,8 @@ type Tabletop struct {
 	mu    sync.RWMutex
 	rooms map[string]*TTRoom
 
+	rules *ttRuleSet // 本地规则库（tabletop_rules.go），没有 data/5e 时为 nil
+
 	// door guests: nickname ↔ door token, so one guest can't act as another
 	guestMu      sync.Mutex
 	guestByToken map[string]string

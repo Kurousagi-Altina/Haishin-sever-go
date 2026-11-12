@@ -1,0 +1,2113 @@
+{
+ "category": "feature",
+ "type": "子职特性",
+ "source": "塔莎的万事坩埚",
+ "generated": "2026-11-09",
+ "count": 86,
+ "entries": [
+  {
+   "id": "feature:孢子结社·一体共生",
+   "name": "一体共生",
+   "en": "Symbiotic Entity",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/德鲁伊（TCE）/孢子结社.html",
+   "alsoIn": [
+    "拉尼卡公会长指南"
+   ],
+   "summary": "消耗一次荒野变形，获得4×德鲁伊等级临时生命值10分钟，孢子环绕伤害再骰一枚，近战多1d6黯蚀伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "孢子结社"
+   },
+   "level": 2,
+   "action": "action",
+   "mechanics": "消耗一次荒野变形，获得4×德鲁伊等级临时生命值10分钟，孢子环绕伤害再骰一枚，近战多1d6黯蚀伤害。",
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "黯蚀"
+    }
+   ],
+   "resource": "荒野变形"
+  },
+  {
+   "id": "feature:雄辩学院·不竭鼓舞",
+   "name": "不竭鼓舞",
+   "en": "Unfailing Inspiration",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/吟游诗人（TCE）/雄辩学院.html",
+   "alsoIn": [
+    "塞洛斯之神话奥德赛"
+   ],
+   "summary": "生物使用你的吟游激励骰后仍失败，可保留该骰不消耗。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "雄辩学院"
+   },
+   "level": 6,
+   "action": "passive",
+   "mechanics": "生物使用你的吟游激励骰后仍失败，可保留该骰不消耗。"
+  },
+  {
+   "id": "feature:书士会·书人合一",
+   "name": "书人合一",
+   "en": "One With the Word",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/法师（TCE）/书士会.html",
+   "alsoIn": [],
+   "summary": "奥秘检定有优势；意识显现时受伤，可反应驱散灵体意识免除全部伤害，书中丢失环阶和不低于3d6的法术。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "书士会"
+   },
+   "level": 14,
+   "action": "reaction",
+   "mechanics": "奥秘检定有优势；意识显现时受伤，可反应驱散灵体意识免除全部伤害，书中丢失环阶和不低于3d6的法术。",
+   "dice": "3d6"
+  },
+  {
+   "id": "feature:书士会·书士宗师",
+   "name": "书士宗师",
+   "en": "Master Scrivener",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/法师（TCE）/书士会.html",
+   "alsoIn": [],
+   "summary": "长休后将书中一道1至2环、动作施放的法术抄成卷轴，施法视为高1环。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "书士会"
+   },
+   "level": 10,
+   "action": "special",
+   "mechanics": "长休后将书中一道1至2环、动作施放的法术抄成卷轴，施法视为高1环。",
+   "uses": {
+    "count": "每次长休",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:符文骑士·云雾符文",
+   "name": "云雾符文",
+   "en": "Cloud Rune",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/战士（TCE）/符文骑士.html",
+   "alsoIn": [],
+   "summary": "敏捷(巧手)与欺瞒有优势；30尺内被攻击命中时反应把攻击转给另一生物，短休恢复。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "符文骑士"
+   },
+   "level": 3,
+   "action": "reaction",
+   "mechanics": "敏捷(巧手)与欺瞒有优势；30尺内被攻击命中时反应把攻击转给另一生物，短休恢复。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   }
+  },
+  {
+   "id": "feature:雄辩学院·传播鼓舞",
+   "name": "传播鼓舞",
+   "en": "Infectious Inspiration",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/吟游诗人（TCE）/雄辩学院.html",
+   "alsoIn": [
+    "塞洛斯之神话奥德赛"
+   ],
+   "summary": "60尺内生物用你的激励骰成功后，反应让另一名可听见者获得一枚激励骰，不消耗你的次数。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "雄辩学院"
+   },
+   "level": 14,
+   "action": "reaction",
+   "mechanics": "60尺内生物用你的激励骰成功后，反应让另一名可听见者获得一枚激励骰，不消耗你的次数。",
+   "uses": {
+    "count": "魅力调整值(至少1)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:和平领域·保护联结",
+   "name": "保护联结",
+   "en": "Protective Bond",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/和平领域.html",
+   "alsoIn": [],
+   "summary": "联结生物受伤时，30尺内另一联结生物反应传送到其身边并代为承受伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "和平领域"
+   },
+   "level": 6,
+   "action": "reaction",
+   "mechanics": "联结生物受伤时，30尺内另一联结生物反应传送到其身边并代为承受伤害。"
+  },
+  {
+   "id": "feature:巨灵宗主·元素赐福",
+   "name": "元素赐福",
+   "en": "Elemental Gift",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/邪术师（TCE）/巨灵宗主.html",
+   "alsoIn": [],
+   "summary": "按宗主类型获得钝击/雷鸣/火焰/寒冷抗性；附赠动作获得30尺飞行速度10分钟。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "巨灵宗主"
+   },
+   "level": 6,
+   "action": "bonus",
+   "mechanics": "按宗主类型获得钝击/雷鸣/火焰/寒冷抗性；附赠动作获得30尺飞行速度10分钟。",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:和平领域·勇气联结",
+   "name": "勇气联结",
+   "en": "Emboldening Bond",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/和平领域.html",
+   "alsoIn": [],
+   "summary": "动作选熟练加值数量自愿生物建立10分钟联结，彼此30尺内时检定可加d4。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "和平领域"
+   },
+   "level": 1,
+   "action": "action",
+   "mechanics": "动作选熟练加值数量自愿生物建立10分钟联结，彼此30尺内时检定可加d4。",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "long"
+   },
+   "dice": "1d4"
+  },
+  {
+   "id": "feature:暮光领域·午夜飞步",
+   "name": "午夜飞步",
+   "en": "Steps of Night",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/暮光领域.html",
+   "alsoIn": [],
+   "summary": "微光或黑暗中附赠动作获得等同步行速度的飞行速度1分钟。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "暮光领域"
+   },
+   "level": 6,
+   "action": "bonus",
+   "mechanics": "微光或黑暗中附赠动作获得等同步行速度的飞行速度1分钟。",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:野火结社·召唤野火灵魄",
+   "name": "召唤野火灵魄",
+   "en": "Summon Wildfire Spirit",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/德鲁伊（TCE）/野火结社.html",
+   "alsoIn": [],
+   "summary": "消耗一次荒野变形召唤野火灵魄，10尺内其他生物敏捷豁免失败受2d6火焰伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "野火结社"
+   },
+   "level": 2,
+   "action": "action",
+   "mechanics": "消耗一次荒野变形召唤野火灵魄，10尺内其他生物敏捷豁免失败受2d6火焰伤害。",
+   "save": {
+    "ability": "dex",
+    "dc": "法术豁免DC"
+   },
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "火焰"
+    }
+   ],
+   "resource": "荒野变形"
+  },
+  {
+   "id": "feature:和平领域·和平执行",
+   "name": "和平执行",
+   "en": "Implement of Peace",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/和平领域.html",
+   "alsoIn": [],
+   "summary": "获得洞悉、表演或游说熟练之一。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "和平领域"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "获得洞悉、表演或游说熟练之一。"
+  },
+  {
+   "id": "feature:守望之誓·哨卫灵光",
+   "name": "哨卫灵光",
+   "en": "Aura of the Sentinel",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/圣武士（TCE）/守望之誓.html",
+   "alsoIn": [],
+   "summary": "你与10尺内所选生物的先攻检定加熟练加值；18级范围30尺。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "守望之誓"
+   },
+   "level": 7,
+   "action": "passive",
+   "mechanics": "你与10尺内所选生物的先攻检定加熟练加值；18级范围30尺。"
+  },
+  {
+   "id": "feature:巨灵宗主·器皿庇护所",
+   "name": "器皿庇护所",
+   "en": "Sanctuary Vessel",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/邪术师（TCE）/巨灵宗主.html",
+   "alsoIn": [],
+   "summary": "进入器皿时可带5名自愿生物，在内停留10分钟视为短休，生命骰加熟练加值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "巨灵宗主"
+   },
+   "level": 10,
+   "action": "special",
+   "mechanics": "进入器皿时可带5名自愿生物，在内停留10分钟视为短休，生命骰加熟练加值。"
+  },
+  {
+   "id": "feature:守望之誓·圣誓法术",
+   "name": "圣誓法术",
+   "en": "Oath Spells",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/圣武士（TCE）/守望之誓.html",
+   "alsoIn": [],
+   "summary": "恒备法术：警报术、侦测魔法、月华之光、识破隐形、法术反制、回避侦测、净化灵光、放逐术等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "守望之誓"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "恒备法术：警报术、侦测魔法、月华之光、识破隐形、法术反制、回避侦测、净化灵光、放逐术等。"
+  },
+  {
+   "id": "feature:和平领域·增强联结",
+   "name": "增强联结",
+   "en": "Expansive Bond",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/和平领域.html",
+   "alsoIn": [],
+   "summary": "联结与保护联结距离放宽到60尺，代承受伤害者视为对该伤害有抗性。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "和平领域"
+   },
+   "level": 17,
+   "action": "passive",
+   "mechanics": "联结与保护联结距离放宽到60尺，代承受伤害者视为对该伤害有抗性。"
+  },
+  {
+   "id": "feature:集群牧者·壮大集群",
+   "name": "壮大集群",
+   "en": "Mighty Swarm",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/游侠（TCE）/集群牧者.html",
+   "alsoIn": [],
+   "summary": "蜂聚集群伤害升为1d8；可令目标倒地；你被其移动后获半身掩护。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "集群牧者"
+   },
+   "level": 11,
+   "action": "passive",
+   "mechanics": "蜂聚集群伤害升为1d8；可令目标倒地；你被其移动后获半身掩护。",
+   "dice": "1d8",
+   "conditions": [
+    "prone"
+   ]
+  },
+  {
+   "id": "feature:符文骑士·奇伟身躯",
+   "name": "奇伟身躯",
+   "en": "Great Stature",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/战士（TCE）/符文骑士.html",
+   "alsoIn": [],
+   "summary": "身高永久增加3d4英寸；巨人之力额外伤害升为1d8。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "符文骑士"
+   },
+   "level": 10,
+   "action": "passive",
+   "mechanics": "身高永久增加3d4英寸；巨人之力额外伤害升为1d8。",
+   "dice": "1d8"
+  },
+  {
+   "id": "feature:孢子结社·孢子环绕",
+   "name": "孢子环绕",
+   "en": "Halo of Spores",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/德鲁伊（TCE）/孢子结社.html",
+   "alsoIn": [
+    "拉尼卡公会长指南"
+   ],
+   "summary": "生物进入10尺内或在其中开始回合时反应：体质豁免失败受1d4黯蚀伤害(随等级升至1d10)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "孢子结社"
+   },
+   "level": 2,
+   "action": "reaction",
+   "mechanics": "生物进入10尺内或在其中开始回合时反应：体质豁免失败受1d4黯蚀伤害(随等级升至1d10)。",
+   "dice": [
+    [
+     2,
+     "1d4"
+    ],
+    [
+     6,
+     "1d6"
+    ],
+    [
+     10,
+     "1d8"
+    ],
+    [
+     14,
+     "1d10"
+    ]
+   ],
+   "save": {
+    "ability": "con",
+    "dc": "法术豁免DC"
+   },
+   "damage": [
+    {
+     "dice": "1d4",
+     "type": "黯蚀"
+    }
+   ]
+  },
+  {
+   "id": "feature:深海意志·守卫缠绕",
+   "name": "守卫缠绕",
+   "en": "Guardian Coil",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/邪术师（TCE）/深海意志.html",
+   "alsoIn": [],
+   "summary": "你或触手10尺内可见者受伤时反应，使其伤害减少1d8(10级2d8)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "深海意志"
+   },
+   "level": 6,
+   "action": "reaction",
+   "mechanics": "你或触手10尺内可见者受伤时反应，使其伤害减少1d8(10级2d8)。",
+   "dice": [
+    [
+     6,
+     "1d8"
+    ],
+    [
+     10,
+     "2d8"
+    ]
+   ]
+  },
+  {
+   "id": "feature:符文骑士·寒霜符文",
+   "name": "寒霜符文",
+   "en": "Frost Rune",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/战士（TCE）/符文骑士.html",
+   "alsoIn": [],
+   "summary": "驯兽与威吓有优势；附赠动作10分钟内力量与体质检定和豁免+2，短休恢复。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "符文骑士"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "驯兽与威吓有优势；附赠动作10分钟内力量与体质检定和豁免+2，短休恢复。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   }
+  },
+  {
+   "id": "feature:守望之誓·尘世壁垒",
+   "name": "尘世壁垒",
+   "en": "Mortal Bulwark",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/圣武士（TCE）/守望之誓.html",
+   "alsoIn": [],
+   "summary": "附赠动作1分钟：120尺真实视觉，对异界类生物攻击有优势，命中可令异位面生物魅力豁免失败被放逐。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "守望之誓"
+   },
+   "level": 20,
+   "action": "bonus",
+   "mechanics": "附赠动作1分钟：120尺真实视觉，对异界类生物攻击有优势，命中可令异位面生物魅力豁免失败被放逐。",
+   "uses": {
+    "count": "1(耗5环法术位可再用)",
+    "recharge": "long"
+   },
+   "save": {
+    "ability": "cha",
+    "dc": "法术豁免DC"
+   }
+  },
+  {
+   "id": "feature:符文骑士·山丘符文",
+   "name": "山丘符文",
+   "en": "Hill Rune",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/战士（TCE）/符文骑士.html",
+   "alsoIn": [],
+   "summary": "对中毒豁免有优势、毒素抗性；附赠动作1分钟获得钝击、挥砍、穿刺抗性。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "符文骑士"
+   },
+   "level": 7,
+   "action": "bonus",
+   "mechanics": "对中毒豁免有优势、毒素抗性；附赠动作1分钟获得钝击、挥砍、穿刺抗性。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   }
+  },
+  {
+   "id": "feature:符文骑士·岩石符文",
+   "name": "岩石符文",
+   "en": "Stone Rune",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/战士（TCE）/符文骑士.html",
+   "alsoIn": [],
+   "summary": "洞悉有优势，黑暗视觉120尺；30尺内生物回合结束时反应令其感知豁免失败被魅惑1分钟。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "符文骑士"
+   },
+   "level": 3,
+   "action": "reaction",
+   "mechanics": "洞悉有优势，黑暗视觉120尺；30尺内生物回合结束时反应令其感知豁免失败被魅惑1分钟。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   },
+   "save": {
+    "ability": "wis",
+    "dc": "8+熟练+体质"
+   },
+   "conditions": [
+    "charmed"
+   ]
+  },
+  {
+   "id": "feature:雄辩学院·巧舌如簧",
+   "name": "巧舌如簧",
+   "en": "Silver Tongue",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/吟游诗人（TCE）/雄辩学院.html",
+   "alsoIn": [
+    "塞洛斯之神话奥德赛"
+   ],
+   "summary": "游说与欺瞒检定中，d20骰9或更低视为10。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "雄辩学院"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "游说与欺瞒检定中，d20骰9或更低视为10。"
+  },
+  {
+   "id": "feature:符文骑士·巨人之力",
+   "name": "巨人之力",
+   "en": "Giant's Might",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/战士（TCE）/符文骑士.html",
+   "alsoIn": [],
+   "summary": "附赠动作1分钟：变大型、力量检定与豁免优势，每回合一次武器命中额外1d6伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "符文骑士"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "附赠动作1分钟：变大型、力量检定与豁免优势，每回合一次武器命中额外1d6伤害。",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "long"
+   },
+   "dice": [
+    [
+     3,
+     "1d6"
+    ],
+    [
+     10,
+     "1d8"
+    ],
+    [
+     18,
+     "1d10"
+    ]
+   ],
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "同武器"
+    }
+   ]
+  },
+  {
+   "id": "feature:巨灵宗主·巨灵器皿",
+   "name": "巨灵器皿",
+   "en": "Genie's Vessel",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/邪术师（TCE）/巨灵宗主.html",
+   "alsoIn": [],
+   "summary": "获得巨灵器皿作法器；动作进入其中的20尺圆柱空间(瓶中小憩)，随等级可带人、恢复生命值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "巨灵宗主"
+   },
+   "level": 1,
+   "action": "action",
+   "mechanics": "获得巨灵器皿作法器；动作进入其中的20尺圆柱空间(瓶中小憩)，随等级可带人、恢复生命值。",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:守望之誓·引导神力",
+   "name": "引导神力",
+   "en": "Channel Divinity",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/圣武士（TCE）/守望之誓.html",
+   "alsoIn": [],
+   "summary": "守望之志：30尺内至多魅力调整值个生物1分钟智力、感知、魅力豁免有优势；驱散异域：令来自异界者感知豁免或被驱离。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "守望之誓"
+   },
+   "level": 3,
+   "action": "action",
+   "mechanics": "守望之志：30尺内至多魅力调整值个生物1分钟智力、感知、魅力豁免有优势；驱散异域：令来自异界者感知豁免或被驱离。",
+   "save": {
+    "ability": "wis",
+    "dc": "法术豁免DC"
+   },
+   "resource": "引导神力"
+  },
+  {
+   "id": "feature:和平领域·引导神力：和平抚慰",
+   "name": "引导神力：和平抚慰",
+   "en": "Channel Divinity:Balm of Peace",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/和平领域.html",
+   "alsoIn": [],
+   "summary": "动作移动速度距离不引发借机攻击，经过的生物各恢复2d6+感知调整值生命值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "和平领域"
+   },
+   "level": 2,
+   "action": "action",
+   "mechanics": "动作移动速度距离不引发借机攻击，经过的生物各恢复2d6+感知调整值生命值。",
+   "heal": "2d6+感知调整值",
+   "resource": "引导神力"
+  },
+  {
+   "id": "feature:暮光领域·引导神力：暮光圣域",
+   "name": "引导神力：暮光圣域",
+   "en": "Twilight Sanctuary",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/暮光领域.html",
+   "alsoIn": [],
+   "summary": "动作展开30尺暮光球域1分钟，回合结束于其中的生物获得1d6+牧师等级临时生命值或结束魅惑/恐慌。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "暮光领域"
+   },
+   "level": 2,
+   "action": "action",
+   "mechanics": "动作展开30尺暮光球域1分钟，回合结束于其中的生物获得1d6+牧师等级临时生命值或结束魅惑/恐慌。",
+   "heal": "1d6+牧师等级(临时)",
+   "conditions": [
+    "charmed",
+    "frightened"
+   ],
+   "resource": "引导神力"
+  },
+  {
+   "id": "feature:秩序领域·引导神力：秩序之令",
+   "name": "引导神力：秩序之令",
+   "en": "Channel Divinity: Order's Demand",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/秩序领域.html",
+   "alsoIn": [
+    "拉尼卡公会长指南"
+   ],
+   "summary": "动作展示圣徽，30尺内生物感知豁免失败则被魅惑到你下回合结束，并可令其丢下手持物。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "秩序领域"
+   },
+   "level": 2,
+   "action": "action",
+   "mechanics": "动作展示圣徽，30尺内生物感知豁免失败则被魅惑到你下回合结束，并可令其丢下手持物。",
+   "save": {
+    "ability": "wis",
+    "dc": "法术豁免DC"
+   },
+   "conditions": [
+    "charmed"
+   ],
+   "resource": "引导神力"
+  },
+  {
+   "id": "feature:和平领域·强力施法",
+   "name": "强力施法",
+   "en": "Potent Spellcasting",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/和平领域.html",
+   "alsoIn": [],
+   "summary": "牧师戏法伤害加感知调整值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "和平领域"
+   },
+   "level": 8,
+   "action": "passive",
+   "mechanics": "牧师戏法伤害加感知调整值。"
+  },
+  {
+   "id": "feature:野火结社·强化链接",
+   "name": "强化链接",
+   "en": "Enhanced Bond",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/德鲁伊（TCE）/野火结社.html",
+   "alsoIn": [],
+   "summary": "灵魄在场时，火焰伤害或治疗法术一次掷骰加1d8；法术可以灵魄作为发出点。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "野火结社"
+   },
+   "level": 6,
+   "action": "passive",
+   "mechanics": "灵魄在场时，火焰伤害或治疗法术一次掷骰加1d8；法术可以灵魄作为发出点。",
+   "dice": "1d8"
+  },
+  {
+   "id": "feature:秩序领域·律法化身",
+   "name": "律法化身",
+   "en": "Embodiment of the Law",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/秩序领域.html",
+   "alsoIn": [
+    "拉尼卡公会长指南"
+   ],
+   "summary": "以法术位施放动作施法的惑控法术时，可改为附赠动作施放。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "秩序领域"
+   },
+   "level": 6,
+   "action": "special",
+   "mechanics": "以法术位施放动作施法的惑控法术时，可改为附赠动作施放。",
+   "uses": {
+    "count": "感知调整值(至少1)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:巨灵宗主·扩展法术列表",
+   "name": "扩展法术列表",
+   "en": "Expanded Spell List",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/邪术师（TCE）/巨灵宗主.html",
+   "alsoIn": [],
+   "summary": "扩展法术表含全巨灵与土/气/火/水巨灵各自的法术，如庇护术、雷鸣波、燃烧之手、水下呼吸等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "巨灵宗主"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "扩展法术表含全巨灵与土/气/火/水巨灵各自的法术，如庇护术、雷鸣波、燃烧之手、水下呼吸等。"
+  },
+  {
+   "id": "feature:深海意志·扩展法术列表",
+   "name": "扩展法术列表",
+   "en": "Expanded Spell List",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/邪术师（TCE）/深海意志.html",
+   "alsoIn": [],
+   "summary": "扩展法术：造水术/枯水术、雷鸣波、造风术、沉默术、闪电束、雪雨暴、操控水体等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "深海意志"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "扩展法术：造水术/枯水术、雷鸣波、造风术、沉默术、闪电束、雪雨暴、操控水体等。"
+  },
+  {
+   "id": "feature:孢子结社·扩散孢子",
+   "name": "扩散孢子",
+   "en": "Spreading Spores",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/德鲁伊（TCE）/孢子结社.html",
+   "alsoIn": [
+    "拉尼卡公会长指南"
+   ],
+   "summary": "一体共生中附赠动作向30尺内投出10尺立方孢子1分钟，进入或开始回合的生物体质豁免，失败受孢子环绕伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "孢子结社"
+   },
+   "level": 10,
+   "action": "bonus",
+   "mechanics": "一体共生中附赠动作向30尺内投出10尺立方孢子1分钟，进入或开始回合的生物体质豁免，失败受孢子环绕伤害。",
+   "save": {
+    "ability": "con",
+    "dc": "法术豁免DC"
+   }
+  },
+  {
+   "id": "feature:雄辩学院·扰神之词",
+   "name": "扰神之词",
+   "en": "Unsettling Words",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/吟游诗人（TCE）/雄辩学院.html",
+   "alsoIn": [],
+   "summary": "附赠动作花一枚吟游激励骰，60尺内目标下一次豁免减去所掷骰值(至你下回合开始)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "雄辩学院"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "附赠动作花一枚吟游激励骰，60尺内目标下一次豁免减去所掷骰值(至你下回合开始)。",
+   "dice": "吟游激励骰",
+   "resource": "吟游激励"
+  },
+  {
+   "id": "feature:狂野魔法道途·振奋魔法",
+   "name": "振奋魔法",
+   "en": "Bolstering Magic",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/野蛮人（TCE）/狂野魔法道途.html",
+   "alsoIn": [],
+   "summary": "动作触碰生物：10分钟内攻击/属性检定加d3，或让其恢复一个不高于d3结果的法术位。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "狂野魔法道途"
+   },
+   "level": 6,
+   "action": "action",
+   "mechanics": "动作触碰生物：10分钟内攻击/属性检定加d3，或让其恢复一个不高于d3结果的法术位。",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "long"
+   },
+   "dice": "1d3"
+  },
+  {
+   "id": "feature:狂野魔法道途·掌控浪潮",
+   "name": "掌控浪潮",
+   "en": "Controlled Surge",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/野蛮人（TCE）/狂野魔法道途.html",
+   "alsoIn": [],
+   "summary": "掷狂野魔法表时可掷两次选其一；点数相同则任选一项效应。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "狂野魔法道途"
+   },
+   "level": 14,
+   "action": "passive",
+   "mechanics": "掷狂野魔法表时可掷两次选其一；点数相同则任选一项效应。"
+  },
+  {
+   "id": "feature:深海意志·擒握触手",
+   "name": "擒握触手",
+   "en": "Grasping Tentacles",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/邪术师（TCE）/深海意志.html",
+   "alsoIn": [],
+   "summary": "免费施放艾伐黑触手一次，施放时获得等于魔契师等级的临时生命值，受伤不破坏该法术专注。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "深海意志"
+   },
+   "level": 10,
+   "action": "special",
+   "mechanics": "免费施放艾伐黑触手一次，施放时获得等于魔契师等级的临时生命值，受伤不破坏该法术专注。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:狂野魔法道途·无常反冲",
+   "name": "无常反冲",
+   "en": "Unstable Backlash",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/野蛮人（TCE）/狂野魔法道途.html",
+   "alsoIn": [],
+   "summary": "狂暴中受伤或豁免失败后，反应重骰狂野魔法表替换当前效应。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "狂野魔法道途"
+   },
+   "level": 10,
+   "action": "reaction",
+   "mechanics": "狂暴中受伤或豁免失败后，反应重骰狂野魔法表替换当前效应。"
+  },
+  {
+   "id": "feature:暮光领域·暮光守护",
+   "name": "暮光守护",
+   "en": "Twilight Shroud",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/暮光领域.html",
+   "alsoIn": [],
+   "summary": "暮光圣域球域内的你与盟友获得半身掩护。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "暮光领域"
+   },
+   "level": 17,
+   "action": "passive",
+   "mechanics": "暮光圣域球域内的你与盟友获得半身掩护。"
+  },
+  {
+   "id": "feature:巨灵宗主·有限祈愿术",
+   "name": "有限祈愿术",
+   "en": "Limited Wish",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/邪术师（TCE）/巨灵宗主.html",
+   "alsoIn": [],
+   "summary": "动作向器皿许愿，复制任意职业一道6环以下1动作法术，之后需1d4次长休才可再用。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "巨灵宗主"
+   },
+   "level": 14,
+   "action": "action",
+   "mechanics": "动作向器皿许愿，复制任意职业一道6环以下1动作法术，之后需1d4次长休才可再用。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:秩序领域·权威之音",
+   "name": "权威之音",
+   "en": "Voice of Authority",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/秩序领域.html",
+   "alsoIn": [
+    "拉尼卡公会长指南"
+   ],
+   "summary": "以法术位对盟友施法后，该盟友可立即反应对你指定目标进行武器攻击。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "秩序领域"
+   },
+   "level": 1,
+   "action": "special",
+   "mechanics": "以法术位对盟友施法后，该盟友可立即反应对你指定目标进行武器攻击。"
+  },
+  {
+   "id": "feature:书士会·法师之笔",
+   "name": "法师之笔",
+   "en": "Wizardly Quill",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/法师（TCE）/书士会.html",
+   "alsoIn": [],
+   "summary": "附赠动作创造无需墨水的魔法羽毛笔，抄写法术时每环只需2分钟。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "书士会"
+   },
+   "level": 2,
+   "action": "bonus",
+   "mechanics": "附赠动作创造无需墨水的魔法羽毛笔，抄写法术时每环只需2分钟。"
+  },
+  {
+   "id": "feature:创造学院·活化表演",
+   "name": "活化表演",
+   "en": "Animating Performance",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/吟游诗人（TCE）/创造学院.html",
+   "alsoIn": [],
+   "summary": "动作活化30尺内大型以下非魔法物品为舞空物品同伴1小时，与你共用先攻。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "创造学院"
+   },
+   "level": 6,
+   "action": "action",
+   "mechanics": "动作活化30尺内大型以下非魔法物品为舞空物品同伴1小时，与你共用先攻。",
+   "uses": {
+    "count": "1(耗法术位可再用)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:深海意志·海洋馈赠",
+   "name": "海洋馈赠",
+   "en": "Gift of the Sea",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/邪术师（TCE）/深海意志.html",
+   "alsoIn": [],
+   "summary": "获得40尺游泳速度，可在水下呼吸。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "深海意志"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "获得40尺游泳速度，可在水下呼吸。"
+  },
+  {
+   "id": "feature:深海意志·海渊传送",
+   "name": "海渊传送",
+   "en": "Fathomless plunge",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/邪术师（TCE）/深海意志.html",
+   "alsoIn": [],
+   "summary": "动作带最多五名自愿生物传送到1英里内见过的水域。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "深海意志"
+   },
+   "level": 14,
+   "action": "action",
+   "mechanics": "动作带最多五名自愿生物传送到1英里内见过的水域。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   }
+  },
+  {
+   "id": "feature:深海意志·海渊魂灵",
+   "name": "海渊魂灵",
+   "en": "Oceanic Soul",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/邪术师（TCE）/深海意志.html",
+   "alsoIn": [],
+   "summary": "寒冷抗性；完全浸水时与同样浸水的生物可互相理解。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "深海意志"
+   },
+   "level": 6,
+   "action": "passive",
+   "mechanics": "寒冷抗性；完全浸水时与同样浸水的生物可互相理解。"
+  },
+  {
+   "id": "feature:深海意志·深海触手",
+   "name": "深海触手",
+   "en": "Tentacle of the Deeps",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/邪术师（TCE）/深海意志.html",
+   "alsoIn": [],
+   "summary": "附赠动作在60尺内造10尺触手1分钟，近战法术攻击1d8寒冷并减速10尺；附赠动作可移动并再攻击。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "深海意志"
+   },
+   "level": 1,
+   "action": "bonus",
+   "mechanics": "附赠动作在60尺内造10尺触手1分钟，近战法术攻击1d8寒冷并减速10尺；附赠动作可移动并再攻击。",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "long"
+   },
+   "dice": [
+    [
+     1,
+     "1d8"
+    ],
+    [
+     10,
+     "2d8"
+    ]
+   ],
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": "寒冷"
+    }
+   ]
+  },
+  {
+   "id": "feature:创造学院·渐强创音",
+   "name": "渐强创音",
+   "en": "Creative Crescendo",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/吟游诗人（TCE）/创造学院.html",
+   "alsoIn": [],
+   "summary": "造物表演可一次造出魅力调整值件(至少2件)物品，且不再有价值上限。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "创造学院"
+   },
+   "level": 14,
+   "action": "passive",
+   "mechanics": "造物表演可一次造出魅力调整值件(至少2件)物品，且不再有价值上限。"
+  },
+  {
+   "id": "feature:创造学院·潜能微尘",
+   "name": "潜能微尘",
+   "en": "Mote of Potential",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/吟游诗人（TCE）/创造学院.html",
+   "alsoIn": [],
+   "summary": "给予吟游激励骰时附带微尘，用于属性检定可重骰取一，用于攻击可令目标及周围生物体质豁免失败受伤，用于豁免有额外加成。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "创造学院"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "给予吟游激励骰时附带微尘，用于属性检定可重骰取一，用于攻击可令目标及周围生物体质豁免失败受伤，用于豁免有额外加成。",
+   "save": {
+    "ability": "con",
+    "dc": "法术豁免DC"
+   },
+   "resource": "吟游激励"
+  },
+  {
+   "id": "feature:符文骑士·火焰符文",
+   "name": "火焰符文",
+   "en": "Fire Rune",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/战士（TCE）/符文骑士.html",
+   "alsoIn": [],
+   "summary": "工具检定熟练加值翻倍；武器命中时可令目标束缚并受2d6火焰伤害(体质豁免)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "符文骑士"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "工具检定熟练加值翻倍；武器命中时可令目标束缚并受2d6火焰伤害(体质豁免)。",
+   "save": {
+    "ability": "con",
+    "dc": "8+熟练+体质"
+   },
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "火焰"
+    }
+   ],
+   "conditions": [
+    "restrained"
+   ]
+  },
+  {
+   "id": "feature:野火结社·灼烧烈焰",
+   "name": "灼烧烈焰",
+   "en": "Cauterizing Flames",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/德鲁伊（TCE）/野火结社.html",
+   "alsoIn": [],
+   "summary": "30尺内小型以上生物死亡时留下幽火，反应熄灭使进入者受2d10+感知调整值火焰伤害或治疗。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "野火结社"
+   },
+   "level": 10,
+   "action": "reaction",
+   "mechanics": "30尺内小型以上生物死亡时留下幽火，反应熄灭使进入者受2d10+感知调整值火焰伤害或治疗。",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "long"
+   },
+   "damage": [
+    {
+     "dice": "2d10+感知调整值",
+     "type": "火焰"
+    }
+   ],
+   "heal": "2d10+感知调整值"
+  },
+  {
+   "id": "feature:野火结社·炽烈回生",
+   "name": "炽烈回生",
+   "en": "Blazing Revival",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/德鲁伊（TCE）/野火结社.html",
+   "alsoIn": [],
+   "summary": "生命降至0昏迷时，若灵魄在120尺内，令其降为0生命值，你恢复一半生命并站起。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "野火结社"
+   },
+   "level": 14,
+   "action": "special",
+   "mechanics": "生命降至0昏迷时，若灵魄在120尺内，令其降为0生命值，你恢复一半生命并站起。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:狂野魔法道途·狂野浪潮",
+   "name": "狂野浪潮",
+   "en": "Wild Surge",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/野蛮人（TCE）/狂野魔法道途.html",
+   "alsoIn": [],
+   "summary": "进入狂暴时掷d8决定一种魔法效应(黯蚀触须、传送、灵魂火炬、力场护盾等)，豁免DC 8+熟练+体质。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "狂野魔法道途"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "进入狂暴时掷d8决定一种魔法效应(黯蚀触须、传送、灵魂火炬、力场护盾等)，豁免DC 8+熟练+体质。",
+   "dice": "1d8",
+   "save": {
+    "ability": "con",
+    "dc": "8+熟练+体质"
+   }
+  },
+  {
+   "id": "feature:孢子结社·真菌之躯",
+   "name": "真菌之躯",
+   "en": "Fungal Body",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/德鲁伊（TCE）/孢子结社.html",
+   "alsoIn": [
+    "拉尼卡公会长指南"
+   ],
+   "summary": "免疫目盲、耳聋、恐慌、中毒；未失能时对你的重击视为普通命中。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "孢子结社"
+   },
+   "level": 14,
+   "action": "passive",
+   "mechanics": "免疫目盲、耳聋、恐慌、中毒；未失能时对你的重击视为普通命中。",
+   "conditions": [
+    "blinded",
+    "deafened",
+    "frightened",
+    "poisoned"
+   ]
+  },
+  {
+   "id": "feature:孢子结社·真菌感染",
+   "name": "真菌感染",
+   "en": "Fungal Infestation",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/德鲁伊（TCE）/孢子结社.html",
+   "alsoIn": [
+    "拉尼卡公会长指南"
+   ],
+   "summary": "10尺内小型或中型生物死亡时反应令其变为丧尸站起(1生命值)，受你控制1小时。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "孢子结社"
+   },
+   "level": 6,
+   "action": "reaction",
+   "mechanics": "10尺内小型或中型生物死亡时反应令其变为丧尸站起(1生命值)，受你控制1小时。",
+   "uses": {
+    "count": "感知调整值(至少1)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:暮光领域·神圣打击",
+   "name": "神圣打击",
+   "en": "Divine Strike",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/暮光领域.html",
+   "alsoIn": [],
+   "summary": "每回合一次武器命中额外1d8光耀伤害(14级2d8)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "暮光领域"
+   },
+   "level": 8,
+   "action": "passive",
+   "mechanics": "每回合一次武器命中额外1d8光耀伤害(14级2d8)。",
+   "dice": [
+    [
+     8,
+     "1d8"
+    ],
+    [
+     14,
+     "2d8"
+    ]
+   ],
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": "光耀"
+    }
+   ]
+  },
+  {
+   "id": "feature:秩序领域·神圣打击",
+   "name": "神圣打击",
+   "en": "Divine Strike",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/秩序领域.html",
+   "alsoIn": [
+    "拉尼卡公会长指南"
+   ],
+   "summary": "每回合一次武器命中额外1d8心灵伤害(14级2d8)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "秩序领域"
+   },
+   "level": 8,
+   "action": "passive",
+   "mechanics": "每回合一次武器命中额外1d8心灵伤害(14级2d8)。",
+   "dice": [
+    [
+     8,
+     "1d8"
+    ],
+    [
+     14,
+     "2d8"
+    ]
+   ],
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": "心灵"
+    }
+   ]
+  },
+  {
+   "id": "feature:书士会·神识显现",
+   "name": "神识显现",
+   "en": "Manifest Mind",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/法师（TCE）/书士会.html",
+   "alsoIn": [],
+   "summary": "附赠动作令法术书意识显现为60尺内微型灵体，可作为施法发出点并共享感官。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "书士会"
+   },
+   "level": 6,
+   "action": "bonus",
+   "mechanics": "附赠动作令法术书意识显现为60尺内微型灵体，可作为施法发出点并共享感官。"
+  },
+  {
+   "id": "feature:秩序领域·秩序之怒",
+   "name": "秩序之怒",
+   "en": "Order's Wrath",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/秩序领域.html",
+   "alsoIn": [
+    "拉尼卡公会长指南"
+   ],
+   "summary": "神圣打击后可诅咒该生物，下次盟友命中它额外2d8心灵伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "秩序领域"
+   },
+   "level": 17,
+   "action": "special",
+   "mechanics": "神圣打击后可诅咒该生物，下次盟友命中它额外2d8心灵伤害。",
+   "damage": [
+    {
+     "dice": "2d8",
+     "type": "心灵"
+    }
+   ]
+  },
+  {
+   "id": "feature:符文骑士·符文主宰",
+   "name": "符文主宰",
+   "en": "Runic Juggernaut",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/战士（TCE）/符文骑士.html",
+   "alsoIn": [],
+   "summary": "巨人之力额外伤害升为1d10，并可变为巨型(触及+5尺)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "符文骑士"
+   },
+   "level": 18,
+   "action": "passive",
+   "mechanics": "巨人之力额外伤害升为1d10，并可变为巨型(触及+5尺)。",
+   "dice": "1d10"
+  },
+  {
+   "id": "feature:符文骑士·符文之盾",
+   "name": "符文之盾",
+   "en": "Runic Shield",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/战士（TCE）/符文骑士.html",
+   "alsoIn": [],
+   "summary": "60尺内可见生物被攻击命中时，反应令攻击者重掷d20并采用新结果。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "符文骑士"
+   },
+   "level": 7,
+   "action": "reaction",
+   "mechanics": "60尺内可见生物被攻击命中时，反应令攻击者重掷d20并采用新结果。",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:符文骑士·符文大师",
+   "name": "符文大师",
+   "en": "Master of Runes",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/战士（TCE）/符文骑士.html",
+   "alsoIn": [],
+   "summary": "每种已知符文可激活两次，短休或长休恢复。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "符文骑士"
+   },
+   "level": 15,
+   "action": "passive",
+   "mechanics": "每种已知符文可激活两次，短休或长休恢复。"
+  },
+  {
+   "id": "feature:符文骑士·符文雕刻者",
+   "name": "符文雕刻者",
+   "en": "Rune Carver",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/战士（TCE）/符文骑士.html",
+   "alsoIn": [],
+   "summary": "学会两种符文(随等级增多)，长休时刻在物品上；每种符文有被动效果和一次主动能力。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "符文骑士"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "学会两种符文(随等级增多)，长休时刻在物品上；每种符文有被动效果和一次主动能力。"
+  },
+  {
+   "id": "feature:孢子结社·结社法术",
+   "name": "结社法术",
+   "en": "Circle Spells",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/德鲁伊（TCE）/孢子结社.html",
+   "alsoIn": [
+    "拉尼卡公会长指南"
+   ],
+   "summary": "学会颤栗之触；恒备法术：目盲/耳聋术、疲劳射线、尸体活化、恐惧术、凋萎术、传染病等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "孢子结社"
+   },
+   "level": 2,
+   "action": "passive",
+   "mechanics": "学会颤栗之触；恒备法术：目盲/耳聋术、疲劳射线、尸体活化、恐惧术、凋萎术、传染病等。"
+  },
+  {
+   "id": "feature:野火结社·结社法术",
+   "name": "结社法术",
+   "en": "Circle Spells",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/德鲁伊（TCE）/野火结社.html",
+   "alsoIn": [],
+   "summary": "恒备法术：燃烧之手、疗伤术、炽焰法球、迷踪步、复生术、火焰护盾、火球术等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "野火结社"
+   },
+   "level": 2,
+   "action": "passive",
+   "mechanics": "恒备法术：燃烧之手、疗伤术、炽焰法球、迷踪步、复生术、火焰护盾、火球术等。"
+  },
+  {
+   "id": "feature:雄辩学院·统一言说",
+   "name": "统一言说",
+   "en": "Universal Speech",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/吟游诗人（TCE）/雄辩学院.html",
+   "alsoIn": [
+    "塞洛斯之神话奥德赛"
+   ],
+   "summary": "动作令60尺内至多魅力调整值个生物1小时内能理解你说的任何语言。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "雄辩学院"
+   },
+   "level": 6,
+   "action": "action",
+   "mechanics": "动作令60尺内至多魅力调整值个生物1小时内能理解你说的任何语言。",
+   "uses": {
+    "count": "1(耗法术位可再用)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:集群牧者·群逸逃散",
+   "name": "群逸逃散",
+   "en": "Swarming Dispersal",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/游侠（TCE）/集群牧者.html",
+   "alsoIn": [],
+   "summary": "受伤时反应获得该次伤害抗性，并传送至30尺内可见空位。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "集群牧者"
+   },
+   "level": 15,
+   "action": "reaction",
+   "mechanics": "受伤时反应获得该次伤害抗性，并传送至30尺内可见空位。",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:集群牧者·翻腾浪涌",
+   "name": "翻腾浪涌",
+   "en": "Writhing Tide",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/游侠（TCE）/集群牧者.html",
+   "alsoIn": [],
+   "summary": "附赠动作获得10尺飞行速度并悬浮1分钟。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "集群牧者"
+   },
+   "level": 7,
+   "action": "bonus",
+   "mechanics": "附赠动作获得10尺飞行速度并悬浮1分钟。",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:集群牧者·蜂聚集群",
+   "name": "蜂聚集群",
+   "en": "Gathered Swarm",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/游侠（TCE）/集群牧者.html",
+   "alsoIn": [],
+   "summary": "每回合一次攻击命中后，集群让目标受1d6穿刺伤害，或令其力量豁免失败被移动15尺，或让你移动5尺。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "集群牧者"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "每回合一次攻击命中后，集群让目标受1d6穿刺伤害，或令其力量豁免失败被移动15尺，或让你移动5尺。",
+   "save": {
+    "ability": "str",
+    "dc": "法术豁免DC"
+   },
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "穿刺"
+    }
+   ]
+  },
+  {
+   "id": "feature:书士会·觉醒魔典",
+   "name": "觉醒魔典",
+   "en": "Awakened Spellbook",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/法师（TCE）/书士会.html",
+   "alsoIn": [],
+   "summary": "法术书可作法器；耗法术位施法时可把伤害类型换为书中同环法术的类型；仪式施法无需额外10分钟。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "书士会"
+   },
+   "level": 2,
+   "action": "special",
+   "mechanics": "法术书可作法器；耗法术位施法时可把伤害类型换为书中同环法术的类型；仪式施法无需额外10分钟。",
+   "uses": {
+    "count": "1(仪式)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:守望之誓·警戒呵斥",
+   "name": "警戒呵斥",
+   "en": "Vigilant Rebuke",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/圣武士（TCE）/守望之誓.html",
+   "alsoIn": [],
+   "summary": "你或30尺内可见者智力、感知、魅力豁免成功时，反应对迫使豁免者造成2d8+魅力调整值力场伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "守望之誓"
+   },
+   "level": 15,
+   "action": "reaction",
+   "mechanics": "你或30尺内可见者智力、感知、魅力豁免成功时，反应对迫使豁免者造成2d8+魅力调整值力场伤害。",
+   "damage": [
+    {
+     "dice": "2d8+魅力调整值",
+     "type": "力场"
+    }
+   ]
+  },
+  {
+   "id": "feature:暮光领域·警觉赐福",
+   "name": "警觉赐福",
+   "en": "Vigilant Blessing",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/暮光领域.html",
+   "alsoIn": [],
+   "summary": "动作触碰生物，使其下次先攻检定有优势。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "暮光领域"
+   },
+   "level": 1,
+   "action": "action",
+   "mechanics": "动作触碰生物，使其下次先攻检定有优势。"
+  },
+  {
+   "id": "feature:创造学院·造物表演",
+   "name": "造物表演",
+   "en": "Performance Of Creation",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/吟游诗人（TCE）/创造学院.html",
+   "alsoIn": [],
+   "summary": "动作在10尺内造出价值不超过20×吟游诗人等级gp的中型以下非魔法物品，持续熟练加值小时。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "创造学院"
+   },
+   "level": 3,
+   "action": "action",
+   "mechanics": "动作在10尺内造出价值不超过20×吟游诗人等级gp的中型以下非魔法物品，持续熟练加值小时。",
+   "uses": {
+    "count": "1(耗法术位可再用)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:暮光领域·附赠熟练项",
+   "name": "附赠熟练项",
+   "en": "Bonus Proficiencies",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/暮光领域.html",
+   "alsoIn": [],
+   "summary": "获得军用武器与重甲熟练。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "暮光领域"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "获得军用武器与重甲熟练。"
+  },
+  {
+   "id": "feature:集群牧者·集群牧者魔法",
+   "name": "集群牧者魔法",
+   "en": "Swarmkeeper Magic",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/游侠（TCE）/集群牧者.html",
+   "alsoIn": [],
+   "summary": "学会法师之手；恒备法术：妖火、蛛网术、气化形体、秘法眼、移形换位等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "集群牧者"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "学会法师之手；恒备法术：妖火、蛛网术、气化形体、秘法眼、移形换位等。"
+  },
+  {
+   "id": "feature:和平领域·领域法术",
+   "name": "领域法术",
+   "en": "Domain Spells",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/和平领域.html",
+   "alsoIn": [],
+   "summary": "领域法术：英雄气概、庇护术、援助术、守护之链、希望信标、短讯术、净化灵光、弹力法球等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "和平领域"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "领域法术：英雄气概、庇护术、援助术、守护之链、希望信标、短讯术、净化灵光、弹力法球等。"
+  },
+  {
+   "id": "feature:暮光领域·领域法术",
+   "name": "领域法术",
+   "en": "Domain Spells",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/暮光领域.html",
+   "alsoIn": [],
+   "summary": "领域法术：妖火、睡眠术、月华之光、识破隐形、活力灵光、李欧蒙小屋、生命灵光、高等隐形术等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "暮光领域"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "领域法术：妖火、睡眠术、月华之光、识破隐形、活力灵光、李欧蒙小屋、生命灵光、高等隐形术等。"
+  },
+  {
+   "id": "feature:秩序领域·领域法术",
+   "name": "领域法术",
+   "en": "Domain Spells",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/秩序领域.html",
+   "alsoIn": [],
+   "summary": "领域法术：命令术、英雄气概、定身类人、诚实之域、群体治愈真言、缓慢术、强迫术、通神术等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "秩序领域"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "领域法术：命令术、英雄气概、定身类人、诚实之域、群体治愈真言、缓慢术、强迫术、通神术等。"
+  },
+  {
+   "id": "feature:符文骑士·额外熟练项",
+   "name": "额外熟练项",
+   "en": "Bonus Proficiencies",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/战士（TCE）/符文骑士.html",
+   "alsoIn": [],
+   "summary": "获得铁匠工具熟练，学会巨人语。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "符文骑士"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "获得铁匠工具熟练，学会巨人语。"
+  },
+  {
+   "id": "feature:符文骑士·风暴符文",
+   "name": "风暴符文",
+   "en": "Storm Rune",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/战士（TCE）/符文骑士.html",
+   "alsoIn": [],
+   "summary": "奥秘有优势，不会被突袭；附赠动作进入先知形态1分钟，60尺内检定可反应给优势或劣势。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "符文骑士"
+   },
+   "level": 7,
+   "action": "bonus",
+   "mechanics": "奥秘有优势，不会被突袭；附赠动作进入先知形态1分钟，60尺内检定可反应给优势或劣势。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   }
+  },
+  {
+   "id": "feature:狂野魔法道途·魔法察觉",
+   "name": "魔法察觉",
+   "en": "Magic Awareness",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/野蛮人（TCE）/狂野魔法道途.html",
+   "alsoIn": [],
+   "summary": "动作至下回合结束知晓60尺内魔法物品或法术的位置与学派。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "狂野魔法道途"
+   },
+   "level": 3,
+   "action": "action",
+   "mechanics": "动作至下回合结束知晓60尺内魔法物品或法术的位置与学派。",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:暮光领域·黑夜明目",
+   "name": "黑夜明目",
+   "en": "Eyes of Night",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/暮光领域.html",
+   "alsoIn": [],
+   "summary": "黑暗视觉300尺且微光视作明亮；动作与10尺内感知调整值个生物共享1小时。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "暮光领域"
+   },
+   "level": 1,
+   "action": "action",
+   "mechanics": "黑暗视觉300尺且微光视作明亮；动作与10尺内感知调整值个生物共享1小时。",
+   "uses": {
+    "count": "1(耗法术位可再用)",
+    "recharge": "long"
+   }
+  }
+ ]
+}

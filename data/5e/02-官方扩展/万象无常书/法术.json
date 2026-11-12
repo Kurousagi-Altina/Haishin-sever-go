@@ -1,0 +1,210 @@
+{
+ "category": "spell",
+ "type": "法术",
+ "source": "万象无常书",
+ "generated": "2026-11-09",
+ "count": 3,
+ "entries": [
+  {
+   "id": "spell:卡牌喷射",
+   "name": "卡牌喷射",
+   "en": "Spray of Cards",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/贤者/卡牌法术详述.htm",
+   "alsoIn": [],
+   "summary": "15尺锥形内的生物进行敏捷豁免，失败受2d10力场伤害并陷入目盲，成功减半",
+   "uncertain": [],
+   "level": 2,
+   "school": "咒法",
+   "classes": [
+    "吟游诗人",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一副牌组",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "2d10",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "cone",
+    "size": 15,
+    "width": null,
+    "height": null,
+    "origin": "self"
+   },
+   "targets": null,
+   "conditions": [
+    "blinded"
+   ],
+   "upcast": {
+    "perLevelDice": "1d10",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d10",
+    "step": 1,
+    "from": 2
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:敌意术",
+   "name": "敌意术",
+   "en": "Antagonize",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/贤者/卡牌法术详述.htm",
+   "alsoIn": [],
+   "summary": "目标进行感知豁免，失败受4d4心灵伤害，成功减半",
+   "uncertain": [],
+   "level": 3,
+   "school": "惑控",
+   "classes": [
+    "吟游诗人",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 30
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一张描绘着浪客Rogue的卡牌",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "wis",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "4d4",
+     "type": "心灵"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d4",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d4",
+    "step": 1,
+    "from": 3
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:死神灵魄",
+   "name": "死神灵魄",
+   "en": "Spirit of Death",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/贤者/卡牌法术详述.htm",
+   "alsoIn": [],
+   "summary": "专注：召唤死神灵魄，使用收割者灵魄数据，随升环强化。",
+   "uncertain": [],
+   "level": 4,
+   "school": "死灵",
+   "classes": [
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一张描绘着死神化身的镀金纸牌，至少价值400gp",
+    "mCost": 400,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1小时",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 0,
+    "summonScales": true,
+    "text": "召唤物数据按所用法术位环阶计算",
+    "from": 4,
+    "step": 1
+   },
+   "cantripScaling": null,
+   "lasting": false
+  }
+ ]
+}

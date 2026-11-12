@@ -1,0 +1,95 @@
+{
+ "category": "feat",
+ "type": "专长",
+ "source": "斯翠海文：混沌研习",
+ "generated": "2026-11-09",
+ "count": 2,
+ "entries": [
+  {
+   "id": "feat:斯翠海文学徒",
+   "name": "斯翠海文学徒",
+   "en": "Strixhaven Initiate",
+   "aliases": [],
+   "source": "斯翠海文：混沌研习",
+   "section": "setting",
+   "path": "topics/斯翠海文：混沌研习/玩家选项/专长.html",
+   "alsoIn": [],
+   "summary": "选一学院得2戏法和一个可免费施放的1环法术，施法属性自选。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "戏法"
+   ],
+   "mechanics": [
+    {
+     "name": "斯翠海文学徒",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": "1",
+     "recharge": "long"
+    }
+   ]
+  },
+  {
+   "id": "feat:斯翠海文苑像",
+   "name": "斯翠海文苑像",
+   "en": "Strixhaven Mascot",
+   "aliases": [],
+   "source": "斯翠海文：混沌研习",
+   "section": "setting",
+   "path": "topics/斯翠海文：混沌研习/玩家选项/专长.html",
+   "alsoIn": [],
+   "summary": "以仪式施寻获魔宠并可选苑像形态；可放弃一次攻击让魔宠反应攻击；可与魔宠换位传送。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "斯翠海文学徒专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "动作"
+   ],
+   "mechanics": [
+    {
+     "name": "斯翠海文苑像",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "斯翠海文苑像",
+     "trigger": "当你在你的回合里进行攻击动作时",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "斯翠海文苑像",
+     "trigger": "如果你的苑像魔宠与你相距60尺内",
+     "action": "action",
+     "effect": "传送",
+     "uses": null,
+     "recharge": "long"
+    }
+   ]
+  }
+ ]
+}

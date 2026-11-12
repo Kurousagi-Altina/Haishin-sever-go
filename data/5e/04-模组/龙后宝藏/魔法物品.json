@@ -1,0 +1,40 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "龙后宝藏",
+ "generated": "2026-11-09",
+ "count": 1,
+ "entries": [
+  {
+   "id": "item:黑龙面具",
+   "name": "黑龙面具",
+   "en": "Black Dragon Mask",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/龙后宝藏/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，传说，需同调。免疫强酸；词条：伤害吸收、龙形威严、龙息、龙之视界",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [
+    "强酸"
+   ],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

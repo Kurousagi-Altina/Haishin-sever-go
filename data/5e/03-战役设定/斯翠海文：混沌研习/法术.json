@@ -1,0 +1,310 @@
+{
+ "category": "spell",
+ "type": "法术",
+ "source": "斯翠海文：混沌研习",
+ "generated": "2026-11-09",
+ "count": 5,
+ "entries": [
+  {
+   "id": "spell:借鉴才学",
+   "name": "借鉴才学",
+   "en": "Borrowed Knowledge",
+   "aliases": [],
+   "source": "斯翠海文：混沌研习",
+   "section": "setting",
+   "path": "topics/斯翠海文：混沌研习/玩家选项/法术详述.html",
+   "alsoIn": [],
+   "summary": "一小时内获得一项你未熟练技能的熟练。",
+   "uncertain": [],
+   "level": 2,
+   "school": "预言",
+   "classes": [
+    "吟游诗人",
+    "牧师",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一本价值至少25gp的书",
+    "mCost": 25,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "1小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:动力短行",
+   "name": "动力短行",
+   "en": "Kinetic Jaunt",
+   "aliases": [],
+   "source": "斯翠海文：混沌研习",
+   "section": "setting",
+   "path": "topics/斯翠海文：混沌研习/玩家选项/法术详述.html",
+   "alsoIn": [],
+   "summary": "专注：附赠动作，速度+10尺、无借机、可穿过他人空间。",
+   "uncertain": [],
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "奇械师",
+    "吟游诗人",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "bonus",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:涡旋翘曲",
+   "name": "涡旋翘曲",
+   "en": "Vortex Warp",
+   "aliases": [],
+   "source": "斯翠海文：混沌研习",
+   "section": "setting",
+   "path": "topics/斯翠海文：混沌研习/玩家选项/法术详述.html",
+   "alsoIn": [],
+   "summary": "体质豁免失败（可自愿失败）的生物被传送到90尺内你选的空位。",
+   "uncertain": [],
+   "level": 2,
+   "school": "咒法",
+   "classes": [
+    "奇械师",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 90
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 0,
+    "text": "每比2环高1环：施法距离+30尺",
+    "step": 1,
+    "from": 2
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:银光锐语",
+   "name": "银光锐语",
+   "en": "Silvery Barbs",
+   "aliases": [],
+   "source": "斯翠海文：混沌研习",
+   "section": "setting",
+   "path": "topics/斯翠海文：混沌研习/玩家选项/法术详述.html",
+   "alsoIn": [],
+   "summary": "反应：令他人刚成功的d20检定重掷取低，并给另一生物优势。",
+   "uncertain": [],
+   "level": 1,
+   "school": "惑控",
+   "classes": [
+    "吟游诗人",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "reaction",
+    "reactionTrigger": "当一个于你60尺内且可见的生物成功进行一次攻击检定，属性检定，或是豁免检定时"
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:靡叶生华",
+   "name": "靡叶生华",
+   "en": "Wither and Bloom",
+   "aliases": [],
+   "source": "斯翠海文：混沌研习",
+   "section": "setting",
+   "path": "topics/斯翠海文：混沌研习/玩家选项/法术详述.html",
+   "alsoIn": [],
+   "summary": "半径10尺球形内的生物进行体质豁免，失败受2d6黯蚀伤害，成功减半",
+   "uncertain": [],
+   "level": 2,
+   "school": "死灵",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "弯折成环形的枯萎藤蔓",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "黯蚀"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "sphere",
+    "size": 10,
+    "height": null,
+    "width": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d6",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d6",
+    "step": 1,
+    "from": 2
+   },
+   "cantripScaling": null,
+   "lasting": false,
+   "legacy": true
+  }
+ ]
+}

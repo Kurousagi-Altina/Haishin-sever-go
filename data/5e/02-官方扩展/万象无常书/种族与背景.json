@@ -1,0 +1,61 @@
+{
+ "category": "feature",
+ "type": "种族与背景",
+ "source": "万象无常书",
+ "generated": "2026-11-09",
+ "count": 2,
+ "entries": [
+  {
+   "id": "background:受宠者",
+   "type": "background",
+   "name": "受宠者",
+   "en": "Rewarded",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/命运/受宠者.htm",
+   "alsoIn": [],
+   "summary": "受宠者背景：技能洞悉、游说；工具一套你自选的赌具（比如纸牌或；特性命运宠幸",
+   "uncertain": [],
+   "abilityScores": null,
+   "feat": null,
+   "featParam": null,
+   "skills": [
+    "洞悉",
+    "游说"
+   ],
+   "skillsNote": null,
+   "tool": "一套你自选的赌具（比如纸牌或三龙牌）",
+   "languages": "一项你自选的语言",
+   "equipment": "一瓶黑色墨水，一支墨水笔，五卷纸，一套赌具（与你所选熟练项一致），一个玺戒，一套高档服装，以及一个装着18gp的小包",
+   "featureName": "命运宠幸",
+   "edition": "2014"
+  },
+  {
+   "id": "background:受难者",
+   "type": "background",
+   "name": "受难者",
+   "en": "Ruined",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/命运/受难者.htm",
+   "alsoIn": [],
+   "summary": "受难者背景：技能隐匿、求生；工具一套你自选的赌具（比如纸牌或；特性屹立不倒",
+   "uncertain": [],
+   "abilityScores": null,
+   "feat": null,
+   "featParam": null,
+   "skills": [
+    "隐匿",
+    "求生"
+   ],
+   "skillsNote": null,
+   "tool": "一套你自选的赌具（比如纸牌或三龙牌）",
+   "languages": "一项你自选的语言",
+   "equipment": "一个有裂缝的沙漏，一副生锈的镣铐，一个半空的玻璃瓶，一套狩猎陷阱，一套赌具（与你所选熟练项一致），一套旅行服装，以及一个装着13gp的小包",
+   "featureName": "屹立不倒",
+   "edition": "2014"
+  }
+ ]
+}

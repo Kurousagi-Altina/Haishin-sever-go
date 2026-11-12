@@ -1,0 +1,275 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "CR溟渊",
+ "generated": "2026-11-09",
+ "count": 7,
+ "entries": [
+  {
+   "id": "item:三祷之坠",
+   "name": "三祷之坠",
+   "en": "Jewel of Three Prayers",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/CR溟渊/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说，需同调。AC+1；3充能，全部 每日黎明恢复；可施放隐形术；DC18体质豁免；涉及目盲/束缚；词条：休眠态、觉醒态、崇高态",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "ac": 1
+   },
+   "charges": {
+    "max": "3",
+    "regain": "全部 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "隐形术",
+     "level": 2,
+     "cost": 1
+    }
+   ],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "4d10",
+     "type": "光耀"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 18,
+    "ability": "con"
+   },
+   "conditions": [
+    "blinded",
+    "restrained"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:传讯耳坠",
+   "name": "传讯耳坠",
+   "en": "Earing of Message",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/CR溟渊/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，普通。5充能，1d4+1 每日黎明恢复；可施放传讯术",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": {
+    "max": "5",
+    "regain": "1d4+1 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "传讯术",
+     "level": 0,
+     "cost": 1
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:传送泥板",
+   "name": "传送泥板",
+   "en": "Teleportation Rablet",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/CR溟渊/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀。DC21豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 21,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:月蚀护甲",
+   "name": "月蚀护甲",
+   "en": "Ruidium Armor",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/CR溟渊/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "护甲（任意除兽皮甲外的中甲或重甲），极珍稀，需同调。抗心灵；DC15魅力豁免；词条：月蚀腐化、如果月蚀矿被消灭",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "任意除兽皮甲外的中甲或重甲",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [
+    "心灵"
+   ],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "cha"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:月蚀武器",
+   "name": "月蚀武器",
+   "en": "Ruidium Weapon",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/CR溟渊/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "武器（任意武器），极珍稀，需同调。额外2d6心灵；DC20魅力豁免；词条：月蚀打击、月蚀腐化、如果月蚀矿被消灭",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意武器",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "2d6",
+     "type": "心灵",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 20,
+    "ability": "cha"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:月蚀盾牌",
+   "name": "月蚀盾牌",
+   "en": "Ruidium Shield",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/CR溟渊/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "盾牌，极珍稀，需同调。抗心灵；DC20魅力豁免；词条：心灵反射、月蚀腐化、如果月蚀矿被消灭",
+   "uncertain": [],
+   "itemType": "盾牌",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [
+    "心灵"
+   ],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 20,
+    "ability": "cha"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:赤红狂怒戒指",
+   "name": "赤红狂怒戒指",
+   "en": "Ring of Red Fury",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/CR溟渊/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "戒指，极珍稀，需同调。DC20魅力豁免；涉及失能；词条：月蚀狂怒、月蚀腐化、如果月蚀矿被消灭",
+   "uncertain": [],
+   "itemType": "戒指",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [
+    "paralyzed",
+    "restrained"
+   ],
+   "save": {
+    "dc": 20,
+    "ability": "cha"
+   },
+   "conditions": [
+    "incapacitated"
+   ],
+   "consumable": false
+  }
+ ]
+}

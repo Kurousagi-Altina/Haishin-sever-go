@@ -1,0 +1,59 @@
+{
+ "category": "feat",
+ "type": "专长",
+ "source": "艾伯伦：从终末战争中崛起",
+ "generated": "2026-11-09",
+ "count": 1,
+ "entries": [
+  {
+   "id": "feat:英魂之刃",
+   "name": "英魂之刃",
+   "en": "Revenant Blade",
+   "aliases": [],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第一章/种族/精灵.htm",
+   "alsoIn": [
+    "艾伯伦寻路者指南"
+   ],
+   "summary": "精灵专长；敏捷或力量+1；双手持双刃弯刀AC+1；双刃弯刀视为灵巧。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "精灵"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "dex",
+     "str"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "英魂之刃",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "英魂之刃",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  }
+ ]
+}

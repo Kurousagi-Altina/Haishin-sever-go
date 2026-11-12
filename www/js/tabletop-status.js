@@ -209,7 +209,7 @@ function renderBossBars() {
         var show = me.gm || t.bossExact;
         return '<div class="boss-bar' + (cur <= 0 ? ' down' : '') + '" data-boss="' + escapeHtml(t.id) + '">' +
             '<div class="boss-name">' + escapeHtml(t.label || 'Boss') + statusList(t).map(function(s) { return ' <span title="' + escapeHtml(statusLabel(s)) + '">' + escapeHtml(statusIcon(s)) + '</span>'; }).join('') +
-            (show ? '<span class="boss-num">' + cur + ' / ' + t.hpMax + (temp ? ' +' + temp : '') + '</span>' : '') +
+            (show ? '<span class="boss-num">' + hpNumText(t).replace('/', ' / ') + '</span>' : '') +
             (me.gm && !t.bossExact ? '<span class="tt-hint">玩家只看到比例</span>' : '') + '</div>' +
             '<div class="boss-track"><i style="width:' + (ratio * 100).toFixed(1) + '%"></i>' + (temp ? '<b style="width:' + Math.min(100, temp / t.hpMax * 100).toFixed(1) + '%"></b>' : '') + '</div></div>';
     }).join('');

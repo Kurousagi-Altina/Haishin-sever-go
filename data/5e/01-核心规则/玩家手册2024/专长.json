@@ -1,0 +1,3631 @@
+{
+ "category": "feat",
+ "type": "专长",
+ "source": "玩家手册2024",
+ "generated": "2026-11-09",
+ "count": 75,
+ "entries": [
+  {
+   "id": "feat:中甲大师",
+   "name": "中甲大师",
+   "en": "Medium Armor Master",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "力量或敏捷+1；穿中甲且敏捷16+时，AC可加3点敏捷调整值。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "中甲受训"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "灵敏着装",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:中甲运用",
+   "name": "中甲运用",
+   "en": "Moderately Armored",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "力量或敏捷+1；获得中甲受训（前提：轻甲受训）。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "轻甲受训"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "护甲受训",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:仪式施法者",
+   "name": "仪式施法者",
+   "en": "Ritual Caster",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "得若干仪式法术并可用普通时间无需法术位施放一次（长休恢复）。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {
+     "int": 13,
+     "wis": 13,
+     "cha": 13
+    },
+    "other": "",
+    "abilityMode": "any"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "仪式魔法",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "快速仪式",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": "long"
+    }
+   ]
+  },
+  {
+   "id": "feat:健壮",
+   "name": "健壮",
+   "en": "Tough",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/起源专长.htm",
+   "alsoIn": [],
+   "summary": "生命值上限增加2倍等级，之后每升一级再加2点。",
+   "uncertain": [],
+   "category": "起源",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "健壮",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:元素掌控",
+   "name": "元素掌控",
+   "en": "Elemental Adept",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "施法属性+1；选一种元素，施法无视该抗性，伤害骰1按2算；可换元素重复选取。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "施法或契约魔法特性"
+   },
+   "repeatable": true,
+   "abilityIncrease": {
+    "choices": [
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "能量掌控",
+     "trigger": "",
+     "action": "passive",
+     "effect": "抗性",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:军用武器训练",
+   "name": "军用武器训练",
+   "en": "Martial Weapon Training",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "力量或敏捷+1；获得军用武器熟练。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "武器熟练"
+   ],
+   "mechanics": [
+    {
+     "name": "武器熟练",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:冲锋手",
+   "name": "冲锋手",
+   "en": "Charger",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "力量或敏捷+1；疾走速度+10尺；冲锋10尺后命中可加1d8伤害或推开10尺。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {
+     "str": 13,
+     "dex": 13
+    },
+    "other": "",
+    "abilityMode": "any"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "进阶疾走",
+     "trigger": "当你执行疾走动作时",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "冲锋攻击",
+     "trigger": "",
+     "action": "passive",
+     "effect": "骰:1d8",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d8"
+    }
+   ]
+  },
+  {
+   "id": "feat:凶蛮打手",
+   "name": "凶蛮打手",
+   "en": "Savage Attacker",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/起源专长.htm",
+   "alsoIn": [],
+   "summary": "每回合一次，武器伤害可掷两次伤害骰取较高者。",
+   "uncertain": [],
+   "category": "起源",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "凶蛮打手",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": "1/回合",
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:劈砍者",
+   "name": "劈砍者",
+   "en": "Slasher",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "力量或敏捷+1；挥砍命中每回合一次使目标速度-10尺；挥砍重击令目标攻击有劣势至你下回合。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "伤筋",
+     "trigger": "当你用造成挥砍伤害的攻击命中一个生物时",
+     "action": "passive",
+     "effect": "伤害:挥砍",
+     "uses": "1/回合",
+     "recharge": null,
+     "damageTypes": [
+      "挥砍"
+     ]
+    },
+    {
+     "name": "强化重击",
+     "trigger": "当你掷出重击并对一个生物造成挥砍伤害时",
+     "action": "passive",
+     "effect": "伤害:挥砍",
+     "uses": null,
+     "recharge": null,
+     "damageTypes": [
+      "挥砍"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "feat:医疗师",
+   "name": "医疗师",
+   "en": "Healer",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/起源专长.htm",
+   "alsoIn": [],
+   "summary": "用医疗包以操作动作救治5尺内生物，对方花生命骰，由你掷并加熟练加值；治疗骰1可重掷。",
+   "uncertain": [
+    "mechanics"
+   ],
+   "category": "起源",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "动作"
+   ],
+   "mechanics": [
+    {
+     "name": "战地医师",
+     "trigger": "如果你有医疗包",
+     "action": "action",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "治疗重掷",
+     "trigger": "当你掷骰以决定用法术或此专长的战地医师增益所恢复的生命值时",
+     "action": "passive",
+     "effect": "治疗",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:博学多才之恩惠",
+   "name": "博学多才之恩惠",
+   "en": "Boon of Skill",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/传奇恩惠专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1（上限30）；获得全部技能熟练，再选一项技能获得专精。",
+   "uncertain": [],
+   "category": "传奇恩惠",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 19,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 30
+   },
+   "grants": [
+    "技能熟练",
+    "专精"
+   ],
+   "mechanics": [
+    {
+     "name": "全能专家",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "专精",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:双持客",
+   "name": "双持客",
+   "en": "Dual Wielder",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "力量或敏捷+1；攻击后附赠动作用另一把非双手近战武器追加攻击（不加属性）；可同时拔收两把武器。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {
+     "str": 13,
+     "dex": 13
+    },
+    "other": "",
+    "abilityMode": "any"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "附赠动作"
+   ],
+   "mechanics": [
+    {
+     "name": "强化双持",
+     "trigger": "当你在自己的回合中执行了攻击动作",
+     "action": "bonus",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "快速拔刀",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:双武器战斗",
+   "name": "双武器战斗",
+   "en": "Two-Weapon Fighting",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/战斗风格专长.htm",
+   "alsoIn": [],
+   "summary": "轻型双持的额外攻击可把属性调整值加进伤害。",
+   "uncertain": [],
+   "category": "战斗风格",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "战斗风格特性"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "双武器战斗",
+     "trigger": "当你因使用具有《轻型》词条的武器而得以发动额外的攻击时",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:哨兵",
+   "name": "哨兵",
+   "en": "Sentinel",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "力量或敏捷+1；借机攻击触发更灵活；借机命中使目标速度变0。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {
+     "str": 13,
+     "dex": 13
+    },
+    "other": "",
+    "abilityMode": "any"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "守护者",
+     "trigger": "当位于你5尺范围内的生物执行《撤离》动作后",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "阻拦",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:大厨",
+   "name": "大厨",
+   "en": "Chef",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "体质或感知+1；厨具熟练；短休烹饪让生物多回1d8；备零嘴给临时生命值（熟练加值）。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "con",
+     "wis"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "工具熟练",
+    "附赠动作"
+   ],
+   "mechanics": [
+    {
+     "name": "厨师工具",
+     "trigger": "如果你没有厨师工具的熟练",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "大补食膳",
+     "trigger": "",
+     "action": "passive",
+     "effect": "骰:1d8；治疗",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d8"
+    },
+    {
+     "name": "应急零嘴",
+     "trigger": "如果你手上有食材和厨师工具",
+     "action": "bonus",
+     "effect": "临时HP",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:妖精触碰",
+   "name": "妖精触碰",
+   "en": "Fey-Touched",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "施法属性+1；得迷踪步和一道预言/惑控1环法术，各可免费施放一次。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "法术:迷踪步"
+   ],
+   "mechanics": [
+    {
+     "name": "妖精魔法",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:迷踪步",
+     "uses": null,
+     "recharge": "long"
+    }
+   ]
+  },
+  {
+   "id": "feat:守护",
+   "name": "守护",
+   "en": "Protection",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/战斗风格专长.htm",
+   "alsoIn": [],
+   "summary": "反应（持盾）：对攻击你5尺内他人的攻击检定施加劣势，其后对该目标的攻击也有劣势。",
+   "uncertain": [],
+   "category": "战斗风格",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "战斗风格特性"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "守护",
+     "trigger": "当一名你可见的生物对一个你5尺内的除你以外的目标发动攻击时",
+     "action": "reaction",
+     "effect": "劣势",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:对决",
+   "name": "对决",
+   "en": "Dueling",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/战斗风格专长.htm",
+   "alsoIn": [],
+   "summary": "单手持一把近战武器且无他物时，该武器伤害+2。",
+   "uncertain": [],
+   "category": "战斗风格",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "战斗风格特性"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "对决",
+     "trigger": "当你单手持用一把近战武器且没有持用其他武器时",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:属性值提升",
+   "name": "属性值提升",
+   "en": "Ability Score Improvement",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "一项属性+2或两项属性各+1（上限20）；可重复选取。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": true,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 2,
+    "max": 20,
+    "alt": "或两项各+1"
+   },
+   "grants": [],
+   "mechanics": []
+  },
+  {
+   "id": "feat:巧匠",
+   "name": "巧匠",
+   "en": "Crafter",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/起源专长.htm",
+   "alsoIn": [],
+   "summary": "得3项工匠工具熟练；买非魔法物品享20%折扣；长休可制作一件快速制作表中的装备。",
+   "uncertain": [],
+   "category": "起源",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "工具熟练"
+   ],
+   "mechanics": [
+    {
+     "name": "工具熟练",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "折扣",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "快速制作",
+     "trigger": "当你完成一次长休时",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:巨武器大师",
+   "name": "巨武器大师",
+   "en": "Great Weapon Master",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "力量+1；重型武器命中额外伤害加熟练加值；重击或击倒目标后附赠动作再攻一次。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {
+     "str": 13
+    },
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "附赠动作"
+   ],
+   "mechanics": [
+    {
+     "name": "重武器掌握",
+     "trigger": "在你的回合内",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "顺势斩",
+     "trigger": "当你使用近战武器掷出一次重击时",
+     "action": "bonus",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:巨武器战斗",
+   "name": "巨武器战斗",
+   "en": "Great Weapon Fighting",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/战斗风格专长.htm",
+   "alsoIn": [],
+   "summary": "双手持双手/多用近战武器的伤害骰，1和2按3算。",
+   "uncertain": [],
+   "category": "战斗风格",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "战斗风格特性"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "巨武器战斗",
+     "trigger": "当你用双手持握的一把近战武器发动了一次攻击并为其进行伤害掷骰时",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:巫师杀手",
+   "name": "巫师杀手",
+   "en": "Mage Slayer",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "力量或敏捷+1；伤害专注中的生物使其专注豁免劣势；智/感/魅豁免失败可改成功（短/长休恢复）。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "专注中断手",
+     "trigger": "当你对一名正处于《专注》的生物造成伤害时",
+     "action": "passive",
+     "effect": "劣势",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "审慎护心",
+     "trigger": "当你的智力、感知或魅力豁免失败时",
+     "action": "passive",
+     "effect": "豁免:cha DC ",
+     "uses": "1",
+     "recharge": "short",
+     "save": {
+      "ability": "cha",
+      "dc": null
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:幸运",
+   "name": "幸运",
+   "en": "Lucky",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/起源专长.htm",
+   "alsoIn": [],
+   "summary": "拥有熟练加值数量的幸运点（长休恢复）；可花点数给自己的d20优势，或给攻击你的检定劣势。",
+   "uncertain": [],
+   "category": "起源",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:D20检定"
+   ],
+   "mechanics": [
+    {
+     "name": "幸运点",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "优势",
+     "trigger": "当你为了一次《D20检定》而投掷d20时",
+     "action": "passive",
+     "effect": "法术:D20检定",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "劣势",
+     "trigger": "当一个生物为了一次对你发动的攻击检定而投掷d20时",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:强健身心",
+   "name": "强健身心",
+   "en": "Resilient",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "选一项未熟练豁免的属性+1并获得该豁免熟练。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20,
+    "note": "须选未熟练豁免的属性"
+   },
+   "grants": [
+    "熟练"
+   ],
+   "mechanics": [
+    {
+     "name": "豁免熟练",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:强力恢复之恩惠",
+   "name": "强力恢复之恩惠",
+   "en": "Boon of Recovery",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/传奇恩惠专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1（上限30）；将降至0生命时改为1并回复一半最大生命（长休恢复）；10d10治疗池，附赠动作回血。",
+   "uncertain": [
+    "mechanics"
+   ],
+   "category": "传奇恩惠",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 19,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 30
+   },
+   "grants": [
+    "动作"
+   ],
+   "mechanics": [
+    {
+     "name": "背水一战",
+     "trigger": "当你的生命值将要降至0时",
+     "action": "passive",
+     "effect": "治疗",
+     "uses": "1",
+     "recharge": "long"
+    },
+    {
+     "name": "重获生机",
+     "trigger": "",
+     "action": "action",
+     "effect": "骰:d10；治疗",
+     "uses": null,
+     "recharge": null,
+     "dice": "d10"
+    }
+   ]
+  },
+  {
+   "id": "feat:强弩专家",
+   "name": "强弩专家",
+   "en": "Crossbow Expert",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "敏捷+1；无视弩的装填；近战范围内用弩无劣势；轻型弩可双持追加攻击。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {
+     "dex": 13
+    },
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "无视装填",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "抵近射击",
+     "trigger": "",
+     "action": "passive",
+     "effect": "劣势",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "双持射击",
+     "trigger": "当你发动由轻型词条所提供的额外的攻击时",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:影界触碰",
+   "name": "影界触碰",
+   "en": "Shadow Touched",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "智/感/魅+1；得隐形术与一道幻术/死灵1环法术，各可免费施放一次。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "法术:隐形术"
+   ],
+   "mechanics": [
+    {
+     "name": "暗影魔法",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:隐形术",
+     "uses": null,
+     "recharge": "long"
+    }
+   ]
+  },
+  {
+   "id": "feat:徒手战斗",
+   "name": "徒手战斗",
+   "en": "Unarmed Fighting",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/战斗风格专长.htm",
+   "alsoIn": [],
+   "summary": "徒手命中可改造成1d6+力量钝击（不持物时d8）；回合开始可对受擒生物造成1d4钝击。",
+   "uncertain": [],
+   "category": "战斗风格",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "战斗风格特性"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "徒手战斗",
+     "trigger": "当你使用《徒手打击》命中并造成了伤害时",
+     "action": "passive",
+     "effect": "骰:1d6/d6/d8/1d4；伤害:钝击",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d6/d6/d8/1d4",
+     "damageTypes": [
+      "钝击"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "feat:心灵感应",
+   "name": "心灵感应",
+   "en": "Telepathic",
+   "aliases": [
+    "心电感应"
+   ],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "智/感/魅+1；60尺内可见生物心灵交流；免费施放侦测思想一次，长休恢复。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "法术:侦测思想",
+    "心灵感应"
+   ],
+   "mechanics": [
+    {
+     "name": "传心呢喃",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "侦测思想",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:侦测思想",
+     "uses": "1",
+     "recharge": "long"
+    }
+   ]
+  },
+  {
+   "id": "feat:念动力",
+   "name": "念动力",
+   "en": "Telekinetic",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "智/感/魅+1；法师之手无成分且可隐形、射程+30；附赠动作念力推拉30尺内目标（力量豁免5尺）。",
+   "uncertain": [
+    "mechanics"
+   ],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "法术:法师之手",
+    "动作"
+   ],
+   "mechanics": [
+    {
+     "name": "次级心灵遥控",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:法师之手",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "念力推撞",
+     "trigger": "",
+     "action": "action",
+     "effect": "豁免:str DC 8+提升属性+熟练",
+     "uses": null,
+     "recharge": null,
+     "save": {
+      "ability": "str",
+      "dc": "8+提升属性+熟练"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:战地施法者",
+   "name": "战地施法者",
+   "en": "War Caster",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "施法属性+1；专注豁免有优势；反应以法术取代借机攻击；手持物仍可做姿势成分。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "施法或契约魔法特性"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "专注",
+     "trigger": "",
+     "action": "passive",
+     "effect": "豁免:con DC ",
+     "uses": null,
+     "recharge": null,
+     "save": {
+      "ability": "con",
+      "dc": null
+     }
+    },
+    {
+     "name": "响应法术",
+     "trigger": "当一个生物因离开你的触及范围而引发你的《借机攻击》时",
+     "action": "reaction",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "姿势成分",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:扭曲命运之恩惠",
+   "name": "扭曲命运之恩惠",
+   "en": "Boon of Fate",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/传奇恩惠专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；60尺内任意生物的d20检定后可加或减2d4，先攻/休息后恢复。",
+   "uncertain": [],
+   "category": "传奇恩惠",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 19,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 30
+   },
+   "grants": [
+    "法术:D20检定",
+    "先攻"
+   ],
+   "mechanics": [
+    {
+     "name": "时来运转",
+     "trigger": "当你或位于你60尺内的另一名生物的《D20检定》中成功时或失败时",
+     "action": "passive",
+     "effect": "骰:2d4；法术:D20检定",
+     "uses": "1",
+     "recharge": "short",
+     "dice": "2d4"
+    }
+   ]
+  },
+  {
+   "id": "feat:技艺专家",
+   "name": "技艺专家",
+   "en": "Skill Expert",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "一项属性+1；获得一项技能熟练，再给一项已熟练技能专精。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "技能熟练",
+    "专精"
+   ],
+   "mechanics": [
+    {
+     "name": "技能熟练",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "专精",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:投掷武器战斗",
+   "name": "投掷武器战斗",
+   "en": "Thrown Weapon Fighting",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/战斗风格专长.htm",
+   "alsoIn": [],
+   "summary": "投掷武器远程攻击命中时伤害+2。",
+   "uncertain": [],
+   "category": "战斗风格",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "战斗风格特性"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "投掷武器战斗",
+     "trigger": "当你使用具有投掷词条的武器进行远程攻击检定并命中时",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:拦截",
+   "name": "拦截",
+   "en": "Interception",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/战斗风格专长.htm",
+   "alsoIn": [],
+   "summary": "反应：减少你5尺内被命中盟友受到的伤害，数值1d10+熟练加值（需持盾或武器）。",
+   "uncertain": [],
+   "category": "战斗风格",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "战斗风格特性"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "拦截",
+     "trigger": "当一名你可见的生物以攻击检定命中你5尺内的另一名生物*",
+     "action": "reaction",
+     "effect": "骰:1d10",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d10"
+    }
+   ]
+  },
+  {
+   "id": "feat:擒抱者",
+   "name": "擒抱者",
+   "en": "Grappler",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "力量或敏捷+1；徒手命中可同时擒抱并伤害（每回合一次）；攻击受你擒抱者有优势；拖行同体型以下对象不额外耗移动。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {
+     "str": 13,
+     "dex": 13
+    },
+    "other": "",
+    "abilityMode": "any"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "连擒带打",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "优势攻击",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "高速拖行",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:敏锐心灵",
+   "name": "敏锐心灵",
+   "en": "Keen Mind",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "智力+1；奥秘/历史/调查/自然/宗教选一项得熟练或专精；附赠动作执行研究。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {
+     "int": 13
+    },
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "int"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "技能熟练",
+    "专精",
+    "附赠动作"
+   ],
+   "mechanics": [
+    {
+     "name": "轶闻知识",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "快速研究",
+     "trigger": "",
+     "action": "bonus",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:无敌攻势之恩惠",
+   "name": "无敌攻势之恩惠",
+   "en": "Boon of Irresistible Offense",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/传奇恩惠专长.htm",
+   "alsoIn": [],
+   "summary": "力量或敏捷+1（上限30）；钝击/挥砍/穿刺伤害无视抗性；d20掷出20时额外伤害等于所提属性值。",
+   "uncertain": [],
+   "category": "传奇恩惠",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 19,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex"
+    ],
+    "amount": 1,
+    "max": 30
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "摧坚破甲",
+     "trigger": "",
+     "action": "passive",
+     "effect": "伤害:穿刺；抗性",
+     "uses": null,
+     "recharge": null,
+     "damageTypes": [
+      "穿刺"
+     ]
+    },
+    {
+     "name": "无阻打击",
+     "trigger": "当你为一次攻击检定投掷的d20骰出了20时",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:暗夜精魂之恩惠",
+   "name": "暗夜精魂之恩惠",
+   "en": "Boon of the Night Spirit",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/传奇恩惠专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1（上限30）；微光或黑暗中附赠动作隐形（行动后结束），且除心灵光耀外全抗性。",
+   "uncertain": [],
+   "category": "传奇恩惠",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 19,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 30
+   },
+   "grants": [
+    "抗性:心灵",
+    "抗性:光耀"
+   ],
+   "mechanics": [
+    {
+     "name": "幽影化身",
+     "trigger": "",
+     "action": "passive",
+     "effect": "伤害:光耀；抗性",
+     "uses": null,
+     "recharge": null,
+     "damageTypes": [
+      "光耀"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "feat:次元旅行之恩惠",
+   "name": "次元旅行之恩惠",
+   "en": "Boon of Dimensional Travel",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/传奇恩惠专长.htm",
+   "alsoIn": [],
+   "summary": "一项属性+1（上限30）；攻击或魔法动作后可传送至多30尺。",
+   "uncertain": [],
+   "category": "传奇恩惠",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 19,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 30
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "闪烁步",
+     "trigger": "当你执行《攻击》动作或《魔法》动作后",
+     "action": "passive",
+     "effect": "传送",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:武器大师",
+   "name": "武器大师",
+   "en": "Weapon Master",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "力量或敏捷+1；可使用一种熟练武器的精通词条，长休可更换。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "精通词条",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:毒师",
+   "name": "毒师",
+   "en": "Poisoner",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "敏捷或智力+1；毒素伤害无视抗性；可制毒涂武，命中者体质豁免否则2d8毒素并中毒。",
+   "uncertain": [
+    "mechanics"
+   ],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "dex",
+     "int"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "工具熟练",
+    "动作"
+   ],
+   "mechanics": [
+    {
+     "name": "强效毒素",
+     "trigger": "",
+     "action": "passive",
+     "effect": "伤害:毒素；抗性",
+     "uses": null,
+     "recharge": null,
+     "damageTypes": [
+      "毒素"
+     ]
+    },
+    {
+     "name": "酿毒",
+     "trigger": "",
+     "action": "action",
+     "effect": "骰:2d8；伤害:毒素；豁免:con DC 8+提升属性+熟练；状态:poisoned",
+     "uses": null,
+     "recharge": null,
+     "dice": "2d8",
+     "damageTypes": [
+      "毒素"
+     ],
+     "conditions": [
+      "poisoned"
+     ],
+     "save": {
+      "ability": "con",
+      "dc": "8+提升属性+熟练"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:法术射手",
+   "name": "法术射手",
+   "en": "Spell Sniper",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "施法属性+1；法术攻击无视半/四分之三掩护，近敌无劣势，射程+60尺。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "施法或契约魔法特性"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "绕过掩体",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "抵近施法",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "法术增距",
+     "trigger": "当你施展一道具有至少10尺施法距离",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:法术溯回之恩惠",
+   "name": "法术溯回之恩惠",
+   "en": "Boon of Spell Recall",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/传奇恩惠专长.htm",
+   "alsoIn": [],
+   "summary": "智/感/魅+1（上限30）；用1-4环法术位施法时掷1d4，等于环阶则不消耗法术位。",
+   "uncertain": [],
+   "category": "传奇恩惠",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 19,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 30
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "免费施法",
+     "trigger": "每当你使用一环到四环的法术位施展法术时",
+     "action": "passive",
+     "effect": "骰:1d4",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4"
+    }
+   ]
+  },
+  {
+   "id": "feat:演员",
+   "name": "演员",
+   "en": "Actor",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "魅力+1；冒充他人的欺瞒/表演检定有优势；可模仿他人声音（对方感知洞悉对抗）。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {
+     "cha": 13
+    },
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "伪装",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "拟声",
+     "trigger": "",
+     "action": "passive",
+     "effect": "DC 8+cha+熟练",
+     "uses": null,
+     "recharge": null,
+     "save": {
+      "ability": null,
+      "dc": "8+cha+熟练"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:熟习",
+   "name": "熟习",
+   "en": "Skilled",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/起源专长.htm",
+   "alsoIn": [],
+   "summary": "额外获得任意3项技能或工具的熟练；可重复选取。",
+   "uncertain": [],
+   "category": "起源",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": true,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": []
+  },
+  {
+   "id": "feat:盲斗",
+   "name": "盲斗",
+   "en": "Blind Fighting",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/战斗风格专长.htm",
+   "alsoIn": [],
+   "summary": "获得10尺盲视。",
+   "uncertain": [],
+   "category": "战斗风格",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "战斗风格特性"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "盲视"
+   ],
+   "mechanics": [
+    {
+     "name": "盲斗",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:盾牌大师",
+   "name": "盾牌大师",
+   "en": "Shield Master",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "力量+1；盾击推开或击倒目标；反应：敏捷豁免成功则免伤。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "盾牌受训"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "盾击",
+     "trigger": "当你通过《攻击》动作中的",
+     "action": "passive",
+     "effect": "豁免:str DC 8+str+熟练；状态:prone",
+     "uses": null,
+     "recharge": null,
+     "conditions": [
+      "prone"
+     ],
+     "save": {
+      "ability": "str",
+      "dc": "8+str+熟练"
+     }
+    },
+    {
+     "name": "介入盾牌",
+     "trigger": "当你受某效应影响而需要进行敏捷豁免来“只受一半伤害”时",
+     "action": "reaction",
+     "effect": "豁免:dex DC ",
+     "uses": null,
+     "recharge": null,
+     "save": {
+      "ability": "dex",
+      "dc": null
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:真实视觉之恩惠",
+   "name": "真实视觉之恩惠",
+   "en": "Boon of Truesight",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/传奇恩惠专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；获得60尺真实视觉。",
+   "uncertain": [],
+   "category": "传奇恩惠",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 19,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 30
+   },
+   "grants": [
+    "真实视觉"
+   ],
+   "mechanics": [
+    {
+     "name": "真实视觉",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:神射手",
+   "name": "神射手",
+   "en": "Sharpshooter",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "敏捷+1；远程武器攻击无视半/四分之三掩护，近敌时及远距离射击都不受劣势。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {
+     "dex": 13
+    },
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "绕过掩体",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "抵近射击",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "百步穿杨",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:神行无拘之恩惠",
+   "name": "神行无拘之恩惠",
+   "en": "Boon of Speed",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/传奇恩惠专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1（上限30）；附赠动作撤离并结束受擒；速度+30尺。",
+   "uncertain": [
+    "mechanics"
+   ],
+   "category": "传奇恩惠",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 19,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 30
+   },
+   "grants": [
+    "动作"
+   ],
+   "mechanics": [
+    {
+     "name": "逃脱大师",
+     "trigger": "",
+     "action": "action",
+     "effect": "状态:grappled",
+     "uses": null,
+     "recharge": null,
+     "conditions": [
+      "grappled"
+     ]
+    },
+    {
+     "name": "风驰电掣",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:穿刺者",
+   "name": "穿刺者",
+   "en": "Piercer",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "力量或敏捷+1；穿刺命中每回合一次可重掷一枚伤害骰；穿刺重击多掷一枚骰。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "穿透伤",
+     "trigger": "当你用造成穿刺伤害的攻击命中一个生物时",
+     "action": "passive",
+     "effect": "伤害:穿刺",
+     "uses": "1/回合",
+     "recharge": null,
+     "damageTypes": [
+      "穿刺"
+     ]
+    },
+    {
+     "name": "强化重击",
+     "trigger": "当你用造成穿刺伤害的攻击命中一个生物并且掷出重击时",
+     "action": "passive",
+     "effect": "伤害:穿刺",
+     "uses": null,
+     "recharge": null,
+     "damageTypes": [
+      "穿刺"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "feat:箭术",
+   "name": "箭术",
+   "en": "Archery",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/战斗风格专长.htm",
+   "alsoIn": [],
+   "summary": "远程武器攻击检定+2。",
+   "uncertain": [],
+   "category": "战斗风格",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "战斗风格特性"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "箭术",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:粉碎者",
+   "name": "粉碎者",
+   "en": "Crusher",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "力量或体质+1；钝击命中每回合一次可推目标5尺；钝击重击使对其攻击有优势。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "con"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "推动",
+     "trigger": "当你以造成钝击伤害的一次攻击命中了一个生物时",
+     "action": "passive",
+     "effect": "伤害:钝击",
+     "uses": "1/回合",
+     "recharge": null,
+     "damageTypes": [
+      "钝击"
+     ]
+    },
+    {
+     "name": "强化重击",
+     "trigger": "当你掷出一次重击命中一名生物并对其造成钝击伤害后",
+     "action": "passive",
+     "effect": "伤害:钝击",
+     "uses": null,
+     "recharge": null,
+     "damageTypes": [
+      "钝击"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "feat:耐性",
+   "name": "耐性",
+   "en": "Durable",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "体质+1；死亡豁免有优势；附赠动作花生命骰回血。",
+   "uncertain": [
+    "mechanics"
+   ],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "con"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "动作"
+   ],
+   "mechanics": [
+    {
+     "name": "悍不畏死",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "高速恢复",
+     "trigger": "",
+     "action": "action",
+     "effect": "治疗",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:能量抗性之恩惠",
+   "name": "能量抗性之恩惠",
+   "en": "Boon of Energy Resistance",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/传奇恩惠专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；选两种能量伤害抗性（长休可换）；反应：把同类伤害导给60尺内目标，敏捷豁免否则2d12+体质。",
+   "uncertain": [],
+   "category": "传奇恩惠",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 19,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 30
+   },
+   "grants": [
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "能量抗性",
+     "trigger": "",
+     "action": "passive",
+     "effect": "抗性",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "能量重导",
+     "trigger": "当你受到伤害时",
+     "action": "reaction",
+     "effect": "骰:2d12；豁免:dex DC 8+con+熟练；抗性",
+     "uses": null,
+     "recharge": null,
+     "dice": "2d12",
+     "save": {
+      "ability": "dex",
+      "dc": "8+con+熟练"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:英勇战斗之恩惠",
+   "name": "英勇战斗之恩惠",
+   "en": "Boon of Combat Prowess",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/传奇恩惠专长.htm",
+   "alsoIn": [],
+   "summary": "一项属性+1（上限30）；攻击检定失手时可改为命中，需到下回合才可再用。",
+   "uncertain": [],
+   "category": "传奇恩惠",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 19,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 30
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "无双锁定",
+     "trigger": "当你的一次攻击检定失手时",
+     "action": "passive",
+     "effect": "",
+     "uses": "1",
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:观察力",
+   "name": "观察力",
+   "en": "Observant",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "智力或感知+1；洞悉/调查/察觉三选一得熟练或专精；附赠动作搜索。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {
+     "int": 13,
+     "wis": 13
+    },
+    "other": "",
+    "abilityMode": "any"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "int",
+     "wis"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "技能熟练",
+    "专精",
+    "附赠动作"
+   ],
+   "mechanics": [
+    {
+     "name": "敏锐观察",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "快速搜索",
+     "trigger": "",
+     "action": "bonus",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:警戒",
+   "name": "警戒",
+   "en": "Alert",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/起源专长.htm",
+   "alsoIn": [],
+   "summary": "先攻掷骰可加熟练加值；战斗开始时可与同战斗的自愿盟友互换先攻值（自己失能时不可）。",
+   "uncertain": [],
+   "category": "起源",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "先攻"
+   ],
+   "mechanics": [
+    {
+     "name": "先攻熟练",
+     "trigger": "当你投掷先攻时",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "先攻互换",
+     "trigger": "当你掷完先攻",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:超凡强韧之恩惠",
+   "name": "超凡强韧之恩惠",
+   "en": "Boon of Fortitude",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/传奇恩惠专长.htm",
+   "alsoIn": [],
+   "summary": "一项属性+1（上限30）；最大生命值+40；回血时可额外回复体质调整值（每回合最多一次）。",
+   "uncertain": [],
+   "category": "传奇恩惠",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 19,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 30
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "身强体壮",
+     "trigger": "",
+     "action": "passive",
+     "effect": "治疗",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:轻甲运用",
+   "name": "轻甲运用",
+   "en": "Lightly Armored",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "力量或敏捷+1；获得轻甲和盾牌受训。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "护甲受训",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:运动精英",
+   "name": "运动精英",
+   "en": "Athlete",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "力量或敏捷+1；得攀爬速度；倒地起身只耗5尺；跳跃只需移动5尺。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {
+     "str": 13,
+     "dex": 13
+    },
+    "other": "",
+    "abilityMode": "any"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "攀爬速度"
+   ],
+   "mechanics": [
+    {
+     "name": "攀爬速度",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "鲤鱼打挺",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "跳跃",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:酒馆斗殴者",
+   "name": "酒馆斗殴者",
+   "en": "Tavern Brawler",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/起源专长.htm",
+   "alsoIn": [],
+   "summary": "徒手打击伤害d4+力量并可重掷伤害骰1；临时武器熟练；命中后可推开目标5尺。",
+   "uncertain": [],
+   "category": "起源",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "强化徒手打击",
+     "trigger": "当你使用徒手打击命中并造成伤害时",
+     "action": "passive",
+     "effect": "骰:1d4；伤害:钝击",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4",
+     "damageTypes": [
+      "钝击"
+     ]
+    },
+    {
+     "name": "伤害重掷",
+     "trigger": "当你为徒手打击掷伤害骰时",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "临时武器专家",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "推离",
+     "trigger": "在你的回合内",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:重甲大师",
+   "name": "重甲大师",
+   "en": "Heavy Armor Master",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "体质或力量+1；穿重甲被命中时，钝击/穿刺/挥砍伤害减去熟练加值。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "重甲受训"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "con",
+     "str"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "伤害减免",
+     "trigger": "",
+     "action": "passive",
+     "effect": "伤害:钝击/穿刺/挥砍",
+     "uses": null,
+     "recharge": null,
+     "damageTypes": [
+      "钝击",
+      "穿刺",
+      "挥砍"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "feat:重甲运用",
+   "name": "重甲运用",
+   "en": "Heavily Armored",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "体质或力量+1；获得重甲受训（前提：中甲受训）。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "中甲受训"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "con",
+     "str"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "护甲受训",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:长柄武器大师",
+   "name": "长柄武器大师",
+   "en": "Polearm Master",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "敏捷或力量+1；长柄武器攻击后附赠动作用另一端d4钝击攻击；敌人进入触及时反应攻击。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {
+     "str": 13,
+     "dex": 13
+    },
+    "other": "",
+    "abilityMode": "any"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "dex",
+     "str"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "反应",
+    "附赠动作"
+   ],
+   "mechanics": [
+    {
+     "name": "长柄打击",
+     "trigger": "在你执行《攻击》动作并使用长棍、矛或同时具有重型词条与触及词条的武器攻击后",
+     "action": "bonus",
+     "effect": "骰:d4；伤害:钝击",
+     "uses": null,
+     "recharge": null,
+     "dice": "d4",
+     "damageTypes": [
+      "钝击"
+     ]
+    },
+    {
+     "name": "反应打击",
+     "trigger": "在你持握长棍、矛或同时具有重型词条与触及词条的武器期间",
+     "action": "reaction",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:防御",
+   "name": "防御",
+   "en": "Defense",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/战斗风格专长.htm",
+   "alsoIn": [],
+   "summary": "穿着护甲时AC+1。",
+   "uncertain": [],
+   "category": "战斗风格",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "战斗风格特性"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "防御",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:防御式决斗",
+   "name": "防御式决斗",
+   "en": "Defensive Duelist",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "敏捷+1；持灵巧武器时反应：被近战命中后AC加熟练加值，可能使攻击落空。",
+   "uncertain": [
+    "mechanics"
+   ],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {
+     "dex": 13
+    },
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "招架",
+     "trigger": "如果其他生物的近战攻击命中你时你正握着一把灵巧武器",
+     "action": "reaction",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:隐伏者",
+   "name": "隐伏者",
+   "en": "Skulker",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "敏捷+1；10尺盲视；躲藏敏捷隐匿有优势；攻击落空不暴露位置。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {
+     "dex": 13
+    },
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "盲视"
+   ],
+   "mechanics": [
+    {
+     "name": "盲视",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "战争迷雾",
+     "trigger": "",
+     "action": "passive",
+     "effect": "优势",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "狙击手",
+     "trigger": "如果你在躲藏中进行了攻击检定",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:音乐家",
+   "name": "音乐家",
+   "en": "Musician",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/起源专长.htm",
+   "alsoIn": [],
+   "summary": "得3种乐器熟练；短休或长休中演奏，熟练加值数量的盟友获得英雄激励。",
+   "uncertain": [],
+   "category": "起源",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "工具熟练",
+    "英雄激励"
+   ],
+   "mechanics": [
+    {
+     "name": "乐器训练",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "鼓舞之歌",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:领袖之证",
+   "name": "领袖之证",
+   "en": "Inspiring Leader",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "感知或魅力+1；短休或长休结束时表演，6名30尺内盟友获得等级+属性调整值的临时生命值。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {
+     "wis": 13,
+     "cha": 13
+    },
+    "other": "",
+    "abilityMode": "any"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "激励演出",
+     "trigger": "每当你的短休/长休结束时",
+     "action": "passive",
+     "effect": "临时HP",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:飙速跑者",
+   "name": "飙速跑者",
+   "en": "Speedy",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "敏捷或体质+1；速度+10尺；疾走无视困难地形；借机攻击你有劣势。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {
+     "dex": 13,
+     "con": 13
+    },
+    "other": "",
+    "abilityMode": "any"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "dex",
+     "con"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "速度提升",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "险地疾行",
+     "trigger": "当你在自己的回合执行《疾走》动作时",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "灵活移动",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:骑乘战斗",
+   "name": "骑乘战斗",
+   "en": "Mounted Combatant",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/通用专长.htm",
+   "alsoIn": [],
+   "summary": "骑乘时对更小未骑乘目标攻击有优势；坐骑躲避效应免伤；反应让攻击你坐骑的命中你。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "wis"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "骑乘突击",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "侧跃躲闪",
+     "trigger": "当你的坐骑受某效应影响而需要进行敏捷豁免时",
+     "action": "passive",
+     "effect": "豁免:dex DC ",
+     "uses": null,
+     "recharge": null,
+     "save": {
+      "ability": "dex",
+      "dc": null
+     }
+    },
+    {
+     "name": "我身作盾",
+     "trigger": "当你骑乘时",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:魔法学徒",
+   "name": "魔法学徒",
+   "en": "Magic Initiate",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/专长/起源专长.htm",
+   "alsoIn": [],
+   "summary": "选牧师/德鲁伊/法师列表，学2戏法与1个1环法术（免费一次，长休恢复）；可换法术；可重复选不同列表。",
+   "uncertain": [],
+   "category": "起源",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": true,
+   "abilityIncrease": null,
+   "grants": [
+    "戏法"
+   ],
+   "mechanics": [
+    {
+     "name": "两道戏法",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "一环法术Level 1",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": "long"
+    },
+    {
+     "name": "改变法术",
+     "trigger": "每当你获得一级新等级",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  }
+ ]
+}

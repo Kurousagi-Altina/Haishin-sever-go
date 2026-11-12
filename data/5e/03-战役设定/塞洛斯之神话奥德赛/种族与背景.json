@@ -1,0 +1,229 @@
+{
+ "category": "feature",
+ "type": "种族与背景",
+ "source": "塞洛斯之神话奥德赛",
+ "generated": "2026-11-09",
+ "count": 6,
+ "entries": [
+  {
+   "id": "feature:狮族·爪击",
+   "type": "feature",
+   "name": "爪击",
+   "en": "Claws",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/角色选项/种族/狮族.htm",
+   "alsoIn": [],
+   "summary": "爪击：被动；伤害1d4+属性挥砍",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "狮族",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": "1d4+你力量调整值",
+   "save": null,
+   "damage": [
+    {
+     "dice": "1d4+属性",
+     "type": "挥砍"
+    }
+   ],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "爪击：被动；伤害1d4+属性挥砍",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2014",
+   "summaryAuto": true
+  },
+  {
+   "id": "species:狮族",
+   "type": "species",
+   "name": "狮族",
+   "en": "Leonin",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/角色选项/种族/狮族.htm",
+   "alsoIn": [],
+   "summary": "狮族：类人，中型，步行35尺，黑暗视觉60尺；特性4项。",
+   "uncertain": [
+    "creatureType"
+   ],
+   "size": [
+    "中型"
+   ],
+   "speed": {
+    "walk": 35
+   },
+   "darkvision": 60,
+   "creatureType": "类人",
+   "traitIds": [
+    "feature:狮族·黑暗视觉",
+    "feature:狮族·爪击",
+    "feature:狮族·猎手本能",
+    "feature:狮族·畏惧咆哮"
+   ],
+   "options": [],
+   "abilityIncrease": {
+    "con": 2,
+    "str": 1
+   },
+   "edition": "2014"
+  },
+  {
+   "id": "feature:狮族·猎手本能",
+   "type": "feature",
+   "name": "猎手本能",
+   "en": "Hunter's Instincts",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/角色选项/种族/狮族.htm",
+   "alsoIn": [],
+   "summary": "猎手本能：被动；熟练:运动/威吓/游说",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "狮族",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "猎手本能：被动；熟练:运动/威吓/游说",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2014",
+   "summaryAuto": true
+  },
+  {
+   "id": "feature:狮族·畏惧咆哮",
+   "type": "feature",
+   "name": "畏惧咆哮",
+   "en": "Daunting Roar",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/角色选项/种族/狮族.htm",
+   "alsoIn": [],
+   "summary": "畏惧咆哮：以附赠动作触发；可用1次，短休后恢复；目标做感知豁免；涉及恐慌；给予熟练",
+   "uncertain": [
+    "save.dc"
+   ],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "狮族",
+    "option": null
+   },
+   "level": null,
+   "action": "bonus",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   },
+   "dice": null,
+   "save": {
+    "ability": "wis",
+    "dc": null
+   },
+   "damage": [],
+   "heal": null,
+   "conditions": [
+    "frightened"
+   ],
+   "resource": null,
+   "mechanics": "畏惧咆哮：以附赠动作触发；可用1次，短休后恢复；目标做感知豁免；涉及恐慌；给予熟练",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2014",
+   "summaryAuto": true
+  },
+  {
+   "id": "background:运动员",
+   "type": "background",
+   "name": "运动员",
+   "en": "Athlete",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/角色选项/背景-运动员.htm",
+   "alsoIn": [],
+   "summary": "运动员背景：技能特技、运动；工具载具（陆运）；特性胜利的回声",
+   "uncertain": [],
+   "abilityScores": null,
+   "feat": null,
+   "featParam": null,
+   "skills": [
+    "特技",
+    "运动"
+   ],
+   "skillsNote": null,
+   "tool": "载具（陆运）",
+   "languages": "自选一门语言",
+   "equipment": "一个青铜铁饼或皮球，一件幸运护身符或过去的奖杯，一套旅行服装，以及一个装有10金币的钱袋",
+   "featureName": "胜利的回声",
+   "edition": "2014"
+  },
+  {
+   "id": "feature:狮族·黑暗视觉",
+   "type": "feature",
+   "name": "黑暗视觉",
+   "en": "Darkvision",
+   "aliases": [],
+   "source": "塞洛斯之神话奥德赛",
+   "section": "setting",
+   "path": "topics/塞洛斯之神话奥德赛/角色选项/种族/狮族.htm",
+   "alsoIn": [],
+   "summary": "黑暗视觉：被动",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "狮族",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "黑暗视觉：被动",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2014",
+   "summaryAuto": true
+  }
+ ]
+}

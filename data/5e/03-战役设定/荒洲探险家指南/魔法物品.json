@@ -1,0 +1,1630 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "荒洲探险家指南",
+ "generated": "2026-11-09",
+ "count": 46,
+ "entries": [
+  {
+   "id": "item:修补之针",
+   "name": "修补之针",
+   "en": "Needle of Mending",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "武器（匕首），珍稀，需同调。攻击+1、伤害+1；可施放修复术",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "匕首",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [
+    {
+     "name": "修复术",
+     "level": 0,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:冥河之剑",
+   "name": "冥河之剑",
+   "en": "Acheron Blade",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "武器（任意剑），珍稀，需同调。攻击+1、伤害+1；词条：黑暗赐福、挫败打击",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意剑",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [
+    "frightened"
+   ],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:可能性药水",
+   "name": "可能性药水",
+   "en": "Potion of Possibility",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "药水，极珍稀。消耗品",
+   "uncertain": [],
+   "itemType": "药水",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:呼吸泡泡",
+   "name": "呼吸泡泡",
+   "en": "Breathing Bubble",
+   "aliases": [
+    "呼吸罩"
+   ],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [
+    "模组"
+   ],
+   "summary": "奇物，普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:复仇权杖",
+   "name": "复仇权杖",
+   "en": "Rod of Retribution",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "权杖，非普通，需同调。3充能，全部 每日黎明恢复；DC13敏捷豁免",
+   "uncertain": [],
+   "itemType": "权杖",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "全部 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "2d10",
+     "type": "闪电"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 13,
+    "ability": "dex"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:夜幕珍珠",
+   "name": "夜幕珍珠",
+   "en": "Nightfall Pearl",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:奥术加农炮",
+   "name": "奥术加农炮",
+   "en": "Arcane Cannon",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀。DC15敏捷豁免；涉及中毒；词条：强酸喷射、火焰喷射、冰霜射击、闪电射击",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "dex"
+   },
+   "conditions": [
+    "poisoned"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:如丝毒怨",
+   "name": "如丝毒怨",
+   "en": "Silken Spite",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/叛神武具.htm",
+   "alsoIn": [],
+   "summary": "武器（刺剑），神器，需同调。攻击+1、伤害+1；DC13体质豁免；涉及失能/中毒；词条：智能、个性、休眠态、觉醒态",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "刺剑",
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 13,
+    "ability": "con"
+   },
+   "conditions": [
+    "incapacitated",
+    "poisoned"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:害兽之幕",
+   "name": "害兽之幕",
+   "en": "Verminshroud",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/诀别遗物.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说，需同调。可施放变形术、疫病虫群；DC17体质豁免；涉及中毒；词条：休眠态、觉醒态、崇高态",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "变形术",
+     "level": 4,
+     "cost": null
+    },
+    {
+     "name": "疫病虫群",
+     "level": 5,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 17,
+    "ability": "con"
+   },
+   "conditions": [
+    "poisoned"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:屠夫围裙",
+   "name": "屠夫围裙",
+   "en": "Butcher's Bib",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:屠尸者",
+   "name": "屠尸者",
+   "en": "Corpse Slayer",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "武器（任意武器），珍稀，需同调。攻击+1、伤害+1",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意武器",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:拉克桑信标",
+   "name": "拉克桑信标",
+   "en": "Luxon Beacon",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说。词条：可能性碎片、灵魂捕捉",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:探洞硬币",
+   "name": "探洞硬币",
+   "en": "Coin of Delving",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:撞击盾",
+   "name": "撞击盾",
+   "en": "Battering Shield",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "护甲（盾牌），珍稀，需同调。AC+1；3充能，1d3 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "盾牌",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "ac": 1
+   },
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:无限秘典",
+   "name": "无限秘典",
+   "en": "Grimoire Infinitus",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/诀别遗物.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说，需法师同调。词条：休眠态、觉醒态、崇高态",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true,
+    "by": "法师"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:时溯救恩之戒",
+   "name": "时溯救恩之戒",
+   "en": "Ring of Temporal Salvation",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "戒指，珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "戒指",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:极限性能药水",
+   "name": "极限性能药水",
+   "en": "Potion of Maximum Power",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "药水，珍稀。消耗品",
+   "uncertain": [],
+   "itemType": "药水",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:棱彩荆冠",
+   "name": "棱彩荆冠",
+   "en": "Wreath of the Prism",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/诀别遗物.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说，需同调。可施放支配怪物；DC13豁免；词条：休眠态、觉醒态、崇高态",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "支配怪物",
+     "level": 8,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 13,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:毁灭残迹",
+   "name": "毁灭残迹",
+   "en": "Ruin's Wake",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/叛神武具.htm",
+   "alsoIn": [],
+   "summary": "武器（矛），神器，需同调。攻击+1、伤害+1；额外1d8穿刺；DC15敏捷豁免；词条：智能、个性、休眠态、觉醒态",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "矛",
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "1d8",
+     "type": "穿刺",
+     "when": "命中时"
+    }
+   ],
+   "damage": [
+    {
+     "dice": "8d6",
+     "type": "闪电"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "dex"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:法术瓶",
+   "name": "法术瓶",
+   "en": "Spell Bottle",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:渗透者之匙",
+   "name": "渗透者之匙",
+   "en": "Infiltrator's Key",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/诀别遗物.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说，需同调。攻击+1、伤害+1；词条：休眠态、觉醒态、崇高态",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:爪之意志",
+   "name": "爪之意志",
+   "en": "Will Of The Talon",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/叛神武具.htm",
+   "alsoIn": [],
+   "summary": "武器（战镐），神器，需同调。攻击+1、伤害+1；DC13感知豁免；词条：智能、个性、休眠态、觉醒态",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "战镐",
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 13,
+    "ability": "wis"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:物象解读护目镜",
+   "name": "物象解读护目镜",
+   "en": "Goggles of Object Reading",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需同调。可施放鉴定术",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "鉴定术",
+     "level": 1,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:猎手外套",
+   "name": "猎手外套",
+   "en": "Hunter's Coat",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "护甲（皮甲），极珍稀，需同调。AC+1；3充能，1d3 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "皮甲",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "ac": 1
+   },
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:生命精华胸针",
+   "name": "生命精华胸针",
+   "en": "Brooch of Living Essence",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:碎暮者",
+   "name": "碎暮者",
+   "en": "Duskcrusher",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "武器（战锤），极珍稀，需同调。攻击+2、伤害+2；可施放阳炎射线；额外1d8光耀；DC15豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "武器",
+   "baseItem": "战锤",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 2,
+    "damage": 2
+   },
+   "charges": null,
+   "spells": [
+    {
+     "name": "阳炎射线",
+     "level": 6,
+     "cost": null
+    }
+   ],
+   "extraDamage": [
+    {
+     "dice": "1d8",
+     "type": "光耀",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:碎镜之锋",
+   "name": "碎镜之锋",
+   "en": "Blade of Broken Mirrors",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/叛神武具.htm",
+   "alsoIn": [],
+   "summary": "武器（匕首），神器，需类人生物同调。攻击+1、伤害+1；DC15豁免；词条：智能、个性、休眠态、觉醒态",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "武器",
+   "baseItem": "匕首",
+   "rarity": "神器",
+   "attunement": {
+    "required": true,
+    "by": "类人生物"
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:秘迹学法杖",
+   "name": "秘迹学法杖",
+   "en": "Staff of Dunamancy",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "法杖，极珍稀，需法师同调。10充能，1d6+4 每日黎明恢复；词条：新的可能性",
+   "uncertain": [],
+   "itemType": "法杖",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true,
+    "by": "法师"
+   },
+   "bonus": null,
+   "charges": {
+    "max": "10",
+    "regain": "1d6+4 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:绝命武器",
+   "name": "绝命武器",
+   "en": "Weapon of Certain Death",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "武器（任意），珍稀。",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:美味尘",
+   "name": "美味尘",
+   "en": "Dust of Deliciousness",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:背水一战护甲",
+   "name": "背水一战护甲",
+   "en": "Last Stand Armor",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "护甲（任意护甲），极珍稀。AC+1；DC15魅力豁免",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "任意护甲",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "ac": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "cha"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:血斧",
+   "name": "血斧",
+   "en": "Bloodaxe",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "武器（巨斧），极珍稀，需同调。攻击+2、伤害+2",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "巨斧",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 2,
+    "damage": 2
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "黯蚀"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:血色终焉",
+   "name": "血色终焉",
+   "en": "The Bloody End",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/叛神武具.htm",
+   "alsoIn": [],
+   "summary": "武器（钉头锤），神器，需同调。攻击+1、伤害+1；可施放支配怪物；DC15感知豁免；词条：智能、个性、休眠态、觉醒态",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "钉头锤",
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [
+    {
+     "name": "支配怪物",
+     "level": 8,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "心灵"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "wis"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:觅音师",
+   "name": "觅音师",
+   "en": "Vox Seeker",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，普通。词条：声音锁定、蛛行、钳击",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:解除石",
+   "name": "解除石",
+   "en": "Dispelling Stone",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:象牙之爪法杖",
+   "name": "象牙之爪法杖",
+   "en": "Staff of the Ivory Claw",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "法杖，珍稀，需施法者同调。攻击+2、伤害+2",
+   "uncertain": [],
+   "itemType": "法杖",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "施法者"
+   },
+   "bonus": {
+    "attack": 2,
+    "damage": 2
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "3d6",
+     "type": "光耀"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:蹂躏者",
+   "name": "蹂躏者",
+   "en": "Grovelthrash",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/叛神武具.htm",
+   "alsoIn": [],
+   "summary": "武器（战锤），神器，需同调。攻击+1、伤害+1；DC17豁免；词条：智能、个性、休眠态、觉醒态",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "武器",
+   "baseItem": "战锤",
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "钝击"
+    },
+    {
+     "dice": "1d6",
+     "type": "心灵"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 17,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:转生尘",
+   "name": "转生尘",
+   "en": "Reincarnation Dust",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀。可施放转生术",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "转生术",
+     "level": 5,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:达诺斯护目镜",
+   "name": "达诺斯护目镜",
+   "en": "Danoth's Visor",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/诀别遗物.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说，需同调。可施放反魔法场；词条：休眠态、觉醒态、崇高态",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "反魔法场",
+     "level": 8,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:遮蔽之戒",
+   "name": "遮蔽之戒",
+   "en": "Ring of Obscuring",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "戒指，非普通，需同调。3充能，1d3 每日黎明恢复；可施放云雾术",
+   "uncertain": [],
+   "itemType": "戒指",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "云雾术",
+     "level": 1,
+     "cost": 1
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:酒鬼护符",
+   "name": "酒鬼护符",
+   "en": "Amulet of the Drunkard",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:野性守护者的毛皮",
+   "name": "野性守护者的毛皮",
+   "en": "Hide of the Feral Guardian",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/诀别遗物.htm",
+   "alsoIn": [],
+   "summary": "护甲（镶钉皮甲），传说，需同调。攻击+1、伤害+1、AC+1；可施放变形术；DC16力量豁免；词条：休眠态、觉醒态、崇高态、敏锐嗅听觉",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "镶钉皮甲",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1,
+    "ac": 1
+   },
+   "charges": null,
+   "spells": [
+    {
+     "name": "变形术",
+     "level": 4,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 16,
+    "ability": "str"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:阴影之鞭",
+   "name": "阴影之鞭",
+   "en": "Lash of Shadows",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/叛神武具.htm",
+   "alsoIn": [],
+   "summary": "武器（鞭），神器，需同调。攻击+1、伤害+1；DC13体质豁免；涉及目盲/麻痹/石化；词条：智能、个性、休眠态、枯眼",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "鞭",
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "3d6",
+     "type": "毒素"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 13,
+    "ability": "con"
+   },
+   "conditions": [
+    "blinded",
+    "paralyzed",
+    "petrified",
+    "poisoned",
+    "restrained"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:面纱法球",
+   "name": "面纱法球",
+   "en": "Orb of the Veil",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/荒洲的魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。词条：诅咒",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:风暴腰带",
+   "name": "风暴腰带",
+   "en": "Stormgirdle",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/诀别遗物.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说，需同调。可施放操控天气；DC15敏捷豁免；词条：休眠态、觉醒态、崇高态",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "操控天气",
+     "level": 8,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "3d6",
+     "type": "闪电"
+    },
+    {
+     "dice": "4d6",
+     "type": "闪电"
+    },
+    {
+     "dice": "5d6",
+     "type": "闪电"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "dex"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:黑冠权杖",
+   "name": "黑冠权杖",
+   "en": "Mace of the Black Crown",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/荒洲宝藏/叛神武具.htm",
+   "alsoIn": [],
+   "summary": "武器（硬头锤），神器，需同调。攻击+1、伤害+1；额外1d6火焰；词条：智能、个性、休眠态、觉醒态",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "硬头锤",
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "1d6",
+     "type": "火焰",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

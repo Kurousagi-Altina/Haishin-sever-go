@@ -1,0 +1,249 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "夸力许",
+ "generated": "2026-11-09",
+ "count": 7,
+ "entries": [
+  {
+   "id": "item:加德尔的泡泡烟斗",
+   "name": "加德尔的泡泡烟斗",
+   "en": "Galder's Bubble Pipe",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/夸力许/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。3充能；可施放云雾术、迷踪步",
+   "uncertain": [
+    "spells"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": null
+   },
+   "spells": [
+    {
+     "name": "云雾术",
+     "level": 1,
+     "cost": null
+    },
+    {
+     "name": "迷踪步",
+     "level": 2,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:千象无常牌",
+   "name": "千象无常牌",
+   "en": "Deck of Several Things",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/夸力许/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，传说。涉及失能；词条：平衡、彗星、城堡、蛇妖",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [
+    "incapacitated"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:变形之刃",
+   "name": "变形之刃",
+   "en": "Polymorph Blade",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/夸力许/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（任意剑），极珍稀，需同调。DC15感知豁免；词条：诅咒",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意剑",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "wis"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:美杜莎之刃",
+   "name": "美杜莎之刃",
+   "en": "Blade of The Medusa",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/夸力许/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（任意剑），极珍稀，需同调。DC15体质豁免；涉及石化；词条：诅咒",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意剑",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "con"
+   },
+   "conditions": [
+    "petrified"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:赌徒之刃",
+   "name": "赌徒之刃",
+   "en": "Gambler's Blade",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/夸力许/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（任意剑），珍稀，需同调。词条：诅咒",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意剑",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:霍华德的万能甲",
+   "name": "霍华德的万能甲",
+   "en": "Heward's Hireling Armor",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/夸力许/魔法物品.html",
+   "alsoIn": [],
+   "summary": "护甲（皮甲），极珍稀，需同调。AC+1",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "皮甲",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "ac": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:魔像皮甲",
+   "name": "魔像皮甲",
+   "en": "Leather Golem Armor",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/夸力许/魔法物品.html",
+   "alsoIn": [],
+   "summary": "护甲（皮甲），珍稀，需同调。豁免+1；抗闪电；DC15豁免；词条：不变形态、闪电吸收、诅咒、厌火",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "护甲",
+   "baseItem": "皮甲",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "save": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [
+    "闪电"
+   ],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

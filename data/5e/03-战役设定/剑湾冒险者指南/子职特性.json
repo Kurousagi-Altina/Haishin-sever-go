@@ -1,0 +1,534 @@
+{
+ "category": "feature",
+ "type": "子职特性",
+ "source": "剑湾冒险者指南",
+ "generated": "2026-11-09",
+ "count": 23,
+ "entries": [
+  {
+   "id": "feature:不朽者·不朽之理",
+   "name": "不朽之理",
+   "en": "Undying Nature",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/邪术师-不朽者.html",
+   "alsoIn": [],
+   "summary": "可无限屏息，不需食水与睡眠，衰老速度减慢并免疫魔法衰老。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "不朽者"
+   },
+   "level": 10,
+   "action": "passive",
+   "mechanics": "可无限屏息，不需食水与睡眠，衰老速度减慢并免疫魔法衰老。"
+  },
+  {
+   "id": "feature:战狂道途·凶蛮无羁",
+   "name": "凶蛮无羁",
+   "en": "Reckless Abandon",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/野蛮人-战狂.html",
+   "alsoIn": [],
+   "summary": "狂暴中鲁莽攻击时获得体质调整值(至少1)点临时生命值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "战狂道途"
+   },
+   "level": 6,
+   "action": "passive",
+   "mechanics": "狂暴中鲁莽攻击时获得体质调整值(至少1)点临时生命值。"
+  },
+  {
+   "id": "feature:不朽者·历经死亡",
+   "name": "历经死亡",
+   "en": "Among the dead",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/邪术师-不朽者.html",
+   "alsoIn": [],
+   "summary": "学会维生术；疾病豁免有优势；亡灵指定你为目标须先过感知豁免，失败则换目标，成功则24小时免疫该效果。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "不朽者"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "学会维生术；疾病豁免有优势；亡灵指定你为目标须先过感知豁免，失败则换目标，成功则24小时免疫该效果。",
+   "save": {
+    "ability": "wis",
+    "dc": "法术豁免DC"
+   }
+  },
+  {
+   "id": "feature:不朽者·反抗死亡",
+   "name": "反抗死亡",
+   "en": "Defy Death",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/邪术师-不朽者.html",
+   "alsoIn": [],
+   "summary": "死亡豁免成功或用维生术稳定他人时，立即恢复1d8+体质调整值生命值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "不朽者"
+   },
+   "level": 6,
+   "action": "special",
+   "mechanics": "死亡豁免成功或用维生术稳定他人时，立即恢复1d8+体质调整值生命值。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   },
+   "heal": "1d8+体质调整值"
+  },
+  {
+   "id": "feature:王冠之誓·圣誓法术",
+   "name": "圣誓法术",
+   "en": "",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/圣武士-王冠之誓.html",
+   "alsoIn": [],
+   "summary": "恒备法术：命令术、强制决斗、守护之链、诚实之域、活力灵光、灵体卫士、放逐术、信仰守卫、威力法阵、指使术。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "王冠之誓"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "恒备法术：命令术、强制决斗、守护之链、诚实之域、活力灵光、灵体卫士、放逐术、信仰守卫、威力法阵、指使术。"
+  },
+  {
+   "id": "feature:奥秘领域·奥术传承",
+   "name": "奥术传承",
+   "en": "Arcana Initiate",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/牧师-奥秘领域.html",
+   "alsoIn": [],
+   "summary": "获得奥秘熟练，并学会两个法师戏法(视为牧师戏法)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "奥秘领域"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "获得奥秘熟练，并学会两个法师戏法(视为牧师戏法)。"
+  },
+  {
+   "id": "feature:奥秘领域·奥术精通",
+   "name": "奥术精通",
+   "en": "Arcane Mastery",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/牧师-奥秘领域.html",
+   "alsoIn": [],
+   "summary": "17级起从法师法术表选6、7、8、9环各一道，加入领域法术并视为牧师法术。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "奥秘领域"
+   },
+   "level": 17,
+   "action": "passive",
+   "mechanics": "17级起从法师法术表选6、7、8、9环各一道，加入领域法术并视为牧师法术。"
+  },
+  {
+   "id": "feature:王冠之誓·崇高卫士",
+   "name": "崇高卫士",
+   "en": "Exalted Champion",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/圣武士-王冠之誓.html",
+   "alsoIn": [],
+   "summary": "动作1小时：非魔法武器伤害抗性，30尺内盟友死亡豁免与感知豁免有优势。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "王冠之誓"
+   },
+   "level": 20,
+   "action": "action",
+   "mechanics": "动作1小时：非魔法武器伤害抗性，30尺内盟友死亡豁免与感知豁免有优势。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:王冠之誓·引导神力",
+   "name": "引导神力",
+   "en": "Channel Divinity",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/圣武士-王冠之誓.html",
+   "alsoIn": [],
+   "summary": "捍卫挑战：30尺内生物感知豁免失败不能自愿离开你30尺；扭转局势：30尺内半血以下者恢复1d6+魅力调整值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "王冠之誓"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "捍卫挑战：30尺内生物感知豁免失败不能自愿离开你30尺；扭转局势：30尺内半血以下者恢复1d6+魅力调整值。",
+   "save": {
+    "ability": "wis",
+    "dc": "法术豁免DC"
+   },
+   "heal": "1d6+魅力调整值",
+   "resource": "引导神力"
+  },
+  {
+   "id": "feature:奥秘领域·引导神力：奥秘阻绝",
+   "name": "引导神力：奥秘阻绝",
+   "en": "Channel Divinity: Arcane Abjuration",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/牧师-奥秘领域.html",
+   "alsoIn": [],
+   "summary": "动作驱散30尺内一个天族、元素、妖精或邪魔(感知豁免)，1分钟内须远离你；低CR非本位面生物可被放逐。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "奥秘领域"
+   },
+   "level": 2,
+   "action": "action",
+   "mechanics": "动作驱散30尺内一个天族、元素、妖精或邪魔(感知豁免)，1分钟内须远离你；低CR非本位面生物可被放逐。",
+   "save": {
+    "ability": "wis",
+    "dc": "法术豁免DC"
+   },
+   "resource": "引导神力"
+  },
+  {
+   "id": "feature:奥秘领域·强力施法",
+   "name": "强力施法",
+   "en": "Potent Spellcasting",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/牧师-奥秘领域.html",
+   "alsoIn": [],
+   "summary": "牧师戏法造成伤害时加感知调整值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "奥秘领域"
+   },
+   "level": 8,
+   "action": "passive",
+   "mechanics": "牧师戏法造成伤害时加感知调整值。"
+  },
+  {
+   "id": "feature:永亡宗·往生咒",
+   "name": "往生咒",
+   "en": "Touch of Death",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/武僧-永亡宗.html",
+   "alsoIn": [],
+   "summary": "使5尺内生物降到0生命值时，获得感知调整值+武僧等级的临时生命值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "永亡宗"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "使5尺内生物降到0生命值时，获得感知调整值+武僧等级的临时生命值。",
+   "heal": "感知调整值+武僧等级(临时)"
+  },
+  {
+   "id": "feature:战狂道途·战狂冲锋",
+   "name": "战狂冲锋",
+   "en": "Battlerager Charge",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/野蛮人-战狂.html",
+   "alsoIn": [],
+   "summary": "狂暴期间可附赠动作执行疾走。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "战狂道途"
+   },
+   "level": 10,
+   "action": "bonus",
+   "mechanics": "狂暴期间可附赠动作执行疾走。"
+  },
+  {
+   "id": "feature:战狂道途·战狂装甲",
+   "name": "战狂装甲",
+   "en": "Battlerager Armor",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/野蛮人-战狂.html",
+   "alsoIn": [],
+   "summary": "穿钉刺甲狂暴时，附赠动作用甲刺近战攻击1d4穿刺(力量)；擒抱成功使目标受3点穿刺伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "战狂道途"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "穿钉刺甲狂暴时，附赠动作用甲刺近战攻击1d4穿刺(力量)；擒抱成功使目标受3点穿刺伤害。",
+   "damage": [
+    {
+     "dice": "1d4",
+     "type": "穿刺"
+    }
+   ]
+  },
+  {
+   "id": "feature:不朽者·扩展法术列表",
+   "name": "扩展法术列表",
+   "en": "Expanded Spell List",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/邪术师-不朽者.html",
+   "alsoIn": [],
+   "summary": "扩展法术：虚假生命、致病射线、目盲/耳聋术、沉默术、假死术、死者交谈、生命灵光、防死结界、疫病术、通晓传奇。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "不朽者"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "扩展法术：虚假生命、致病射线、目盲/耳聋术、沉默术、假死术、死者交谈、生命灵光、防死结界、疫病术、通晓传奇。"
+  },
+  {
+   "id": "feature:永亡宗·握生死",
+   "name": "握生死",
+   "en": "Mastery of Death",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/武僧-永亡宗.html",
+   "alsoIn": [],
+   "summary": "生命值降为0时，花1点气(无需动作)改为1点生命值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "永亡宗"
+   },
+   "level": 11,
+   "action": "reaction",
+   "mechanics": "生命值降为0时，花1点气(无需动作)改为1点生命值。",
+   "resource": "气"
+  },
+  {
+   "id": "feature:永亡宗·永亡触",
+   "name": "永亡触",
+   "en": "Touch of the Long Death",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/武僧-永亡宗.html",
+   "alsoIn": [],
+   "summary": "动作花1至10点气触碰5尺内生物，体质豁免失败受每点气2d10黯蚀伤害，成功减半。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "永亡宗"
+   },
+   "level": 17,
+   "action": "action",
+   "mechanics": "动作花1至10点气触碰5尺内生物，体质豁免失败受每点气2d10黯蚀伤害，成功减半。",
+   "save": {
+    "ability": "con",
+    "dc": "气DC"
+   },
+   "damage": [
+    {
+     "dice": "2d10×气点",
+     "type": "黯蚀"
+    }
+   ],
+   "resource": "气"
+  },
+  {
+   "id": "feature:不朽者·永恒生命",
+   "name": "永恒生命",
+   "en": "Indestrustible Life",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/邪术师-不朽者.html",
+   "alsoIn": [],
+   "summary": "附赠动作恢复1d8+魔契师等级生命值，并可接回被切断的肢体。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "不朽者"
+   },
+   "level": 14,
+   "action": "bonus",
+   "mechanics": "附赠动作恢复1d8+魔契师等级生命值，并可接回被切断的肢体。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   },
+   "heal": "1d8+魔契师等级"
+  },
+  {
+   "id": "feature:奥秘领域·破法者",
+   "name": "破法者",
+   "en": "Spell Breaker",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/牧师-奥秘领域.html",
+   "alsoIn": [],
+   "summary": "用1环以上法术治疗盟友时，可同时终止其身上一个不高于该法术位环阶的法术。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "奥秘领域"
+   },
+   "level": 6,
+   "action": "passive",
+   "mechanics": "用1环以上法术治疗盟友时，可同时终止其身上一个不高于该法术位环阶的法术。"
+  },
+  {
+   "id": "feature:王冠之誓·神圣誓忠",
+   "name": "神圣誓忠",
+   "en": "Divine Allegiance",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/圣武士-王冠之誓.html",
+   "alsoIn": [],
+   "summary": "5尺内生物受伤时反应由你代为承受该次伤害，不可减免。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "王冠之誓"
+   },
+   "level": 7,
+   "action": "reaction",
+   "mechanics": "5尺内生物受伤时反应由你代为承受该次伤害，不可减免。"
+  },
+  {
+   "id": "feature:永亡宗·索命镰",
+   "name": "索命镰",
+   "en": "Hour of Reaping",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/武僧-永亡宗.html",
+   "alsoIn": [],
+   "summary": "动作令30尺内可见生物感知豁免，失败则恐慌到你下回合结束。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "永亡宗"
+   },
+   "level": 6,
+   "action": "action",
+   "mechanics": "动作令30尺内可见生物感知豁免，失败则恐慌到你下回合结束。",
+   "save": {
+    "ability": "wis",
+    "dc": "气DC"
+   },
+   "conditions": [
+    "frightened"
+   ]
+  },
+  {
+   "id": "feature:战狂道途·钉刺反冲",
+   "name": "钉刺反冲",
+   "en": "Spiked Retribution",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/野蛮人-战狂.html",
+   "alsoIn": [],
+   "summary": "狂暴且穿钉刺甲时，5尺内近战命中你的攻击者受3点穿刺伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "战狂道途"
+   },
+   "level": 14,
+   "action": "passive",
+   "mechanics": "狂暴且穿钉刺甲时，5尺内近战命中你的攻击者受3点穿刺伤害。",
+   "damage": [
+    {
+     "dice": "3",
+     "type": "穿刺"
+    }
+   ]
+  },
+  {
+   "id": "feature:王冠之誓·顽强精神",
+   "name": "顽强精神",
+   "en": "Unyielding Spirit",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/职业/圣武士-王冠之誓.html",
+   "alsoIn": [],
+   "summary": "对抗麻痹和震慑的豁免有优势。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "王冠之誓"
+   },
+   "level": 15,
+   "action": "passive",
+   "mechanics": "对抗麻痹和震慑的豁免有优势。",
+   "conditions": [
+    "paralyzed",
+    "stunned"
+   ]
+  }
+ ]
+}

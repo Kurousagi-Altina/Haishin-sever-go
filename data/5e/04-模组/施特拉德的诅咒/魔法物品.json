@@ -1,0 +1,73 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "施特拉德的诅咒",
+ "generated": "2026-11-09",
+ "count": 2,
+ "entries": [
+  {
+   "id": "item:圣马柯维娅的股骨",
+   "name": "圣马柯维娅的股骨",
+   "en": "Saint Markovia's Thighbone",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/施特拉德的诅咒/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（硬头锤），珍稀，需同调。词条：智能、个性",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "硬头锤",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:血矛",
+   "name": "血矛",
+   "en": "Blood Spear",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/施特拉德的诅咒/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（矛），非普通，需同调。10充能，每日黎明恢复；DC12感知豁免；词条：吸血打击、枯枝祸根、吸血鬼定身术、驱散亡灵",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "矛",
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "10",
+    "regain": "每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 12,
+    "ability": "wis"
+   },
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

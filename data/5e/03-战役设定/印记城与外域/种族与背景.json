@@ -1,0 +1,62 @@
+{
+ "category": "feature",
+ "type": "种族与背景",
+ "source": "印记城与外域",
+ "generated": "2026-11-09",
+ "count": 2,
+ "entries": [
+  {
+   "id": "background:位面哲学家",
+   "type": "background",
+   "name": "位面哲学家",
+   "en": "Planar Philosopher",
+   "aliases": [],
+   "source": "印记城与外域",
+   "section": "setting",
+   "path": "topics/印记城与外域/第一章/位面哲学家.htm",
+   "alsoIn": [],
+   "summary": "位面哲学家背景：起源专长外层位面后裔(from-feature)；技能奥秘；特性信念之力",
+   "uncertain": [
+    "skills"
+   ],
+   "abilityScores": null,
+   "feat": "外层位面后裔",
+   "featParam": "from-feature",
+   "skills": [
+    "奥秘"
+   ],
+   "skillsNote": "奥秘，与你的派系有关的一项技能（见下方印记城派系偏好表）或你自选的一项技能",
+   "tool": null,
+   "languages": "自选两门语言",
+   "equipment": "一把传送门钥匙（例如一包金色茶叶，或是位面野兽之牙），一份阐述你指导哲学的宣言，一套符合你派系风格的普通服装，以及一个装着来自不同位面和不同世界的钱币（这些钱币的价值相当于10gp）的小包。",
+   "featureName": "信念之力",
+   "edition": "2014"
+  },
+  {
+   "id": "background:门镇守卫",
+   "type": "background",
+   "name": "门镇守卫",
+   "en": "Gate Warden",
+   "aliases": [],
+   "source": "印记城与外域",
+   "section": "setting",
+   "path": "topics/印记城与外域/第一章/门镇守卫.htm",
+   "alsoIn": [],
+   "summary": "门镇守卫背景：技能游说、求生；特性位面注能",
+   "uncertain": [],
+   "abilityScores": null,
+   "feat": null,
+   "featParam": null,
+   "skills": [
+    "游说",
+    "求生"
+   ],
+   "skillsNote": null,
+   "tool": null,
+   "languages": "自选两门语言（推荐选择深渊语、天界语或炼狱语）",
+   "equipment": "一轮不知道对应什么锁的钥匙串，一本空白的书籍，一根墨水笔或羽毛笔，一瓶黑墨水，一套旅行服装，以及一个装有10gp的小包。",
+   "featureName": "位面注能",
+   "edition": "2014"
+  }
+ ]
+}

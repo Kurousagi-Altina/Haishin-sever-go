@@ -1,0 +1,124 @@
+{
+ "category": "spell",
+ "type": "法术",
+ "source": "星界冒险者指南",
+ "generated": "2026-11-09",
+ "count": 2,
+ "entries": [
+  {
+   "id": "spell:创造法驱魔舵",
+   "name": "创造法驱魔舵",
+   "en": "Create Spelljamming Helm",
+   "aliases": [],
+   "source": "星界冒险者指南",
+   "section": "setting",
+   "path": "topics/星界冒险者指南/新法术.htm",
+   "alsoIn": [],
+   "summary": "把座椅变成法驱魔舵，用于驾驶魔法飞船。",
+   "uncertain": [],
+   "level": 5,
+   "school": "变化",
+   "classes": [
+    "奇械师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "touch",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一根价值至少5000gp的水晶权杖，作为法术的耗材",
+    "mCost": 5000,
+    "mConsumed": true
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:空气泡泡",
+   "name": "空气泡泡",
+   "en": "Air Bubble",
+   "aliases": [],
+   "source": "星界冒险者指南",
+   "section": "setting",
+   "path": "topics/星界冒险者指南/新法术.htm",
+   "alsoIn": [],
+   "summary": "给自愿生物头部加空气泡，可在水下/真空呼吸，持续24小时。",
+   "uncertain": [],
+   "level": 2,
+   "school": "咒法",
+   "classes": [
+    "奇械师",
+    "德鲁伊",
+    "游侠",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "24小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 2,
+    "text": "每高1环：目标/数量+2",
+    "step": 1,
+    "from": 2
+   },
+   "cantripScaling": null,
+   "lasting": false
+  }
+ ]
+}

@@ -1,0 +1,296 @@
+{
+ "category": "feature",
+ "type": "子职特性",
+ "source": "费资本的巨龙宝库",
+ "generated": "2026-11-09",
+ "count": 10,
+ "entries": [
+  {
+   "id": "feature:神龙宗·古龙姿",
+   "name": "古龙姿",
+   "en": "Aspect of the Wyrm",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/武僧-神龙宗.html",
+   "alsoIn": [],
+   "summary": "附赠动作1分钟10尺龙力灵光：骇人威仪(目标感知豁免失败恐慌)或让你与盟友获一种伤害抗性。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "神龙宗"
+   },
+   "level": 11,
+   "action": "bonus",
+   "mechanics": "附赠动作1分钟10尺龙力灵光：骇人威仪(目标感知豁免失败恐慌)或让你与盟友获一种伤害抗性。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   },
+   "save": {
+    "ability": "wis",
+    "dc": "气DC"
+   },
+   "conditions": [
+    "frightened"
+   ]
+  },
+  {
+   "id": "feature:龙兽守卫·完美联结",
+   "name": "完美联结",
+   "en": "Perfected Bond",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/游侠-龙兽守卫.html",
+   "alsoIn": [],
+   "summary": "咬击再多d6(共2d6)；龙兽变大型；你与龙兽30尺内受伤时可反应使你或龙兽获该伤害抗性。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "龙兽守卫"
+   },
+   "level": 15,
+   "action": "passive",
+   "mechanics": "咬击再多d6(共2d6)；龙兽变大型；你与龙兽30尺内受伤时可反应使你或龙兽获该伤害抗性。",
+   "uses": {
+    "count": "熟练加值(反射抗性)",
+    "recharge": "long"
+   },
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "同精粹"
+    }
+   ]
+  },
+  {
+   "id": "feature:龙兽守卫·牙鳞之联",
+   "name": "牙鳞之联",
+   "en": "Bond of Fang and Scale",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/游侠-龙兽守卫.html",
+   "alsoIn": [],
+   "summary": "龙兽长出翅膀获飞行速度，成为中型坐骑；咬击额外d6精粹伤害；你获得精粹类型的伤害抗性。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "龙兽守卫"
+   },
+   "level": 7,
+   "action": "passive",
+   "mechanics": "龙兽长出翅膀获飞行速度，成为中型坐骑；咬击额外d6精粹伤害；你获得精粹类型的伤害抗性。",
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "同精粹"
+    }
+   ]
+  },
+  {
+   "id": "feature:神龙宗·神龙身",
+   "name": "神龙身",
+   "en": "Ascendant Aspect",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/武僧-神龙宗.html",
+   "alsoIn": [],
+   "summary": "龙之息增至60尺锥/90尺线、4个武艺骰；10尺盲视；古龙姿可令灵光内生物承受怒气爆发。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "神龙宗"
+   },
+   "level": 17,
+   "action": "special",
+   "mechanics": "龙之息增至60尺锥/90尺线、4个武艺骰；10尺盲视；古龙姿可令灵光内生物承受怒气爆发。",
+   "damage": [
+    {
+     "dice": "4×武艺骰",
+     "type": "火焰"
+    }
+   ],
+   "resource": "气"
+  },
+  {
+   "id": "feature:神龙宗·龙之徒",
+   "name": "龙之徒",
+   "en": "Draconic Disciple",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/武僧-神龙宗.html",
+   "alsoIn": [],
+   "summary": "魅力威吓/游说失败可反应重骰；徒手打击可改为强酸/寒冷/火焰/闪电/毒素伤害；学会龙语。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "神龙宗"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "魅力威吓/游说失败可反应重骰；徒手打击可改为强酸/寒冷/火焰/闪电/毒素伤害；学会龙语。",
+   "uses": {
+    "count": "1(重骰)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:神龙宗·龙之息",
+   "name": "龙之息",
+   "en": "Breath of the Dragon",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/武僧-神龙宗.html",
+   "alsoIn": [],
+   "summary": "以一次攻击换20尺锥或30尺线龙息，敏捷豁免，失败受2个武艺骰(11级3个)所选类型伤害，成功减半。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "神龙宗"
+   },
+   "level": 3,
+   "action": "action",
+   "mechanics": "以一次攻击换20尺锥或30尺线龙息，敏捷豁免，失败受2个武艺骰(11级3个)所选类型伤害，成功减半。",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "long"
+   },
+   "save": {
+    "ability": "dex",
+    "dc": "气DC"
+   },
+   "damage": [
+    {
+     "dice": "2×武艺骰",
+     "type": "火焰"
+    }
+   ],
+   "resource": "气"
+  },
+  {
+   "id": "feature:龙兽守卫·龙兽伙伴",
+   "name": "龙兽伙伴",
+   "en": "Drake Companion",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/游侠-龙兽守卫.html",
+   "alsoIn": [],
+   "summary": "动作在30尺内召唤小型龙兽同伴(咬1d6+熟练穿刺)，与你共享先攻，选择强酸/寒冷/闪电/火焰/毒素精粹。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "龙兽守卫"
+   },
+   "level": 3,
+   "action": "action",
+   "mechanics": "动作在30尺内召唤小型龙兽同伴(咬1d6+熟练穿刺)，与你共享先攻，选择强酸/寒冷/闪电/火焰/毒素精粹。",
+   "damage": [
+    {
+     "dice": "1d6+熟练加值",
+     "type": "穿刺"
+    }
+   ]
+  },
+  {
+   "id": "feature:龙兽守卫·龙兽吐息",
+   "name": "龙兽吐息",
+   "en": "Drake's Breath",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/游侠-龙兽守卫.html",
+   "alsoIn": [],
+   "summary": "动作喷吐30尺锥(可从龙兽发出)，敏捷豁免，失败受8d6所选类型伤害，成功减半；15级10d6。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "龙兽守卫"
+   },
+   "level": 11,
+   "action": "action",
+   "mechanics": "动作喷吐30尺锥(可从龙兽发出)，敏捷豁免，失败受8d6所选类型伤害，成功减半；15级10d6。",
+   "uses": {
+    "count": "1(耗3环以上法术位可再用)",
+    "recharge": "long"
+   },
+   "dice": [
+    [
+     11,
+     "8d6"
+    ],
+    [
+     15,
+     "10d6"
+    ]
+   ],
+   "save": {
+    "ability": "dex",
+    "dc": "法术豁免DC"
+   },
+   "damage": [
+    {
+     "dice": "8d6",
+     "type": "火焰"
+    }
+   ]
+  },
+  {
+   "id": "feature:龙兽守卫·龙族赠礼",
+   "name": "龙族赠礼",
+   "en": "Draconic Gift",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/游侠-龙兽守卫.html",
+   "alsoIn": [],
+   "summary": "学会奇术戏法和龙语(或另一门语言)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "龙兽守卫"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "学会奇术戏法和龙语(或另一门语言)。"
+  },
+  {
+   "id": "feature:神龙宗·龙翼翱翔",
+   "name": "龙翼翱翔",
+   "en": "Wings Unfurled",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/武僧-神龙宗.html",
+   "alsoIn": [],
+   "summary": "使用飞檐走壁时展开龙翼，获得等同步行速度的飞行速度至回合结束。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "神龙宗"
+   },
+   "level": 6,
+   "action": "special",
+   "mechanics": "使用飞檐走壁时展开龙翼，获得等同步行速度的飞行速度至回合结束。",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "long"
+   }
+  }
+ ]
+}

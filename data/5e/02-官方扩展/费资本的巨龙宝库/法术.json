@@ -1,0 +1,454 @@
+{
+ "category": "spell",
+ "type": "法术",
+ "source": "费资本的巨龙宝库",
+ "generated": "2026-11-09",
+ "count": 7,
+ "entries": [
+  {
+   "id": "spell:劳洛希姆心灵长枪",
+   "name": "劳洛希姆心灵长枪",
+   "en": "Raulothim's Psychic Lance",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/巨龙法术详述.htm",
+   "alsoIn": [],
+   "summary": "目标进行智力豁免，失败受7d6心灵伤害并陷入失能，成功减半",
+   "uncertain": [],
+   "level": 4,
+   "school": "惑控",
+   "classes": [
+    "吟游诗人",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 120
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "int",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "7d6",
+     "type": "心灵"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [
+    "incapacitated"
+   ],
+   "upcast": {
+    "perLevelDice": "1d6",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d6",
+    "step": 1,
+    "from": 4
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:纳撒尔恶作剧",
+   "name": "纳撒尔恶作剧",
+   "en": "Nathair's Mischief",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/巨龙法术详述.htm",
+   "alsoIn": [],
+   "summary": "专注：25尺立方内随机出现迷雾、藤蔓、彩色光等效应，感知豁免失败者目盲或魅惑。",
+   "uncertain": [
+    "conditions"
+   ],
+   "level": 2,
+   "school": "幻术",
+   "classes": [
+    "吟游诗人",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": "一块面包皮，来自一个苹果派",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多一分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "wis",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [
+    "charmed",
+    "blinded",
+    "incapacitated"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:费资本铂金盾",
+   "name": "费资本铂金盾",
+   "en": "Fizban's Platinum Shield",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/巨龙法术详述.htm",
+   "alsoIn": [],
+   "summary": "专注：目标半身掩护、五元素抗性与敏捷豁免免伤，可附赠动作传送。",
+   "uncertain": [],
+   "level": 6,
+   "school": "防护",
+   "classes": [
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "bonus",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一枚镀上铂金的龙鳞，价值至少500gp",
+    "mCost": 500,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:阿莎德隆奔行",
+   "name": "阿莎德隆奔行",
+   "en": "Ashardalon's Stride",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/巨龙法术详述.htm",
+   "alsoIn": [],
+   "summary": "专注：速度+20尺，移动不引发借机且灼烧经过的生物1d6火焰伤害。",
+   "uncertain": [],
+   "level": 3,
+   "school": "变化",
+   "classes": [
+    "奇械师",
+    "游侠",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "bonus",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "火焰"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d6",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d6",
+    "step": 1,
+    "from": 3
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:雾凇霜缚",
+   "name": "雾凇霜缚",
+   "en": "Rime's Binding Ice",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/巨龙法术详述.htm",
+   "alsoIn": [],
+   "summary": "30尺锥形内的生物进行体质豁免，失败受3d8寒冷伤害，成功减半",
+   "uncertain": [],
+   "level": 2,
+   "school": "塑能",
+   "classes": [
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": "一瓶冰雪融化而成的水",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "3d8",
+     "type": "寒冷"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "cone",
+    "size": 30,
+    "width": null,
+    "height": null,
+    "origin": "self"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d8",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d8",
+    "step": 1,
+    "from": 2
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:龙类变形",
+   "name": "龙类变形",
+   "en": "Draconic Transformation",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/巨龙法术详述.htm",
+   "alsoIn": [],
+   "summary": "专注：获得30尺盲视、60尺飞行和每回合可用的60尺锥形6d8力场吐息（敏捷豁免）。",
+   "uncertain": [
+    "conditions"
+   ],
+   "level": 7,
+   "school": "变化",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "bonus",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一个龙形小雕像，价值至少500gp",
+    "mCost": 500,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "6d8",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "cone",
+    "size": 60,
+    "width": null,
+    "height": null,
+    "origin": "self"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:龙类灵魄召唤术",
+   "name": "龙类灵魄召唤术",
+   "en": "Summon Draconic Spirit",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/巨龙法术详述.htm",
+   "alsoIn": [],
+   "summary": "专注：召唤龙类灵魄（色彩/宝石/金属），随升环强化。",
+   "uncertain": [],
+   "level": 5,
+   "school": "咒法",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一件带有巨龙图案的物品，价值至少500gp",
+    "mCost": 500,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1小时",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 0,
+    "summonScales": true,
+    "text": "召唤物数据按所用法术位环阶计算",
+    "from": 5,
+    "step": 1
+   },
+   "cantripScaling": null,
+   "lasting": false
+  }
+ ]
+}

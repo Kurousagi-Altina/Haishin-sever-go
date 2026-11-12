@@ -1,0 +1,369 @@
+{
+ "category": "feature",
+ "type": "子职特性",
+ "source": "荒洲探险家指南",
+ "generated": "2026-11-09",
+ "count": 15,
+ "entries": [
+  {
+   "id": "feature:回音骑士·一人成军",
+   "name": "一人成军",
+   "en": "Legion of One",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/子职/战士/战士-回音骑士.htm",
+   "alsoIn": [],
+   "summary": "附赠动作可同时拥有两个回音；掷先攻时若释放化身用尽则恢复一次。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "回音骑士"
+   },
+   "level": 18,
+   "action": "bonus",
+   "mechanics": "附赠动作可同时拥有两个回音；掷先攻时若释放化身用尽则恢复一次。"
+  },
+  {
+   "id": "feature:重力魔法·事件视界",
+   "name": "事件视界",
+   "en": "Event Horizon",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/子职/法师/法师-重力魔法.htm",
+   "alsoIn": [],
+   "summary": "动作1分钟(专注)：30尺内敌对生物回合开始时力量豁免，失败受2d10力场伤害且速度为0，成功减半并加倍移动消耗。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "重力魔法"
+   },
+   "level": 14,
+   "action": "action",
+   "mechanics": "动作1分钟(专注)：30尺内敌对生物回合开始时力量豁免，失败受2d10力场伤害且速度为0，成功减半并加倍移动消耗。",
+   "uses": {
+    "count": "1(耗3环以上法术位可再用)",
+    "recharge": "long"
+   },
+   "save": {
+    "ability": "str",
+    "dc": "法术豁免DC"
+   },
+   "damage": [
+    {
+     "dice": "2d10",
+     "type": "力场"
+    }
+   ]
+  },
+  {
+   "id": "feature:回音骑士·回收潜能",
+   "name": "回收潜能",
+   "en": "Reclaim Potential",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/子职/战士/战士-回音骑士.htm",
+   "alsoIn": [],
+   "summary": "回音因受伤被毁时，若你无临时生命值则获得2d6+体质调整值临时生命值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "回音骑士"
+   },
+   "level": 15,
+   "action": "special",
+   "mechanics": "回音因受伤被毁时，若你无临时生命值则获得2d6+体质调整值临时生命值。",
+   "uses": {
+    "count": "体质调整值(至少1)",
+    "recharge": "long"
+   },
+   "heal": "2d6+体质调整值(临时)"
+  },
+  {
+   "id": "feature:回音骑士·回音显现",
+   "name": "回音显现",
+   "en": "Manifest Echo",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/子职/战士/战士-回音骑士.htm",
+   "alsoIn": [],
+   "summary": "附赠动作在15尺内显现你的回音(AC14+熟练，1生命值，免疫状态)，可在其位置攻击、施法并无动作移动30尺。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "回音骑士"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "附赠动作在15尺内显现你的回音(AC14+熟练，1生命值，免疫状态)，可在其位置攻击、施法并无动作移动30尺。"
+  },
+  {
+   "id": "feature:回音骑士·回音现身",
+   "name": "回音现身",
+   "en": "Echo Avatar",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/子职/战士/战士-回音骑士.htm",
+   "alsoIn": [],
+   "summary": "动作10分钟内用回音的感官，自身目盲且耳聋，回音可离你1000尺。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "回音骑士"
+   },
+   "level": 7,
+   "action": "action",
+   "mechanics": "动作10分钟内用回音的感官，自身目盲且耳聋，回音可离你1000尺。",
+   "conditions": [
+    "blinded",
+    "deafened"
+   ]
+  },
+  {
+   "id": "feature:时间魔法·奥法暂滞",
+   "name": "奥法暂滞",
+   "en": "Arcane Abeyance",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/子职/法师/法师-时间魔法.htm",
+   "alsoIn": [],
+   "summary": "用四环以下法术位施法时可把法术冻结在小珠里，持有者动作释放。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "时间魔法"
+   },
+   "level": 10,
+   "action": "special",
+   "mechanics": "用四环以下法术位施法时可把法术冻结在小珠里，持有者动作释放。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   }
+  },
+  {
+   "id": "feature:回音骑士·影之殉难",
+   "name": "影之殉难",
+   "en": "Shadow Martyr",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/子职/战士/战士-回音骑士.htm",
+   "alsoIn": [],
+   "summary": "其他生物被攻击时反应把回音传送到其5尺内，由回音承受该次攻击。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "回音骑士"
+   },
+   "level": 10,
+   "action": "reaction",
+   "mechanics": "其他生物被攻击时反应把回音传送到其5尺内，由回音承受该次攻击。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   }
+  },
+  {
+   "id": "feature:时间魔法·收束未来",
+   "name": "收束未来",
+   "en": "Convergent Future",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/子职/法师/法师-时间魔法.htm",
+   "alsoIn": [],
+   "summary": "你或60尺内可见生物的d20检定，反应直接决定骰值为刚好成功的最低值或低1点；你获一级力竭。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "时间魔法"
+   },
+   "level": 14,
+   "action": "reaction",
+   "mechanics": "你或60尺内可见生物的d20检定，反应直接决定骰值为刚好成功的最低值或低1点；你获一级力竭。"
+  },
+  {
+   "id": "feature:时间魔法·时序感知",
+   "name": "时序感知",
+   "en": "Temporal Awarness",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/子职/法师/法师-时间魔法.htm",
+   "alsoIn": [],
+   "summary": "先攻检定加智力调整值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "时间魔法"
+   },
+   "level": 2,
+   "action": "passive",
+   "mechanics": "先攻检定加智力调整值。"
+  },
+  {
+   "id": "feature:时间魔法·时间变幻",
+   "name": "时间变幻",
+   "en": "Chornal Shift",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/子职/法师/法师-时间魔法.htm",
+   "alsoIn": [],
+   "summary": "你或30尺内可见生物攻击/属性/豁免检定后，反应令其重骰并采用新结果。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "时间魔法"
+   },
+   "level": 2,
+   "action": "reaction",
+   "mechanics": "你或30尺内可见生物攻击/属性/豁免检定后，反应令其重骰并采用新结果。",
+   "uses": {
+    "count": "2",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:重力魔法·狂暴牵引",
+   "name": "狂暴牵引",
+   "en": "Violent Attraction",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/子职/法师/法师-重力魔法.htm",
+   "alsoIn": [],
+   "summary": "60尺内他人武器命中时反应令目标额外1d10同类型伤害；或使坠落伤害增加2d10。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "重力魔法"
+   },
+   "level": 10,
+   "action": "reaction",
+   "mechanics": "60尺内他人武器命中时反应令目标额外1d10同类型伤害；或使坠落伤害增加2d10。",
+   "uses": {
+    "count": "智力调整值(至少1)",
+    "recharge": "long"
+   },
+   "damage": [
+    {
+     "dice": "1d10",
+     "type": "同武器"
+    }
+   ]
+  },
+  {
+   "id": "feature:时间魔法·瞬时静止",
+   "name": "瞬时静止",
+   "en": "Momentary Stasis",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/子职/法师/法师-时间魔法.htm",
+   "alsoIn": [],
+   "summary": "动作令60尺内大型以下生物体质豁免，失败则速度为0并失能，到你下回合结束或受伤。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "时间魔法"
+   },
+   "level": 6,
+   "action": "action",
+   "mechanics": "动作令60尺内大型以下生物体质豁免，失败则速度为0并失能，到你下回合结束或受伤。",
+   "uses": {
+    "count": "智力调整值(至少1)",
+    "recharge": "long"
+   },
+   "save": {
+    "ability": "con",
+    "dc": "法术豁免DC"
+   },
+   "conditions": [
+    "incapacitated"
+   ]
+  },
+  {
+   "id": "feature:重力魔法·调节密度",
+   "name": "调节密度",
+   "en": "Adjust Density",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/子职/法师/法师-重力魔法.htm",
+   "alsoIn": [],
+   "summary": "动作令30尺内大型以下生物或物件重量减半或加倍，至多1分钟(专注)，影响速度与力量检定。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "重力魔法"
+   },
+   "level": 2,
+   "action": "action",
+   "mechanics": "动作令30尺内大型以下生物或物件重量减半或加倍，至多1分钟(专注)，影响速度与力量检定。"
+  },
+  {
+   "id": "feature:回音骑士·释放化身",
+   "name": "释放化身",
+   "en": "Unleash Incarnation",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/子职/战士/战士-回音骑士.htm",
+   "alsoIn": [],
+   "summary": "攻击动作时可在回音位置多发动一次近战攻击。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "回音骑士"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "攻击动作时可在回音位置多发动一次近战攻击。",
+   "uses": {
+    "count": "体质调整值(至少1)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:重力魔法·重力井",
+   "name": "重力井",
+   "en": "Gravity Well",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/子职/法师/法师-重力魔法.htm",
+   "alsoIn": [],
+   "summary": "对生物施法时，可将目标移动5尺(须自愿、被命中或豁免失败)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "重力魔法"
+   },
+   "level": 6,
+   "action": "passive",
+   "mechanics": "对生物施法时，可将目标移动5尺(须自愿、被命中或豁免失败)。"
+  }
+ ]
+}
