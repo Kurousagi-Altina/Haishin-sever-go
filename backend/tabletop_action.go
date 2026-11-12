@@ -34,11 +34,12 @@ type TTActionReq struct {
 	Status        map[string]interface{} `json:"status"` // condition applied on hit / failed save / always
 	Caster        string                 `json:"caster"` // token id
 	Concentration bool                   `json:"concentration"`
-	Spell         bool                   `json:"spell"`   // a spell (Magic Resistance etc.)
-	Magic         bool                   `json:"magic"`   // a magical attack / effect (beats 非魔法 resistances; spells always are)
-	School        string                 `json:"school"`  // spell school (防护 / 咒法 / … ) for school-specific save advantage
-	Parts         []TTDamagePart         `json:"parts"`   // extra damage of other types (weapon + 2d6 火焰, 冰风暴's 钝击 + 寒冷)
-	Mastery       string                 `json:"mastery"` // weapon mastery (2024): 侵扰 / 削弱 / 失衡 / 推离 / 擦掠 / 横扫 / 缓速 / 迅击
+	Spell         bool                   `json:"spell"`     // a spell (Magic Resistance etc.)
+	Magic         bool                   `json:"magic"`     // a magical attack / effect (beats 非魔法 resistances; spells always are)
+	School        string                 `json:"school"`    // spell school (防护 / 咒法 / … ) for school-specific save advantage
+	Parts         []TTDamagePart         `json:"parts"`     // extra damage of other types (weapon + 2d6 火焰, 冰风暴's 钝击 + 寒冷)
+	Mastery       string                 `json:"mastery"`   // weapon mastery (2024): 侵扰 / 削弱 / 失衡 / 推离 / 擦掠 / 横扫 / 缓速 / 迅击
+	SlotLevel     int                    `json:"slotLevel"` // spell slot spent on it (法术反制 gives it back)
 	Targets       []TTActionTarget       `json:"targets"`
 }
 
@@ -68,6 +69,7 @@ type TTActionHit struct {
 	Amount int             `json:"amount"`          // HP change actually applied (−damage / +healing / temp HP)
 	Note   string          `json:"note,omitempty"`
 	Status string          `json:"status,omitempty"`
+	Types  map[string]int  `json:"types,omitempty"` // damage dealt per type after resistances (吸收元素)
 }
 
 type TTActionResult struct {
@@ -80,9 +82,11 @@ type TTActionResult struct {
 	DC         int            `json:"dc,omitempty"`
 	Parts      []TTPartRoll   `json:"parts,omitempty"` // shared rolls of the extra damage components
 	Magic      bool           `json:"magic,omitempty"`
-	Half       bool           `json:"half,omitempty"`     // save for half damage (Legendary Resistance re-resolves with it)
-	Mastery    string         `json:"mastery,omitempty"`  // weapon mastery of the attack (the client offers its follow-up)
-	CasterID   string         `json:"casterId,omitempty"` // acting token id (push direction, Vex)
+	Half       bool           `json:"half,omitempty"`      // save for half damage (Legendary Resistance re-resolves with it)
+	Mastery    string         `json:"mastery,omitempty"`   // weapon mastery of the attack (the client offers its follow-up)
+	CasterID   string         `json:"casterId,omitempty"`  // acting token id (push direction, Vex)
+	Spell      bool           `json:"spell,omitempty"`     // a spell (法术反制 can answer it)
+	SlotLevel  int            `json:"slotLevel,omitempty"` // slot level spent on the spell
 	Targets    []*TTActionHit `json:"targets"`
 	Note       string         `json:"note,omitempty"`
 }
@@ -351,7 +355,10 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 	}
 	sc := room.activeScene()
 	res := &TTActionResult{Name: ttCleanName(a.Name, 40, "行动"), Kind: a.Kind, DamageType: ttCleanName(a.DamageType, 8, ""), Save: a.Save, DC: a.DC, Half: a.Half,
-		Mastery: ttCleanName(a.Mastery, 8, "")}
+		Mastery: ttCleanName(a.Mastery, 8, ""), Spell: a.Spell}
+	if a.Spell && a.SlotLevel >= 1 && a.SlotLevel <= 9 {
+		res.SlotLevel = a.SlotLevel
+	}
 	if _, ok := ttAbilityCN[a.Save]; a.Kind == "save" && !ok && a.Save != "strdex" { // strdex：力量或敏捷，目标选高的（擒抱 / 推撞）
 		return http.StatusBadRequest, "请选择豁免属性"
 	}
@@ -690,6 +697,16 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 						addNote(note)
 					}
 				}
+				if amt > 0 { // 按类型记下实际造成的伤害（吸收元素按这个减半）
+					if h.Types == nil {
+						h.Types = map[string]int{}
+					}
+					ty := strings.TrimSuffix(strings.TrimSpace(types[i]), "伤害")
+					if ty == "" {
+						ty = "无类型"
+					}
+					h.Types[ty] += amt
+				}
 				total += amt
 			}
 			dmg = total
@@ -834,9 +851,21 @@ func (room *TTRoom) rememberUndo(id string, recs []ttUndoRec) {
 }
 
 func (room *TTRoom) undoAction(u ttUser, logID string) (int, string) {
-	recs, ok := room.actUndo[logID]
+	name, ok := room.revertAction(logID)
 	if !ok {
 		return http.StatusBadRequest, "这次结算已经撤销过，或者太久远（只保留最近 30 次）"
+	}
+	e := newLogEntry("sys", u.name)
+	e.Text = "撤销了「" + name + "」的结算（生命值、状态已恢复）"
+	room.addLog(e)
+	return 0, ""
+}
+
+// revertAction restores the tokens an action touched to their state before it (GM undo, 法术反制).
+func (room *TTRoom) revertAction(logID string) (string, bool) {
+	recs, ok := room.actUndo[logID]
+	if !ok {
+		return "", false
 	}
 	delete(room.actUndo, logID)
 	name := "行动"
@@ -866,10 +895,7 @@ func (room *TTRoom) undoAction(u ttUser, logID string) (int, string) {
 	if len(changed) > 0 {
 		room.broadcastItems(changed)
 	}
-	e := newLogEntry("sys", u.name)
-	e.Text = "撤销了「" + name + "」的结算（生命值、状态已恢复）"
-	room.addLog(e)
-	return 0, ""
+	return name, true
 }
 
 // dropToZero: a creature knocked from above 0 to 0 HP. Player characters fall unconscious

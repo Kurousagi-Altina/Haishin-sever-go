@@ -461,7 +461,7 @@ function uploadMusic(input) {
 
 // ===== 记录：重掷 =====
 function onLogClick(e) {
-    var fb = e.target.closest('[data-oa],[data-ssave],[data-dot],[data-concsave],[data-lause],[data-mst],[data-shove],[data-sa]');
+    var fb = e.target.closest('[data-oa],[data-ssave],[data-dot],[data-concsave],[data-lause],[data-mst],[data-shove],[data-sa],[data-cs],[data-hr]');
     if (fb && fightLogClick(fb)) return; // 战斗提示（tabletop-fight.js）
     var tg = e.target.closest('[data-trigfocus],[data-trigact]');
     if (tg) { dmLogClick(tg); return; } // 触发区域提示（tabletop-dm.js）

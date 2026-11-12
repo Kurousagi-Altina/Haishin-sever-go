@@ -178,7 +178,7 @@ function fightTargetBtns(e, t, r) {
             h += '<button class="tt-btn small react-btn" data-react="legendary" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) +
                 '" data-react-ref="' + escapeHtml(e.id + ':' + t.id) + '" title="扣一次传奇抗性，把这次豁免改为成功并重新结算伤害和状态">传奇抗性（剩 ' + num(lr.cur, 0) + '）</button>';
     }
-    return mb + h;
+    return mb + h + reactSpellBtns(e, t, r, tok); // 炼狱叱喝 / 吸收元素
 }
 
 function fightLogClick(el) {
@@ -188,6 +188,7 @@ function fightLogClick(el) {
     if (d.dot) { op({ op: 'fight.dot', ids: [d.dot], text: d.st }); el.disabled = true; return true; }
     if (d.concsave) { op({ op: 'fight.save', ids: [d.concsave], mode: 'conc', dc: parseInt(d.dc, 10) || 10, text: d.log || '' }); el.remove(); return true; }
     if (d.mst) return masteryClick(el);
+    if (d.cs || d.hr) return reactSpellClick(el);
     if (d.sa) return sneakClick(el);
     if (d.shove) { masteryDone[d.log + ':' + d.shove + ':push'] = true; el.remove(); pushToken(d.shove, d.from, 5); return true; }
     if (d.lause) {
@@ -329,7 +330,8 @@ function onMultiBarClick(e) {
 var HINT_KEYS = [['hintOA', '借机攻击提示', '拖动棋子离开敌人触及范围时提示'], ['hintEcon', '动作经济', '先攻条显示动作 / 附赠 / 反应，结算时自动勾选'],
     ['hintTurn', '回合开始 / 结束效果', '闪避 / 撤离自动结束，重复豁免和持续伤害提示'], ['hintLegend', '传奇动作与充能', '传奇动作提示与恢复、传奇抗性按钮、充能自动掷骰'],
     ['hintMastery', '武器精通', '攻击命中 / 失手后按武器精通给出后续按钮（侵扰、削弱、失衡、推离、擦掠、横扫、缓速）'],
-    ['hintClass', '职业特性', '偷袭按钮、狂暴伤害自动加值、属性面板里的狂暴 / 回气 / 动作如潮 / 诗人激励']];
+    ['hintClass', '职业特性', '偷袭按钮、狂暴伤害自动加值、属性面板里的狂暴 / 回气 / 动作如潮 / 诗人激励'],
+    ['hintReact', '反应法术', '施法后的法术反制按钮，受伤后的炼狱叱喝 / 吸收元素按钮']];
 
 function renderFightHints() {
     var box = $('fightHintBox');
@@ -680,4 +682,85 @@ function sneakClick(el) {
         scaleNote: '偷袭伤害与武器同类型；重击时骰子已经翻倍' }, c, c.sheet && sheets[c.sheet] || null);
     act.presetTargets = [tgt.id];
     return true;
+}
+
+// ===================== 8. 反应法术：法术反制、炼狱叱喝、吸收元素 =====================
+// 羽落术等不依赖触发的反应法术照常从角色卡施放（施法时间是反应的会自动把消耗设为反应）
+var ELEMENTAL = { '强酸': 1, '寒冷': 1, '火焰': 1, '闪电': 1, '雷鸣': 1 };
+
+function tokenHasSpell(t, name) {
+    var sh = t && t.sheet && sheets[t.sheet];
+    return !!sh && ((sh.spells || []).some(function(s) { return String(s.name || '').indexOf(name) >= 0; }) || sheetHasEntry(sh, new RegExp(name)));
+}
+
+// 用掉一个不低于 minLv 环的法术位（最低能用的那个）
+function spendSlotAtLeast(t, minLv) {
+    var sh = t && t.sheet && sheets[t.sheet];
+    if (!sh || !canEditSheet(sh) || !(sh.slots || []).length) return;
+    for (var lv = minLv; lv <= 9; lv++) {
+        var s = slotOf(sh, lv);
+        if (s && s.cur > 0) { changeSlot(sh, s.idx, -1); notice('已消耗 1 个 ' + lv + ' 环法术位（剩 ' + (s.cur - 1) + '）'); return; }
+    }
+    notice('没有剩余的 ' + minLv + ' 环或更高的法术位（仍然施放了，可在角色卡上调整）', true);
+}
+
+// 施法记录后面：附近能用「法术反制」的单位（自己控制的；GM 看得到所有）
+function counterBtns(e, r) {
+    if (!r.spell || !e.id || !hintOn('hintReact')) return '';
+    if (logEntries.some(function(x) { return x.ref === 'cs:' + e.id; })) return '';
+    var caster = r.casterId && scene.items[r.casterId];
+    var list = sortedItems().filter(function(t) {
+        return t.kind === 'token' && t.id !== r.casterId && (me.gm || (t.owner && t.owner === me.name)) && isCreatureToken(t) &&
+            canReact(t) && tokenHasSpell(t, '法术反制') && (!caster || creatureDist(t, caster) <= 60);
+    });
+    if (!list.length) return '';
+    return '<div class="act-target">⛔ ' + list.map(function(t) {
+        return '<button class="tt-btn small react-btn" data-cs="' + escapeHtml(t.id) + '" data-log="' + escapeHtml(e.id) + '" title="用反应施放法术反制（三环）：施法者体质豁免对抗你的法术 DC，失败则这道法术作废、不消耗法术位">法术反制（' + escapeHtml(chipName(t.label)) + '）</button>';
+    }).join('') + '</div>';
+}
+
+// 受伤的目标后面：炼狱叱喝（反击伤害来源）、吸收元素（减半元素伤害）
+function reactSpellBtns(e, t, r, tok) {
+    if (!hintOn('hintReact') || !tok || !canReact(tok)) return '';
+    var h = '', caster = r.casterId && scene.items[r.casterId], ref = e.id + ':' + t.id;
+    var elem = Object.keys(t.types || {}).filter(function(ty) { return ELEMENTAL[ty] && t.types[ty] > 0; });
+    if (elem.length && tokenHasSpell(tok, '吸收元素') && !logEntries.some(function(x) { return x.ref === ref; }))
+        h += '<button class="tt-btn small react-btn" data-react="absorb" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) + '" data-react-ref="' + escapeHtml(ref) +
+            '" title="用反应施放吸收元素（一环）：这次的' + escapeHtml(elem.join('、')) + '伤害减半，直到你下回合开始有抗性">吸收元素</button>';
+    if (t.amount < 0 && caster && caster.id !== tok.id && creatureDist(tok, caster) <= 60 && tokenHasSpell(tok, '炼狱叱喝') && !masteryDone[ref + ':hr'])
+        h += '<button class="tt-btn small react-btn" data-hr="' + escapeHtml(t.id) + '" data-log="' + escapeHtml(e.id) + '" title="用反应施放炼狱叱喝：伤害来源敏捷豁免，失败受火焰伤害">炼狱叱喝</button>';
+    return h;
+}
+
+function reactSpellClick(el) {
+    var d = el.dataset;
+    if (d.cs) {
+        var t = scene.items[d.cs];
+        el.remove();
+        op({ op: 'fight.counter', ids: [d.cs], text: d.log }).then(function(ok) { if (ok) spendSlotAtLeast(t, 3); });
+        return true;
+    }
+    if (d.hr) {
+        var ent = logEntries.filter(function(x) { return x.id === d.log; })[0], tok = scene.items[d.hr];
+        var sh = tok && tok.sheet && sheets[tok.sheet], src = ent && ent.act && ent.act.casterId;
+        var i = sh ? (sh.spells || []).findIndex(function(s) { return String(s.name || '').indexOf('炼狱叱喝') >= 0; }) : -1;
+        if (i < 0 || !src) { notice('角色卡上没有「炼狱叱喝」，或找不到伤害来源', true); return true; }
+        masteryDone[d.log + ':' + d.hr + ':hr'] = true;
+        el.remove();
+        actPreset = { caster: tok, targets: [src], cost: 'r' };
+        castFromSheet(sh, { kind: 'spell', idx: String(i) });
+        return true;
+    }
+    return false;
+}
+
+// 打开行动框时套用预设（反应法术：施放者、预选目标、消耗）
+var actPreset = null;
+function applyActPreset() {
+    if (!actPreset || !act) return;
+    var p = actPreset;
+    actPreset = null;
+    if (p.caster) { act.caster = p.caster; $('acCaster').textContent = p.caster.label || '未命名棋子'; }
+    if (p.targets) act.presetTargets = p.targets.slice();
+    if (p.cost) { act.a.cost = p.cost; $('acCost').value = p.cost; }
 }
