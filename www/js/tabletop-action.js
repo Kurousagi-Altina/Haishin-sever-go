@@ -599,6 +599,7 @@ function openActionDialog(a, caster, sh) {
     f('acHidden').checked = $('diceHidden').checked;
     f('acCaster').textContent = caster ? (caster.label || '未命名棋子') : '（未指定：先在地图上选中你的棋子再打开，或不限距离）';
     syncActionDialog();
+    classDialogSync(a, caster, sh); // 狂暴伤害（tabletop-fight.js）
     $('actDialog').style.display = 'flex';
 }
 
@@ -627,6 +628,7 @@ function readActionDialog() {
     a.conc = $('acConc').checked;
     a.hidden = $('acHidden').checked;
     a.mastery = a.kind === 'attack' ? v('acMastery') : '';
+    classDialogApply(a); // 勾了狂暴伤害：伤害加上
     a.cost = v('acCost') || 'a';
     a.repeatSave = $('acRepeat').checked;
     a.dot = v('acDot');
