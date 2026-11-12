@@ -380,7 +380,7 @@ function actionFromAttack(sh, at) {
     var r = parseAttackRange((at.props || '') + ' ' + (at.range || ''));
     var dmgStr = String(at.damage || '').replace(/\s/g, '');
     var magic = /[+＋]\s*[1-3](?!\d)|魔法/.test((at.name || '') + ' ' + (at.props || ''));
-    return { name: at.name, kind: 'attack', attack: normBonus(at.atk) || '+0', damage: dmgStr, dtype: at.type || '', magic: magic,
+    return { name: at.name, kind: 'attack', attack: normBonus(at.atk) || '+0', damage: dmgStr, dtype: at.type || '', magic: magic, mastery: normMastery(at.mastery),
         range: r.normal || 0, rangeLong: r.long || 0, reach: r.reach || 0, area: { shape: '', size: 0, width: 5, self: false }, targets: 1 };
 }
 
@@ -388,7 +388,7 @@ function actionFromAttack(sh, at) {
 function castFromSheet(sh, ds) {
     if (!sh) return;
     var caster = casterFor(sh);
-    if (ds.kind === 'atk') { openActionDialog(actionFromAttack(sh, sh.attacks[+ds.idx]), caster, sh); return; }
+    if (ds.kind === 'atk') { var aa = actionFromAttack(sh, sh.attacks[+ds.idx]); openActionDialog(aa, caster, sh); fillMasteryFromRules(aa, sh); return; }
     if (ds.kind === 'spell') {
         var sp = sh.spells[+ds.idx];
         // 本地规则库（data/5e）里有这道法术：直接用结构化数据，不用联网，也不靠文字猜
@@ -592,6 +592,7 @@ function openActionDialog(a, caster, sh) {
     f('acStatus').value = a.status || '';
     f('acRounds').value = a.rounds || '';
     f('acConc').checked = !!a.conc;
+    f('acMastery').value = normMastery(a.mastery);
     f('acCost').value = a.cost || 'a';
     f('acRepeat').checked = !!a.repeatSave;
     f('acDot').value = a.dot || '';
@@ -625,6 +626,7 @@ function readActionDialog() {
     a.rounds = parseInt(v('acRounds'), 10) || 0;
     a.conc = $('acConc').checked;
     a.hidden = $('acHidden').checked;
+    a.mastery = a.kind === 'attack' ? v('acMastery') : '';
     a.cost = v('acCost') || 'a';
     a.repeatSave = $('acRepeat').checked;
     a.dot = v('acDot');
@@ -634,6 +636,8 @@ function readActionDialog() {
 function syncActionDialog() {
     var k = $('acKind').value, shape = $('acShape').value;
     $('acAttackRow').style.display = k === 'attack' ? '' : 'none';
+    $('acMasteryRow').style.display = k === 'attack' ? '' : 'none';
+    $('acMasteryHint').textContent = MASTERY[$('acMastery').value] || '';
     $('acSaveRow').style.display = k === 'save' ? '' : 'none';
     $('acDamageRow').style.display = k === 'effect' ? 'none' : '';
     $('acDamageLabel').textContent = k === 'heal' ? '治疗' : k === 'temp' ? '临时生命' : '伤害';
@@ -664,7 +668,7 @@ function actionRollOnly() {
 // ===== 地图选目标 =====
 function startActionTargeting() {
     var a = readActionDialog();
-    if ((a.kind === 'attack' || a.kind === 'auto' || a.kind === 'save') && a.kind !== 'attack' && !a.damage && !a.status) { notice('填写伤害骰或要附加的状态', true); return; }
+    if (a.kind === 'auto' && !a.damage && !a.status) { notice('填写伤害骰或要附加的状态', true); return; } // 豁免可以只掷（推撞推开、单纯检定）
     if (a.kind === 'save' && !a.dc) { notice('填写豁免 DC', true); return; }
     if ((a.kind === 'heal' || a.kind === 'temp') && !a.damage) { notice('填写治疗 / 临时生命的骰子', true); return; }
     closeActionDialog();
@@ -1086,7 +1090,7 @@ function confirmActionTargeting() {
         name: a.name, kind: a.kind, attack: a.attack || '', damage: a.damage || '', damageType: a.dtype || '',
         save: a.kind === 'save' ? a.save || '' : '', dc: a.kind === 'save' ? a.dc || 0 : 0, half: !!a.half,
         caster: m.caster && canEdit(m.caster) ? m.caster.id : '', concentration: !!a.conc, targets: targets, spell: !!a.isSpell,
-        magic: !!(a.magic || a.isSpell), school: a.school || '', parts: a.parts || [],
+        magic: !!(a.magic || a.isSpell), school: a.school || '', parts: a.parts || [], mastery: a.kind === 'attack' ? a.mastery || '' : '',
         status: def ? statusWithTurnEffects({ id: def.id, name: def.name, color: def.color, icon: def.icon, rounds: a.rounds || 0 }, a) : null
     } };
     if (isPathShape(a.area) && !m.locked && m.pts && m.pts.length > 1) finishPathShape();
@@ -1098,6 +1102,7 @@ function confirmActionTargeting() {
     cancelActionTargeting();
     op(body);
     if (!m.zoneId) econAfterAction(a, caster); // 动作经济：记上这次的消耗
+    masteryAfterAttack(a, caster, targets.map(function(o) { return o.id; })); // 用掉「侵扰」「削弱」
 }
 
 // 开始新的专注 = 结束旧的专注：先移除同一施放者之前留下的专注区域（服务器那边专注状态本来就只有一个）
@@ -1304,7 +1309,7 @@ function initAction() {
             if (e.target.value === 'ring' && act.a.area && act.a.area.ringSize) $('acSize').value = act.a.area.ringSize;
             if (hasWidth({ shape: e.target.value }) && !$('acWidth').value) $('acWidth').value = e.target.value === 'line' ? 5 : 1;
         }
-        if (e.target.id === 'acKind' || e.target.id === 'acShape') syncActionDialog();
+        if (e.target.id === 'acKind' || e.target.id === 'acShape' || e.target.id === 'acMastery') syncActionDialog();
         if (e.target.id === 'acSlot' && act) { // 换环阶：自动改成对应的伤害 / 治疗公式和目标数
             applySlotLevel(act.a, parseInt(e.target.value, 10) || act.a.spellLevel);
             $('acDamage').value = act.a.damage || '';

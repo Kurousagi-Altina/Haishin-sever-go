@@ -34,10 +34,11 @@ type TTActionReq struct {
 	Status        map[string]interface{} `json:"status"` // condition applied on hit / failed save / always
 	Caster        string                 `json:"caster"` // token id
 	Concentration bool                   `json:"concentration"`
-	Spell         bool                   `json:"spell"`  // a spell (Magic Resistance etc.)
-	Magic         bool                   `json:"magic"`  // a magical attack / effect (beats 非魔法 resistances; spells always are)
-	School        string                 `json:"school"` // spell school (防护 / 咒法 / … ) for school-specific save advantage
-	Parts         []TTDamagePart         `json:"parts"`  // extra damage of other types (weapon + 2d6 火焰, 冰风暴's 钝击 + 寒冷)
+	Spell         bool                   `json:"spell"`   // a spell (Magic Resistance etc.)
+	Magic         bool                   `json:"magic"`   // a magical attack / effect (beats 非魔法 resistances; spells always are)
+	School        string                 `json:"school"`  // spell school (防护 / 咒法 / … ) for school-specific save advantage
+	Parts         []TTDamagePart         `json:"parts"`   // extra damage of other types (weapon + 2d6 火焰, 冰风暴's 钝击 + 寒冷)
+	Mastery       string                 `json:"mastery"` // weapon mastery (2024): 侵扰 / 削弱 / 失衡 / 推离 / 擦掠 / 横扫 / 缓速 / 迅击
 	Targets       []TTActionTarget       `json:"targets"`
 }
 
@@ -79,7 +80,9 @@ type TTActionResult struct {
 	DC         int            `json:"dc,omitempty"`
 	Parts      []TTPartRoll   `json:"parts,omitempty"` // shared rolls of the extra damage components
 	Magic      bool           `json:"magic,omitempty"`
-	Half       bool           `json:"half,omitempty"` // save for half damage (Legendary Resistance re-resolves with it)
+	Half       bool           `json:"half,omitempty"`     // save for half damage (Legendary Resistance re-resolves with it)
+	Mastery    string         `json:"mastery,omitempty"`  // weapon mastery of the attack (the client offers its follow-up)
+	CasterID   string         `json:"casterId,omitempty"` // acting token id (push direction, Vex)
 	Targets    []*TTActionHit `json:"targets"`
 	Note       string         `json:"note,omitempty"`
 }
@@ -347,8 +350,9 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 		return http.StatusBadRequest, "无效的行动"
 	}
 	sc := room.activeScene()
-	res := &TTActionResult{Name: ttCleanName(a.Name, 40, "行动"), Kind: a.Kind, DamageType: ttCleanName(a.DamageType, 8, ""), Save: a.Save, DC: a.DC, Half: a.Half}
-	if _, ok := ttAbilityCN[a.Save]; a.Kind == "save" && !ok {
+	res := &TTActionResult{Name: ttCleanName(a.Name, 40, "行动"), Kind: a.Kind, DamageType: ttCleanName(a.DamageType, 8, ""), Save: a.Save, DC: a.DC, Half: a.Half,
+		Mastery: ttCleanName(a.Mastery, 8, "")}
+	if _, ok := ttAbilityCN[a.Save]; a.Kind == "save" && !ok && a.Save != "strdex" { // strdex：力量或敏捷，目标选高的（擒抱 / 推撞）
 		return http.StatusBadRequest, "请选择豁免属性"
 	}
 	if a.Kind == "attack" && strings.TrimSpace(a.Attack) == "" {
@@ -362,6 +366,7 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 			return http.StatusForbidden, "只能用自己控制的棋子行动"
 		} else if !ttConcealed(c) && !ttInitHidden(c) {
 			res.Caster = ttCleanName(ttItemLabel(c), 40, "")
+			res.CasterID = a.Caster
 		}
 	}
 	if a.Kind == "attack" && a.Damage != "" { // a crit doubles the dice: make sure that still rolls
@@ -424,6 +429,7 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 			if r, ok := ttNum(a.Status["rounds"]); ok && r > 0 {
 				status["rounds"] = r
 			}
+			ttCopyStatusExtras(status, a.Status)
 		}
 	}
 
@@ -546,19 +552,27 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 			}
 
 		case "save":
-			sb := room.saveBonus(it, a.Save)
-			if a.Save == "dex" && (t.Cover == 2 || t.Cover == 5) {
+			ab := a.Save
+			if ab == "strdex" { // 擒抱 / 推撞：目标自己选力量或敏捷豁免 → 用加值高的那个
+				ab = "str"
+				if room.saveBonus(it, "dex") > room.saveBonus(it, "str") {
+					ab = "dex"
+				}
+				addNote("选择" + ttAbilityCN[ab] + "豁免")
+			}
+			sb := room.saveBonus(it, ab)
+			if ab == "dex" && (t.Cover == 2 || t.Cover == 5) {
 				sb += t.Cover
 			}
-			autoFail := (a.Save == "str" || a.Save == "dex") && (conds["paralyzed"] || conds["stunned"] || conds["unconscious"] || conds["petrified"])
+			autoFail := (ab == "str" || ab == "dex") && (conds["paralyzed"] || conds["stunned"] || conds["unconscious"] || conds["petrified"])
 			if autoFail {
 				h.Saved = "auto"
 			} else {
 				// advantage / disadvantage from the target's conditions and traits (they cancel out)
-				more, bonusNotes, advSrc := tr.saveMods(a.Save, a.Spell, magic, a.School, statusID, conds)
+				more, bonusNotes, advSrc := tr.saveMods(ab, a.Spell, magic, a.School, statusID, conds)
 				sb += more
-				adv := a.Save == "dex" && (conds["hasted"] || conds["dodging"]) || len(advSrc) > 0
-				dis := a.Save == "dex" && conds["restrained"]
+				adv := ab == "dex" && (conds["hasted"] || conds["dodging"]) || len(advSrc) > 0
+				dis := ab == "dex" && conds["restrained"]
 				if len(bonusNotes) > 0 {
 					addNote("豁免 " + ttJoinNotes(bonusNotes))
 				}
@@ -598,7 +612,7 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 				addNote("可用传奇抗性改为成功（GM 撤销后手动结算）")
 			}
 			// Evasion: a Dex save for half damage → no damage on a success, half on a failure
-			evasion := tr.evasion != "" && a.Save == "dex" && a.Half && !ttIncapacitated(conds)
+			evasion := tr.evasion != "" && ab == "dex" && a.Half && !ttIncapacitated(conds)
 			hasDmg := shared != nil || len(sharedParts) > 0
 			scale := 1.0 // applies to every damage part
 			switch {
@@ -893,4 +907,37 @@ func ttStatusLevel(it map[string]interface{}, id string) int {
 		}
 	}
 	return 0
+}
+
+// ttCopyStatusExtras keeps the validated extras of a status sent with an action: repeated save
+// (save {ab, dc, when}), ongoing damage (dot {dice, type, when}) and a grapple's escape DC / grappler (dc, by).
+func ttCopyStatusExtras(dst, src map[string]interface{}) {
+	if sv, ok := src["save"].(map[string]interface{}); ok {
+		ab, _ := sv["ab"].(string)
+		dc, _ := ttNum(sv["dc"])
+		if _, known := ttAbilityCN[ab]; known && dc > 0 && dc <= 40 {
+			when := "end"
+			if sv["when"] == "start" {
+				when = "start"
+			}
+			dst["save"] = map[string]interface{}{"ab": ab, "dc": dc, "when": when}
+		}
+	}
+	if dot, ok := src["dot"].(map[string]interface{}); ok {
+		dice, _ := dot["dice"].(string)
+		typ, _ := dot["type"].(string)
+		if _, err := RollTabletopDice(dice); err == nil && len(dice) <= 20 {
+			when := "start"
+			if dot["when"] == "end" {
+				when = "end"
+			}
+			dst["dot"] = map[string]interface{}{"dice": dice, "type": ttCleanName(typ, 8, ""), "when": when}
+		}
+	}
+	if dc, ok := ttNum(src["dc"]); ok && dc > 0 && dc <= 40 {
+		dst["dc"] = dc
+	}
+	if by, _ := src["by"].(string); ttIDRe.MatchString(by) {
+		dst["by"] = by
+	}
 }

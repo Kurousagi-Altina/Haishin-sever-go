@@ -165,7 +165,9 @@ function fightLogBtns(e) {
 // 行动记录里每个目标后面的按钮：专注豁免、传奇抗性
 function fightTargetBtns(e, t, r) {
     if (!t.id || !e.id) return '';
+    var mb = masteryBtns(e, t, r) + shoveBtns(e, t, r); // 武器精通 / 推撞（出手的人看得到）
     var tok = scene.items[t.id];
+    if (mb && !(tok && (me.gm || (tok.owner && tok.owner === me.name)))) return mb;
     if (!tok || !(me.gm || (tok.owner && tok.owner === me.name))) return '';
     var h = '', m = String(t.note || '').match(/(?:需专注豁免|专注豁免改为) DC (\d+)/);
     if (m && hasStatus(tok, 'concentration') && !logEntries.some(function(x) { return x.ref === 'conc:' + e.id + ':' + t.id; }))
@@ -176,7 +178,7 @@ function fightTargetBtns(e, t, r) {
             h += '<button class="tt-btn small react-btn" data-react="legendary" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) +
                 '" data-react-ref="' + escapeHtml(e.id + ':' + t.id) + '" title="扣一次传奇抗性，把这次豁免改为成功并重新结算伤害和状态">传奇抗性（剩 ' + num(lr.cur, 0) + '）</button>';
     }
-    return h;
+    return mb + h;
 }
 
 function fightLogClick(el) {
@@ -185,6 +187,8 @@ function fightLogClick(el) {
     if (d.ssave) { op({ op: 'fight.save', ids: [d.ssave], mode: 'status', text: d.st }); el.disabled = true; return true; }
     if (d.dot) { op({ op: 'fight.dot', ids: [d.dot], text: d.st }); el.disabled = true; return true; }
     if (d.concsave) { op({ op: 'fight.save', ids: [d.concsave], mode: 'conc', dc: parseInt(d.dc, 10) || 10, text: d.log || '' }); el.remove(); return true; }
+    if (d.mst) return masteryClick(el);
+    if (d.shove) { masteryDone[d.log + ':' + d.shove + ':push'] = true; el.remove(); pushToken(d.shove, d.from, 5); return true; }
     if (d.lause) {
         var t = scene.items[d.lause];
         if (!t) return true;
@@ -244,6 +248,7 @@ function parseTurnEffects(a, text) {
 // 附加到目标身上的状态：带上回合效果
 function statusWithTurnEffects(st, a) {
     if (!st) return st;
+    if (a.grapple && st.id === 'grappled') { st.dc = a.dc; if (a.casterId) st.by = a.casterId; } // 挣脱时对抗的 DC
     if (a.repeatSave && a.kind === 'save' && a.save && a.dc) st.save = { ab: a.save, dc: a.dc, when: 'end' };
     var d = String(a.dot || '').trim().match(/^(\d*d\d+(?:[+\-]\d+)?)\s*(\S*)/i);
     if (d) st.dot = { dice: d[1], type: (d[2] || '').replace(/伤害$/, ''), when: 'start' };
@@ -321,7 +326,8 @@ function onMultiBarClick(e) {
 
 // ===================== 设置：战斗提示开关 =====================
 var HINT_KEYS = [['hintOA', '借机攻击提示', '拖动棋子离开敌人触及范围时提示'], ['hintEcon', '动作经济', '先攻条显示动作 / 附赠 / 反应，结算时自动勾选'],
-    ['hintTurn', '回合开始 / 结束效果', '闪避 / 撤离自动结束，重复豁免和持续伤害提示'], ['hintLegend', '传奇动作与充能', '传奇动作提示与恢复、传奇抗性按钮、充能自动掷骰']];
+    ['hintTurn', '回合开始 / 结束效果', '闪避 / 撤离自动结束，重复豁免和持续伤害提示'], ['hintLegend', '传奇动作与充能', '传奇动作提示与恢复、传奇抗性按钮、充能自动掷骰'],
+    ['hintMastery', '武器精通', '攻击命中 / 失手后按武器精通给出后续按钮（侵扰、削弱、失衡、推离、擦掠、横扫、缓速）']];
 
 function renderFightHints() {
     var box = $('fightHintBox');
@@ -338,4 +344,185 @@ function initFight() {
         if (k) setRoomSetting(k, e.target.checked ? null : false);
     });
     renderFightHints();
+}
+
+// ===================== 6. 武器精通（2024）与徒手打击 =====================
+var MASTERY = {
+    '侵扰': '命中并造成伤害后，你对该生物的下一次攻击检定具有优势（到你下回合结束）',
+    '削弱': '命中后，该生物的下一次攻击检定具有劣势（到你下回合开始）',
+    '失衡': '命中后，目标进行体质豁免（DC 8 + 属性调整值 + 熟练加值），失败则倒地',
+    '推离': '命中体型不超过大型的生物时，可以把它直线推离至多 10 尺',
+    '擦掠': '攻击失手时，仍造成等于属性调整值的伤害（同武器伤害类型）',
+    '横扫': '近战命中后，可以对它 5 尺内、你触及内的另一个生物再攻击一次（伤害不加属性调整值，每回合一次）',
+    '缓速': '命中并造成伤害时，目标速度 −10 尺，直到你下回合开始（不叠加）',
+    '迅击': '轻型武器的额外攻击改为攻击动作的一部分，不占附赠动作（每回合一次）'
+};
+var MASTERY_EN = { vex: '侵扰', sap: '削弱', topple: '失衡', push: '推离', graze: '擦掠', cleave: '横扫', slow: '缓速', nick: '迅击' };
+
+function normMastery(s) {
+    s = String(s || '').trim();
+    if (!s) return '';
+    for (var k in MASTERY) if (s.indexOf(k) >= 0) return k;
+    var en = s.toLowerCase().match(/[a-z]+/);
+    return en && MASTERY_EN[en[0]] || '';
+}
+
+// 武器名 → 规则库里的武器（去掉 +1、括号）
+function weaponBaseName(n) { return String(n || '').replace(/[+＋]\s*\d/g, '').replace(/[（(][^）)]*[）)]/g, '').replace(/^\s*(魔法|精制)\s*/, '').trim(); }
+
+// 角色卡的武器攻击没写精通、但角色有「武器精通」时，从规则库的武器表补上
+function fillMasteryFromRules(a, sh) {
+    if (a.mastery || !sh || !sheetHasEntry(sh, /武器精通|weaponmastery/i)) return;
+    ruleLookup('装备', weaponBaseName(a.name)).then(function(w) {
+        var m = w && normMastery(w.mastery);
+        if (!m || !act || act.a !== a || a.mastery) return;
+        a.mastery = m;
+        $('acMastery').value = m;
+        syncActionDialog();
+    });
+}
+
+function sheetAbilityMod(sh, key) {
+    var cn = { str: '力量', dex: '敏捷', con: '体质', int: '智力', wis: '感知', cha: '魅力' }[key];
+    var ab = (sh && sh.abilities || []).filter(function(x) { return x.key === key || x.name === cn; })[0];
+    if (!ab) return 0;
+    if (ab.mod != null && ab.mod !== '') return num(String(ab.mod).replace('+', ''), 0);
+    return Math.floor((num(ab.score, 10) - 10) / 2);
+}
+function sheetProf(sh) {
+    var p = parseInt(String(sh && sh.prof || '').replace('+', ''), 10);
+    if (p > 0) return p;
+    var cr = String(sh && sh.cr || '').replace(/\s/g, ''), c = cr.indexOf('/') > 0 ? 0 : parseInt(cr, 10) || 0;
+    if (sh && sh.kind !== 'pc' && cr) return c >= 29 ? 9 : c >= 25 ? 8 : c >= 21 ? 7 : c >= 17 ? 6 : c >= 13 ? 5 : c >= 9 ? 4 : c >= 5 ? 3 : 2;
+    var lv = parseInt(sh && sh.level, 10) || 1;
+    return 2 + Math.floor((Math.max(1, lv) - 1) / 4);
+}
+
+// 攻击记录里的命中加值：「1d20 + 5」「2d20kh1 + 5 + 1d4」→ 5
+function attackBonusOf(t) {
+    var m = String(t && t.attack && t.attack.expr || '').replace(/\s/g, '').match(/^\d*d20(?:k[hl]1)?([+\-]\d+)/i);
+    return m ? parseInt(m[1], 10) : 0;
+}
+
+// 推开：沿施加者 → 目标的方向推 ft 尺
+function pushToken(tid, fromId, ft) {
+    var t = scene.items[tid], f = scene.items[fromId];
+    if (!t || !f) { notice('找不到推的方向（施加者不在当前场景）', true); return; }
+    var a = tokenCenter(f), b = tokenCenter(t), dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 1, px = ftToPx(ft);
+    patchItems([{ id: t.id, x: r1((t.x || 0) + dx / d * px), y: r1((t.y || 0) + dy / d * px) }]);
+    notice('已把「' + (t.label || '目标') + '」推开 ' + ft + ' 尺（Ctrl+Z 撤销）');
+}
+
+function addStatusTo(tok, st) {
+    if (!tok) return;
+    var list = statusList(tok).filter(function(s) { return !(s.id === st.id && (st.vs == null || s.vs === st.vs)); }).concat([st]);
+    patchItems([{ id: tok.id, status: list }]);
+}
+
+// 记录里攻击目标后面的精通按钮（出手的人和 GM 看得到）
+function masteryBtns(e, t, r) {
+    if (r.kind !== 'attack' || !r.mastery || !hintOn('hintMastery') || !(me.gm || e.who === me.name) || !t.id) return '';
+    var key = e.id + ':' + t.id;
+    if (masteryDone[key]) return '';
+    var hit = t.hit === 'hit' || t.hit === 'crit', dealt = t.amount < 0, m = r.mastery, b = '';
+    var btn = function(kind, label) {
+        return '<button class="tt-btn small react-btn" data-mst="' + kind + '" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) + '" title="' + escapeHtml('武器精通「' + m + '」：' + (MASTERY[m] || '')) + '">' + label + '</button>';
+    };
+    if (hit) {
+        if (m === '侵扰' && dealt) b = btn('vex', '侵扰：下次攻击优势');
+        else if (m === '削弱') b = btn('sap', '削弱：它下次攻击劣势');
+        else if (m === '失衡') b = btn('topple', '失衡：体质豁免');
+        else if (m === '推离') b = btn('push', '推离 10 尺');
+        else if (m === '缓速' && dealt) b = btn('slow', '缓速 −10 尺');
+        else if (m === '横扫') b = btn('cleave', '横扫：再打一个');
+    } else if (m === '擦掠' && (t.hit === 'miss' || t.hit === 'fumble')) b = btn('graze', '擦掠伤害');
+    return b;
+}
+var masteryDone = {};
+
+function masteryClick(el) {
+    var d = el.dataset, ent = logEntries.filter(function(x) { return x.id === d.log; })[0];
+    if (!ent || !ent.act) return true;
+    var r = ent.act, t = (r.targets || []).filter(function(x) { return x.id === d.tok; })[0] || {};
+    var caster = r.casterId && scene.items[r.casterId], tgt = scene.items[d.tok];
+    if (!tgt) { notice('目标不在当前场景', true); return true; }
+    var sh = caster && caster.sheet && sheets[caster.sheet];
+    var bonus = attackBonusOf(t), prof = sheetProf(sh);
+    masteryDone[d.log + ':' + d.tok] = true;
+    el.remove();
+    switch (d.mst) {
+    case 'vex':
+        if (!caster) { notice('找不到出手的棋子', true); return true; }
+        addStatusTo(caster, { id: 'vex', name: '精通·侵扰', icon: '🎯', color: '#ffb74d', vs: tgt.id, vsName: tgt.label || '', rounds: 2 });
+        notice((caster.label || '') + ' 对「' + (tgt.label || '目标') + '」的下一次攻击具有优势');
+        break;
+    case 'sap':
+        addStatusTo(tgt, { id: 'sapped', name: '削弱', icon: '🫠', color: '#8d6e63', rounds: 1 });
+        break;
+    case 'slow':
+        addStatusTo(tgt, { id: 'slowed', name: '缓速', icon: '🐌', color: '#90a4ae', rounds: 1 });
+        break;
+    case 'push':
+        if (!caster) { notice('找不到出手的棋子（推的方向）', true); return true; }
+        pushToken(tgt.id, caster.id, 10);
+        break;
+    case 'topple':
+        openActionDialog({ name: '失衡（' + r.name + '）', kind: 'save', save: 'con', dc: 8 + bonus, status: 'prone', reach: 0, cost: 'n', area: { shape: '', size: 0, width: 5 }, targets: 1,
+            scaleNote: '失衡：DC = 8 + 属性调整值 + 熟练加值，默认按命中加值估算（魔法武器加值要减掉）' }, caster || null, sh || null);
+        act.presetTargets = [tgt.id];
+        break;
+    case 'graze':
+        openActionDialog({ name: '擦掠（' + r.name + '）', kind: 'auto', damage: String(Math.max(0, bonus - prof)), dtype: r.damageType || '', cost: 'n', area: { shape: '', size: 0, width: 5 }, targets: 1,
+            scaleNote: '擦掠：伤害 = 属性调整值，默认按命中加值 − 熟练加值估算' }, caster || null, sh || null);
+        act.presetTargets = [tgt.id];
+        break;
+    case 'cleave':
+        var dmg = String(t.damage && t.damage.expr || '').replace(/\s/g, '').replace(/([+\-]\d+)$/, '');
+        openActionDialog({ name: r.name + '（横扫）', kind: 'attack', attack: (bonus >= 0 ? '+' : '') + bonus, damage: dmg, dtype: r.damageType || '', reach: 5, cost: 'n', mastery: '',
+            area: { shape: '', size: 0, width: 5 }, targets: 1, scaleNote: '横扫：攻击原目标 5 尺内、你触及内的另一个生物；伤害不加属性调整值（为负时照加），每回合一次' }, caster || null, sh || null);
+        break;
+    }
+    return true;
+}
+
+// 攻击之后：用掉施放者身上的「侵扰」（对这些目标）和「削弱」
+function masteryAfterAttack(a, caster, ids) {
+    if (a.kind !== 'attack' || !caster) return;
+    var list = statusList(caster), keep = list.filter(function(s) { return !(s.id === 'vex' && ids.indexOf(s.vs) >= 0) && s.id !== 'sapped'; });
+    if (keep.length !== list.length) patchItems([{ id: caster.id, status: keep.length ? keep : null }]);
+}
+
+// 属性面板「徒手」：徒手打击 / 擒抱 / 推撞（2024：目标力量或敏捷豁免，DC 8 + 力量调整值 + 熟练加值）
+function unarmedRowHtml(it) {
+    if (!canEdit(it) || !isCreatureToken(it)) return '';
+    return '<div class="prop-row"><label>徒手</label><button class="tt-btn small" data-act="unarmed" title="徒手打击：命中 1 + 力量调整值 钝击">👊 打击</button>' +
+        '<button class="tt-btn small" data-act="grapple" title="擒抱：目标力量或敏捷豁免（取高），失败则受擒；需要一只空手，目标至多大你一个体型">🤼 擒抱</button>' +
+        '<button class="tt-btn small" data-act="shove" title="推撞：目标力量或敏捷豁免（取高），失败则倒地或被推开 5 尺">推撞</button></div>';
+}
+
+function fightSelAct(act0, ids) {
+    if (act0 !== 'unarmed' && act0 !== 'grapple' && act0 !== 'shove') return false;
+    var it = scene.items[ids[0]];
+    if (!it) return true;
+    var sh = it.sheet && sheets[it.sheet], str = sheetAbilityMod(sh, 'str'), pb = sheetProf(sh), dc = 8 + str + pb;
+    var base = { area: { shape: '', size: 0, width: 5 }, targets: 1, reach: 5, cost: 'a' };
+    if (act0 === 'unarmed') {
+        var ui = sh && (sh.attacks || []).findIndex(function(x) { return /徒手/.test(x.name || ''); });
+        if (sh && ui >= 0) { castFromSheet(sh, { kind: 'atk', idx: String(ui) }); return true; }
+        openActionDialog(Object.assign(base, { name: '徒手打击', kind: 'attack', attack: signed(str + pb) || '+0', damage: String(Math.max(1, 1 + str)), dtype: '钝击',
+            scaleNote: '徒手打击：命中 = 力量调整值 + 熟练加值，伤害 = 1 + 力量调整值（武僧等可在这里改成武艺骰）' }), it, sh || null);
+    } else {
+        var g = act0 === 'grapple';
+        openActionDialog(Object.assign(base, { name: g ? '擒抱' : '推撞', kind: 'save', save: 'strdex', dc: dc, status: g ? 'grappled' : 'prone', grapple: g, casterId: it.id,
+            scaleNote: (g ? '擒抱：需要一只空手；目标至多大你一个体型。失败受擒，可以用动作挣脱（运动或特技对抗 DC ' + dc + '）' :
+                '推撞：目标至多大你一个体型。默认失败则倒地；想推开 5 尺就把附加状态改成（无），结算后点记录里的「推开 5 尺」') + '。DC = 8 + 力量 ' + signed(str) + ' + 熟练 ' + pb }), it, sh || null);
+    }
+    return true;
+}
+
+// 推撞失败：推开 5 尺
+function shoveBtns(e, t, r) {
+    if (r.kind !== 'save' || !/^推撞/.test(r.name || '') || !(t.saved === 'no' || t.saved === 'auto') || !r.casterId || !(me.gm || e.who === me.name)) return '';
+    if (masteryDone[e.id + ':' + t.id + ':push']) return '';
+    return '<button class="tt-btn small react-btn" data-shove="' + escapeHtml(t.id) + '" data-log="' + escapeHtml(e.id) + '" data-from="' + escapeHtml(r.casterId) + '">推开 5 尺</button>';
 }
