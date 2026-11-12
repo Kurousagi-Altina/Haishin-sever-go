@@ -1,0 +1,282 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "烛堡",
+ "generated": "2026-11-09",
+ "count": 8,
+ "entries": [
+  {
+   "id": "item:云巨人陶瓷壶",
+   "name": "云巨人陶瓷壶",
+   "en": "Cloud Giants' Ceramic Jug",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/烛堡/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通。词条：蓝色水壶、橙色水壶",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:光辉",
+   "name": "光辉",
+   "en": "Radiance",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/烛堡/魔法物品.html",
+   "alsoIn": [],
+   "summary": "魔杖，非普通，需同调。可施放强化属性",
+   "uncertain": [],
+   "itemType": "魔杖",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "强化属性",
+     "level": 2,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:命运法杖",
+   "name": "命运法杖",
+   "en": "Staff of Fate",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/烛堡/魔法物品.html",
+   "alsoIn": [],
+   "summary": "法杖，极珍稀，需同调。攻击+3、伤害+3；6充能；词条：改变结果",
+   "uncertain": [],
+   "itemType": "法杖",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 3,
+    "damage": 3
+   },
+   "charges": {
+    "max": "6",
+    "regain": null
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:守望头盔",
+   "name": "守望头盔",
+   "en": "Watchful Helm",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/烛堡/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。AC+1；可施放识破隐形",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "ac": 1
+   },
+   "charges": null,
+   "spells": [
+    {
+     "name": "识破隐形",
+     "level": 2,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:缠魂手衣",
+   "name": "缠魂手衣",
+   "en": "Gloves of Soul Catching",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/烛堡/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，传说，需同调。额外2d10力场",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "2d10",
+     "type": "力场",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:蛇牙剑",
+   "name": "蛇牙剑",
+   "en": "Serpent's Fang",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/烛堡/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（长剑），珍稀。",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "长剑",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d10",
+     "type": "毒素"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:蛇鳞甲",
+   "name": "蛇鳞甲",
+   "en": "Serpent Scale Armor",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/烛堡/魔法物品.html",
+   "alsoIn": [],
+   "summary": "护甲（鳞甲），非普通。",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "鳞甲",
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:阿祖玛的奈瑟卷轴",
+   "name": "阿祖玛的奈瑟卷轴",
+   "en": "Nether Scroll of Azumar",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/烛堡/魔法物品.html",
+   "alsoIn": [],
+   "summary": "卷轴，传说。DC25豁免；消耗品",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "卷轴",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "16d10",
+     "type": "心灵"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 25,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": true
+  }
+ ]
+}

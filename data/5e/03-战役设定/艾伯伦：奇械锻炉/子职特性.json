@@ -1,0 +1,1047 @@
+{
+ "category": "feature",
+ "type": "子职特性",
+ "source": "艾伯伦：奇械锻炉",
+ "generated": "2026-11-09",
+ "count": 43,
+ "entries": [
+  {
+   "id": "feature:制图师·万能地图匣",
+   "name": "万能地图匣",
+   "en": "Superior Atlas",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/制图师.htm",
+   "alsoIn": [],
+   "summary": "地图持有者降至0生命时可毁图，生命变为2×奇械师等级并传送到你身边；可免费施放寻路术。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "制图师"
+   },
+   "level": 15,
+   "action": "reaction",
+   "mechanics": "地图持有者降至0生命时可毁图，生命变为2×奇械师等级并传送到你身边；可免费施放寻路术。",
+   "uses": {
+    "count": "1(寻路术)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:奇械师·仿制魔法物品",
+   "name": "仿制魔法物品",
+   "en": "Replicate Magic Item",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/奇械师.htm",
+   "alsoIn": [],
+   "summary": "学会魔法物品方案，每次长休用修补工具造出1至2件物品，死后1d4天消失，可同调。",
+   "uncertain": [],
+   "owner": {
+    "kind": "class",
+    "class": "奇械师"
+   },
+   "level": 2,
+   "action": "special",
+   "mechanics": "学会魔法物品方案，每次长休用修补工具造出1至2件物品，死后1d4天消失，可同调。",
+   "uses": {
+    "count": "随等级1至6件",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:奇械师·储法物品",
+   "name": "储法物品",
+   "en": "Spell-Storing Item",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/奇械师.htm",
+   "alsoIn": [],
+   "summary": "长休后把一道一至三环、动作施放、无耗材的法术存入武器或法器，持有者魔法动作触发。",
+   "uncertain": [],
+   "owner": {
+    "kind": "class",
+    "class": "奇械师"
+   },
+   "level": 11,
+   "action": "special",
+   "mechanics": "长休后把一道一至三环、动作施放、无耗材的法术存入武器或法器，持有者魔法动作触发。",
+   "uses": {
+    "count": "2×智力调整值(至少2)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:制图师·冒险者的地图匣",
+   "name": "冒险者的地图匣",
+   "en": "Adventurer's Atlas",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/制图师.htm",
+   "alsoIn": [],
+   "summary": "长休给至少两名生物造魔法地图：先攻+1d4，彼此知晓位置，可无视视线以持有者为法术目标。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "制图师"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "长休给至少两名生物造魔法地图：先攻+1d4，彼此知晓位置，可无视视线以持有者为法术目标。",
+   "uses": {
+    "count": "每次长休",
+    "recharge": "long"
+   },
+   "dice": "1d4"
+  },
+  {
+   "id": "feature:制图师·制图师法术",
+   "name": "制图师法术",
+   "en": "Cartographer Spells",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/制图师.htm",
+   "alsoIn": [],
+   "summary": "恒备法术：妖火、光导箭、治愈真言、物件定位术、心灵尖刺、召雷术、鹰眼术、放逐术、传送法阵等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "制图师"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "恒备法术：妖火、光导箭、治愈真言、物件定位术、心灵尖刺、召雷术、鹰眼术、放逐术、传送法阵等。"
+  },
+  {
+   "id": "feature:制图师·地图魔法",
+   "name": "地图魔法",
+   "en": "Mapping Magic",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/制图师.htm",
+   "alsoIn": [],
+   "summary": "可免费施放妖火；回合内花半速度传送到地图持有者10尺内的空位。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "制图师"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "可免费施放妖火；回合内花半速度传送到地图持有者10尺内的空位。",
+   "uses": {
+    "count": "智力调整值(至少1)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:炼金师·复原药剂",
+   "name": "复原药剂",
+   "en": "Restorative Reagents",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/炼金师.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "用炼金工具作法器可免费施放次等复原术。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "炼金师"
+   },
+   "level": 9,
+   "action": "action",
+   "mechanics": "用炼金工具作法器可免费施放次等复原术。",
+   "uses": {
+    "count": "智力调整值(至少1)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:奇械师·奇械之魂",
+   "name": "奇械之魂",
+   "en": "Soul of Artifice",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/奇械师.htm",
+   "alsoIn": [],
+   "summary": "生命值降至0未死时，解消自造物品并把生命值设为被解消物品数×20；短休恢复灵光一闪。",
+   "uncertain": [],
+   "owner": {
+    "kind": "class",
+    "class": "奇械师"
+   },
+   "level": 20,
+   "action": "reaction",
+   "mechanics": "生命值降至0未死时，解消自造物品并把生命值设为被解消物品数×20；短休恢复灵光一闪。"
+  },
+  {
+   "id": "feature:魔炮师·奥法火器",
+   "name": "奥法火器",
+   "en": "Arcane Firearm",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/魔炮师.htm",
+   "alsoIn": [],
+   "summary": "在法器或武器上刻符文，用它施放奇械师法术时一次伤害掷骰加1d8。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "魔炮师"
+   },
+   "level": 5,
+   "action": "passive",
+   "mechanics": "在法器或武器上刻符文，用它施放奇械师法术时一次伤害掷骰加1d8。",
+   "dice": "1d8"
+  },
+  {
+   "id": "feature:装甲师·奥能装甲",
+   "name": "奥能装甲",
+   "en": "Arcane Armor",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/装甲师.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "持铁匠工具魔法动作将所穿护甲变为奥能装甲：无力量需求，一个动作穿脱，可作法器。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "装甲师"
+   },
+   "level": 3,
+   "action": "action",
+   "mechanics": "持铁匠工具魔法动作将所穿护甲变为奥能装甲：无力量需求，一个动作穿脱，可作法器。"
+  },
+  {
+   "id": "feature:战地匠师·奥能震荡",
+   "name": "奥能震荡",
+   "en": "Arcane Jolt",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/战地匠师.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "魔法武器或守卫命中时，额外2d6力场伤害，或使30尺内一人或物恢复2d6生命值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "战地匠师"
+   },
+   "level": 9,
+   "action": "special",
+   "mechanics": "魔法武器或守卫命中时，额外2d6力场伤害，或使30尺内一人或物恢复2d6生命值。",
+   "uses": {
+    "count": "智力调整值(至少1)",
+    "recharge": "long"
+   },
+   "dice": "2d6",
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "力场"
+    }
+   ],
+   "heal": "2d6"
+  },
+  {
+   "id": "feature:装甲师·完美装甲",
+   "name": "完美装甲",
+   "en": "Perfected Armor",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/装甲师.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "按型号强化：无畏者破坏器2d6且触及更长；守护者脉冲1d10并可牵引；渗透者发射器2d6并令目标发光。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "装甲师"
+   },
+   "level": 15,
+   "action": "special",
+   "mechanics": "按型号强化：无畏者破坏器2d6且触及更长；守护者脉冲1d10并可牵引；渗透者发射器2d6并令目标发光。",
+   "save": {
+    "ability": "str",
+    "dc": "法术豁免DC"
+   },
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "力场"
+    },
+    {
+     "dice": "1d10",
+     "type": "雷鸣"
+    },
+    {
+     "dice": "2d6",
+     "type": "闪电"
+    }
+   ]
+  },
+  {
+   "id": "feature:炼金师·实验性灵药",
+   "name": "实验性灵药",
+   "en": "Experimental Elixir",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/炼金师.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "长休造两瓶灵药，掷d6定效果(治疗2d8+智力、加速、AC+1、d4加值等)；耗法术位可另造一瓶并自选。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "炼金师"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "长休造两瓶灵药，掷d6定效果(治疗2d8+智力、加速、AC+1、d4加值等)；耗法术位可另造一瓶并自选。",
+   "uses": {
+    "count": "2至5瓶",
+    "recharge": "long"
+   },
+   "dice": "2d8",
+   "heal": "2d8+智力调整值",
+   "resource": "法术位"
+  },
+  {
+   "id": "feature:奇械师·工艺魔法",
+   "name": "工艺魔法",
+   "en": "Tinker's Magicl",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/奇械师.htm",
+   "alsoIn": [],
+   "summary": "持修补工具魔法动作造出清单内的小物件，长休消失；学会修复术。",
+   "uncertain": [],
+   "owner": {
+    "kind": "class",
+    "class": "奇械师"
+   },
+   "level": 1,
+   "action": "action",
+   "mechanics": "持修补工具魔法动作造出清单内的小物件，长休消失；学会修复术。",
+   "uses": {
+    "count": "智力调整值(至少1)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:战地匠师·战地匠师法术",
+   "name": "战地匠师法术",
+   "en": "Battle Smith Spells",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/战地匠师.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "恒备法术：英雄气概、护盾术，之后每两档加闪耀斩、守护之链、活力灵光、箭如雨下、净化灵光等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "战地匠师"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "恒备法术：英雄气概、护盾术，之后每两档加闪耀斩、守护之链、活力灵光、箭如雨下、净化灵光等。"
+  },
+  {
+   "id": "feature:战地匠师·战斗准备",
+   "name": "战斗准备",
+   "en": "Battle Ready",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/战地匠师.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "魔法武器攻击与伤害可用智力调整值；获得军用武器熟练，熟练武器可作施法法器。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "战地匠师"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "魔法武器攻击与伤害可用智力调整值；获得军用武器熟练，熟练武器可作施法法器。"
+  },
+  {
+   "id": "feature:战地匠师·改良守卫",
+   "name": "改良守卫",
+   "en": "Improved Defender",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/战地匠师.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "奥能震荡升为4d6；守卫偏转攻击时，攻击者受1d4+智力调整值力场伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "战地匠师"
+   },
+   "level": 15,
+   "action": "passive",
+   "mechanics": "奥能震荡升为4d6；守卫偏转攻击时，攻击者受1d4+智力调整值力场伤害。",
+   "dice": "4d6",
+   "damage": [
+    {
+     "dice": "1d4+智力调整值",
+     "type": "力场"
+    }
+   ]
+  },
+  {
+   "id": "feature:奇械师·施法",
+   "name": "施法",
+   "en": "Spellcasting",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/奇械师.htm",
+   "alsoIn": [],
+   "summary": "用修补工具等工匠工具作法器，智力为施法属性；长休可换一个戏法和一道准备法术。",
+   "uncertain": [],
+   "owner": {
+    "kind": "class",
+    "class": "奇械师"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "用修补工具等工匠工具作法器，智力为施法属性；长休可换一个戏法和一道准备法术。",
+   "resource": "法术位"
+  },
+  {
+   "id": "feature:奇械师·灵光一闪",
+   "name": "灵光一闪",
+   "en": "Flash of Genius",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/奇械师.htm",
+   "alsoIn": [],
+   "summary": "你或30尺内可见者的属性检定或豁免失败时，反应加上智力调整值，可转败为胜。",
+   "uncertain": [],
+   "owner": {
+    "kind": "class",
+    "class": "奇械师"
+   },
+   "level": 7,
+   "action": "reaction",
+   "mechanics": "你或30尺内可见者的属性检定或豁免失败时，反应加上智力调整值，可转败为胜。",
+   "uses": {
+    "count": "智力调整值(至少1)",
+    "recharge": "long"
+   },
+   "dice": "智力调整值"
+  },
+  {
+   "id": "feature:制图师·灵机一动",
+   "name": "灵机一动",
+   "en": "Ingenious Movement",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/制图师.htm",
+   "alsoIn": [],
+   "summary": "灵光一闪时，你或30尺内自愿生物可顺带传送至多30尺到可见空位。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "制图师"
+   },
+   "level": 9,
+   "action": "reaction",
+   "mechanics": "灵光一闪时，你或30尺内自愿生物可顺带传送至多30尺到可见空位。"
+  },
+  {
+   "id": "feature:炼金师·炼金专家",
+   "name": "炼金专家",
+   "en": "Chemical Mastery",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/炼金师.htm",
+   "alsoIn": [],
+   "summary": "强酸/火焰/毒素奇械师法术额外2d8力场伤害；强酸毒素抗性、中毒免疫；免费施放一次泡泡坩埚。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "炼金师"
+   },
+   "level": 15,
+   "action": "passive",
+   "mechanics": "强酸/火焰/毒素奇械师法术额外2d8力场伤害；强酸毒素抗性、中毒免疫；免费施放一次泡泡坩埚。",
+   "uses": {
+    "count": "1(泡泡坩埚)",
+    "recharge": "long"
+   },
+   "damage": [
+    {
+     "dice": "2d8",
+     "type": "力场"
+    }
+   ],
+   "conditions": [
+    "poisoned"
+   ]
+  },
+  {
+   "id": "feature:炼金师·炼金师法术",
+   "name": "炼金师法术",
+   "en": "Alchemist Spells",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/炼金师.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "恒备法术：治愈真言、致病射线、炽焰法球、气化形体、群体治愈真言、死云术、死者复活等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "炼金师"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "恒备法术：治愈真言、致病射线、炽焰法球、气化形体、群体治愈真言、死云术、死者复活等。"
+  },
+  {
+   "id": "feature:炼金师·炼金术掌握",
+   "name": "炼金术掌握",
+   "en": "Alchemical Savant",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/炼金师.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "用炼金工具作法器施法时，治疗或强酸/火焰/毒素伤害的一次掷骰加智力调整值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "炼金师"
+   },
+   "level": 5,
+   "action": "passive",
+   "mechanics": "用炼金工具作法器施法时，治疗或强酸/火焰/毒素伤害的一次掷骰加智力调整值。"
+  },
+  {
+   "id": "feature:制图师·精准引导",
+   "name": "精准引导",
+   "en": "Guided Precision",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/制图师.htm",
+   "alsoIn": [],
+   "summary": "每回合一次，制图师法术或命中受妖火影响者时，伤害加智力调整值；受伤不失去妖火专注。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "制图师"
+   },
+   "level": 5,
+   "action": "passive",
+   "mechanics": "每回合一次，制图师法术或命中受妖火影响者时，伤害加智力调整值；受伤不失去妖火专注。"
+  },
+  {
+   "id": "feature:装甲师·精进装甲师",
+   "name": "精进装甲师",
+   "en": "Improved Armorer",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/装甲师.htm",
+   "alsoIn": [],
+   "summary": "多一个护甲方案和一件护甲；型号武器攻击与伤害掷骰+1。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "装甲师"
+   },
+   "level": 9,
+   "action": "passive",
+   "mechanics": "多一个护甲方案和一件护甲；型号武器攻击与伤害掷骰+1。"
+  },
+  {
+   "id": "feature:制图师·行业工具",
+   "name": "行业工具",
+   "en": "Tools of the Trade",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/制图师.htm",
+   "alsoIn": [],
+   "summary": "获得书法与制图工具熟练，制作法术卷轴时间减半。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "制图师"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "获得书法与制图工具熟练，制作法术卷轴时间减半。"
+  },
+  {
+   "id": "feature:战地匠师·行业工具",
+   "name": "行业工具",
+   "en": "Tools of the Trade",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/战地匠师.htm",
+   "alsoIn": [],
+   "summary": "获得铁匠工具熟练，制造武器所需时间减半。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "战地匠师"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "获得铁匠工具熟练，制造武器所需时间减半。"
+  },
+  {
+   "id": "feature:炼金师·行业工具",
+   "name": "行业工具",
+   "en": "Tools of the Trade",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/炼金师.htm",
+   "alsoIn": [],
+   "summary": "获得炼金工具与草药工具熟练，酿造药水时间减半。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "炼金师"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "获得炼金工具与草药工具熟练，酿造药水时间减半。"
+  },
+  {
+   "id": "feature:装甲师·行业工具",
+   "name": "行业工具",
+   "en": "Tools of the Trade",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/装甲师.htm",
+   "alsoIn": [],
+   "summary": "获得重甲受训与铁匠工具熟练，制造护甲时间减半。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "装甲师"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "获得重甲受训与铁匠工具熟练，制造护甲时间减半。"
+  },
+  {
+   "id": "feature:魔炮师·行业工具",
+   "name": "行业工具",
+   "en": "Tools of the Trade",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/魔炮师.htm",
+   "alsoIn": [],
+   "summary": "获得军用远程武器与木雕工具熟练，制作魔杖时间减半。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "魔炮师"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "获得军用远程武器与木雕工具熟练，制作魔杖时间减半。"
+  },
+  {
+   "id": "feature:装甲师·装甲型号",
+   "name": "装甲型号",
+   "en": "Armor Model",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/装甲师.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "选无畏者(1d10力场破坏器，可变大型)、守护者(1d8雷鸣脉冲，临时生命值)或渗透者(1d6闪电发射器)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "装甲师"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "选无畏者(1d10力场破坏器，可变大型)、守护者(1d8雷鸣脉冲，临时生命值)或渗透者(1d6闪电发射器)。",
+   "uses": {
+    "count": "伟岸身姿：智力调整值",
+    "recharge": "long"
+   },
+   "damage": [
+    {
+     "dice": "1d10",
+     "type": "力场"
+    },
+    {
+     "dice": "1d8",
+     "type": "雷鸣"
+    },
+    {
+     "dice": "1d6",
+     "type": "闪电"
+    }
+   ]
+  },
+  {
+   "id": "feature:装甲师·装甲师法术",
+   "name": "装甲师法术",
+   "en": "Armorer Spells",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/装甲师.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "恒备法术：魔法飞弹、雷鸣波、镜影术、粉碎音波、催眠图纹、闪电束、火焰护盾、穿墙术、力场墙等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "装甲师"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "恒备法术：魔法飞弹、雷鸣波、镜影术、粉碎音波、催眠图纹、闪电束、火焰护盾、穿墙术、力场墙等。"
+  },
+  {
+   "id": "feature:魔炮师·要塞阵地",
+   "name": "要塞阵地",
+   "en": "Fortified Position",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/魔炮师.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "可同时拥有两门炮台并一起激活；炮台10尺内你和盟友享半身掩护。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "魔炮师"
+   },
+   "level": 15,
+   "action": "passive",
+   "mechanics": "可同时拥有两门炮台并一起激活；炮台10尺内你和盟友享半身掩护。"
+  },
+  {
+   "id": "feature:奇械师·进阶奇械术",
+   "name": "进阶奇械术",
+   "en": "Advanced Artifice",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/奇械师.htm",
+   "alsoIn": [],
+   "summary": "同调上限升至5件；完成短休时灵光一闪恢复1次。",
+   "uncertain": [],
+   "owner": {
+    "kind": "class",
+    "class": "奇械师"
+   },
+   "level": 14,
+   "action": "passive",
+   "mechanics": "同调上限升至5件；完成短休时灵光一闪恢复1次。"
+  },
+  {
+   "id": "feature:战地匠师·钢铁守卫",
+   "name": "钢铁守卫",
+   "en": "Steel Defender",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/战地匠师.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "长休造一台构装同伴，附赠动作命令；近战力场1d8+2+智力，修理3次，反应令攻击者劣势。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "战地匠师"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "长休造一台构装同伴，附赠动作命令；近战力场1d8+2+智力，修理3次，反应令攻击者劣势。",
+   "damage": [
+    {
+     "dice": "1d8+2+智力调整值",
+     "type": "力场"
+    }
+   ],
+   "heal": "2d8+智力调整值"
+  },
+  {
+   "id": "feature:战地匠师·额外攻击",
+   "name": "额外攻击",
+   "en": "Extra Attack",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/战地匠师.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "攻击动作可攻击两次，其中一次可换成命令钢铁守卫攻击。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "战地匠师"
+   },
+   "level": 5,
+   "action": "passive",
+   "mechanics": "攻击动作可攻击两次，其中一次可换成命令钢铁守卫攻击。"
+  },
+  {
+   "id": "feature:装甲师·额外攻击",
+   "name": "额外攻击",
+   "en": "Extra Attack",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/装甲师.htm",
+   "alsoIn": [],
+   "summary": "攻击动作可攻击两次。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "装甲师"
+   },
+   "level": 5,
+   "action": "passive",
+   "mechanics": "攻击动作可攻击两次。"
+  },
+  {
+   "id": "feature:魔炮师·高爆炮台",
+   "name": "高爆炮台",
+   "en": "Explosive Cannon",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/魔炮师.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "炮台受伤时反应引爆，20尺内敏捷豁免失败受3d10力场伤害；炮台伤害与临时生命值+1d8。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "魔炮师"
+   },
+   "level": 9,
+   "action": "reaction",
+   "mechanics": "炮台受伤时反应引爆，20尺内敏捷豁免失败受3d10力场伤害；炮台伤害与临时生命值+1d8。",
+   "save": {
+    "ability": "dex",
+    "dc": "法术豁免DC"
+   },
+   "damage": [
+    {
+     "dice": "3d10",
+     "type": "力场"
+    }
+   ]
+  },
+  {
+   "id": "feature:奇械师·魔法物品大师",
+   "name": "魔法物品大师",
+   "en": "Magic Item Master",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/奇械师.htm",
+   "alsoIn": [],
+   "summary": "同调魔法物品上限升至6件。",
+   "uncertain": [],
+   "owner": {
+    "kind": "class",
+    "class": "奇械师"
+   },
+   "level": 18,
+   "action": "passive",
+   "mechanics": "同调魔法物品上限升至6件。"
+  },
+  {
+   "id": "feature:奇械师·魔法物品工艺师",
+   "name": "魔法物品工艺师",
+   "en": "Magic Item Tinker",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/奇械师.htm",
+   "alsoIn": [],
+   "summary": "附赠动作给自造充能物品灌入法术位充能；或将自造物品化为法术位；或魔法动作转成另一方案物品。",
+   "uncertain": [],
+   "owner": {
+    "kind": "class",
+    "class": "奇械师"
+   },
+   "level": 6,
+   "action": "bonus",
+   "mechanics": "附赠动作给自造充能物品灌入法术位充能；或将自造物品化为法术位；或魔法动作转成另一方案物品。",
+   "uses": {
+    "count": "汲取与转变各1次",
+    "recharge": "long"
+   },
+   "resource": "法术位"
+  },
+  {
+   "id": "feature:奇械师·魔法物品巧匠",
+   "name": "魔法物品巧匠",
+   "en": "Magic Item Adept",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/奇械师.htm",
+   "alsoIn": [],
+   "summary": "同调魔法物品上限提升到4件。",
+   "uncertain": [],
+   "owner": {
+    "kind": "class",
+    "class": "奇械师"
+   },
+   "level": 10,
+   "action": "passive",
+   "mechanics": "同调魔法物品上限提升到4件。"
+  },
+  {
+   "id": "feature:魔炮师·魔炮师法术",
+   "name": "魔炮师法术",
+   "en": "Artillerist Spells",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/魔炮师.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "恒备法术：护盾术、雷鸣波、灼热射线、粉碎音波、火球术、风墙术、冰风暴、火墙术、寒冰锥等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "魔炮师"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "恒备法术：护盾术、雷鸣波、灼热射线、粉碎音波、火球术、风墙术、冰风暴、火墙术、寒冰锥等。"
+  },
+  {
+   "id": "feature:魔炮师·魔能炮台",
+   "name": "魔能炮台",
+   "en": "Eldritch Cannon",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/魔炮师.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "魔法动作造炮台(AC18，生命值5×等级)；附赠动作令其喷2d8火焰(敏捷豁免)、射2d8力场或给临时生命值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "魔炮师"
+   },
+   "level": 3,
+   "action": "action",
+   "mechanics": "魔法动作造炮台(AC18，生命值5×等级)；附赠动作令其喷2d8火焰(敏捷豁免)、射2d8力场或给临时生命值。",
+   "uses": {
+    "count": "1(或耗法术位)",
+    "recharge": "long"
+   },
+   "save": {
+    "ability": "dex",
+    "dc": "法术豁免DC"
+   },
+   "damage": [
+    {
+     "dice": "2d8",
+     "type": "火焰"
+    },
+    {
+     "dice": "2d8",
+     "type": "力场"
+    }
+   ],
+   "heal": "1d8+智力调整值(临时)"
+  }
+ ]
+}

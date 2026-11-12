@@ -1,0 +1,270 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "艾奎兹玄有限责任公司",
+ "generated": "2026-11-09",
+ "count": 7,
+ "entries": [
+  {
+   "id": "item:位面游荡仪",
+   "name": "位面游荡仪",
+   "en": "",
+   "aliases": [],
+   "source": "艾奎兹玄有限责任公司",
+   "section": "setting",
+   "path": "topics/艾奎兹玄有限责任公司/位面游荡仪/位面游荡仪.html",
+   "alsoIn": [],
+   "summary": "奇物，神器，需同调。AC+1；7充能；DC17豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "ac": 1
+   },
+   "charges": {
+    "max": "7",
+    "regain": null
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 17,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:回溯引擎",
+   "name": "回溯引擎",
+   "en": "",
+   "aliases": [],
+   "source": "艾奎兹玄有限责任公司",
+   "section": "setting",
+   "path": "topics/艾奎兹玄有限责任公司/位面游荡仪/位面游荡仪.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:年表仪盘",
+   "name": "年表仪盘",
+   "en": "",
+   "aliases": [],
+   "source": "艾奎兹玄有限责任公司",
+   "section": "setting",
+   "path": "topics/艾奎兹玄有限责任公司/位面游荡仪/位面游荡仪.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:旅行表盘",
+   "name": "旅行表盘",
+   "en": "",
+   "aliases": [],
+   "source": "艾奎兹玄有限责任公司",
+   "section": "setting",
+   "path": "topics/艾奎兹玄有限责任公司/位面游荡仪/位面游荡仪.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。可施放大步奔行、传送术",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "大步奔行",
+     "level": 1,
+     "cost": null
+    },
+    {
+     "name": "传送术",
+     "level": 7,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:星轮",
+   "name": "星轮",
+   "en": "",
+   "aliases": [],
+   "source": "艾奎兹玄有限责任公司",
+   "section": "setting",
+   "path": "topics/艾奎兹玄有限责任公司/位面游荡仪/位面游荡仪.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。可施放舞光术、飞行术、浮空术；DC15豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "舞光术",
+     "level": 0,
+     "cost": null
+    },
+    {
+     "name": "飞行术",
+     "level": 3,
+     "cost": null
+    },
+    {
+     "name": "浮空术",
+     "level": 2,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:维度环",
+   "name": "维度环",
+   "en": "",
+   "aliases": [],
+   "source": "艾奎兹玄有限责任公司",
+   "section": "setting",
+   "path": "topics/艾奎兹玄有限责任公司/位面游荡仪/位面游荡仪.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:遥远齿轮",
+   "name": "遥远齿轮",
+   "en": "",
+   "aliases": [],
+   "source": "艾奎兹玄有限责任公司",
+   "section": "setting",
+   "path": "topics/艾奎兹玄有限责任公司/位面游荡仪/位面游荡仪.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。可施放咒唤圣光、灾祸术；DC15豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "咒唤圣光",
+     "level": 7,
+     "cost": null
+    },
+    {
+     "name": "灾祸术",
+     "level": 1,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

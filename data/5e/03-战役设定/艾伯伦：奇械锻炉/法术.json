@@ -1,0 +1,68 @@
+{
+ "category": "spell",
+ "type": "法术",
+ "source": "艾伯伦：奇械锻炉",
+ "generated": "2026-11-09",
+ "count": 1,
+ "entries": [
+  {
+   "id": "spell:人工生命仆从",
+   "name": "人工生命仆从",
+   "en": "Homunculus Servant",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第一章/法术.htm",
+   "alsoIn": [],
+   "summary": "召唤人工生命仆从，使用法术环阶计算的数据，随你行动。",
+   "uncertain": [],
+   "level": 2,
+   "school": "咒法",
+   "classes": [
+    "奇械师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "hour",
+    "reactionTrigger": ""
+   },
+   "ritual": true,
+   "range": {
+    "type": "ft",
+    "ft": 10
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "价值100+GP的宝石",
+    "mCost": 100,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 0,
+    "text": "仆从数据按所用法术位环阶计算",
+    "step": 1,
+    "from": 2,
+    "summonScales": true
+   },
+   "cantripScaling": null,
+   "lasting": false
+  }
+ ]
+}

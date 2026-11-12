@@ -1,0 +1,83 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "黄金宝库",
+ "generated": "2026-11-09",
+ "count": 2,
+ "entries": [
+  {
+   "id": "item:康斯坦托里的肖像",
+   "name": "康斯坦托里的肖像",
+   "en": "Constantori's Portrait",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/黄金宝库/魔法物品/康斯坦托里的肖像.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。有充能，全部 每日黎明恢复；词条：智能、个性、有价值的信息、画中守卫",
+   "uncertain": [
+    "charges"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": null,
+    "regain": "全部 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:破碎孤石",
+   "name": "破碎孤石",
+   "en": "Shard Solitaire",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/黄金宝库/魔法物品/破碎孤石.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说，需同调。6充能，1d6 每日黎明恢复；DC16体质豁免；词条：裂隙穿梭、施法",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "6",
+    "regain": "1d6 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "3d10",
+     "type": "力场"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 16,
+    "ability": "con"
+   },
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

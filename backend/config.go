@@ -21,6 +21,7 @@ type Config struct {
 	VideoDir           string `json:"video_dir"`
 	CloudUploadMinRole string `json:"cloud_upload_min_role"` // "admin", "user", or "door"
 	TabletopDir        string `json:"tabletop_dir"`
+	RulesDir           string `json:"rules_dir"`      // 本地规则库（data/5e，按出处整理的不全书数据）
 	NotifySendKey      string `json:"notify_sendkey"` // Server酱 Turbo 的 SendKey，留空则关闭注册通知
 }
 
@@ -50,6 +51,7 @@ func LoadConfig() *Config {
 		VideoDir:           "../userdata/videos",
 		CloudUploadMinRole: "user",
 		TabletopDir:        "../userdata/tabletop",
+		RulesDir:           "../data/5e",
 	}
 
 	// 1. Load from config.json, or create it on first run
@@ -109,6 +111,9 @@ func LoadConfig() *Config {
 	}
 	if v := os.Getenv("TABLETOP_DIR"); v != "" {
 		cfg.TabletopDir = v
+	}
+	if v := os.Getenv("RULES_DIR"); v != "" {
+		cfg.RulesDir = v
 	}
 	if v := os.Getenv("NOTIFY_SENDKEY"); v != "" {
 		cfg.NotifySendKey = v

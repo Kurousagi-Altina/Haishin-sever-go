@@ -1,0 +1,1147 @@
+{
+ "category": "spell",
+ "type": "法术",
+ "source": "被遗忘的国度",
+ "generated": "2026-11-09",
+ "count": 18,
+ "entries": [
+  {
+   "id": "spell:伊尔明斯特的法术闪避",
+   "name": "伊尔明斯特的法术闪避",
+   "en": "Elminster's Elusion",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第五章/新法术.htm",
+   "alsoIn": [],
+   "summary": "专注：你的法术和魔法效应豁免优势，且豁免成功时半伤变免伤。",
+   "uncertain": [],
+   "level": 2,
+   "school": "防护",
+   "classes": [
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "bonus",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多10分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:伊尔明斯特的绚丽光球",
+   "name": "伊尔明斯特的绚丽光球",
+   "en": "Elminster's Effulgent Spheres",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第五章/新法术.htm",
+   "alsoIn": [],
+   "summary": "创造数颗光球，每回合可附赠动作射出，远程法术攻击造成3d6元素伤害。",
+   "uncertain": [],
+   "level": 6,
+   "school": "塑能",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一块价值1,000+GP的欧珀",
+    "mCost": 1000,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "1小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": "ranged",
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "3d6",
+     "type": "强酸/寒冷/火焰/闪电/雷鸣",
+     "typeChoice": true
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 1,
+    "text": "每高1环：多一颗光球",
+    "step": 1,
+    "from": 6
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:制敌术",
+   "name": "制敌术",
+   "en": "Wardaway",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第五章/新法术.htm",
+   "alsoIn": [],
+   "summary": "目标进行体质豁免，失败受2d4力场伤害，成功减半",
+   "uncertain": [],
+   "level": 1,
+   "school": "防护",
+   "classes": [
+    "吟游诗人",
+    "牧师",
+    "圣武士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一个黏土做的小手塑像",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "2d4",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "2d4",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+2d4",
+    "step": 1,
+    "from": 1
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:厄难黑潮",
+   "name": "厄难黑潮",
+   "en": "Doomtide",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第五章/新法术.htm",
+   "alsoIn": [],
+   "summary": "半径20尺球形内的生物进行感知豁免，失败受5d6心灵伤害，成功减半；需专注",
+   "uncertain": [],
+   "level": 4,
+   "school": "咒法",
+   "classes": [
+    "吟游诗人",
+    "牧师",
+    "魔契师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 120
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "煤灰或烟灰，以及一片鳗鱼干",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "wis",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "5d6",
+     "type": "心灵"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "sphere",
+    "size": 20,
+    "height": null,
+    "width": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:反冲术",
+   "name": "反冲术",
+   "en": "Backlash",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第五章/新法术.htm",
+   "alsoIn": [],
+   "summary": "目标进行体质豁免，失败受4d6力场伤害，成功减半",
+   "uncertain": [],
+   "level": 4,
+   "school": "防护",
+   "classes": [
+    "吟游诗人",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "reaction",
+    "reactionTrigger": "当你受到伤害时，作为对该次伤害的回应执行"
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "4d6",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d6",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d6",
+    "step": 1,
+    "from": 4
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:咒唤机群",
+   "name": "咒唤机群",
+   "en": "Conjure Constructs",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第五章/新法术.htm",
+   "alsoIn": [],
+   "summary": "专注：构装灵体机群，魔法动作令其对5尺内目标造成3d6力场（敏捷豁免）或赐临时生命。",
+   "uncertain": [],
+   "level": 3,
+   "school": "咒法",
+   "classes": [
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一枚黄铜齿轮",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多10分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "3d6",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d6",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d6",
+    "step": 1,
+    "from": 3
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:咒火闪焰",
+   "name": "咒火闪焰",
+   "en": "Spellfire Flare",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第五章/新法术.htm",
+   "alsoIn": [],
+   "summary": "对目标进行远程法术攻击，命中受2d10光耀伤害",
+   "uncertain": [],
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": "ranged",
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "2d10",
+     "type": "光耀"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 1,
+    "text": "每高1环：目标/数量+1",
+    "step": 1,
+    "from": 1
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:咒火风暴",
+   "name": "咒火风暴",
+   "en": "Spellfire Storm",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第五章/新法术.htm",
+   "alsoIn": [],
+   "summary": "半径20尺柱形内的生物进行体质豁免，失败受4d10光耀伤害，成功减半；需专注",
+   "uncertain": [],
+   "level": 4,
+   "school": "塑能",
+   "classes": [
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "4d10",
+     "type": "光耀"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "cylinder",
+    "size": 20,
+    "height": 20,
+    "width": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d10",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d10",
+    "step": 1,
+    "from": 4
+   },
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:噪鸣护盾",
+   "name": "噪鸣护盾",
+   "en": "Cacophonic Shield",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第五章/新法术.htm",
+   "alsoIn": [],
+   "summary": "周围10尺内的生物进行体质豁免，失败受3d6雷鸣伤害并陷入耳聋，成功减半；需专注",
+   "uncertain": [],
+   "level": 3,
+   "school": "塑能",
+   "classes": [
+    "吟游诗人",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多10分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "3d6",
+     "type": "雷鸣"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "emanation",
+    "size": 10,
+    "height": null,
+    "width": null,
+    "origin": "self"
+   },
+   "targets": null,
+   "conditions": [
+    "deafened"
+   ],
+   "upcast": {
+    "perLevelDice": "1d6",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d6",
+    "step": 1,
+    "from": 3
+   },
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:密斯特拉圣星",
+   "name": "密斯特拉圣星",
+   "en": "Holy Star of Mystra",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第五章/新法术.htm",
+   "alsoIn": [],
+   "summary": "专注：召唤圣星，持续对目标造成伤害并限制其行动。",
+   "uncertain": [],
+   "level": 8,
+   "school": "塑能",
+   "classes": [
+    "牧师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "bonus",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": "ranged",
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:希伦的剧毒灵蛇",
+   "name": "希伦的剧毒灵蛇",
+   "en": "Sylune's Viper",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第五章/新法术.htm",
+   "alsoIn": [],
+   "summary": "召唤魔法毒蛇，附赠动作发动近战法术攻击，命中受毒素伤害。",
+   "uncertain": [],
+   "level": 3,
+   "school": "咒法",
+   "classes": [
+    "德鲁伊",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "bonus",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一枚蛇牙",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "1小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": "ranged",
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": "15",
+   "area": null,
+   "targets": null,
+   "conditions": [
+    "poisoned",
+    "incapacitated"
+   ],
+   "upcast": {
+    "perLevelDice": "1d6",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d6",
+    "step": 1,
+    "from": 3
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:德莉安的人工生命小帮手",
+   "name": "德莉安的人工生命小帮手",
+   "en": "Deryan's Helpful Homunculi",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第五章/新法术.htm",
+   "alsoIn": [],
+   "summary": "召唤灵体小帮手，视为协助者并给予奥秘和工具熟练。",
+   "uncertain": [],
+   "level": 2,
+   "school": "咒法",
+   "classes": [
+    "牧师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": true,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "价值100+GP的宝石粉末，作为法术的耗材；外加一套你熟练的工匠工具",
+    "mCost": 100,
+    "mConsumed": true
+   },
+   "duration": {
+    "text": "8小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:悲恸挽歌",
+   "name": "悲恸挽歌",
+   "en": "Dirge",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第五章/新法术.htm",
+   "alsoIn": [],
+   "summary": "周围60尺内的生物进行体质豁免，失败受3d10黯蚀伤害并陷入倒地、力竭，成功减半；需专注",
+   "uncertain": [],
+   "level": 6,
+   "school": "惑控",
+   "classes": [
+    "吟游诗人",
+    "牧师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "3d10",
+     "type": "黯蚀"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "emanation",
+    "size": 60,
+    "width": null,
+    "height": null,
+    "origin": "self"
+   },
+   "targets": null,
+   "conditions": [
+    "prone",
+    "exhaustion"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:桑缟的元灵显圣",
+   "name": "桑缟的元灵显圣",
+   "en": "Songal's Elemental Suffusion",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第五章/新法术.htm",
+   "alsoIn": [],
+   "summary": "专注：散发15尺元素光环，回合开始敌人敏捷豁免，失败受元素伤害并倒地。",
+   "uncertain": [],
+   "level": 5,
+   "school": "变化",
+   "classes": [
+    "德鲁伊",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一枚价值100+GP的珍珠",
+    "mCost": 100,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "dex",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "强酸/寒冷/火焰/闪电/雷鸣",
+     "typeChoice": true
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "emanation",
+    "size": 15,
+    "width": null,
+    "height": null,
+    "origin": "self"
+   },
+   "targets": null,
+   "conditions": [
+    "prone"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:欣布的法愈秘术",
+   "name": "欣布的法愈秘术",
+   "en": "Simbul's Synostodweomer",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第五章/新法术.htm",
+   "alsoIn": [],
+   "summary": "目标施法时可消耗生命骰回复生命值（法术环阶枚）。",
+   "uncertain": [],
+   "level": 7,
+   "school": "变化",
+   "classes": [
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "touch",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "1小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:死佑护甲",
+   "name": "死佑护甲",
+   "en": "Death Armor",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第五章/新法术.htm",
+   "alsoIn": [],
+   "summary": "触碰生物，其死亡豁免优势，近战命中它的攻击者受2d4黯蚀伤害。",
+   "uncertain": [],
+   "level": 2,
+   "school": "死灵",
+   "classes": [
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "touch",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一块价值50+GP的缟玛瑙，作为法术的耗材",
+    "mCost": 50,
+    "mConsumed": true
+   },
+   "duration": {
+    "text": "1小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "2d4",
+     "type": "黯蚀"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:艾拉斯卓的月辉之篷",
+   "name": "艾拉斯卓的月辉之篷",
+   "en": "Alustriel's Mooncloak",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第五章/新法术.htm",
+   "alsoIn": [],
+   "summary": "专注：20尺光环内半身掩护、冷/电/光耀抗性，另有临时生命等选项。",
+   "uncertain": [],
+   "level": 5,
+   "school": "防护",
+   "classes": [
+    "吟游诗人",
+    "德鲁伊",
+    "游侠",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一块价值50+GP的月石",
+    "mCost": 50,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": "4d10",
+   "healAddsMod": true,
+   "tempHp": null,
+   "area": {
+    "shape": "emanation",
+    "size": 20,
+    "width": null,
+    "height": null,
+    "origin": "self"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:莱拉的银辉长枪",
+   "name": "莱拉的银辉长枪",
+   "en": "Laeral's Silver Lance",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦英雄/第五章/新法术.htm",
+   "alsoIn": [],
+   "summary": "120尺长直线内的生物进行力量豁免，失败受3d10力场伤害并陷入倒地，成功减半",
+   "uncertain": [],
+   "level": 3,
+   "school": "塑能",
+   "classes": [
+    "牧师",
+    "术士",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一枚价值250+GP的银针",
+    "mCost": 250,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "str",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "3d10",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "line",
+    "size": 120,
+    "width": 5,
+    "height": null,
+    "origin": "self"
+   },
+   "targets": null,
+   "conditions": [
+    "prone"
+   ],
+   "upcast": {
+    "perLevelDice": "1d10",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d10",
+    "step": 1,
+    "from": 3
+   },
+   "cantripScaling": null,
+   "lasting": false
+  }
+ ]
+}

@@ -1,0 +1,987 @@
+{
+ "category": "feature",
+ "type": "子职特性",
+ "source": "鸦阁魔域：魔障深藏",
+ "generated": "2026-11-09",
+ "count": 37,
+ "entries": [
+  {
+   "id": "feature:幽邃戍卫·亘古凶威",
+   "name": "亘古凶威",
+   "en": "Ancient Might",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/游侠-幽邃戍卫.htm",
+   "alsoIn": [],
+   "summary": "命中恐慌生物额外伤害加感知调整值；变身中生命降至0未死时生命变为2×游侠等级；免疫力竭。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "幽邃戍卫"
+   },
+   "level": 15,
+   "action": "special",
+   "mechanics": "命中恐慌生物额外伤害加感知调整值；变身中生命降至0未死时生命变为2×游侠等级；免疫力竭。",
+   "uses": {
+    "count": "1(耗四环以上法术位可再用)",
+    "recharge": "long"
+   },
+   "conditions": [
+    "frightened"
+   ]
+  },
+  {
+   "id": "feature:鬼魅·亡者余声",
+   "name": "亡者余声",
+   "en": "Whispers of the Dead",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/游荡者-鬼魅.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "每次短休或长休可选一项未熟练的技能或工具获得熟练，换选时失去原选择。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "鬼魅"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "每次短休或长休可选一项未熟练的技能或工具获得熟练，换选时失去原选择。"
+  },
+  {
+   "id": "feature:幽影术法·凶兆之兽",
+   "name": "凶兆之兽",
+   "en": "Beasts of Ill Omen",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/术士-幽影术法.htm",
+   "alsoIn": [
+    "珊娜萨的万事指南"
+   ],
+   "summary": "花3术法点免费附赠动作施放野兽召唤术(影子野兽)；其5尺内敌人对你法术的豁免有劣势；可无需专注。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "幽影术法",
+    "subclassAliases": [
+     "幽影魔法"
+    ]
+   },
+   "level": 6,
+   "action": "bonus",
+   "mechanics": "花3术法点免费附赠动作施放野兽召唤术(影子野兽)；其5尺内敌人对你法术的豁免有劣势；可无需专注。",
+   "resource": "术法点"
+  },
+  {
+   "id": "feature:坟墓领域·司命神使",
+   "name": "司命神使",
+   "en": "Divine Reaper",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/牧师-坟墓领域.htm",
+   "alsoIn": [
+    "珊娜萨的万事指南"
+   ],
+   "summary": "单目标五环以下死灵法术可耗引导神力多选一目标；60尺内敌人死亡时你或盟友恢复2×牧师等级生命值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "坟墓领域"
+   },
+   "level": 17,
+   "action": "special",
+   "mechanics": "单目标五环以下死灵法术可耗引导神力多选一目标；60尺内敌人死亡时你或盟友恢复2×牧师等级生命值。",
+   "uses": {
+    "count": "1(耗六环以上法术位可再用)",
+    "recharge": "short"
+   },
+   "heal": "2×牧师等级"
+  },
+  {
+   "id": "feature:死灵宗主·坟冢之触",
+   "name": "坟冢之触",
+   "en": "Grave Touched",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/魔契师-死灵宗主.htm",
+   "alsoIn": [
+    "范·里希腾的鸦阁魔域指南"
+   ],
+   "summary": "黯蚀伤害无视抗性，可把法术伤害改为黯蚀；战栗形态命中时黯蚀伤害多骰一枚；不会因脱水、饥饿、窒息力竭，不需睡眠。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "死灵宗主"
+   },
+   "level": 6,
+   "action": "passive",
+   "mechanics": "黯蚀伤害无视抗性，可把法术伤害改为黯蚀；战栗形态命中时黯蚀伤害多骰一枚；不会因脱水、饥饿、窒息力竭，不需睡眠。"
+  },
+  {
+   "id": "feature:坟墓领域·坟墓领域法术",
+   "name": "坟墓领域法术",
+   "en": "Grave Domain Spells",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/牧师-坟墓领域.htm",
+   "alsoIn": [],
+   "summary": "恒备法术：维生术、侦测善恶、虚假生命、遗体防腐、衰弱射线、回生术、汲血之触、枯萎术、防死结界等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "坟墓领域"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "恒备法术：维生术、侦测善恶、虚假生命、遗体防腐、衰弱射线、回生术、汲血之触、枯萎术、防死结界等。"
+  },
+  {
+   "id": "feature:鬼魅·墓冢哀嚎",
+   "name": "墓冢哀嚎",
+   "en": "Wails from the Grave",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/游荡者-鬼魅.htm",
+   "alsoIn": [],
+   "summary": "偷袭后，30尺内第二生物受半数偷袭骰(向上取整)总和的黯蚀伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "鬼魅"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "偷袭后，30尺内第二生物受半数偷袭骰(向上取整)总和的黯蚀伤害。",
+   "uses": {
+    "count": "敏捷调整值(至少1)",
+    "recharge": "long"
+   },
+   "damage": [
+    {
+     "dice": "偷袭骰一半",
+     "type": "黯蚀"
+    }
+   ]
+  },
+  {
+   "id": "feature:幽影术法·幽冥形态",
+   "name": "幽冥形态",
+   "en": "Umbral Form",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/术士-幽影术法.htm",
+   "alsoIn": [
+    "珊娜萨的万事指南"
+   ],
+   "summary": "先天术法期间化为幽影之躯：可穿过生物与物件(回合末在内受1d10力场)，除力场、光耀外所有伤害抗性。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "幽影术法",
+    "subclassAliases": [
+     "幽影魔法"
+    ]
+   },
+   "level": 18,
+   "action": "special",
+   "mechanics": "先天术法期间化为幽影之躯：可穿过生物与物件(回合末在内受1d10力场)，除力场、光耀外所有伤害抗性。",
+   "uses": {
+    "count": "1(耗6术法点可再用)",
+    "recharge": "long"
+   },
+   "damage": [
+    {
+     "dice": "1d10",
+     "type": "力场"
+    }
+   ]
+  },
+  {
+   "id": "feature:幽影术法·幽影之威",
+   "name": "幽影之威",
+   "en": "Power of Shadow",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/术士-幽影术法.htm",
+   "alsoIn": [
+    "珊娜萨的万事指南"
+   ],
+   "summary": "120尺黑暗视觉与10尺盲视，可看透自己造的黑暗；生命将降为0时魅力豁免(DC5+伤害)，成功则生命变为魅力调整值+术士等级。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "幽影术法",
+    "subclassAliases": [
+     "幽影魔法"
+    ]
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "120尺黑暗视觉与10尺盲视，可看透自己造的黑暗；生命将降为0时魅力豁免(DC5+伤害)，成功则生命变为魅力调整值+术士等级。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   },
+   "save": {
+    "ability": "cha",
+    "dc": "5+所受伤害"
+   }
+  },
+  {
+   "id": "feature:幽影术法·幽影法术",
+   "name": "幽影法术",
+   "en": "Shadow Spells",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/术士-幽影术法.htm",
+   "alsoIn": [],
+   "summary": "恒备法术：灾祸术、致伤术、黑暗术、行动无踪、哈达之欲、回避侦测、高等隐形术、魅影杀手、疫病术、造物术。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "幽影术法",
+    "subclassAliases": [
+     "幽影魔法"
+    ]
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "恒备法术：灾祸术、致伤术、黑暗术、行动无踪、哈达之欲、回避侦测、高等隐形术、魅影杀手、疫病术、造物术。"
+  },
+  {
+   "id": "feature:幽影术法·幽影漫步",
+   "name": "幽影漫步",
+   "en": "Shadow Walk",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/术士-幽影术法.htm",
+   "alsoIn": [
+    "珊娜萨的万事指南"
+   ],
+   "summary": "微光或黑暗中附赠动作传送120尺到同样昏暗的可见空位。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "幽影术法",
+    "subclassAliases": [
+     "幽影魔法"
+    ]
+   },
+   "level": 14,
+   "action": "bonus",
+   "mechanics": "微光或黑暗中附赠动作传送120尺到同样昏暗的可见空位。"
+  },
+  {
+   "id": "feature:鬼魅·幽灵漫步",
+   "name": "幽灵漫步",
+   "en": "Ghost Walk",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/游荡者-鬼魅.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "附赠动作10分钟：10尺飞行，被攻击检定有劣势，可穿过生物物件(回合末在内受1d10力场)；长休或毁一饰品恢复。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "鬼魅"
+   },
+   "level": 13,
+   "action": "bonus",
+   "mechanics": "附赠动作10分钟：10尺飞行，被攻击检定有劣势，可穿过生物物件(回合末在内受1d10力场)；长休或毁一饰品恢复。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   },
+   "damage": [
+    {
+     "dice": "1d10",
+     "type": "力场"
+    }
+   ]
+  },
+  {
+   "id": "feature:幽邃戍卫·幽邃戍卫魔法",
+   "name": "幽邃戍卫魔法",
+   "en": "Hollow Warden Magic",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/游侠-幽邃戍卫.htm",
+   "alsoIn": [],
+   "summary": "恒备法术：激愤斩、变身术、魅影驹、支配野兽、钢风斩。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "幽邃戍卫"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "恒备法术：激愤斩、变身术、魅影驹、支配野兽、钢风斩。"
+  },
+  {
+   "id": "feature:苏生师·强化苏生",
+   "name": "强化苏生",
+   "en": "Improved Reanimation",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/奇械师-苏生师.htm",
+   "alsoIn": [],
+   "summary": "伴兵自爆伤害升为4d4，其暗蚀伤害无视抗性。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "苏生师"
+   },
+   "level": 9,
+   "action": "passive",
+   "mechanics": "伴兵自爆伤害升为4d4，其暗蚀伤害无视抗性。",
+   "damage": [
+    {
+     "dice": "4d4",
+     "type": "黯蚀"
+    }
+   ]
+  },
+  {
+   "id": "feature:精魂学院·彼岸之魂",
+   "name": "彼岸之魂",
+   "en": "Spirits from Beyond",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/吟游诗人-精魂学院.htm",
+   "alsoIn": [
+    "范·里希腾的鸦阁魔域指南"
+   ],
+   "summary": "给予激励骰时掷骰通灵一位随机精魂(彼岸之魂表)，或花一次激励选定精魂；魔法动作可释放其效果。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "精魂学院"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "给予激励骰时掷骰通灵一位随机精魂(彼岸之魂表)，或花一次激励选定精魂；魔法动作可释放其效果。",
+   "dice": "吟游激励骰",
+   "resource": "吟游激励"
+  },
+  {
+   "id": "feature:坟墓领域·往墓之途",
+   "name": "往墓之途",
+   "en": "Path to the Grave",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/牧师-坟墓领域.htm",
+   "alsoIn": [
+    "珊娜萨的万事指南"
+   ],
+   "summary": "附赠动作消耗引导神力诅咒30尺内生物：攻击与豁免劣势；你或盟友命中时可终止诅咒加牧师等级黯蚀或光耀伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "坟墓领域"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "附赠动作消耗引导神力诅咒30尺内生物：攻击与豁免劣势；你或盟友命中时可终止诅咒加牧师等级黯蚀或光耀伤害。",
+   "damage": [
+    {
+     "dice": "牧师等级",
+     "type": "黯蚀"
+    }
+   ],
+   "resource": "引导神力"
+  },
+  {
+   "id": "feature:苏生师·怪异改造",
+   "name": "怪异改造",
+   "en": "Strange Modifications",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/奇械师-苏生师.htm",
+   "alsoIn": [],
+   "summary": "创造伴兵时选一项改造：魔导(以伴兵为施法发出点并加伤害)或凶残(挥击伤害升为1d6)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "苏生师"
+   },
+   "level": 5,
+   "action": "special",
+   "mechanics": "创造伴兵时选一项改造：魔导(以伴兵为施法发出点并加伤害)或凶残(挥击伤害升为1d6)。"
+  },
+  {
+   "id": "feature:死灵宗主·战栗形态",
+   "name": "战栗形态",
+   "en": "Form of Dread",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/魔契师-死灵宗主.htm",
+   "alsoIn": [
+    "范·里希腾的鸦阁魔域指南"
+   ],
+   "summary": "附赠动作1分钟：获得1d10+魔契师等级临时生命值、免疫恐慌，命中时可令目标感知豁免失败恐慌。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "死灵宗主"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "附赠动作1分钟：获得1d10+魔契师等级临时生命值、免疫恐慌，命中时可令目标感知豁免失败恐慌。",
+   "uses": {
+    "count": "魅力调整值(至少1)",
+    "recharge": "long"
+   },
+   "save": {
+    "ability": "wis",
+    "dc": "法术豁免DC"
+   },
+   "heal": "1d10+魔契师等级(临时)",
+   "conditions": [
+    "frightened"
+   ]
+  },
+  {
+   "id": "feature:幽邃戍卫·枯朽残虐",
+   "name": "枯朽残虐",
+   "en": "Rot and Violence",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/游侠-幽邃戍卫.htm",
+   "alsoIn": [],
+   "summary": "变身增益：豁免失败者到你下回合不能恢复生命值和反应；武器命中可额外应用削弱或缓速精通。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "幽邃戍卫"
+   },
+   "level": 11,
+   "action": "passive",
+   "mechanics": "变身增益：豁免失败者到你下回合不能恢复生命值和反应；武器命中可额外应用削弱或缓速精通。"
+  },
+  {
+   "id": "feature:鬼魅·死亡之友",
+   "name": "死亡之友",
+   "en": "Death's Friend",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/游荡者-鬼魅.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "墓冢哀嚎同时伤害两个目标；掷先攻时若无灵魂饰品则获得一件。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "鬼魅"
+   },
+   "level": 17,
+   "action": "passive",
+   "mechanics": "墓冢哀嚎同时伤害两个目标；掷先攻时若无灵魂饰品则获得一件。"
+  },
+  {
+   "id": "feature:鬼魅·死亡之声",
+   "name": "死亡之声",
+   "en": "Voice of Death",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/游荡者-鬼魅.htm",
+   "alsoIn": [],
+   "summary": "免费施放死者交谈(敏捷为属性)，可以灵魂饰品为目标；短休或长休恢复。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "鬼魅"
+   },
+   "level": 9,
+   "action": "special",
+   "mechanics": "免费施放死者交谈(敏捷为属性)，可以灵魂饰品为目标；短休或长休恢复。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   }
+  },
+  {
+   "id": "feature:死灵宗主·死灵法术",
+   "name": "死灵法术",
+   "en": "Undead Spells",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/魔契师-死灵宗主.htm",
+   "alsoIn": [
+    "范·里希腾的鸦阁魔域指南"
+   ],
+   "summary": "恒备法术：灾祸术、致病射线、目盲/耳聋术、魅影之力、死者交谈、亡灵召唤术、高等隐形术、防活物护罩、死云术等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "死灵宗主"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "恒备法术：灾祸术、致病射线、目盲/耳聋术、魅影之力、死者交谈、亡灵召唤术、高等隐形术、防活物护罩、死云术等。"
+  },
+  {
+   "id": "feature:死灵宗主·死疽躯壳",
+   "name": "死疽躯壳",
+   "en": "Necrotic Husk",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/魔契师-死灵宗主.htm",
+   "alsoIn": [],
+   "summary": "黯蚀抗性(战栗形态免疫)；生命降为0未死时爆发30尺死气，体质豁免失败2d10+魅力黯蚀，随后生命变为2×等级并获一级力竭。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "死灵宗主"
+   },
+   "level": 10,
+   "action": "reaction",
+   "mechanics": "黯蚀抗性(战栗形态免疫)；生命降为0未死时爆发30尺死气，体质豁免失败2d10+魅力黯蚀，随后生命变为2×等级并获一级力竭。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   },
+   "save": {
+    "ability": "con",
+    "dc": "法术豁免DC"
+   },
+   "damage": [
+    {
+     "dice": "2d10+魅力调整值",
+     "type": "黯蚀"
+    }
+   ]
+  },
+  {
+   "id": "feature:坟墓领域·死门哨卫",
+   "name": "死门哨卫",
+   "en": "Sentinel at Death's Door",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/牧师-坟墓领域.htm",
+   "alsoIn": [
+    "珊娜萨的万事指南"
+   ],
+   "summary": "你或60尺内浴血生物被命中时反应使伤害减半，并取消重击效应。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "坟墓领域"
+   },
+   "level": 6,
+   "action": "reaction",
+   "mechanics": "你或60尺内浴血生物被命中时反应使伤害减半，并取消重击效应。",
+   "uses": {
+    "count": "感知调整值(至少1)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:幽邃戍卫·渴血予力",
+   "name": "渴血予力",
+   "en": "Hungering Might",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/游侠-幽邃戍卫.htm",
+   "alsoIn": [],
+   "summary": "体质豁免加感知调整值；变身中浴血时命中生物，恢复1d10+感知调整值生命值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "幽邃戍卫"
+   },
+   "level": 7,
+   "action": "passive",
+   "mechanics": "体质豁免加感知调整值；变身中浴血时命中生物，恢复1d10+感知调整值生命值。",
+   "heal": "1d10+感知调整值"
+  },
+  {
+   "id": "feature:坟墓领域·生死轮回",
+   "name": "生死轮回",
+   "en": "Circle of Mortality",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/牧师-坟墓领域.htm",
+   "alsoIn": [
+    "珊娜萨的万事指南"
+   ],
+   "summary": "每回合一次对未满血生物造成伤害时额外1d4黯蚀(11级1d6)；可附赠动作施放维生术；治疗0生命值者时骰子取最大值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "坟墓领域"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "每回合一次对未满血生物造成伤害时额外1d4黯蚀(11级1d6)；可附赠动作施放维生术；治疗0生命值者时骰子取最大值。",
+   "dice": [
+    [
+     3,
+     "1d4"
+    ],
+    [
+     11,
+     "1d6"
+    ]
+   ],
+   "damage": [
+    {
+     "dice": "1d4",
+     "type": "黯蚀"
+    }
+   ]
+  },
+  {
+   "id": "feature:苏生师·精纯苏生",
+   "name": "精纯苏生",
+   "en": "Refined Reanimation",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/奇械师-苏生师.htm",
+   "alsoIn": [],
+   "summary": "免费施放一次死者复活；伴兵受伤时反应可汲取其当前生命值治疗自己；伴兵可获三项改造。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "苏生师"
+   },
+   "level": 15,
+   "action": "special",
+   "mechanics": "免费施放一次死者复活；伴兵受伤时反应可汲取其当前生命值治疗自己；伴兵可获三项改造。",
+   "uses": {
+    "count": "1(复活)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:苏生师·苏生伴兵",
+   "name": "苏生伴兵",
+   "en": "Reanimated Companion",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/奇械师-苏生师.htm",
+   "alsoIn": [],
+   "summary": "魔法动作用工具造出苏生伴兵(AC10+智力，生命值5×等级，暗蚀挥击1d4+智力使目标无法借机)，长休消失，死亡时自爆2d4暗蚀。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "苏生师"
+   },
+   "level": 3,
+   "action": "action",
+   "mechanics": "魔法动作用工具造出苏生伴兵(AC10+智力，生命值5×等级，暗蚀挥击1d4+智力使目标无法借机)，长休消失，死亡时自爆2d4暗蚀。",
+   "uses": {
+    "count": "1(耗法术位可再造)",
+    "recharge": "long"
+   },
+   "save": {
+    "ability": "dex",
+    "dc": "法术豁免DC"
+   },
+   "damage": [
+    {
+     "dice": "1d4+智力调整值",
+     "type": "黯蚀"
+    },
+    {
+     "dice": "2d4",
+     "type": "黯蚀"
+    }
+   ]
+  },
+  {
+   "id": "feature:苏生师·苏生师技艺",
+   "name": "苏生师技艺",
+   "en": "Reanimator's Skill Set",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/奇械师-苏生师.htm",
+   "alsoIn": [],
+   "summary": "维生术可改为电击回生：目标恢复等于奇械师等级的生命值，10尺内所选生物敏捷豁免失败受2d4闪电伤害；获得炼金工具熟练。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "苏生师"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "维生术可改为电击回生：目标恢复等于奇械师等级的生命值，10尺内所选生物敏捷豁免失败受2d4闪电伤害；获得炼金工具熟练。",
+   "uses": {
+    "count": "智力调整值",
+    "recharge": "long"
+   },
+   "dice": [
+    [
+     3,
+     "2d4"
+    ],
+    [
+     11,
+     "3d4"
+    ],
+    [
+     17,
+     "4d4"
+    ]
+   ],
+   "save": {
+    "ability": "dex",
+    "dc": "法术豁免DC"
+   },
+   "damage": [
+    {
+     "dice": "2d4",
+     "type": "闪电"
+    }
+   ],
+   "heal": "奇械师等级"
+  },
+  {
+   "id": "feature:苏生师·苏生师法术",
+   "name": "苏生师法术",
+   "en": "Reanimator Spells",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/奇械师-苏生师.htm",
+   "alsoIn": [],
+   "summary": "恒备法术：维生术、虚假生命、巫术箭、目盲/耳聋术、强化属性、活化死尸、闪电束、枯萎术、防死结界等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "苏生师"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "恒备法术：维生术、虚假生命、巫术箭、目盲/耳聋术、强化属性、活化死尸、闪电束、枯萎术、防死结界等。"
+  },
+  {
+   "id": "feature:幽邃戍卫·荒野之怒",
+   "name": "荒野之怒",
+   "en": "Wrath of the Wild",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/游侠-幽邃戍卫.htm",
+   "alsoIn": [],
+   "summary": "消耗一次宿敌次数变身1分钟：AC+1(11级+2)，5尺内生物伤害你或盟友后可借机攻击，变身时周围生物受悚然灵光影响。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "幽邃戍卫"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "消耗一次宿敌次数变身1分钟：AC+1(11级+2)，5尺内生物伤害你或盟友后可借机攻击，变身时周围生物受悚然灵光影响。",
+   "save": {
+    "ability": "wis",
+    "dc": "法术豁免DC"
+   },
+   "resource": "宿敌"
+  },
+  {
+   "id": "feature:死灵宗主·超凡战栗",
+   "name": "超凡战栗",
+   "en": "Superior Dread",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/魔契师-死灵宗主.htm",
+   "alsoIn": [],
+   "summary": "战栗形态中获得钝击/穿刺/挥砍抗性、等同速度的飞行速度，可免除咒法与死灵魔契师法术的非昂贵成分。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "死灵宗主"
+   },
+   "level": 14,
+   "action": "passive",
+   "mechanics": "战栗形态中获得钝击/穿刺/挥砍抗性、等同速度的飞行速度，可免除咒法与死灵魔契师法术的非昂贵成分。"
+  },
+  {
+   "id": "feature:精魂学院·超能通灵",
+   "name": "超能通灵",
+   "en": "Empowered Channeling",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/吟游诗人-精魂学院.htm",
+   "alsoIn": [
+    "范·里希腾的鸦阁魔域指南"
+   ],
+   "summary": "法术位伤害或治疗法术每回合一次加d6；恒备灵体卫士，可免费施放一次并令灵体光环内盟友获半身掩护。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "精魂学院"
+   },
+   "level": 6,
+   "action": "special",
+   "mechanics": "法术位伤害或治疗法术每回合一次加d6；恒备灵体卫士，可免费施放一次并令灵体光环内盟友获半身掩护。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   },
+   "dice": "1d6"
+  },
+  {
+   "id": "feature:精魂学院·通灵师",
+   "name": "通灵师",
+   "en": "Channeler",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/吟游诗人-精魂学院.htm",
+   "alsoIn": [
+    "范·里希腾的鸦阁魔域指南"
+   ],
+   "summary": "学会神导术(施法距离60尺)；获得纸牌赌具熟练，可用纸牌等作吟游诗人法器。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "精魂学院"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "学会神导术(施法距离60尺)；获得纸牌赌具熟练，可用纸牌等作吟游诗人法器。"
+  },
+  {
+   "id": "feature:鬼魅·逝者遗物",
+   "name": "逝者遗物",
+   "en": "Tokens of the Departed",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/游荡者-鬼魅.htm",
+   "alsoIn": [
+    "塔莎的万事坩埚"
+   ],
+   "summary": "获得两件灵魂饰品：摧毁可免费触发墓冢哀嚎；持有时死亡豁免与体质豁免有优势；也可用于灵魂问询。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "鬼魅"
+   },
+   "level": 9,
+   "action": "special",
+   "mechanics": "获得两件灵魂饰品：摧毁可免费触发墓冢哀嚎；持有时死亡豁免与体质豁免有优势；也可用于灵魂问询。",
+   "uses": {
+    "count": "2件饰品",
+    "recharge": null
+   }
+  },
+  {
+   "id": "feature:精魂学院·非凡联结",
+   "name": "非凡联结",
+   "en": "Mystical Connection",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/吟游诗人-精魂学院.htm",
+   "alsoIn": [
+    "范·里希腾的鸦阁魔域指南"
+   ],
+   "summary": "掷彼岸之魂表时可掷两次选其一；点数相同则任选一项效应。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "精魂学院"
+   },
+   "level": 14,
+   "action": "passive",
+   "mechanics": "掷彼岸之魂表时可掷两次选其一；点数相同则任选一项效应。"
+  },
+  {
+   "id": "feature:苏生师·骇惧改造",
+   "name": "骇惧改造",
+   "en": "Macabre Modifications",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/子职/奇械师-苏生师.htm",
+   "alsoIn": [],
+   "summary": "伴兵获得两项改造，并可选肿胀(变大型、推离)、枯瘦(速度45尺、攀爬、令生物恐慌)、湿滑等。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "奇械师",
+    "subclass": "苏生师"
+   },
+   "level": 9,
+   "action": "special",
+   "mechanics": "伴兵获得两项改造，并可选肿胀(变大型、推离)、枯瘦(速度45尺、攀爬、令生物恐慌)、湿滑等。",
+   "conditions": [
+    "frightened"
+   ]
+  }
+ ]
+}

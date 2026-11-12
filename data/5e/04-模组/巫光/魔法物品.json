@@ -1,0 +1,420 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "巫光",
+ "generated": "2026-11-09",
+ "count": 12,
+ "entries": [
+  {
+   "id": "item:伊格薇尔伏的坩埚",
+   "name": "伊格薇尔伏的坩埚",
+   "en": "Iggwilv's Cauldron",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/巫光/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，神器，需施法者同调。3充能；DC15体质豁免；词条：同调、随机属性、金坩埚、铁坩埚",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "神器",
+   "attunement": {
+    "required": true,
+    "by": "施法者"
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": null
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "con"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:伐木者之斧",
+   "name": "伐木者之斧",
+   "en": "Woodcutter's Axe",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/巫光/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "武器（巨斧），珍稀。攻击+1、伤害+1；额外2d6挥砍",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "巨斧",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "2d6",
+     "type": "挥砍",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:优势药水",
+   "name": "优势药水",
+   "en": "Potion of Advantage",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/巫光/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "药水，非普通。消耗品",
+   "uncertain": [],
+   "itemType": "药水",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:咔吱咔嚓",
+   "name": "咔吱咔嚓",
+   "en": "Snicker-Snack",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/巫光/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "武器（巨剑），传说，需一名非邪恶阵营的生物同调。攻击+3、伤害+3；抗挥砍；免疫挥砍；词条：智能",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "巨剑",
+   "rarity": "传说",
+   "attunement": {
+    "required": true,
+    "by": "一名非邪恶阵营的生物"
+   },
+   "bonus": {
+    "attack": 3,
+    "damage": 3
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [
+    "挥砍"
+   ],
+   "immune": [
+    "挥砍"
+   ],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:摇曳荷叶",
+   "name": "摇曳荷叶",
+   "en": "Bobbing Lily Pad",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/巫光/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:皮克精之尘",
+   "name": "皮克精之尘",
+   "en": "Pixie Dust",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/巫光/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:色彩玫瑰",
+   "name": "色彩玫瑰",
+   "en": "Chromatic Rose",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/巫光/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀。DC15体质豁免",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "con"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:裁影之剪",
+   "name": "裁影之剪",
+   "en": "Scissors of Shadow Snipping",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/巫光/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需一个妖精或施法者同调。DC15魅力豁免；涉及昏迷",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "一个妖精或施法者"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "cha"
+   },
+   "conditions": [
+    "unconscious"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:锈蚀之尘",
+   "name": "锈蚀之尘",
+   "en": "Dust of Corrosion",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/巫光/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通。DC13体质豁免",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "4d8",
+     "type": "黯蚀"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 13,
+    "ability": "con"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:锻钢",
+   "name": "锻钢",
+   "en": "Steel",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/巫光/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "武器（长剑），极珍稀，需一名善良阵营的生物同调。攻击+2、伤害+2；可施放回生术；词条：回生、智能",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "长剑",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true,
+    "by": "一名善良阵营的生物"
+   },
+   "bonus": {
+    "attack": 2,
+    "damage": 2
+   },
+   "charges": null,
+   "spells": [
+    {
+     "name": "回生术",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:飞行扑翼机",
+   "name": "飞行扑翼机",
+   "en": "Ornithopter of Flying",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/巫光/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:魔能法杖",
+   "name": "魔能法杖",
+   "en": "Eldritch Staff",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/巫光/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "法杖，极珍稀，需同调。攻击+1、伤害+1；10充能，1d6+4 每日黎明恢复；额外1d8闪电；词条：魔能攻击、魔能逃逸",
+   "uncertain": [],
+   "itemType": "法杖",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": {
+    "max": "10",
+    "regain": "1d6+4 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "1d8",
+     "type": "闪电",
+     "when": "额外"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

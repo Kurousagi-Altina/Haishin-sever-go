@@ -1,0 +1,423 @@
+{
+ "category": "spell",
+ "type": "法术",
+ "source": "艾奎兹玄有限责任公司",
+ "generated": "2026-11-09",
+ "count": 7,
+ "entries": [
+  {
+   "id": "spell:励志演讲",
+   "name": "励志演讲",
+   "en": "Motivational Speech",
+   "aliases": [],
+   "source": "艾奎兹玄有限责任公司",
+   "section": "setting",
+   "path": "topics/艾奎兹玄有限责任公司/玩家选项/新法术详述.htm",
+   "alsoIn": [],
+   "summary": "至多5名生物获得5临时生命值和感知豁免优势，受击后下次攻击优势。",
+   "uncertain": [],
+   "level": 3,
+   "school": "惑控",
+   "classes": [
+    "吟游诗人",
+    "牧师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "minute",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "1小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": "5",
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 0,
+    "text": "每高1环：临时生命值+5",
+    "step": 1,
+    "from": 3,
+    "perLevelFlat": 5
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:吉姆的发光硬币",
+   "name": "吉姆的发光硬币",
+   "en": "Jim's Glowing Coin",
+   "aliases": [],
+   "source": "艾奎兹玄有限责任公司",
+   "section": "setting",
+   "path": "topics/艾奎兹玄有限责任公司/玩家选项/新法术详述.htm",
+   "alsoIn": [],
+   "summary": "硬币令30尺内感知豁免失败者分心，观察与先攻检定劣势。",
+   "uncertain": [],
+   "level": 2,
+   "school": "惑控",
+   "classes": [
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": "一枚硬币",
+    "mCost": 0,
+    "mConsumed": false,
+    "r": "2gp"
+   },
+   "duration": {
+    "text": "1分钟",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": "wis",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:吉姆的魔法飞弹",
+   "name": "吉姆的魔法飞弹",
+   "en": "Jim's Magic Missile",
+   "aliases": [],
+   "source": "艾奎兹玄有限责任公司",
+   "section": "setting",
+   "path": "topics/艾奎兹玄有限责任公司/玩家选项/新法术详述.htm",
+   "alsoIn": [],
+   "summary": "三枚飞镖各进行远程法术攻击，命中2d4力场；骰出1则全部反噬到你。",
+   "uncertain": [],
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 120
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false,
+    "r": "1gp"
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": "ranged",
+   "save": null,
+   "onSave": null,
+   "damage": [
+    {
+     "dice": "2d4",
+     "type": "力场"
+    },
+    {
+     "dice": "5d4",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 1,
+    "text": "每高1环：目标/数量+1",
+    "step": 1,
+    "from": 1
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:巧舌如簧",
+   "name": "巧舌如簧",
+   "en": "Gift of Gab",
+   "aliases": [],
+   "source": "艾奎兹玄有限责任公司",
+   "section": "setting",
+   "path": "topics/艾奎兹玄有限责任公司/玩家选项/新法术详述.htm",
+   "alsoIn": [],
+   "summary": "反应：5尺内你选的生物忘掉你最近6秒说过的话，改记住法术言语成分。",
+   "uncertain": [],
+   "level": 2,
+   "school": "惑控",
+   "classes": [
+    "吟游诗人",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "reaction",
+    "reactionTrigger": "当你与另一个生物说话时采取"
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false,
+    "r": "2gp"
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:快速交友",
+   "name": "快速交友",
+   "en": "Fast Friends",
+   "aliases": [],
+   "source": "艾奎兹玄有限责任公司",
+   "section": "setting",
+   "path": "topics/艾奎兹玄有限责任公司/玩家选项/新法术详述.htm",
+   "alsoIn": [],
+   "summary": "目标进行感知豁免，失败陷入魅惑；需专注",
+   "uncertain": [],
+   "level": 3,
+   "school": "惑控",
+   "classes": [
+    "吟游诗人",
+    "牧师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 30
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1小时",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "wis",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [
+    "charmed"
+   ],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 1,
+    "text": "每高1环：目标/数量+1",
+    "step": 1,
+    "from": 3
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:扭曲价值",
+   "name": "扭曲价值",
+   "en": "Distort Value",
+   "aliases": [],
+   "source": "艾奎兹玄有限责任公司",
+   "section": "setting",
+   "path": "topics/艾奎兹玄有限责任公司/玩家选项/新法术详述.htm",
+   "alsoIn": [],
+   "summary": "把边长1尺内的物件看起来价值翻倍或减半，调查检定对抗DC可识破。",
+   "uncertain": [],
+   "level": 1,
+   "school": "幻术",
+   "classes": [
+    "吟游诗人",
+    "术士",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "minute",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "touch",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": false,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "8小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 0,
+    "text": "每高1环：物件最大边长+1尺",
+    "step": 1,
+    "from": 1
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:鼓动贪欲",
+   "name": "鼓动贪欲",
+   "en": "Incite Greed",
+   "aliases": [],
+   "source": "艾奎兹玄有限责任公司",
+   "section": "setting",
+   "path": "topics/艾奎兹玄有限责任公司/玩家选项/新法术详述.htm",
+   "alsoIn": [],
+   "summary": "目标进行感知豁免，失败陷入魅惑；需专注",
+   "uncertain": [],
+   "level": 3,
+   "school": "惑控",
+   "classes": [
+    "牧师",
+    "魔契师",
+    "法师"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 30
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一块至少价值50gp的宝石",
+    "mCost": 50,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "wis",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [
+    "charmed"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  }
+ ]
+}

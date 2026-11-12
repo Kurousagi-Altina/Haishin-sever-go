@@ -1,0 +1,3235 @@
+{
+ "category": "feature",
+ "type": "子职特性",
+ "source": "珊娜萨的万事指南",
+ "generated": "2026-11-09",
+ "count": 136,
+ "entries": [
+  {
+   "id": "feature:武士·不懈",
+   "name": "不懈",
+   "en": "Tireless Spirit",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/武士.html",
+   "alsoIn": [],
+   "summary": "掷先攻时若战意用完，恢复一次使用次数。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "武士"
+   },
+   "level": 10,
+   "action": "passive",
+   "mechanics": "掷先攻时若战意用完，恢复一次使用次数。"
+  },
+  {
+   "id": "feature:征服之誓·不移胜者",
+   "name": "不移胜者",
+   "en": "Invincible Conqueror",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/圣武士/征服之誓.html",
+   "alsoIn": [],
+   "summary": "动作化身1分钟：所有伤害抗性，攻击动作多一次攻击，近战19-20重击；长休恢复。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "征服之誓"
+   },
+   "level": 20,
+   "action": "action",
+   "mechanics": "动作化身1分钟：所有伤害抗性，攻击动作多一次攻击，近战19-20重击；长休恢复。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:剑圣宗·人剑合一",
+   "name": "人剑合一",
+   "en": "One with the Blade",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/武僧/剑圣宗.html",
+   "alsoIn": [],
+   "summary": "剑圣武器视为魔法；每回合一次命中时花1点气，额外造成武艺骰伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "剑圣宗"
+   },
+   "level": 6,
+   "action": "special",
+   "mechanics": "剑圣武器视为魔法；每回合一次命中时花1点气，额外造成武艺骰伤害。",
+   "dice": "武艺骰",
+   "resource": "气"
+  },
+  {
+   "id": "feature:先祖守卫道途·仇魂先祖",
+   "name": "仇魂先祖",
+   "en": "Vengeful Ancestors",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/野蛮人/先祖守卫道途.html",
+   "alsoIn": [],
+   "summary": "精魂之盾减免伤害时，攻击者受等同于减免量的力场伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "先祖守卫道途"
+   },
+   "level": 14,
+   "action": "passive",
+   "mechanics": "精魂之盾减免伤害时，攻击者受等同于减免量的力场伤害。",
+   "damage": [
+    {
+     "dice": "等同精魂之盾减免量",
+     "type": "力场"
+    }
+   ]
+  },
+  {
+   "id": "feature:边界行者·以太漫步",
+   "name": "以太漫步",
+   "en": "Ethereal Step",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游侠/边界行者.html",
+   "alsoIn": [],
+   "summary": "附赠动作免费施放以太化，在当前回合结束时结束。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "边界行者"
+   },
+   "level": 7,
+   "action": "bonus",
+   "mechanics": "附赠动作免费施放以太化，在当前回合结束时结束。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   }
+  },
+  {
+   "id": "feature:斥候·伏击大师",
+   "name": "伏击大师",
+   "en": "Ambush Master",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/斥候.html",
+   "alsoIn": [],
+   "summary": "先攻检定有优势；战斗第一轮被你击中的生物受到的攻击都有优势，至你下回合开始。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "斥候"
+   },
+   "level": 13,
+   "action": "passive",
+   "mechanics": "先攻检定有优势；战斗第一轮被你击中的生物受到的攻击都有优势，至你下回合开始。"
+  },
+  {
+   "id": "feature:神圣之魂·众神眷恩",
+   "name": "众神眷恩",
+   "en": "Favored by the Gods",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/术士/神圣之魂.html",
+   "alsoIn": [],
+   "summary": "豁免失败或攻击失手时掷2d4加到检定上，可能改变结果。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "神圣之魂"
+   },
+   "level": 1,
+   "action": "special",
+   "mechanics": "豁免失败或攻击失手时掷2d4加到检定上，可能改变结果。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   },
+   "dice": "2d4"
+  },
+  {
+   "id": "feature:斥候·优异灵活",
+   "name": "优异灵活",
+   "en": "Superior Mobility",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/斥候.html",
+   "alsoIn": [],
+   "summary": "步行速度+10尺，攀爬/游泳速度同样增加。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "斥候"
+   },
+   "level": 9,
+   "action": "passive",
+   "mechanics": "步行速度+10尺，攀爬/游泳速度同样增加。"
+  },
+  {
+   "id": "feature:风流剑客·优雅战技",
+   "name": "优雅战技",
+   "en": "Elegant Maneuver",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/风流剑客.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "附赠动作使本回合下一次特技或运动检定有优势。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "风流剑客"
+   },
+   "level": 13,
+   "action": "bonus",
+   "mechanics": "附赠动作使本回合下一次特技或运动检定有优势。"
+  },
+  {
+   "id": "feature:调查员·伺隙锐瞳",
+   "name": "伺隙锐瞳",
+   "en": "Eye For Weakness",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/调查员.html",
+   "alsoIn": [],
+   "summary": "战术洞悉生效期间，对目标偷袭伤害+3d6。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "调查员"
+   },
+   "level": 17,
+   "action": "passive",
+   "mechanics": "战术洞悉生效期间，对目标偷袭伤害+3d6。",
+   "damage": [
+    {
+     "dice": "3d6",
+     "type": "偷袭加骰"
+    }
+   ]
+  },
+  {
+   "id": "feature:边界行者·位面战士",
+   "name": "位面战士",
+   "en": "Planar Warrior",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游侠/边界行者.html",
+   "alsoIn": [],
+   "summary": "附赠动作指定30尺内生物，本回合对其下次武器命中改为力场伤害并额外1d8(11级2d8)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "边界行者"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "附赠动作指定30尺内生物，本回合对其下次武器命中改为力场伤害并额外1d8(11级2d8)。",
+   "dice": [
+    [
+     3,
+     "1d8"
+    ],
+    [
+     11,
+     "2d8"
+    ]
+   ],
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": "力场"
+    }
+   ]
+  },
+  {
+   "id": "feature:低语学院·低语光环",
+   "name": "低语光环",
+   "en": "Mantle of Whispers",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/吟游诗人/低语学院.html",
+   "alsoIn": [],
+   "summary": "30尺内类人死亡时反应捕获其影，之后可用动作披上该人的外貌1小时，洞悉对抗你的欺瞒时你+5。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "低语学院"
+   },
+   "level": 6,
+   "action": "reaction",
+   "mechanics": "30尺内类人死亡时反应捕获其影，之后可用动作披上该人的外貌1小时，洞悉对抗你的欺瞒时你+5。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   }
+  },
+  {
+   "id": "feature:边界行者·侦测传送门",
+   "name": "侦测传送门",
+   "en": "Detect Portal",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游侠/边界行者.html",
+   "alsoIn": [],
+   "summary": "动作感知1里内最近的位面传送门的方向与距离。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "边界行者"
+   },
+   "level": 3,
+   "action": "action",
+   "mechanics": "动作感知1里内最近的位面传送门的方向与距离。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   }
+  },
+  {
+   "id": "feature:战争魔法·偏斜罩幕",
+   "name": "偏斜罩幕",
+   "en": "Deflecting Shroud",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/法师/战争魔法.html",
+   "alsoIn": [],
+   "summary": "使用奥术偏斜时，60尺内至多三个可见目标受法师等级一半的力场伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "战争魔法"
+   },
+   "level": 14,
+   "action": "special",
+   "mechanics": "使用奥术偏斜时，60尺内至多三个可见目标受法师等级一半的力场伤害。",
+   "damage": [
+    {
+     "dice": "法师等级÷2",
+     "type": "力场"
+    }
+   ]
+  },
+  {
+   "id": "feature:先祖守卫道途·先祖护卫",
+   "name": "先祖护卫",
+   "en": "Ancestral Protectors",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/野蛮人/先祖守卫道途.html",
+   "alsoIn": [],
+   "summary": "狂暴时每回合首个被你命中的生物成为目标：其攻击他人有劣势，打中他人时被打者受伤抗性，至你下回合开始。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "先祖守卫道途"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "狂暴时每回合首个被你命中的生物成为目标：其攻击他人有劣势，打中他人时被打者受伤抗性，至你下回合开始。"
+  },
+  {
+   "id": "feature:牧人结社·全能牧者",
+   "name": "全能牧者",
+   "en": "Mighty Summoner",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/德鲁伊/牧人结社.html",
+   "alsoIn": [],
+   "summary": "你召唤的野兽与妖精每生命骰多2点生命值，天生武器视作魔法。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "牧人结社"
+   },
+   "level": 6,
+   "action": "passive",
+   "mechanics": "你召唤的野兽与妖精每生命骰多2点生命值，天生武器视作魔法。"
+  },
+  {
+   "id": "feature:骑兵·冲锋陷阵",
+   "name": "冲锋陷阵",
+   "en": "Ferocious Charger",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/骑兵.html",
+   "alsoIn": [],
+   "summary": "每回合一次，直线移动10尺后命中，目标力量豁免失败则倒地。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "骑兵"
+   },
+   "level": 15,
+   "action": "passive",
+   "mechanics": "每回合一次，直线移动10尺后命中，目标力量豁免失败则倒地。",
+   "save": {
+    "ability": "str",
+    "dc": "8+熟练+力量"
+   },
+   "conditions": [
+    "prone"
+   ]
+  },
+  {
+   "id": "feature:风流剑客·决斗大师",
+   "name": "决斗大师",
+   "en": "Master Duelist",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/风流剑客.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "攻击失手时可以优势重骰攻击检定。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "风流剑客"
+   },
+   "level": 17,
+   "action": "special",
+   "mechanics": "攻击失手时可以优势重骰攻击检定。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   }
+  },
+  {
+   "id": "feature:剑圣宗·剑圣之途",
+   "name": "剑圣之途",
+   "en": "Path of the Kensei",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/武僧/剑圣宗.html",
+   "alsoIn": [],
+   "summary": "选两种武器(近战与远程)作剑圣武器，视为武僧武器并获得熟练；6/11/17级各多选一种。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "剑圣宗"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "选两种武器(近战与远程)作剑圣武器，视为武僧武器并获得熟练；6/11/17级各多选一种。"
+  },
+  {
+   "id": "feature:剑舞学院·剑舞",
+   "name": "剑舞",
+   "en": "Blade Flourish",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/吟游诗人/剑舞学院.html",
+   "alsoIn": [],
+   "summary": "攻击动作时速度+10尺；命中后消耗一次吟游激励，加激励骰伤害并选守御(加AC)、乱击(波及5尺内)或推击(推开目标)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "剑舞学院"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "攻击动作时速度+10尺；命中后消耗一次吟游激励，加激励骰伤害并选守御(加AC)、乱击(波及5尺内)或推击(推开目标)。",
+   "dice": "吟游激励骰",
+   "resource": "吟游激励"
+  },
+  {
+   "id": "feature:剑舞学院·剑舞大师",
+   "name": "剑舞大师",
+   "en": "Master's Flourish",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/吟游诗人/剑舞学院.html",
+   "alsoIn": [],
+   "summary": "使用剑舞选项可不消耗吟游激励，改掷d6作为激励骰。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "剑舞学院"
+   },
+   "level": 14,
+   "action": "passive",
+   "mechanics": "使用剑舞选项可不消耗吟游激励，改掷d6作为激励骰。",
+   "dice": "1d6"
+  },
+  {
+   "id": "feature:怪物杀手·卓越防守",
+   "name": "卓越防守",
+   "en": "Supernatural Defense",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游侠/怪物杀手.html",
+   "alsoIn": [],
+   "summary": "猎物迫使你豁免或你为脱离其擒抱做检定时，加1d6。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "怪物杀手"
+   },
+   "level": 7,
+   "action": "passive",
+   "mechanics": "猎物迫使你豁免或你为脱离其擒抱做检定时，加1d6。",
+   "dice": "1d6"
+  },
+  {
+   "id": "feature:咒剑·咒剑诅咒",
+   "name": "咒剑诅咒",
+   "en": "Hexblade's Curse",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/邪术师/咒剑.html",
+   "alsoIn": [],
+   "summary": "附赠动作诅咒30尺内一生物1分钟：伤害加熟练加值，19-20重击，其死亡时你恢复魔契师等级+魅力调整值生命。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "咒剑"
+   },
+   "level": 1,
+   "action": "bonus",
+   "mechanics": "附赠动作诅咒30尺内一生物1分钟：伤害加熟练加值，19-20重击，其死亡时你恢复魔契师等级+魅力调整值生命。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   },
+   "heal": "魔契师等级+魅力调整值"
+  },
+  {
+   "id": "feature:咒剑·咒缚恶灵",
+   "name": "咒缚恶灵",
+   "en": "Accursed Specter",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/邪术师/咒剑.html",
+   "alsoIn": [],
+   "summary": "杀死类人时可让其化为恶灵为你作战(临时生命值为等级一半，攻击获魅力加值)，到下次长休消失。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "咒剑"
+   },
+   "level": 6,
+   "action": "special",
+   "mechanics": "杀死类人时可让其化为恶灵为你作战(临时生命值为等级一半，攻击获魅力加值)，到下次长休消失。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:征服之誓·圣誓法术",
+   "name": "圣誓法术",
+   "en": "Oath Spells",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/圣武士/征服之誓.html",
+   "alsoIn": [],
+   "summary": "恒备法术：黯冰狱铠、命令术、定身类人、灵体武器、降咒、恐惧术、支配野兽、石肤术、死云术、支配类人。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "征服之誓"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "恒备法术：黯冰狱铠、命令术、定身类人、灵体武器、降咒、恐惧术、支配野兽、石肤术、死云术、支配类人。"
+  },
+  {
+   "id": "feature:救赎之誓·圣誓法术",
+   "name": "圣誓法术",
+   "en": "Oath Spells",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/圣武士/救赎之誓.html",
+   "alsoIn": [],
+   "summary": "恒备法术：庇护术、睡眠术、安定心神、定身类人、法术反制、催眠图纹、弹力法球、石肤术、定身怪物、力场墙。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "救赎之誓"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "恒备法术：庇护术、睡眠术、安定心神、定身类人、法术反制、催眠图纹、弹力法球、石肤术、定身怪物、力场墙。"
+  },
+  {
+   "id": "feature:骑兵·坚守战线",
+   "name": "坚守战线",
+   "en": "Hold the Line",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/骑兵.html",
+   "alsoIn": [],
+   "summary": "5尺内移动的生物引发借机攻击；借机命中使其速度降为0至回合结束。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "骑兵"
+   },
+   "level": 10,
+   "action": "passive",
+   "mechanics": "5尺内移动的生物引发借机攻击；借机命中使其速度降为0至回合结束。"
+  },
+  {
+   "id": "feature:骑兵·坚定之印",
+   "name": "坚定之印",
+   "en": "Unwavering Mark",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/骑兵.html",
+   "alsoIn": [],
+   "summary": "近战命中为敌人赋予印记：5尺内攻击他人有劣势；该敌伤害他人后，你可附赠动作攻击(优势，加战士等级一半伤害)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "骑兵"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "近战命中为敌人赋予印记：5尺内攻击他人有劣势；该敌伤害他人后，你可附赠动作攻击(优势，加战士等级一半伤害)。",
+   "uses": {
+    "count": "力量调整值(至少1)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:梦境结社·夏之王庭的芬馥",
+   "name": "夏之王庭的芬馥",
+   "en": "Balm of the Summer Court",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/德鲁伊/梦境结社.html",
+   "alsoIn": [],
+   "summary": "拥有德鲁伊等级枚d6池，附赠动作对120尺内可见者消耗至多等级一半枚骰，恢复骰值总和并给等量临时生命值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "梦境结社"
+   },
+   "level": 2,
+   "action": "bonus",
+   "mechanics": "拥有德鲁伊等级枚d6池，附赠动作对120尺内可见者消耗至多等级一半枚骰，恢复骰值总和并给等量临时生命值。",
+   "uses": {
+    "count": "德鲁伊等级枚d6",
+    "recharge": "long"
+   },
+   "dice": "d6",
+   "heal": "所掷d6总和",
+   "resource": "芬馥d6池"
+  },
+  {
+   "id": "feature:日魂宗·太阳盾",
+   "name": "太阳盾",
+   "en": "Sun Shield",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/武僧/日魂宗.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "常驻30尺明亮光照；被近战命中时反应对攻击者造成5+感知调整值光耀伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "日魂宗"
+   },
+   "level": 17,
+   "action": "reaction",
+   "mechanics": "常驻30尺明亮光照；被近战命中时反应对攻击者造成5+感知调整值光耀伤害。",
+   "damage": [
+    {
+     "dice": "5+感知调整值",
+     "type": "光耀"
+    }
+   ]
+  },
+  {
+   "id": "feature:战争魔法·奥术偏斜",
+   "name": "奥术偏斜",
+   "en": "Arcane Deflection",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/法师/战争魔法.html",
+   "alsoIn": [],
+   "summary": "被命中或豁免失败时反应：该次攻击AC+2或豁免+4；之后到下回合结束只能施放戏法。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "战争魔法"
+   },
+   "level": 2,
+   "action": "reaction",
+   "mechanics": "被命中或豁免失败时反应：该次攻击AC+2或豁免+4；之后到下回合结束只能施放戏法。"
+  },
+  {
+   "id": "feature:魔射手·奥术射击",
+   "name": "奥术射击",
+   "en": "Arcane Shot",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/魔射手.html",
+   "alsoIn": [],
+   "summary": "用短弓/长弓攻击时每回合一次选已知奥术射击选项；3级学两种，7/10/15/18级各多学一种，18级强化。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "魔射手"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "用短弓/长弓攻击时每回合一次选已知奥术射击选项；3级学两种，7/10/15/18级各多学一种，18级强化。",
+   "uses": {
+    "count": "2",
+    "recharge": "short"
+   }
+  },
+  {
+   "id": "feature:救赎之誓·守护之魂",
+   "name": "守护之魂",
+   "en": "Protective Spirit",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/圣武士/救赎之誓.html",
+   "alsoIn": [],
+   "summary": "战斗中回合结束时若生命值低于一半，恢复1d6+圣武士等级一半的生命值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "救赎之誓"
+   },
+   "level": 15,
+   "action": "passive",
+   "mechanics": "战斗中回合结束时若生命值低于一半，恢复1d6+圣武士等级一半的生命值。",
+   "heal": "1d6+圣武士等级÷2"
+  },
+  {
+   "id": "feature:骑兵·守护战技",
+   "name": "守护战技",
+   "en": "Warding Maneuver",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/骑兵.html",
+   "alsoIn": [],
+   "summary": "你或5尺内生物被命中时，反应掷1d8加入AC，若仍命中则受伤抗性。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "骑兵"
+   },
+   "level": 7,
+   "action": "reaction",
+   "mechanics": "你或5尺内生物被命中时，反应掷1d8加入AC，若仍命中则受伤抗性。",
+   "uses": {
+    "count": "体质调整值(至少1)",
+    "recharge": "long"
+   },
+   "dice": "1d8"
+  },
+  {
+   "id": "feature:咒剑·巫咒大师",
+   "name": "巫咒大师",
+   "en": "Master of Hexes",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/邪术师/咒剑.html",
+   "alsoIn": [],
+   "summary": "受咒生物死亡时，可把诅咒转移给30尺内另一可见生物(此次不回复生命)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "咒剑"
+   },
+   "level": 14,
+   "action": "passive",
+   "mechanics": "受咒生物死亡时，可把诅咒转移给30尺内另一可见生物(此次不回复生命)。"
+  },
+  {
+   "id": "feature:咒剑·巫咒战士",
+   "name": "巫咒战士",
+   "en": "Hex Warrior",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/邪术师/咒剑.html",
+   "alsoIn": [],
+   "summary": "获得中甲、盾牌、军用武器熟练；长休后选一把熟练武器用魅力调整值攻击和伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "咒剑"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "获得中甲、盾牌、军用武器熟练；长休后选一把熟练武器用魅力调整值攻击和伤害。"
+  },
+  {
+   "id": "feature:咒剑·巫咒盔甲",
+   "name": "巫咒盔甲",
+   "en": "Armor of Hexes",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/邪术师/咒剑.html",
+   "alsoIn": [],
+   "summary": "被诅咒目标命中你时反应掷d6，4或更高则该次攻击改为失手。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "咒剑"
+   },
+   "level": 10,
+   "action": "reaction",
+   "mechanics": "被诅咒目标命中你时反应掷d6，4或更高则该次攻击改为失手。",
+   "dice": "1d6"
+  },
+  {
+   "id": "feature:策士·帷幄之士",
+   "name": "帷幄之士",
+   "en": "Insightful Manipulator",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/策士.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "观察或交谈1分钟后，可得知对方在智力、感知、魅力或职业等级中两项与你的高低比较。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "策士"
+   },
+   "level": 9,
+   "action": "special",
+   "mechanics": "观察或交谈1分钟后，可得知对方在智力、感知、魅力或职业等级中两项与你的高低比较。"
+  },
+  {
+   "id": "feature:神圣之魂·异界光翼",
+   "name": "异界光翼",
+   "en": "Otherworldly Wings",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/术士/神圣之魂.html",
+   "alsoIn": [],
+   "summary": "附赠动作展开光翼，获得30尺飞行速度，直到失能、死亡或主动收起。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "神圣之魂"
+   },
+   "level": 14,
+   "action": "bonus",
+   "mechanics": "附赠动作展开光翼，获得30尺飞行速度，直到失能、死亡或主动收起。"
+  },
+  {
+   "id": "feature:征服之誓·引导神力",
+   "name": "引导神力",
+   "en": "Channel Divinity",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/圣武士/征服之誓.html",
+   "alsoIn": [],
+   "summary": "征服威压：30尺内感知豁免失败者恐慌1分钟；导引打击：攻击检定获+10(看到骰值后决定)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "征服之誓"
+   },
+   "level": 3,
+   "action": "action",
+   "mechanics": "征服威压：30尺内感知豁免失败者恐慌1分钟；导引打击：攻击检定获+10(看到骰值后决定)。",
+   "save": {
+    "ability": "wis",
+    "dc": "法术豁免DC"
+   },
+   "conditions": [
+    "frightened"
+   ],
+   "resource": "引导神力"
+  },
+  {
+   "id": "feature:救赎之誓·引导神力",
+   "name": "引导神力",
+   "en": "Channel Divinity",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/圣武士/救赎之誓.html",
+   "alsoIn": [],
+   "summary": "和平使节：10分钟游说+5；斥喝暴力：反应令30尺内造成伤害的敌人感知豁免，失败受等额光耀伤害，成功减半。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "救赎之誓"
+   },
+   "level": 3,
+   "action": "action",
+   "mechanics": "和平使节：10分钟游说+5；斥喝暴力：反应令30尺内造成伤害的敌人感知豁免，失败受等额光耀伤害，成功减半。",
+   "save": {
+    "ability": "wis",
+    "dc": "法术豁免DC"
+   },
+   "damage": [
+    {
+     "dice": "等同其造成伤害",
+     "type": "光耀"
+    }
+   ],
+   "resource": "引导神力"
+  },
+  {
+   "id": "feature:锻造领域·引导神力：铁匠祝福",
+   "name": "引导神力：铁匠祝福",
+   "en": "Channel Divinity: Artisan's Blessing",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/牧师/锻造领域.html",
+   "alsoIn": [],
+   "summary": "花1小时仪式并提供等价金属，造出价值低于100gp的含金属非魔法物件。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "锻造领域"
+   },
+   "level": 2,
+   "action": "special",
+   "mechanics": "花1小时仪式并提供等价金属，造出价值低于100gp的含金属非魔法物件。",
+   "resource": "引导神力"
+  },
+  {
+   "id": "feature:神圣之魂·强效治疗",
+   "name": "强效治疗",
+   "en": "Empowered Healing",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/术士/神圣之魂.html",
+   "alsoIn": [],
+   "summary": "你或5尺内盟友掷治疗法术骰时，花1点术法点令其重骰任意枚骰一次；每回合一次。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "神圣之魂"
+   },
+   "level": 6,
+   "action": "special",
+   "mechanics": "你或5尺内盟友掷治疗法术骰时，花1点术法点令其重骰任意枚骰一次；每回合一次。",
+   "resource": "术法点"
+  },
+  {
+   "id": "feature:征服之誓·征服灵光",
+   "name": "征服灵光",
+   "en": "Aura of Conquest",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/圣武士/征服之誓.html",
+   "alsoIn": [],
+   "summary": "10尺光环(18级30尺)：对你恐慌的生物速度为0，回合开始时在光环内受圣武士等级一半的心灵伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "征服之誓"
+   },
+   "level": 7,
+   "action": "passive",
+   "mechanics": "10尺光环(18级30尺)：对你恐慌的生物速度为0，回合开始时在光环内受圣武士等级一半的心灵伤害。",
+   "damage": [
+    {
+     "dice": "圣武士等级÷2",
+     "type": "心灵"
+    }
+   ],
+   "conditions": [
+    "frightened"
+   ]
+  },
+  {
+   "id": "feature:醉拳宗·微醺摇摆",
+   "name": "微醺摇摆",
+   "en": "Tipsy Sway",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/武僧/醉拳宗.html",
+   "alsoIn": [],
+   "summary": "倒地时只花5尺移动起身；他人近战攻击你失手时，花1点气反应让攻击改打5尺内另一生物。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "醉拳宗"
+   },
+   "level": 6,
+   "action": "reaction",
+   "mechanics": "倒地时只花5尺移动起身；他人近战攻击你失手时，花1点气反应让攻击改打5尺内另一生物。",
+   "resource": "气"
+  },
+  {
+   "id": "feature:低语学院·心灵之刃",
+   "name": "心灵之刃",
+   "en": "Psychic Blades",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/吟游诗人/低语学院.html",
+   "alsoIn": [],
+   "summary": "武器命中时消耗一次吟游激励，额外造成2d6心灵伤害(5/10/15级为3d6/5d6/8d6)，每回合一次。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "低语学院"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "武器命中时消耗一次吟游激励，额外造成2d6心灵伤害(5/10/15级为3d6/5d6/8d6)，每回合一次。",
+   "dice": [
+    [
+     3,
+     "2d6"
+    ],
+    [
+     5,
+     "3d6"
+    ],
+    [
+     10,
+     "5d6"
+    ],
+    [
+     15,
+     "8d6"
+    ]
+   ],
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "心灵"
+    }
+   ],
+   "resource": "吟游激励"
+  },
+  {
+   "id": "feature:牧人结社·忠诚牧畜",
+   "name": "忠诚牧畜",
+   "en": "Faithful Summons",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/德鲁伊/牧人结社.html",
+   "alsoIn": [],
+   "summary": "生命降为0或非自愿失能时，免费获得9环咒唤兽群(4只CR2以下野兽，1小时，无需专注)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "牧人结社"
+   },
+   "level": 14,
+   "action": "special",
+   "mechanics": "生命降为0或非自愿失能时，免费获得9环咒唤兽群(4只CR2以下野兽，1小时，无需专注)。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:怪物杀手·怪物杀手魔法",
+   "name": "怪物杀手魔法",
+   "en": "Monster Slayer Magic",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游侠/怪物杀手.html",
+   "alsoIn": [],
+   "summary": "额外游侠法术：防护善恶、诚实之域、防护法阵、放逐术、定身怪物。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "怪物杀手"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "额外游侠法术：防护善恶、诚实之域、防护法阵、放逐术、定身怪物。"
+  },
+  {
+   "id": "feature:低语学院·惊骇之语",
+   "name": "惊骇之语",
+   "en": "Words of Terror",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/吟游诗人/低语学院.html",
+   "alsoIn": [],
+   "summary": "与类人单独交谈满1分钟后，目标感知豁免失败则对你或指定生物恐慌1小时；受攻击或目睹盟友受害即终止。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "低语学院"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "与类人单独交谈满1分钟后，目标感知豁免失败则对你或指定生物恐慌1小时；受攻击或目睹盟友受害即终止。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   },
+   "save": {
+    "ability": "wis",
+    "dc": "法术豁免DC"
+   },
+   "conditions": [
+    "frightened"
+   ]
+  },
+  {
+   "id": "feature:武士·战意",
+   "name": "战意",
+   "en": "Fighting Spirit",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/武士.html",
+   "alsoIn": [],
+   "summary": "附赠动作使本回合所有武器攻击具有优势并获得5点临时生命值(10级10点，15级15点)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "武士"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "附赠动作使本回合所有武器攻击具有优势并获得5点临时生命值(10级10点，15级15点)。",
+   "uses": {
+    "count": "3",
+    "recharge": "long"
+   },
+   "heal": "5/10/15临时生命值"
+  },
+  {
+   "id": "feature:剑舞学院·战斗风格",
+   "name": "战斗风格",
+   "en": "Fighting Style",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/吟游诗人/剑舞学院.html",
+   "alsoIn": [],
+   "summary": "选择决斗或双武器战斗风格(决斗单手近战伤害+2，双武器副手加属性伤害)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "剑舞学院"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "选择决斗或双武器战斗风格(决斗单手近战伤害+2，双武器副手加属性伤害)。"
+  },
+  {
+   "id": "feature:战争魔法·战术之智",
+   "name": "战术之智",
+   "en": "Tactical Wit",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/法师/战争魔法.html",
+   "alsoIn": [],
+   "summary": "先攻检定加智力调整值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "战争魔法"
+   },
+   "level": 2,
+   "action": "passive",
+   "mechanics": "先攻检定加智力调整值。"
+  },
+  {
+   "id": "feature:策士·战术大师",
+   "name": "战术大师",
+   "en": "Master of Tactics",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/策士.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "协助动作改为附赠动作，且可协助30尺内目标(需其看见或听见你)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "策士"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "协助动作改为附赠动作，且可协助30尺内目标(需其看见或听见你)。"
+  },
+  {
+   "id": "feature:调查员·战术洞悉",
+   "name": "战术洞悉",
+   "en": "Insightful Fighting",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/调查员.html",
+   "alsoIn": [],
+   "summary": "附赠动作洞悉对抗目标欺瞒，成功则1分钟内无优势也可对其偷袭(有劣势仍不行)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "调查员"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "附赠动作洞悉对抗目标欺瞒，成功则1分钟内无优势也可对其偷袭(有劣势仍不行)。"
+  },
+  {
+   "id": "feature:咒剑·扩展法术列表",
+   "name": "扩展法术列表",
+   "en": "Expanded Spell List",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/邪术师/咒剑.html",
+   "alsoIn": [],
+   "summary": "扩展法术：护盾术、激愤斩、朦胧术、印记斩、闪现术、元素武器、魅影杀手、惊惧斩、放逐斩、寒冰锥。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "魔契师",
+    "subclass": "咒剑"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "扩展法术：护盾术、激愤斩、朦胧术、印记斩、闪现术、元素武器、魅影杀手、惊惧斩、放逐斩、寒冰锥。"
+  },
+  {
+   "id": "feature:救赎之誓·护卫灵光",
+   "name": "护卫灵光",
+   "en": "Aura of the Guardian",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/圣武士/救赎之誓.html",
+   "alsoIn": [],
+   "summary": "10尺(18级30尺)内生物受伤时反应由你代为承受该伤害，伤害不可减免。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "救赎之誓"
+   },
+   "level": 7,
+   "action": "reaction",
+   "mechanics": "10尺(18级30尺)内生物受伤时反应由你代为承受该伤害，伤害不可减免。"
+  },
+  {
+   "id": "feature:魔射手·放逐矢",
+   "name": "放逐矢",
+   "en": "Banishing Arrow",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/魔射手.html",
+   "alsoIn": [],
+   "summary": "奥术射击：目标魅力豁免失败则被放逐，速度0并失能，到其下回合结束；18级额外2d6力场。",
+   "uncertain": [
+    "level"
+   ],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "魔射手"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "奥术射击：目标魅力豁免失败则被放逐，速度0并失能，到其下回合结束；18级额外2d6力场。",
+   "save": {
+    "ability": "cha",
+    "dc": "8+熟练+智力"
+   },
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "力场"
+    }
+   ],
+   "conditions": [
+    "incapacitated"
+   ]
+  },
+  {
+   "id": "feature:救赎之誓·救赎使节",
+   "name": "救赎使节",
+   "en": "Emissary of Redemption",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/圣武士/救赎之誓.html",
+   "alsoIn": [],
+   "summary": "获得对其他生物所造成伤害的抗性；被攻击伤害时攻击者受其伤害一半的光耀伤害(对已被你伤害者无效)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "救赎之誓"
+   },
+   "level": 20,
+   "action": "passive",
+   "mechanics": "获得对其他生物所造成伤害的抗性；被攻击伤害时攻击者受其伤害一半的光耀伤害(对已被你伤害者无效)。",
+   "damage": [
+    {
+     "dice": "所受伤害的一半",
+     "type": "光耀"
+    }
+   ]
+  },
+  {
+   "id": "feature:斥候·散兵战术",
+   "name": "散兵战术",
+   "en": "Skirmisher",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/斥候.html",
+   "alsoIn": [],
+   "summary": "敌人在你5尺内结束回合时，反应移动至多速度一半且不引发借机攻击。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "斥候"
+   },
+   "level": 3,
+   "action": "reaction",
+   "mechanics": "敌人在你5尺内结束回合时，反应移动至多速度一半且不引发借机攻击。"
+  },
+  {
+   "id": "feature:调查员·明察秋毫",
+   "name": "明察秋毫",
+   "en": "Unerring Eye",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/调查员.html",
+   "alsoIn": [],
+   "summary": "动作感知30尺内幻术、变形者及欺骗感官的魔法(不知真相)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "调查员"
+   },
+   "level": 13,
+   "action": "action",
+   "mechanics": "动作感知30尺内幻术、变形者及欺骗感官的魔法(不知真相)。",
+   "uses": {
+    "count": "感知调整值(至少1)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:风暴术法·暴风狂怒",
+   "name": "暴风狂怒",
+   "en": "Storm's Fury",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/术士/风暴术法.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "被近战命中时反应对攻击者造成等于术士等级的闪电伤害，其力量豁免失败被推开20尺。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "风暴术法"
+   },
+   "level": 14,
+   "action": "reaction",
+   "mechanics": "被近战命中时反应对攻击者造成等于术士等级的闪电伤害，其力量豁免失败被推开20尺。",
+   "save": {
+    "ability": "str",
+    "dc": "法术豁免DC"
+   },
+   "damage": [
+    {
+     "dice": "术士等级",
+     "type": "闪电"
+    }
+   ]
+  },
+  {
+   "id": "feature:风暴术法·暴风魔法",
+   "name": "暴风魔法",
+   "en": "Tempestuous Magic",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/术士/风暴术法.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "回合内施放1环或以上法术后，附赠动作飞行至多10尺且不引发借机攻击。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "风暴术法"
+   },
+   "level": 1,
+   "action": "bonus",
+   "mechanics": "回合内施放1环或以上法术后，附赠动作飞行至多10尺且不引发借机攻击。"
+  },
+  {
+   "id": "feature:魔射手·曲线射击",
+   "name": "曲线射击",
+   "en": "Curving Shot",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/魔射手.html",
+   "alsoIn": [],
+   "summary": "魔法箭矢未命中时，附赠动作指定60尺内另一目标重骰攻击检定。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "魔射手"
+   },
+   "level": 7,
+   "action": "bonus",
+   "mechanics": "魔法箭矢未命中时，附赠动作指定60尺内另一目标重骰攻击检定。"
+  },
+  {
+   "id": "feature:梦境结社·月光阴影的炉心",
+   "name": "月光阴影的炉心",
+   "en": "Hearth of Moonlight and Shadow",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/德鲁伊/梦境结社.html",
+   "alsoIn": [],
+   "summary": "休息时设半径30尺隐形球域：域内你与盟友隐匿、察觉检定+5，明火光亮不外泄。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "梦境结社"
+   },
+   "level": 6,
+   "action": "special",
+   "mechanics": "休息时设半径30尺隐形球域：域内你与盟友隐匿、察觉检定+5，明火光亮不外泄。"
+  },
+  {
+   "id": "feature:魔射手·有箭无患",
+   "name": "有箭无患",
+   "en": "Ever-Ready Shot",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/魔射手.html",
+   "alsoIn": [],
+   "summary": "掷先攻时若奥术射击次数用完，恢复一次。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "魔射手"
+   },
+   "level": 15,
+   "action": "passive",
+   "mechanics": "掷先攻时若奥术射击次数用完，恢复一次。"
+  },
+  {
+   "id": "feature:怪物杀手·杀手反制",
+   "name": "杀手反制",
+   "en": "Slayer's Counter",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游侠/怪物杀手.html",
+   "alsoIn": [],
+   "summary": "猎物迫使你豁免时，先反应对其武器攻击；命中则该豁免自动成功。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "怪物杀手"
+   },
+   "level": 15,
+   "action": "reaction",
+   "mechanics": "猎物迫使你豁免时，先反应对其武器攻击；命中则该豁免自动成功。"
+  },
+  {
+   "id": "feature:牧人结社·林地之语",
+   "name": "林地之语",
+   "en": "Speech of the Woods",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/德鲁伊/牧人结社.html",
+   "alsoIn": [],
+   "summary": "学会木族语；野兽能理解你，你也能理解野兽的声音动作。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "牧人结社"
+   },
+   "level": 2,
+   "action": "passive",
+   "mechanics": "学会木族语；野兽能理解你，你也能理解野兽的声音动作。"
+  },
+  {
+   "id": "feature:梦境结社·梦境行者",
+   "name": "梦境行者",
+   "en": "Walker in Dreams",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/德鲁伊/梦境结社.html",
+   "alsoIn": [],
+   "summary": "短休后可免费施放托梦术、探知术或传送法阵(通往上次长休地)之一；每长休一次。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "梦境结社"
+   },
+   "level": 14,
+   "action": "special",
+   "mechanics": "短休后可免费施放托梦术、探知术或传送法阵(通往上次长休地)之一；每长休一次。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:风流剑客·梦幻舞步",
+   "name": "梦幻舞步",
+   "en": "Fancy Footwork",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/风流剑客.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "本回合近战攻击过的生物，不能对你发动借机攻击。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "风流剑客"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "本回合近战攻击过的生物，不能对你发动借机攻击。"
+  },
+  {
+   "id": "feature:魔射手·欺诈矢",
+   "name": "欺诈矢",
+   "en": "Beguiling Arrow",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/魔射手.html",
+   "alsoIn": [],
+   "summary": "奥术射击：额外2d6心灵伤害，目标感知豁免失败被所选盟友魅惑至你下回合开始；18级4d6。",
+   "uncertain": [
+    "level"
+   ],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "魔射手"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "奥术射击：额外2d6心灵伤害，目标感知豁免失败被所选盟友魅惑至你下回合开始；18级4d6。",
+   "save": {
+    "ability": "wis",
+    "dc": "8+熟练+智力"
+   },
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "心灵"
+    }
+   ],
+   "conditions": [
+    "charmed"
+   ]
+  },
+  {
+   "id": "feature:魔射手·注魔箭矢",
+   "name": "注魔箭矢",
+   "en": "Magic Arrow",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/魔射手.html",
+   "alsoIn": [],
+   "summary": "射出非魔法箭矢时可变为魔法箭矢，克服抗性与免疫。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "魔射手"
+   },
+   "level": 7,
+   "action": "passive",
+   "mechanics": "射出非魔法箭矢时可变为魔法箭矢，克服抗性与免疫。"
+  },
+  {
+   "id": "feature:风暴术法·清风之灵",
+   "name": "清风之灵",
+   "en": "Wind Soul",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/术士/风暴术法.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "免疫闪电与雷鸣，获得60尺飞行速度；动作可降为30尺并让3+魅力调整值个生物获得30尺飞行1小时。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "风暴术法"
+   },
+   "level": 18,
+   "action": "action",
+   "mechanics": "免疫闪电与雷鸣，获得60尺飞行速度；动作可降为30尺并让3+魅力调整值个生物获得30尺飞行1小时。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   }
+  },
+  {
+   "id": "feature:风流剑客·潇洒无畏",
+   "name": "潇洒无畏",
+   "en": "Rakish Audacity",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/风流剑客.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "先攻加魅力调整值；只要5尺内只有目标一个敌对生物且无劣势，无需优势即可偷袭。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "风流剑客"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "先攻加魅力调整值；只要5尺内只有目标一个敌对生物且无劣势，无需优势即可偷袭。"
+  },
+  {
+   "id": "feature:风流剑客·潇洒气质",
+   "name": "潇洒气质",
+   "en": "Panache",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/风流剑客.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "动作用游说对抗洞悉：敌对者对他人攻击劣势且不能借机攻击；非敌对者被魅惑1分钟。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "风流剑客"
+   },
+   "level": 9,
+   "action": "action",
+   "mechanics": "动作用游说对抗洞悉：敌对者对他人攻击劣势且不能借机攻击；非敌对者被魅惑1分钟。",
+   "conditions": [
+    "charmed"
+   ]
+  },
+  {
+   "id": "feature:边界行者·灵体防御",
+   "name": "灵体防御",
+   "en": "Spectral Defense",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游侠/边界行者.html",
+   "alsoIn": [],
+   "summary": "受攻击伤害时反应，对该次伤害含有的所有类型获得抗性至回合结束。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "边界行者"
+   },
+   "level": 15,
+   "action": "reaction",
+   "mechanics": "受攻击伤害时反应，对该次伤害含有的所有类型获得抗性至回合结束。"
+  },
+  {
+   "id": "feature:日魂宗·热能袭",
+   "name": "热能袭",
+   "en": "Searing Arc Strike",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/武僧/日魂宗.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "攻击动作后花2点气，附赠动作施放燃烧之手；多花气可提升环阶，总气不超过武僧等级一半。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "日魂宗"
+   },
+   "level": 6,
+   "action": "bonus",
+   "mechanics": "攻击动作后花2点气，附赠动作施放燃烧之手；多花气可提升环阶，总气不超过武僧等级一半。",
+   "save": {
+    "ability": "dex",
+    "dc": "气DC"
+   },
+   "resource": "气"
+  },
+  {
+   "id": "feature:日魂宗·焰阳爆",
+   "name": "焰阳爆",
+   "en": "Searing Sunburst",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/武僧/日魂宗.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "动作向150尺内投出光球，20尺半径体质豁免，失败2d6光耀；每多花1点气+2d6，最多3点。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "日魂宗"
+   },
+   "level": 11,
+   "action": "action",
+   "mechanics": "动作向150尺内投出光球，20尺半径体质豁免，失败2d6光耀；每多花1点气+2d6，最多3点。",
+   "save": {
+    "ability": "con",
+    "dc": "气DC"
+   },
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "光耀"
+    }
+   ],
+   "resource": "气"
+  },
+  {
+   "id": "feature:武士·燕返",
+   "name": "燕返",
+   "en": "Rapid Strike",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/武士.html",
+   "alsoIn": [],
+   "summary": "攻击动作中某次攻击有优势时，可放弃该优势，额外攻击同一目标一次；每回合一次。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "武士"
+   },
+   "level": 15,
+   "action": "special",
+   "mechanics": "攻击动作中某次攻击有优势时，可放弃该优势，额外攻击同一目标一次；每回合一次。"
+  },
+  {
+   "id": "feature:魔射手·爆裂矢",
+   "name": "爆裂矢",
+   "en": "Bursting Arrow",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/魔射手.html",
+   "alsoIn": [],
+   "summary": "奥术射击：命中后目标及其10尺内所有生物受2d6力场伤害；18级4d6。",
+   "uncertain": [
+    "level"
+   ],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "魔射手"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "奥术射击：命中后目标及其10尺内所有生物受2d6力场伤害；18级4d6。",
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "力场"
+    }
+   ]
+  },
+  {
+   "id": "feature:风暴先驱道途·狂怒风暴",
+   "name": "狂怒风暴",
+   "en": "raging storm",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/野蛮人/风暴先驱道途.html",
+   "alsoIn": [],
+   "summary": "按环境反应：荒漠对攻击者火焰伤害(敏捷豁免)；海洋令其力量豁免失败倒地；冻原令灵光内生物力量豁免失败失去速度。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "风暴先驱道途"
+   },
+   "level": 14,
+   "action": "reaction",
+   "mechanics": "按环境反应：荒漠对攻击者火焰伤害(敏捷豁免)；海洋令其力量豁免失败倒地；冻原令灵光内生物力量豁免失败失去速度。",
+   "save": {
+    "ability": "dex",
+    "dc": "8+熟练+体质"
+   },
+   "damage": [
+    {
+     "dice": "野蛮人等级÷2",
+     "type": "火焰"
+    }
+   ],
+   "conditions": [
+    "prone"
+   ]
+  },
+  {
+   "id": "feature:怪物杀手·狩猎开始",
+   "name": "狩猎开始",
+   "en": "Slayer's Prey",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游侠/怪物杀手.html",
+   "alsoIn": [],
+   "summary": "附赠动作指定60尺内目标为猎物，每回合首次武器命中额外1d6同类型伤害，直到短休或长休。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "怪物杀手"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "附赠动作指定60尺内目标为猎物，每回合首次武器命中额外1d6同类型伤害，直到短休或长休。",
+   "dice": "1d6"
+  },
+  {
+   "id": "feature:怪物杀手·猎手感知",
+   "name": "猎手感知",
+   "en": "Hunter's Sense",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游侠/怪物杀手.html",
+   "alsoIn": [],
+   "summary": "动作获知60尺内一名生物的伤害免疫、抗性与易伤。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "怪物杀手"
+   },
+   "level": 3,
+   "action": "action",
+   "mechanics": "动作获知60尺内一名生物的伤害免疫、抗性与易伤。",
+   "uses": {
+    "count": "感知调整值(至少1)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:武士·生死流转",
+   "name": "生死流转",
+   "en": "Strength before Death",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/武士.html",
+   "alsoIn": [],
+   "summary": "受到会使生命降到0但不致死的伤害时，反应立即进行一个额外回合；之后仍昏迷。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "武士"
+   },
+   "level": 18,
+   "action": "reaction",
+   "mechanics": "受到会使生命降到0但不致死的伤害时，反应立即进行一个额外回合；之后仍昏迷。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:骑兵·生而为骑",
+   "name": "生而为骑",
+   "en": "Born to the Saddle",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/骑兵.html",
+   "alsoIn": [],
+   "summary": "避免从坐骑坠落的豁免有优势，10尺内坠落可站稳；上下坐骑只花5尺移动。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "骑兵"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "避免从坐骑坠落的豁免有优势，10尺内坠落可站稳；上下坐骑只花5尺移动。"
+  },
+  {
+   "id": "feature:调查员·目不转睛",
+   "name": "目不转睛",
+   "en": "Steady Eye",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/调查员.html",
+   "alsoIn": [],
+   "summary": "回合内移动不超过速度一半时，察觉与调查检定有优势。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "调查员"
+   },
+   "level": 9,
+   "action": "passive",
+   "mechanics": "回合内移动不超过速度一半时，察觉与调查检定有优势。"
+  },
+  {
+   "id": "feature:策士·瞒天之魂",
+   "name": "瞒天之魂",
+   "en": "Soul of Deceit",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/策士.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "思想不会被读取(除非你同意)，可用欺瞒对抗读心者喂假思想，并可让魔法判定你说真话。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "策士"
+   },
+   "level": 17,
+   "action": "passive",
+   "mechanics": "思想不会被读取(除非你同意)，可用欺瞒对抗读心者喂假思想，并可让魔法判定你说真话。"
+  },
+  {
+   "id": "feature:斥候·瞬息打击",
+   "name": "瞬息打击",
+   "en": "Sudden Strike",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/斥候.html",
+   "alsoIn": [],
+   "summary": "攻击动作后可附赠动作额外攻击一次，这次攻击也可偷袭(同一目标每回合仅一次偷袭)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "斥候"
+   },
+   "level": 17,
+   "action": "bonus",
+   "mechanics": "攻击动作后可附赠动作额外攻击一次，这次攻击也可偷袭(同一目标每回合仅一次偷袭)。"
+  },
+  {
+   "id": "feature:锻造领域·神圣打击",
+   "name": "神圣打击",
+   "en": "Divine Strike",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/牧师/锻造领域.html",
+   "alsoIn": [],
+   "summary": "每回合一次武器命中额外1d8火焰伤害(14级2d8)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "锻造领域"
+   },
+   "level": 8,
+   "action": "passive",
+   "mechanics": "每回合一次武器命中额外1d8火焰伤害(14级2d8)。",
+   "dice": [
+    [
+     8,
+     "1d8"
+    ],
+    [
+     14,
+     "2d8"
+    ]
+   ],
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": "火焰"
+    }
+   ]
+  },
+  {
+   "id": "feature:神圣之魂·神圣魔法",
+   "name": "神圣魔法",
+   "en": "Divine Magic",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/术士/神圣之魂.html",
+   "alsoIn": [],
+   "summary": "可从牧师法术表选术士法术，并按亲和力(善良/邪恶/守序/混乱/中立)额外获得一道对应法术。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "神圣之魂"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "可从牧师法术表选术士法术，并按亲和力(善良/邪恶/守序/混乱/中立)额外获得一道对应法术。"
+  },
+  {
+   "id": "feature:神圣之魂·神赐痊愈",
+   "name": "神赐痊愈",
+   "en": "Unearthly Recovery",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/术士/神圣之魂.html",
+   "alsoIn": [],
+   "summary": "生命值不足一半时，附赠动作恢复生命值上限一半的生命值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "神圣之魂"
+   },
+   "level": 18,
+   "action": "bonus",
+   "mechanics": "生命值不足一半时，附赠动作恢复生命值上限一半的生命值。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   },
+   "heal": "生命值上限÷2"
+  },
+  {
+   "id": "feature:魔射手·穿梭矢",
+   "name": "穿梭矢",
+   "en": "Piercing Arrow",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/魔射手.html",
+   "alsoIn": [],
+   "summary": "奥术射击：不需攻击检定，向30尺长直线发射，线上生物敏捷豁免，失败受武器伤害加1d6穿刺，成功减半。",
+   "uncertain": [
+    "level"
+   ],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "魔射手"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "奥术射击：不需攻击检定，向30尺长直线发射，线上生物敏捷豁免，失败受武器伤害加1d6穿刺，成功减半。",
+   "save": {
+    "ability": "dex",
+    "dc": "8+熟练+智力"
+   },
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "穿刺"
+    }
+   ]
+  },
+  {
+   "id": "feature:剑圣宗·精妙剑法",
+   "name": "精妙剑法",
+   "en": "Unerring Accuracy",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/武僧/剑圣宗.html",
+   "alsoIn": [],
+   "summary": "每回合一次，武僧武器攻击失手时可重骰。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "剑圣宗"
+   },
+   "level": 17,
+   "action": "passive",
+   "mechanics": "每回合一次，武僧武器攻击失手时可重骰。"
+  },
+  {
+   "id": "feature:先祖守卫道途·精魂之盾",
+   "name": "精魂之盾",
+   "en": "Spirit Shield",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/野蛮人/先祖守卫道途.html",
+   "alsoIn": [],
+   "summary": "狂暴中，30尺内其他生物受伤时反应减免2d6伤害(10级3d6，14级4d6)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "先祖守卫道途"
+   },
+   "level": 6,
+   "action": "reaction",
+   "mechanics": "狂暴中，30尺内其他生物受伤时反应减免2d6伤害(10级3d6，14级4d6)。",
+   "dice": [
+    [
+     6,
+     "2d6"
+    ],
+    [
+     10,
+     "3d6"
+    ],
+    [
+     14,
+     "4d6"
+    ]
+   ]
+  },
+  {
+   "id": "feature:牧人结社·精魂图腾",
+   "name": "精魂图腾",
+   "en": "Spirit Totem",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/德鲁伊/牧人结社.html",
+   "alsoIn": [],
+   "summary": "附赠动作在60尺内召唤30尺光环精魂1分钟(熊：临时生命+力量优势；鹰：攻击优势；独角兽：治疗加成)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "牧人结社"
+   },
+   "level": 2,
+   "action": "bonus",
+   "mechanics": "附赠动作在60尺内召唤30尺光环精魂1分钟(熊：临时生命+力量优势；鹰：攻击优势；独角兽：治疗加成)。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   },
+   "resource": "精魂图腾"
+  },
+  {
+   "id": "feature:牧人结社·精魂守卫",
+   "name": "精魂守卫",
+   "en": "Guardian Spirit",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/德鲁伊/牧人结社.html",
+   "alsoIn": [],
+   "summary": "你召唤的野兽或妖精在图腾光环内回合结束时恢复德鲁伊等级一半的生命值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "牧人结社"
+   },
+   "level": 10,
+   "action": "passive",
+   "mechanics": "你召唤的野兽或妖精在图腾光环内回合结束时恢复德鲁伊等级一半的生命值。",
+   "heal": "德鲁伊等级÷2"
+  },
+  {
+   "id": "feature:魔射手·缠绕矢",
+   "name": "缠绕矢",
+   "en": "Grasping arrow",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/魔射手.html",
+   "alsoIn": [],
+   "summary": "奥术射击：额外2d6毒素伤害并减速10尺，目标每回合首次移动受2d6挥砍；力量(运动)检定可挣脱。",
+   "uncertain": [
+    "level"
+   ],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "魔射手"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "奥术射击：额外2d6毒素伤害并减速10尺，目标每回合首次移动受2d6挥砍；力量(运动)检定可挣脱。",
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "毒素"
+    },
+    {
+     "dice": "2d6",
+     "type": "挥砍"
+    }
+   ]
+  },
+  {
+   "id": "feature:日魂宗·耀阳箭",
+   "name": "耀阳箭",
+   "en": "Radiant Sun Bolt",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/武僧/日魂宗.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "攻击动作中可用30尺远程法术攻击，敏捷调整值，1d4光耀(随武艺骰成长)；花1点气可附赠动作再攻击两次。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "日魂宗"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "攻击动作中可用30尺远程法术攻击，敏捷调整值，1d4光耀(随武艺骰成长)；花1点气可附赠动作再攻击两次。",
+   "damage": [
+    {
+     "dice": "武艺骰",
+     "type": "光耀"
+    }
+   ],
+   "resource": "气"
+  },
+  {
+   "id": "feature:战争魔法·耐久魔法",
+   "name": "耐久魔法",
+   "en": "Durable Magic",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/法师/战争魔法.html",
+   "alsoIn": [],
+   "summary": "专注法术期间，AC和所有豁免+2。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "战争魔法"
+   },
+   "level": 10,
+   "action": "passive",
+   "mechanics": "专注法术期间，AC和所有豁免+2。"
+  },
+  {
+   "id": "feature:魔射手·虚弱矢",
+   "name": "虚弱矢",
+   "en": "Enfeebling Arrow",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/魔射手.html",
+   "alsoIn": [],
+   "summary": "奥术射击：额外2d6黯蚀伤害，体质豁免失败则目标武器伤害减半至你下回合开始。",
+   "uncertain": [
+    "level"
+   ],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "魔射手"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "奥术射击：额外2d6黯蚀伤害，体质豁免失败则目标武器伤害减半至你下回合开始。",
+   "save": {
+    "ability": "con",
+    "dc": "8+熟练+智力"
+   },
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "黯蚀"
+    }
+   ]
+  },
+  {
+   "id": "feature:骑兵·警戒守卫",
+   "name": "警戒守卫",
+   "en": "Vigilant Defender",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/骑兵.html",
+   "alsoIn": [],
+   "summary": "每个其他生物的回合中多一次特殊反应，仅用于借机攻击。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "骑兵"
+   },
+   "level": 18,
+   "action": "reaction",
+   "mechanics": "每个其他生物的回合中多一次特殊反应，仅用于借机攻击。"
+  },
+  {
+   "id": "feature:策士·误导",
+   "name": "误导",
+   "en": "Misdirection",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/策士.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "被选为攻击目标且5尺内有生物为你提供掩护时，反应把攻击转嫁给该生物。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "策士"
+   },
+   "level": 13,
+   "action": "reaction",
+   "mechanics": "被选为攻击目标且5尺内有生物为你提供掩护时，反应把攻击转嫁给该生物。"
+  },
+  {
+   "id": "feature:策士·谋陷大师",
+   "name": "谋陷大师",
+   "en": "Master of Intrigue",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/策士.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "获得易容工具、文书伪造工具、一种赌博工具熟练，学两门语言，听1分钟后可模仿其口音。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "策士"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "获得易容工具、文书伪造工具、一种赌博工具熟练，学两门语言，听1分钟后可模仿其口音。"
+  },
+  {
+   "id": "feature:征服之誓·轻蔑呵斥",
+   "name": "轻蔑呵斥",
+   "en": "Scornful Rebuke",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/圣武士/征服之誓.html",
+   "alsoIn": [],
+   "summary": "被攻击命中时，攻击者受魅力调整值(至少1)点心灵伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "圣武士",
+    "subclass": "征服之誓"
+   },
+   "level": 15,
+   "action": "passive",
+   "mechanics": "被攻击命中时，攻击者受魅力调整值(至少1)点心灵伤害。",
+   "damage": [
+    {
+     "dice": "魅力调整值",
+     "type": "心灵"
+    }
+   ]
+  },
+  {
+   "id": "feature:调查员·辨谎之耳",
+   "name": "辨谎之耳",
+   "en": "Ear for Deceit",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/调查员.html",
+   "alsoIn": [],
+   "summary": "用洞悉判断是否撒谎时，d20骰7或更低视为8。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "调查员"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "用洞悉判断是否撒谎时，d20骰7或更低视为8。"
+  },
+  {
+   "id": "feature:边界行者·边界行者魔法",
+   "name": "边界行者魔法",
+   "en": "Horizon Walker Magic",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游侠/边界行者.html",
+   "alsoIn": [],
+   "summary": "额外游侠法术：防护善恶、迷踪步、加速术、放逐术、传送法阵。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "边界行者"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "额外游侠法术：防护善恶、迷踪步、加速术、放逐术、传送法阵。"
+  },
+  {
+   "id": "feature:魔射手·追踪矢",
+   "name": "追踪矢",
+   "en": "Seeking arrow",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/魔射手.html",
+   "alsoIn": [],
+   "summary": "奥术射击：对近1分钟见过的生物发射，绕过掩护，敏捷豁免失败受武器伤害加1d6力场并得知其位置。",
+   "uncertain": [
+    "level"
+   ],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "魔射手"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "奥术射击：对近1分钟见过的生物发射，绕过掩护，敏捷豁免失败受武器伤害加1d6力场并得知其位置。",
+   "save": {
+    "ability": "dex",
+    "dc": "8+熟练+智力"
+   },
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "力场"
+    }
+   ]
+  },
+  {
+   "id": "feature:魔射手·遮影矢",
+   "name": "遮影矢",
+   "en": "Shadow Arrow",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/魔射手.html",
+   "alsoIn": [],
+   "summary": "奥术射击：额外2d6心灵伤害，感知豁免失败则目标在你下回合前看不到5尺外事物；18级4d6。",
+   "uncertain": [
+    "level"
+   ],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "魔射手"
+   },
+   "level": 3,
+   "action": "special",
+   "mechanics": "奥术射击：额外2d6心灵伤害，感知豁免失败则目标在你下回合前看不到5尺外事物；18级4d6。",
+   "save": {
+    "ability": "wis",
+    "dc": "8+熟练+智力"
+   },
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "心灵"
+    }
+   ]
+  },
+  {
+   "id": "feature:醉拳宗·酣醉若狂",
+   "name": "酣醉若狂",
+   "en": "Intoxicated Frenzy",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/武僧/醉拳宗.html",
+   "alsoIn": [],
+   "summary": "疾风连击可多至五次攻击，每次攻击须以不同生物为目标。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "醉拳宗"
+   },
+   "level": 17,
+   "action": "passive",
+   "mechanics": "疾风连击可多至五次攻击，每次攻击须以不同生物为目标。"
+  },
+  {
+   "id": "feature:醉拳宗·醉拳技巧",
+   "name": "醉拳技巧",
+   "en": "Drunken Technique",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/武僧/醉拳宗.html",
+   "alsoIn": [],
+   "summary": "使用疾风连击时获得撤离动作的好处，且速度+10尺至回合结束。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "醉拳宗"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "使用疾风连击时获得撤离动作的好处，且速度+10尺至回合结束。"
+  },
+  {
+   "id": "feature:醉拳宗·醉汉机运",
+   "name": "醉汉机运",
+   "en": "Drunkard's Luck",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/武僧/醉拳宗.html",
+   "alsoIn": [],
+   "summary": "属性检定、攻击检定或豁免有劣势时，花2点气抵消劣势。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "醉拳宗"
+   },
+   "level": 11,
+   "action": "special",
+   "mechanics": "属性检定、攻击检定或豁免有劣势时，花2点气抵消劣势。",
+   "resource": "气"
+  },
+  {
+   "id": "feature:调查员·鉴识之眼",
+   "name": "鉴识之眼",
+   "en": "Eye for Detail",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游荡者/调查员.html",
+   "alsoIn": [],
+   "summary": "附赠动作进行察觉(找隐藏者/物)或调查(辨析线索)检定。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游荡者",
+    "subclass": "调查员"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "附赠动作进行察觉(找隐藏者/物)或调查(辨析线索)检定。"
+  },
+  {
+   "id": "feature:剑圣宗·锋锐剑影",
+   "name": "锋锐剑影",
+   "en": "Sharpen the Blade",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/武僧/剑圣宗.html",
+   "alsoIn": [],
+   "summary": "附赠动作花至多3点气，使所触剑圣武器的攻击与伤害加值等于所花气点，持续1分钟。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "剑圣宗"
+   },
+   "level": 11,
+   "action": "bonus",
+   "mechanics": "附赠动作花至多3点气，使所触剑圣武器的攻击与伤害加值等于所花气点，持续1分钟。",
+   "resource": "气"
+  },
+  {
+   "id": "feature:锻造领域·锻炉与烈焰的圣徒",
+   "name": "锻炉与烈焰的圣徒",
+   "en": "Saint of Forge and Fire",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/牧师/锻造领域.html",
+   "alsoIn": [],
+   "summary": "火焰免疫；穿重甲时对非魔法钝击、穿刺、挥砍伤害抗性。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "锻造领域"
+   },
+   "level": 17,
+   "action": "passive",
+   "mechanics": "火焰免疫；穿重甲时对非魔法钝击、穿刺、挥砍伤害抗性。"
+  },
+  {
+   "id": "feature:锻造领域·锻造之魂",
+   "name": "锻造之魂",
+   "en": "Soul of the Forge",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/牧师/锻造领域.html",
+   "alsoIn": [],
+   "summary": "火焰抗性；穿重甲时AC+1。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "锻造领域"
+   },
+   "level": 6,
+   "action": "passive",
+   "mechanics": "火焰抗性；穿重甲时AC+1。"
+  },
+  {
+   "id": "feature:锻造领域·锻造祝福",
+   "name": "锻造祝福",
+   "en": "Blessing of the Forge",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/牧师/锻造领域.html",
+   "alsoIn": [],
+   "summary": "长休后触碰非魔法护甲(AC+1)或简易/军用武器(攻击和伤害+1)，持续到下次长休。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "锻造领域"
+   },
+   "level": 1,
+   "action": "special",
+   "mechanics": "长休后触碰非魔法护甲(AC+1)或简易/军用武器(攻击和伤害+1)，持续到下次长休。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:边界行者·闪现打击",
+   "name": "闪现打击",
+   "en": "Distant Strike",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游侠/边界行者.html",
+   "alsoIn": [],
+   "summary": "攻击动作中每次攻击前可传送10尺；攻击至少两个不同生物时可多攻击第三个生物一次。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "边界行者"
+   },
+   "level": 11,
+   "action": "passive",
+   "mechanics": "攻击动作中每次攻击前可传送10尺；攻击至少两个不同生物时可多攻击第三个生物一次。"
+  },
+  {
+   "id": "feature:先祖守卫道途·问道精魂",
+   "name": "问道精魂",
+   "en": "Consult the Spirits",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/野蛮人/先祖守卫道途.html",
+   "alsoIn": [],
+   "summary": "可免费施放卜筮术或鹰眼术(感知为施法属性)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "先祖守卫道途"
+   },
+   "level": 10,
+   "action": "special",
+   "mechanics": "可免费施放卜筮术或鹰眼术(感知为施法属性)。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   }
+  },
+  {
+   "id": "feature:低语学院·阴暗学识",
+   "name": "阴暗学识",
+   "en": "Shadow Lore",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/吟游诗人/低语学院.html",
+   "alsoIn": [],
+   "summary": "动作对30尺内能听见的生物低语，感知豁免失败则被魅惑8小时，因害怕秘密曝光而听令，不会自损或替你战斗。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "低语学院"
+   },
+   "level": 14,
+   "action": "action",
+   "mechanics": "动作对30尺内能听见的生物低语，感知豁免失败则被魅惑8小时，因害怕秘密曝光而听令，不会自损或替你战斗。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   },
+   "save": {
+    "ability": "wis",
+    "dc": "法术豁免DC"
+   },
+   "conditions": [
+    "charmed"
+   ]
+  },
+  {
+   "id": "feature:剑舞学院·附赠熟练项",
+   "name": "附赠熟练项",
+   "en": "Bonus Proficiencies",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/吟游诗人/剑舞学院.html",
+   "alsoIn": [],
+   "summary": "获得中甲与弯刀熟练；熟练的近战武器可作吟游诗人法术的法器。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "剑舞学院"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "获得中甲与弯刀熟练；熟练的近战武器可作吟游诗人法术的法器。"
+  },
+  {
+   "id": "feature:武士·附赠熟练项",
+   "name": "附赠熟练项",
+   "en": "Bonus Proficiency",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/武士.html",
+   "alsoIn": [],
+   "summary": "在历史、洞悉、表演、游说中选一项熟练，或改学一门语言。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "武士"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "在历史、洞悉、表演、游说中选一项熟练，或改学一门语言。"
+  },
+  {
+   "id": "feature:醉拳宗·附赠熟练项",
+   "name": "附赠熟练项",
+   "en": "Bonus Proficiencies",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/武僧/醉拳宗.html",
+   "alsoIn": [],
+   "summary": "获得表演与酿酒工具熟练。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "武僧",
+    "subclass": "醉拳宗"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "获得表演与酿酒工具熟练。"
+  },
+  {
+   "id": "feature:骑兵·附赠熟练项",
+   "name": "附赠熟练项",
+   "en": "Bonus Proficiency",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/骑兵.html",
+   "alsoIn": [],
+   "summary": "在驯兽、历史、洞悉、表演、游说中选一项熟练，或改学一门语言。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "骑兵"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "在驯兽、历史、洞悉、表演、游说中选一项熟练，或改学一门语言。"
+  },
+  {
+   "id": "feature:梦境结社·隐匿通途",
+   "name": "隐匿通途",
+   "en": "Hidden Paths",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/德鲁伊/梦境结社.html",
+   "alsoIn": [],
+   "summary": "附赠动作传送到60尺内可见空位，或动作传送一名自愿生物30尺。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "德鲁伊",
+    "subclass": "梦境结社"
+   },
+   "level": 10,
+   "action": "bonus",
+   "mechanics": "附赠动作传送到60尺内可见空位，或动作传送一名自愿生物30尺。",
+   "uses": {
+    "count": "感知调整值(至少1)",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:武士·雅臣",
+   "name": "雅臣",
+   "en": "Elegant Courtier",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/武士.html",
+   "alsoIn": [],
+   "summary": "游说检定加感知调整值；获得感知豁免熟练(已有则改智力或魅力)。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "武士"
+   },
+   "level": 7,
+   "action": "passive",
+   "mechanics": "游说检定加感知调整值；获得感知豁免熟练(已有则改智力或魅力)。"
+  },
+  {
+   "id": "feature:锻造领域·领域法术",
+   "name": "领域法术",
+   "en": "Domain Spells",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/牧师/锻造领域.html",
+   "alsoIn": [],
+   "summary": "领域法术：鉴定术、炽焰斩、灼热金属、魔化武器、元素武器、防护能量、鬼斧神工、火墙术、活化物件、造物术。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "锻造领域"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "领域法术：鉴定术、炽焰斩、灼热金属、魔化武器、元素武器、防护能量、鬼斧神工、火墙术、活化物件、造物术。"
+  },
+  {
+   "id": "feature:剑舞学院·额外攻击",
+   "name": "额外攻击",
+   "en": "Extra Attack",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/吟游诗人/剑舞学院.html",
+   "alsoIn": [],
+   "summary": "攻击动作可攻击两次。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "吟游诗人",
+    "subclass": "剑舞学院"
+   },
+   "level": 6,
+   "action": "passive",
+   "mechanics": "攻击动作可攻击两次。"
+  },
+  {
+   "id": "feature:锻造领域·额外熟练项",
+   "name": "额外熟练项",
+   "en": "Bonus Proficiencies",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/牧师/锻造领域.html",
+   "alsoIn": [],
+   "summary": "获得重甲与铁匠工具熟练。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "牧师",
+    "subclass": "锻造领域"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "获得重甲与铁匠工具熟练。"
+  },
+  {
+   "id": "feature:风暴术法·风暴之心",
+   "name": "风暴之心",
+   "en": "Heart of the Storm",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/术士/风暴术法.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "获得闪电与雷鸣抗性；施放造成闪电或雷鸣的1环以上法术时，10尺内所选生物受术士等级一半的该类伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "风暴术法"
+   },
+   "level": 6,
+   "action": "passive",
+   "mechanics": "获得闪电与雷鸣抗性；施放造成闪电或雷鸣的1环以上法术时，10尺内所选生物受术士等级一半的该类伤害。",
+   "damage": [
+    {
+     "dice": "术士等级÷2",
+     "type": "闪电"
+    },
+    {
+     "dice": "术士等级÷2",
+     "type": "雷鸣"
+    }
+   ]
+  },
+  {
+   "id": "feature:风暴先驱道途·风暴之盾",
+   "name": "风暴之盾",
+   "en": "Shielding Storm",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/野蛮人/风暴先驱道途.html",
+   "alsoIn": [],
+   "summary": "灵光内你选择的盟友也享有风暴之魂的伤害抗性。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "风暴先驱道途"
+   },
+   "level": 10,
+   "action": "passive",
+   "mechanics": "灵光内你选择的盟友也享有风暴之魂的伤害抗性。"
+  },
+  {
+   "id": "feature:风暴先驱道途·风暴之魂",
+   "name": "风暴之魂",
+   "en": "Storm Soul",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/野蛮人/风暴先驱道途.html",
+   "alsoIn": [],
+   "summary": "按环境获得抗性：荒漠火焰抗性且不怕酷热；海洋闪电抗性、水下呼吸与游泳速度；冻原寒冷抗性并可冻结水。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "风暴先驱道途"
+   },
+   "level": 6,
+   "action": "passive",
+   "mechanics": "按环境获得抗性：荒漠火焰抗性且不怕酷热；海洋闪电抗性、水下呼吸与游泳速度；冻原寒冷抗性并可冻结水。"
+  },
+  {
+   "id": "feature:风暴术法·风暴导向",
+   "name": "风暴导向",
+   "en": "Storm Guide",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/术士/风暴术法.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "动作停止20尺半径的降雨；有风时附赠动作改变100尺内的风向。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "风暴术法"
+   },
+   "level": 6,
+   "action": "special",
+   "mechanics": "动作停止20尺半径的降雨；有风时附赠动作改变100尺内的风向。"
+  },
+  {
+   "id": "feature:风暴先驱道途·风暴灵光",
+   "name": "风暴灵光",
+   "en": "Storm Aura",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/野蛮人/风暴先驱道途.html",
+   "alsoIn": [],
+   "summary": "狂暴期间散发10尺灵光，进入狂暴时及之后每回合附赠动作激活：荒漠2点火焰、海洋闪电、冻原临时生命值，随等级增强。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "野蛮人",
+    "subclass": "风暴先驱道途"
+   },
+   "level": 3,
+   "action": "bonus",
+   "mechanics": "狂暴期间散发10尺灵光，进入狂暴时及之后每回合附赠动作激活：荒漠2点火焰、海洋闪电、冻原临时生命值，随等级增强。",
+   "save": {
+    "ability": "dex",
+    "dc": "8+熟练+体质"
+   },
+   "damage": [
+    {
+     "dice": "2",
+     "type": "火焰"
+    }
+   ]
+  },
+  {
+   "id": "feature:风暴术法·风语者",
+   "name": "风语者",
+   "en": "Wind Speaker",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/术士/风暴术法.html",
+   "alsoIn": [
+    "剑湾冒险者指南"
+   ],
+   "summary": "学会原初语，能与水族语、气族语、火族语、土族语使用者互通。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "风暴术法"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "学会原初语，能与水族语、气族语、火族语、土族语使用者互通。"
+  },
+  {
+   "id": "feature:战争魔法·魔力潮涌",
+   "name": "魔力潮涌",
+   "en": "Power Surge",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/法师/战争魔法.html",
+   "alsoIn": [],
+   "summary": "储存至多智力调整值股魔力潮涌，每回合一次伤害法术可消耗一股，额外造成法师等级一半的力场伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "法师",
+    "subclass": "战争魔法"
+   },
+   "level": 6,
+   "action": "special",
+   "mechanics": "储存至多智力调整值股魔力潮涌，每回合一次伤害法术可消耗一股，额外造成法师等级一半的力场伤害。",
+   "damage": [
+    {
+     "dice": "法师等级÷2",
+     "type": "力场"
+    }
+   ],
+   "resource": "魔力潮涌"
+  },
+  {
+   "id": "feature:怪物杀手·魔法使的克星",
+   "name": "魔法使的克星",
+   "en": "Magic-user's Nemesis",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/游侠/怪物杀手.html",
+   "alsoIn": [],
+   "summary": "60尺内生物施法或传送时反应，其感知豁免失败则法术或传送失败。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "游侠",
+    "subclass": "怪物杀手"
+   },
+   "level": 11,
+   "action": "reaction",
+   "mechanics": "60尺内生物施法或传送时反应，其感知豁免失败则法术或传送失败。",
+   "uses": {
+    "count": "1",
+    "recharge": "short"
+   },
+   "save": {
+    "ability": "wis",
+    "dc": "法术豁免DC"
+   }
+  },
+  {
+   "id": "feature:魔射手·魔箭学识",
+   "name": "魔箭学识",
+   "en": "Arcane Archer Lore",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/战士/魔射手.html",
+   "alsoIn": [],
+   "summary": "获得奥秘或自然熟练，学会魔法伎俩或德鲁伊伎俩之一。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "战士",
+    "subclass": "魔射手"
+   },
+   "level": 3,
+   "action": "passive",
+   "mechanics": "获得奥秘或自然熟练，学会魔法伎俩或德鲁伊伎俩之一。"
+  }
+ ]
+}

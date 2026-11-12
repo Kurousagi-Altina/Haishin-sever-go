@@ -1,0 +1,860 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "艾伯伦：从终末战争中崛起",
+ "generated": "2026-11-09",
+ "count": 24,
+ "entries": [
+  {
+   "id": "item:凯尔津的泥怪",
+   "name": "凯尔津的泥怪",
+   "en": "Kyrzin's Ooze",
+   "aliases": [],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。抗强酸/毒素；DC15敏捷豁免；词条：抗力、无定形、强酸吐息、共生本质",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [
+    "强酸",
+    "毒素"
+   ],
+   "immune": [],
+   "conditionsImmune": [
+    "poisoned"
+   ],
+   "save": {
+    "dc": 15,
+    "ability": "dex"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:喷流式奥能臂",
+   "name": "喷流式奥能臂",
+   "en": "Arcane Propulsion Arm",
+   "aliases": [],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需缺失手或臂的生物同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true,
+    "by": "缺失手或臂的生物"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": "力场"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:幻纺",
+   "name": "幻纺",
+   "en": "Glamerweave",
+   "aliases": [],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/多种稀有度.htm",
+   "alsoIn": [
+    "艾伯伦寻路者指南"
+   ],
+   "summary": "奇物，普通/非普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "多种",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false,
+   "rarityList": [
+    "普通",
+    "非普通"
+   ]
+  },
+  {
+   "id": "item:抄录笔",
+   "name": "抄录笔",
+   "en": "Scribe's Pen",
+   "aliases": [
+    "抄录魔笔"
+   ],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/普通.htm",
+   "alsoIn": [
+    "艾伯伦寻路者指南"
+   ],
+   "summary": "奇物，普通，需持有抄录龙纹的生物同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": true,
+    "by": "持有抄录龙纹的生物"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:护盾法球",
+   "name": "护盾法球",
+   "en": "Orb of Shielding",
+   "aliases": [
+    "防护法球"
+   ],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/普通.htm",
+   "alsoIn": [
+    "艾伯伦寻路者指南"
+   ],
+   "summary": "奇物，普通，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:指导附件",
+   "name": "指导附件",
+   "en": "Docent",
+   "aliases": [],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/珍稀.htm",
+   "alsoIn": [
+    "艾伯伦寻路者指南"
+   ],
+   "summary": "奇物，珍稀，需战俑同调。词条：智能、生命维持、随机词条、语言",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "战俑"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:探寻护目镜",
+   "name": "探寻护目镜",
+   "en": "Finder's Goggles",
+   "aliases": [],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/非普通.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需持有探寻龙纹的生物同调。可施放生物定位术",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true,
+    "by": "持有探寻龙纹的生物"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "生物定位术",
+     "level": 4,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:易纺",
+   "name": "易纺",
+   "en": "Shiftweave",
+   "aliases": [
+    "变装布"
+   ],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/普通.htm",
+   "alsoIn": [
+    "艾伯伦寻路者指南"
+   ],
+   "summary": "奇物，普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:永明提灯",
+   "name": "永明提灯",
+   "en": "Everbright Lantern",
+   "aliases": [],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/普通.htm",
+   "alsoIn": [
+    "艾伯伦寻路者指南"
+   ],
+   "summary": "奇物，普通。可施放不灭明焰",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "不灭明焰",
+     "level": 2,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:法晶",
+   "name": "法晶",
+   "en": "Spellshard",
+   "aliases": [],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/普通.htm",
+   "alsoIn": [
+    "艾伯伦寻路者指南"
+   ],
+   "summary": "奇物，普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:洁净石",
+   "name": "洁净石",
+   "en": "Cleansing Stone",
+   "aliases": [
+    "清洗石"
+   ],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/普通.htm",
+   "alsoIn": [
+    "艾伯伦寻路者指南"
+   ],
+   "summary": "奇物，普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:活体手套",
+   "name": "活体手套",
+   "en": "Living Gloves",
+   "aliases": [],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/非普通.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需同调。词条：共生本质",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:活体护甲",
+   "name": "活体护甲",
+   "en": "Living Armor",
+   "aliases": [],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "护甲（任意），极珍稀，需同调。AC+1；词条：共生本质",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "任意",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "ac": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:生风铁肺",
+   "name": "生风铁肺",
+   "en": "Ventilating Lungs",
+   "aliases": [],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。可施放死云术、造风术；DC15豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "死云术",
+     "level": 5,
+     "cost": null
+    },
+    {
+     "name": "造风术",
+     "level": 2,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:羽符",
+   "name": "羽符",
+   "en": "Feather Token",
+   "aliases": [
+    "羽毛徽章"
+   ],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/普通.htm",
+   "alsoIn": [
+    "艾伯伦寻路者指南"
+   ],
+   "summary": "奇物，普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:耳虫",
+   "name": "耳虫",
+   "en": "Earworm",
+   "aliases": [],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/非普通.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需同调。4充能，1d4 每日黎明恢复；可施放侦测思想；DC15豁免；词条：法术、共生本质",
+   "uncertain": [
+    "save",
+    "spells"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "4",
+    "regain": "1d4 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "侦测思想",
+     "level": 2,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:臂刃",
+   "name": "臂刃",
+   "en": "Armblade",
+   "aliases": [],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/普通.htm",
+   "alsoIn": [
+    "艾伯伦寻路者指南"
+   ],
+   "summary": "武器（任意单手近战武器），普通，需战俑同调。",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意单手近战武器",
+   "rarity": "普通",
+   "attunement": {
+    "required": true,
+    "by": "战俑"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:蕴能木法器",
+   "name": "蕴能木法器",
+   "en": "Imbued Wood Focus",
+   "aliases": [],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/普通.htm",
+   "alsoIn": [],
+   "summary": "奇物，普通，需同调。攻击+1、伤害+1",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:贝拉希拉的眼魔冠冕",
+   "name": "贝拉希拉的眼魔冠冕",
+   "en": "Belashyrra's Beholder Crown",
+   "aliases": [],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/传说.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说，需同调。10充能，1d6+3 每日黎明恢复；DC16豁免；词条：法术、共生本质",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "10",
+    "regain": "1d6+3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 16,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:迪恩的触手长鞭",
+   "name": "迪恩的触手长鞭",
+   "en": "Dyrrn's Tentacle Whip",
+   "aliases": [],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（鞭），极珍稀，需同调。攻击+2、伤害+2；额外1d6心灵；涉及震慑；词条：共生本质",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "鞭",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 2,
+    "damage": 2
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "1d6",
+     "type": "心灵",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [
+    "stunned"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:通讯石",
+   "name": "通讯石",
+   "en": "Speaking Stone",
+   "aliases": [],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/极珍稀.htm",
+   "alsoIn": [
+    "模组"
+   ],
+   "summary": "奇物，极珍稀。可施放短讯术",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "短讯术",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:钥饰",
+   "name": "钥饰",
+   "en": "Keycharm",
+   "aliases": [
+    "钥匙符咒"
+   ],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/普通.htm",
+   "alsoIn": [
+    "艾伯伦寻路者指南"
+   ],
+   "summary": "奇物，普通，需持有守御龙纹的生物同调。可施放警报术、秘法锁、守卫刻纹",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": true,
+    "by": "持有守御龙纹的生物"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "警报术",
+     "level": 1,
+     "cost": null
+    },
+    {
+     "name": "秘法锁",
+     "level": 2,
+     "cost": null
+    },
+    {
+     "name": "守卫刻纹",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:风水舵",
+   "name": "风水舵",
+   "en": "Wheel of Wind and Water",
+   "aliases": [
+    "风水舵轮"
+   ],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/非普通.htm",
+   "alsoIn": [
+    "艾伯伦寻路者指南"
+   ],
+   "summary": "奇物，非普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:魔杖插槽",
+   "name": "魔杖插槽",
+   "en": "Wand Sheath",
+   "aliases": [],
+   "source": "艾伯伦：从终末战争中崛起",
+   "section": "setting",
+   "path": "topics/艾伯伦：从终末战争中崛起/第五章/普通.htm",
+   "alsoIn": [
+    "艾伯伦寻路者指南"
+   ],
+   "summary": "奇物，普通，需战俑同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": true,
+    "by": "战俑"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

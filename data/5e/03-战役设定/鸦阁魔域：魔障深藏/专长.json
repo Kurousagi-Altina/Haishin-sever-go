@@ -1,0 +1,606 @@
+{
+ "category": "feat",
+ "type": "专长",
+ "source": "鸦阁魔域：魔障深藏",
+ "generated": "2026-11-09",
+ "count": 11,
+ "entries": [
+  {
+   "id": "feat:共生存在",
+   "name": "共生存在",
+   "en": "Symbiotic Being",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/黑暗赠礼.htm",
+   "alsoIn": [],
+   "summary": "黑暗赠礼；共生体生死与共；一项技能熟练与语言；反应花生命骰加豁免；d20掷1魅力豁免否则魅惑。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "黑暗赠礼",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "鸦阁战役"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "技能熟练",
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "交缠存在",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "第二心智",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "恒久共生",
+     "trigger": "当你的豁免检定失败时",
+     "action": "reaction",
+     "effect": "",
+     "uses": "熟练加值",
+     "recharge": "long"
+    },
+    {
+     "name": "共生目标",
+     "trigger": "当你在你进行一次D20检定且d20掷出1后",
+     "action": "passive",
+     "effect": "骰:1d12；豁免:cha DC 13+熟练；状态:charmed",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d12",
+     "conditions": [
+      "charmed"
+     ],
+     "save": {
+      "ability": "cha",
+      "dc": "13+熟练"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:幸存者",
+   "name": "幸存者",
+   "en": "Survivor",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/起源专长.htm",
+   "alsoIn": [],
+   "summary": "先攻d20不超过9可重掷；反应：抵抗魅惑恐慌豁免失败时加熟练加值，长休恢复。",
+   "uncertain": [],
+   "category": "起源",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "先攻",
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "杯弓蛇影",
+     "trigger": "每当你进行先攻掷骰时",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "我心如铁",
+     "trigger": "当你为避免或结束魅惑或恐慌状态进行的豁免失败时",
+     "action": "reaction",
+     "effect": "状态:frightened",
+     "uses": "1",
+     "recharge": "long",
+     "conditions": [
+      "frightened"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "feat:异变内构",
+   "name": "异变内构",
+   "en": "Aberrant Anatomy",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/黑暗赠礼.htm",
+   "alsoIn": [],
+   "summary": "黑暗赠礼；屏息一小时；察觉熟练专精与15尺盲视；d20掷1时体质豁免否则震慑。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "黑暗赠礼",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "鸦阁战役"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "专精",
+    "盲视"
+   ],
+   "mechanics": [
+    {
+     "name": "无呼无息",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "超感知觉",
+     "trigger": "若你不具有察觉技能的熟练",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "血肉扭曲",
+     "trigger": "在你进行一次D20检定且d20掷出1后",
+     "action": "passive",
+     "effect": "豁免:con DC 13+熟练；状态:stunned",
+     "uses": null,
+     "recharge": null,
+     "conditions": [
+      "stunned"
+     ],
+     "save": {
+      "ability": "con",
+      "dc": "13+熟练"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:死亡之触",
+   "name": "死亡之触",
+   "en": "Touch of Death",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/黑暗赠礼.htm",
+   "alsoIn": [],
+   "summary": "黑暗赠礼；得颤栗之触且黯蚀无视抗性；死亡豁免有劣势。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "黑暗赠礼",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "鸦阁战役"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:颤栗之触",
+    "抗性:黯蚀"
+   ],
+   "mechanics": [
+    {
+     "name": "触死之亡",
+     "trigger": "",
+     "action": "passive",
+     "effect": "伤害:黯蚀；抗性；法术:颤栗之触",
+     "uses": null,
+     "recharge": null,
+     "damageTypes": [
+      "黯蚀"
+     ]
+    },
+    {
+     "name": "坟冢之引",
+     "trigger": "",
+     "action": "passive",
+     "effect": "劣势",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:汇灵低语",
+   "name": "汇灵低语",
+   "en": "Gathered Whispers",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/黑暗赠礼.htm",
+   "alsoIn": [],
+   "summary": "黑暗赠礼；得传讯术和卜筮术；反应加熟练加值于AC；d20掷1时感知豁免否则耳聋。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "黑暗赠礼",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "鸦阁战役"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:传讯术",
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "精魂低语",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:传讯术",
+     "uses": "1",
+     "recharge": "long"
+    },
+    {
+     "name": "怪谲尖嚎",
+     "trigger": "当你被一次攻击检定命中时",
+     "action": "reaction",
+     "effect": "",
+     "uses": "熟练加值",
+     "recharge": "long"
+    },
+    {
+     "name": "彼岸之声",
+     "trigger": "在你进行一次D20检定且d20掷出1后",
+     "action": "passive",
+     "effect": "豁免:wis DC 13+熟练；状态:deafened；劣势",
+     "uses": null,
+     "recharge": null,
+     "conditions": [
+      "deafened"
+     ],
+     "save": {
+      "ability": "wis",
+      "dc": "13+熟练"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:活体阴影",
+   "name": "活体阴影",
+   "en": "Living Shadow",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/黑暗赠礼.htm",
+   "alsoIn": [],
+   "summary": "黑暗赠礼；得法师之手；近战触及+10尺；d20掷1时感知豁免否则失能并掷阴影意志。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "黑暗赠礼",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "鸦阁战役"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:法师之手",
+    "动作"
+   ],
+   "mechanics": [
+    {
+     "name": "攫取之影",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:法师之手",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "延伸打击",
+     "trigger": "当你作为攻击或魔法动作的一部分",
+     "action": "action",
+     "effect": "",
+     "uses": "熟练加值",
+     "recharge": "long"
+    },
+    {
+     "name": "不祥意志",
+     "trigger": "在你进行一次D20检定且d20掷出1后",
+     "action": "passive",
+     "effect": "豁免:wis DC 13+熟练；状态:incapacitated",
+     "uses": null,
+     "recharge": null,
+     "conditions": [
+      "incapacitated"
+     ],
+     "save": {
+      "ability": "wis",
+      "dc": "13+熟练"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:灵魂回响",
+   "name": "灵魂回响",
+   "en": "Echoing Soul",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/黑暗赠礼.htm",
+   "alsoIn": [],
+   "summary": "黑暗赠礼；两项技能熟练和一项专精；多一门语言；d20掷1时体质豁免否则失能。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "黑暗赠礼",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "鸦阁战役"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "技能熟练",
+    "专精"
+   ],
+   "mechanics": [
+    {
+     "name": "通灵之力",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "原初之舌",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "回响之袭",
+     "trigger": "在你进行一次D20检定且d20掷出1后",
+     "action": "passive",
+     "effect": "豁免:con DC 13+熟练；状态:incapacitated",
+     "uses": null,
+     "recharge": null,
+     "conditions": [
+      "incapacitated"
+     ],
+     "save": {
+      "ability": "con",
+      "dc": "13+熟练"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:监视者",
+   "name": "监视者",
+   "en": "Watchers",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/黑暗赠礼.htm",
+   "alsoIn": [],
+   "summary": "黑暗赠礼；免费施放野兽感官与动物交谈；搜索加1d4；d20掷1感知豁免否则劣势。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "黑暗赠礼",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "鸦阁战役"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:野兽感知",
+    "法术:动物交谈",
+    "法术:探知术"
+   ],
+   "mechanics": [
+    {
+     "name": "借目而视",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:野兽感知/动物交谈",
+     "uses": "1",
+     "recharge": "long"
+    },
+    {
+     "name": "疑神疑鬼",
+     "trigger": "每当你执行搜索动作时",
+     "action": "passive",
+     "effect": "骰:1d4",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4"
+    },
+    {
+     "name": "无终监视",
+     "trigger": "",
+     "action": "passive",
+     "effect": "豁免:wis DC 13+熟练；劣势；法术:探知术",
+     "uses": null,
+     "recharge": null,
+     "save": {
+      "ability": "wis",
+      "dc": "13+熟练"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:第二面目",
+   "name": "第二面目",
+   "en": "Second Skin",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/黑暗赠礼.htm",
+   "alsoIn": [],
+   "summary": "黑暗赠礼；免费施放变身术；触发催化后魅力豁免否则被迫变身。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "黑暗赠礼",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "鸦阁战役"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:变身术"
+   ],
+   "mechanics": [
+    {
+     "name": "后备形貌",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:变身术",
+     "uses": "1",
+     "recharge": "long"
+    },
+    {
+     "name": "被迫改变",
+     "trigger": "",
+     "action": "passive",
+     "effect": "豁免:cha DC 13+熟练；状态:stunned；法术:变身术",
+     "uses": null,
+     "recharge": null,
+     "conditions": [
+      "stunned"
+     ],
+     "save": {
+      "ability": "cha",
+      "dc": "13+熟练"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:迷雾行者",
+   "name": "迷雾行者",
+   "en": "Mist Walker",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/黑暗赠礼.htm",
+   "alsoIn": [],
+   "summary": "黑暗赠礼；穿越迷雾到任意已知领域；反应传送15尺；休息时体质豁免否则无益。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "黑暗赠礼",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "鸦阁战役"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "领域旅者",
+     "trigger": "当你进入迷雾意图到达某个特定领域时",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "迷雾行走",
+     "trigger": "当你受到伤害或当你为避免或结束擒抱或束缚状态进行的豁免失败时",
+     "action": "reaction",
+     "effect": "状态:restrained；传送",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "conditions": [
+      "restrained"
+     ]
+    },
+    {
+     "name": "毒害根源",
+     "trigger": "当你完成长休时",
+     "action": "passive",
+     "effect": "豁免:con DC 13+熟练",
+     "uses": null,
+     "recharge": null,
+     "save": {
+      "ability": "con",
+      "dc": "13+熟练"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:锐眼",
+   "name": "锐眼",
+   "en": "Sharp Eye",
+   "aliases": [],
+   "source": "鸦阁魔域：魔障深藏",
+   "section": "setting",
+   "path": "topics/鸦阁魔域：魔障深藏/第一章/起源专长.htm",
+   "alsoIn": [],
+   "summary": "搜索或研究动作中的属性检定有优势，失败不耗次数，次数为熟练加值。",
+   "uncertain": [],
+   "category": "起源",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "锐眼",
+     "trigger": "当你执行搜索或研究动作时",
+     "action": "passive",
+     "effect": "优势",
+     "uses": "熟练加值",
+     "recharge": "long"
+    }
+   ]
+  }
+ ]
+}

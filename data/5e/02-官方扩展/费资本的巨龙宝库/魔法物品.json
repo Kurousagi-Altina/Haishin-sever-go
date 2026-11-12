@@ -1,0 +1,541 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "费资本的巨龙宝库",
+ "generated": "2026-11-09",
+ "count": 15,
+ "entries": [
+  {
+   "id": "item:异能塑像：金丝雀",
+   "name": "异能塑像：金丝雀",
+   "en": "Figurine of Wondrous Power: Gold Canary",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/巨龙魔法/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，传说。AC+4；词条：喙击",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "ac": 4
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:提亚马特链枷",
+   "name": "提亚马特链枷",
+   "en": "Flail of Tiamat",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/巨龙魔法/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（链枷），传说，需同调。攻击+3、伤害+3；DC18敏捷豁免",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "链枷",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 3,
+    "damage": 3
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 18,
+    "ability": "dex"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:紫晶磁石",
+   "name": "紫晶磁石",
+   "en": "Amethyst Lodestone",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/巨龙魔法/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。6充能，1d6 每日黎明恢复；额外1d8光耀；DC18力量豁免",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "6",
+    "regain": "1d6 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "1d8",
+     "type": "光耀",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 18,
+    "ability": "str"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:翡翠钢笔",
+   "name": "翡翠钢笔",
+   "en": "Emerald Pen",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/巨龙魔法/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:蓝宝石圆盾",
+   "name": "蓝宝石圆盾",
+   "en": "Sapphire Buckler",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/巨龙魔法/魔法物品.html",
+   "alsoIn": [],
+   "summary": "护甲（盾牌），极珍稀，需同调。抗心灵/雷鸣",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "盾牌",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "雷鸣"
+    }
+   ],
+   "resist": [
+    "心灵",
+    "雷鸣"
+   ],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:覆鳞饰物",
+   "name": "覆鳞饰物",
+   "en": "Scaled Ornament",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/巨龙魔法/宝库物品.html",
+   "alsoIn": [],
+   "summary": "奇物，稀有度多种，需同调。AC+1；涉及魅惑",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "多种",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "ac": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [
+    "charmed"
+   ],
+   "consumable": false,
+   "rarityList": []
+  },
+  {
+   "id": "item:铂金围巾",
+   "name": "铂金围巾",
+   "en": "Platinum Scarf",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/巨龙魔法/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，传说，需同调。额外2d4光耀；免疫光耀；词条：生命之息、铂金战盾、光耀战锤",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "2d4",
+     "type": "光耀",
+     "when": "额外"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [
+    "光耀"
+   ],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:魔网红宝石",
+   "name": "魔网红宝石",
+   "en": "Ruby Weave Gem",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/巨龙魔法/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，传说，需施法者同调。3充能，全部 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true,
+    "by": "施法者"
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "全部 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:黄玉歼灭者",
+   "name": "黄玉歼灭者",
+   "en": "Topaz Annihilator",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/巨龙魔法/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（枪械），传说，需同调。DC18豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "武器",
+   "baseItem": "枪械",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "黯蚀"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 18,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:龙器",
+   "name": "龙器",
+   "en": "Dragon Vessel",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/巨龙魔法/宝库物品.html",
+   "alsoIn": [],
+   "summary": "奇物，稀有度多种，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "多种",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false,
+   "rarityList": []
+  },
+  {
+   "id": "item:龙威药水",
+   "name": "龙威药水",
+   "en": "Potion of Dragon's Majesty",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/巨龙魔法/魔法物品.html",
+   "alsoIn": [],
+   "summary": "药水，传说。消耗品",
+   "uncertain": [],
+   "itemType": "药水",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:龙怒武器",
+   "name": "龙怒武器",
+   "en": "Dragon's Wrath Weapon",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/巨龙魔法/宝库物品.html",
+   "alsoIn": [],
+   "summary": "武器（任意），稀有度多种，需同调。攻击+1、伤害+1；DC16敏捷豁免",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意",
+   "rarity": "多种",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 16,
+    "ability": "dex"
+   },
+   "conditions": [],
+   "consumable": false,
+   "rarityList": []
+  },
+  {
+   "id": "item:龙枪",
+   "name": "龙枪",
+   "en": "Dragonlance",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/巨龙魔法/魔法物品.html",
+   "alsoIn": [
+    "龙枪：龙后之影"
+   ],
+   "summary": "武器（骑枪或长矛），传说，需同调。攻击+3、伤害+3；额外3d6力场",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "骑枪或长矛",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 3,
+    "damage": 3
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "3d6",
+     "type": "力场",
+     "when": "额外"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:龙皮腰带",
+   "name": "龙皮腰带",
+   "en": "Dragonhide Belt",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/巨龙魔法/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通/珍稀/极珍稀，需武僧同调。加值随稀有度变化",
+   "uncertain": [
+    "bonus"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "多种",
+   "attunement": {
+    "required": true,
+    "by": "武僧"
+   },
+   "bonus": [
+    {
+     "rarity": "非普通",
+     "value": 1
+    },
+    {
+     "rarity": "珍稀",
+     "value": 2
+    },
+    {
+     "rarity": "极珍稀",
+     "value": 3
+    }
+   ],
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false,
+   "rarityList": [
+    "非普通",
+    "珍稀",
+    "极珍稀"
+   ]
+  },
+  {
+   "id": "item:龙触法器",
+   "name": "龙触法器",
+   "en": "Dragon-Touched Focus",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/巨龙魔法/宝库物品.html",
+   "alsoIn": [],
+   "summary": "奇物，稀有度多种，需施法者同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "多种",
+   "attunement": {
+    "required": true,
+    "by": "施法者"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false,
+   "rarityList": []
+  }
+ ]
+}

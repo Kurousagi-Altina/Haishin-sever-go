@@ -1,0 +1,1010 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "巨人之荣耀",
+ "generated": "2026-11-09",
+ "count": 27,
+ "entries": [
+  {
+   "id": "item:勇气战争号角",
+   "name": "勇气战争号角",
+   "en": "War Horn of Valor",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀。AC+1；涉及恐慌；词条：激活符文",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "ac": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [
+    "frightened"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:史前异能塑像",
+   "name": "史前异能塑像",
+   "en": "Prehistoric Figurines of Wondrous Power",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/多种稀有度.htm",
+   "alsoIn": [],
+   "summary": "奇物，稀有度多种。可施放水下呼吸",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "多种",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "水下呼吸",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false,
+   "rarityList": []
+  },
+  {
+   "id": "item:司寇雷乌斯的宝珠",
+   "name": "司寇雷乌斯的宝珠",
+   "en": "Orb of Skoraeus",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/传说.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说，需由施法者同调。豁免+2；3充能，全部 每日黎明恢复；词条：充足成分、敏锐心智、神性视觉",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true,
+    "by": "由施法者"
+   },
+   "bonus": {
+    "save": 2
+   },
+   "charges": {
+    "max": "3",
+    "regain": "全部 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:和睦戒指",
+   "name": "和睦戒指",
+   "en": "Ring of Amity",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "戒指，极珍稀，需同调。词条：激活符文",
+   "uncertain": [],
+   "itemType": "戒指",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:圣所护符",
+   "name": "圣所护符",
+   "en": "Sanctum Amulet",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。词条：激活符文",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:安南之锛",
+   "name": "安南之锛",
+   "en": "Adze of Annam",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/神器.htm",
+   "alsoIn": [],
+   "summary": "武器（巨斧），神器，需同调。攻击+3、伤害+3；可施放地动术；额外3d12力场；词条：随机属性、魔法武器、神圣之锄",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "巨斧",
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 3,
+    "damage": 3
+   },
+   "charges": null,
+   "spells": [
+    {
+     "name": "地动术",
+     "level": 6,
+     "cost": null
+    }
+   ],
+   "extraDamage": [
+    {
+     "dice": "3d12",
+     "type": "力场",
+     "when": "额外"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:安防护甲",
+   "name": "安防护甲",
+   "en": "Armor of Safeguarding",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "护甲（重甲），极珍稀，需同调。可施放希望信标；词条：激活符文",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "重甲",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "希望信标",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:完美潜能头盔",
+   "name": "完美潜能头盔",
+   "en": "Helm of Perfect Potential",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/神器.htm",
+   "alsoIn": [],
+   "summary": "奇物，神器，需同调。6充能，1d6 每日黎明恢复；DC20敏捷豁免；词条：随机属性、狡诈之主、元素浩劫之矢、施法",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "6",
+    "regain": "1d6 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 20,
+    "ability": "dex"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:愈炉长弓",
+   "name": "愈炉长弓",
+   "en": "Longbow of the Healing Hearth",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/传说.htm",
+   "alsoIn": [],
+   "summary": "武器（长弓），传说，需同调。攻击+3、伤害+3；8充能，1d4+1 每日黎明恢复；DC18豁免；词条：治愈箭、施法",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "武器",
+   "baseItem": "长弓",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 3,
+    "damage": 3
+   },
+   "charges": {
+    "max": "8",
+    "regain": "1d4+1 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 18,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:掘地之爪",
+   "name": "掘地之爪",
+   "en": "Delver's Claws",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。词条：激活符文",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d4",
+     "type": "挥砍"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:掠魂尖啸",
+   "name": "掠魂尖啸",
+   "en": "Reaper's Scream",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/传说.htm",
+   "alsoIn": [],
+   "summary": "武器（钉头锤），传说，需同调。攻击+2、伤害+2；DC15感知豁免；词条：激活符文",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "钉头锤",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 2,
+    "damage": 2
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "wis"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:旅人之靴",
+   "name": "旅人之靴",
+   "en": "Wayfarer's Boots",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。可施放脚底抹油；词条：激活符文",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "脚底抹油",
+     "level": 1,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:朔风披风",
+   "name": "朔风披风",
+   "en": "Mistral Mantle",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。可施放雪雨暴；DC14敏捷豁免；词条：激活符文",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "雪雨暴",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "寒冷"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 14,
+    "ability": "dex"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:根深蒂固法杖",
+   "name": "根深蒂固法杖",
+   "en": "Staff of the Rooted Hills",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "法杖，极珍稀，需同调。攻击+1、伤害+1；可施放定身类人；DC12力量豁免；词条：激活符文",
+   "uncertain": [],
+   "itemType": "法杖",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [
+    {
+     "name": "定身类人",
+     "level": 2,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 12,
+    "ability": "str"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:毕格比裨益臂镯",
+   "name": "毕格比裨益臂镯",
+   "en": "Bigby's Beneficent Bracelet",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/神器.htm",
+   "alsoIn": [],
+   "summary": "奇物，神器，需同调。可施放法师之手、解离术、毕格比之手；词条：随机属性、灵活手指、力场雕塑、有助之手",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "法师之手",
+     "level": 0,
+     "cost": null
+    },
+    {
+     "name": "解离术",
+     "level": 6,
+     "cost": null
+    },
+    {
+     "name": "毕格比之手",
+     "level": 9,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:灭龙拳",
+   "name": "灭龙拳",
+   "en": "Wyrmreaver Gauntlets",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。额外1d6力场；词条：激活符文",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "1d6",
+     "type": "力场",
+     "when": "额外"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:炽焰无畏者之盾",
+   "name": "炽焰无畏者之盾",
+   "en": "Shield of the Blazing Dreadnought",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/传说.htm",
+   "alsoIn": [],
+   "summary": "护甲（盾牌），传说，需同调。免疫火焰；词条：炽魂、净火、盾击",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "盾牌",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "3d6",
+     "type": "钝击"
+    },
+    {
+     "dice": "3d6",
+     "type": "火焰"
+    }
+   ],
+   "resist": [],
+   "immune": [
+    "火焰"
+   ],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:焚焰之笞",
+   "name": "焚焰之笞",
+   "en": "Lash of Immolation",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（鞭子），珍稀。攻击+1、伤害+1；额外1d6火焰；词条：激活符文",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "鞭子",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "1d6",
+     "type": "火焰",
+     "when": "额外"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:碎岩胸甲",
+   "name": "碎岩胸甲",
+   "en": "Stonebreaker's Breastplate",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/传说.htm",
+   "alsoIn": [],
+   "summary": "护甲（胸甲），传说，需同调。可施放石墙术；DC14豁免；词条：激活符文",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "护甲",
+   "baseItem": "胸甲",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "石墙术",
+     "level": 5,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [
+    "prone"
+   ],
+   "save": {
+    "dc": 14,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:祭血之刃",
+   "name": "祭血之刃",
+   "en": "Bloodshed Blade",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（任意剑），极珍稀，需同调。词条：激活符文",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意剑",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:耀闪灭击铳",
+   "name": "耀闪灭击铳",
+   "en": "Lucent Destroyer",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（火铳），极珍稀，需同调。攻击+1、伤害+1；可施放阳炎射线；DC17豁免；词条：激活符文",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "武器",
+   "baseItem": "火铳",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [
+    {
+     "name": "阳炎射线",
+     "level": 6,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 17,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:荧光符文颜料",
+   "name": "荧光符文颜料",
+   "en": "Glowrune Pigment",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀。词条：旅途符文、生命符文、光明符文、山脉符文",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [
+    "prone"
+   ],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:西风护甲",
+   "name": "西风护甲",
+   "en": "Zephyr Armor",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/珍稀.htm",
+   "alsoIn": [],
+   "summary": "护甲（轻甲），珍稀，需同调。可施放风墙术；DC15豁免；词条：激活符文",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "护甲",
+   "baseItem": "轻甲",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "风墙术",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:金穗琴",
+   "name": "金穗琴",
+   "en": "Harp of Gilded Plenty",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/传说.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说，需同调。可施放英雄宴、安定心神；DC15豁免；词条：忠诚之歌、丰饶盛宴、抚慰旋律、智能",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "英雄宴",
+     "level": 6,
+     "cost": null
+    },
+    {
+     "name": "安定心神",
+     "level": 2,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:降怒王冠",
+   "name": "降怒王冠",
+   "en": "Crown of the Wrath Bringer",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。可施放恐惧术；DC15豁免；词条：激活符文",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "恐惧术",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:雨云宝冠",
+   "name": "雨云宝冠",
+   "en": "Nimbus Coronet",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。词条：激活符文",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:雷音铳",
+   "name": "雷音铳",
+   "en": "Thunderbuss",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/巨人宝藏/魔法物品/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（手铳），极珍稀。攻击+1、伤害+1；DC14体质豁免；词条：激活符文",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "手铳",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "3d6",
+     "type": "雷鸣"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 14,
+    "ability": "con"
+   },
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

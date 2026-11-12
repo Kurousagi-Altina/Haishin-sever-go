@@ -1,0 +1,541 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "被遗忘的国度",
+ "generated": "2026-11-09",
+ "count": 15,
+ "entries": [
+  {
+   "id": "item:乘风板",
+   "name": "乘风板",
+   "en": "Windskiff",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦冒险/第八章：魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀。3充能，全部 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "全部 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:元素胸针",
+   "name": "元素胸针",
+   "en": "Brooch of the Elements",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/耐瑟瑞尔/魔法物品/珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。3充能，全部 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "全部 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:卡林曼农水晶",
+   "name": "卡林曼农水晶",
+   "en": "Calimemnon Crystal",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦冒险/第八章：魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，神器，需同调。可施放祈愿术；DC18敏捷豁免；词条：水晶词条、奥术法器、飞行、法术",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "祈愿术",
+     "level": 9,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "寒冷"
+    },
+    {
+     "dice": "6d6+6",
+     "type": "光耀"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 18,
+    "ability": "dex"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:变容面具",
+   "name": "变容面具",
+   "en": "Mask of Changed Appearance",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/耐瑟瑞尔/魔法物品/普通.htm",
+   "alsoIn": [],
+   "summary": "奇物，普通。3充能，1d3 每日黎明恢复；涉及隐形；词条：重获充能",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [
+    "invisible"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:唤涡音叉",
+   "name": "唤涡音叉",
+   "en": "Fork of Eddy Summoning",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/耐瑟瑞尔/魔法物品/珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:奥术电池",
+   "name": "奥术电池",
+   "en": "Arcane Battery",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/耐瑟瑞尔/魔法物品/非普通.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:机巧奇具",
+   "name": "机巧奇具",
+   "en": "Mechanical Wonders",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦冒险/第八章：魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，稀有度多种。AC+2；涉及昏迷；词条：机械坚韧、上弦操作、载重提升、鸣钟",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "多种",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "ac": 2
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [
+    "unconscious"
+   ],
+   "consumable": false,
+   "rarityList": []
+  },
+  {
+   "id": "item:漩涡之帽",
+   "name": "漩涡之帽",
+   "en": "Hat of Vortexes",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/耐瑟瑞尔/魔法物品/非普通.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需同调。3充能，全部 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "全部 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:竖琴手胸针",
+   "name": "竖琴手胸针",
+   "en": "Harper Pin",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦冒险/第八章：魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通/珍稀，需同调。可施放回避侦测；DC13豁免；词条：银质竖琴手胸针、金质竖琴手胸针",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "多种",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "回避侦测",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 13,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false,
+   "rarityList": [
+    "非普通",
+    "珍稀"
+   ]
+  },
+  {
+   "id": "item:角之王冠",
+   "name": "角之王冠",
+   "en": "Crown of Horns",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦冒险/第八章：魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，神器，需同调。可施放律令死亡、传送术；DC18体质豁免；涉及恐慌/失能；词条：诅咒、束缚、残酷、终局",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "律令死亡",
+     "level": 9,
+     "cost": null
+    },
+    {
+     "name": "传送术",
+     "level": 7,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "4d8",
+     "type": "黯蚀"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 18,
+    "ability": "con"
+   },
+   "conditions": [
+    "frightened",
+    "incapacitated"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:达玛剌宝珠",
+   "name": "达玛剌宝珠",
+   "en": "Orb of Damara",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦冒险/第八章：魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，神器，需同调。6充能，1d4+2 每日黎明恢复；DC18敏捷豁免；涉及恐慌/失能；词条：宝珠词条、龙息、恐惧灵光、飞行",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "6",
+    "regain": "1d4+2 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 18,
+    "ability": "dex"
+   },
+   "conditions": [
+    "frightened",
+    "incapacitated"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:迷锁能核手链",
+   "name": "迷锁能核手链",
+   "en": "Mythallar Bracelet",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/耐瑟瑞尔/魔法物品/普通.htm",
+   "alsoIn": [],
+   "summary": "奇物，普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:迷锁能核斗篷",
+   "name": "迷锁能核斗篷",
+   "en": "Mythallar Cloak",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/耐瑟瑞尔/魔法物品/珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。10充能，1d10 每日黎明恢复；额外1d4光耀",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "10",
+    "regain": "1d10 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "1d4",
+     "type": "光耀",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:魔卫手铃",
+   "name": "魔卫手铃",
+   "en": "Magen Handbell",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/耐瑟瑞尔/魔法物品/珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀。词条：狂暴魔卫",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:龙之卷册",
+   "name": "龙之卷册",
+   "en": "Tome of the Dragon",
+   "aliases": [],
+   "source": "被遗忘的国度",
+   "section": "setting",
+   "path": "topics/被遗忘的国度/费伦冒险/第八章：魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "12d6",
+     "type": "黯蚀"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

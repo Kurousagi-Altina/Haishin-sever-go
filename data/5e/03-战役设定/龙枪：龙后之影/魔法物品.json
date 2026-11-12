@@ -1,0 +1,108 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "龙枪：龙后之影",
+ "generated": "2026-11-09",
+ "count": 3,
+ "entries": [
+  {
+   "id": "item:卡冈那斯提森林斗篷",
+   "name": "卡冈那斯提森林斗篷",
+   "en": "Kagonesti Forest Shroud",
+   "aliases": [],
+   "source": "龙枪：龙后之影",
+   "section": "setting",
+   "path": "topics/龙枪：龙后之影/装备和魔法物品/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:追忆之镜",
+   "name": "追忆之镜",
+   "en": "Mirror Of Reflected Pasts",
+   "aliases": [],
+   "source": "龙枪：龙后之影",
+   "section": "setting",
+   "path": "topics/龙枪：龙后之影/装备和魔法物品/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。DC15感知豁免；涉及麻痹",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "wis"
+   },
+   "conditions": [
+    "paralyzed"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:飞行要塞魔舵",
+   "name": "飞行要塞魔舵",
+   "en": "Flying Citadel Helm",
+   "aliases": [],
+   "source": "龙枪：龙后之影",
+   "section": "setting",
+   "path": "topics/龙枪：龙后之影/装备和魔法物品/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需施法者同调。免疫毒素/心灵；DC20敏捷豁免；词条：转移同调、摧毁",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true,
+    "by": "施法者"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [
+    "毒素",
+    "心灵"
+   ],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 20,
+    "ability": "dex"
+   },
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

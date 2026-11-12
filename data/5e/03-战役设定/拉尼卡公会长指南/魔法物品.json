@@ -1,0 +1,902 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "拉尼卡公会长指南",
+ "generated": "2026-11-09",
+ "count": 26,
+ "entries": [
+  {
+   "id": "item:伊捷护符",
+   "name": "伊捷护符",
+   "en": "Izzet Charm",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/公会魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物。可施放解除魔法；消耗品",
+   "uncertain": [
+    "rarity"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": null,
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "解除魔法",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:俄佐立护符",
+   "name": "俄佐立护符",
+   "en": "Azorius Charm",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/公会魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物。可施放定身类人；消耗品",
+   "uncertain": [
+    "rarity"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": null,
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "定身类人",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:公会印记",
+   "name": "公会印记",
+   "en": "Guild Signet",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/魔法物品详述.htm",
+   "alsoIn": [],
+   "summary": "戒指，非普通，需同调。3充能，1d3 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "戒指",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:公会符镇兵",
+   "name": "公会符镇兵",
+   "en": "Guild Keyrune",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/魔法物品详述.htm",
+   "alsoIn": [],
+   "summary": "奇物，需同公会成员同调。涉及目盲/耳聋",
+   "uncertain": [
+    "rarity"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": null,
+   "attunement": {
+    "required": true,
+    "by": "同公会成员"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [
+    "blinded",
+    "deafened"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:古鲁护符",
+   "name": "古鲁护符",
+   "en": "Gruul Charm",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/公会魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物。可施放英雄气概；消耗品",
+   "uncertain": [
+    "rarity"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": null,
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "英雄气概",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:幻影师护臂",
+   "name": "幻影师护臂",
+   "en": "Illusionist's Bracers",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/魔法物品详述.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需施法者同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true,
+    "by": "施法者"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:底密尔护符",
+   "name": "底密尔护符",
+   "en": "Dimir Charm",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/公会魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物。可施放闪现术；消耗品",
+   "uncertain": [
+    "rarity"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": null,
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "闪现术",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:拉铎司护符",
+   "name": "拉铎司护符",
+   "en": "Rakdos Charm",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/公会魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物。可施放疯狂冠冕；消耗品",
+   "uncertain": [
+    "rarity"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": null,
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "疯狂冠冕",
+     "level": 2,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:拉铎司祭刃",
+   "name": "拉铎司祭刃",
+   "en": "Rakdos Riteknife",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/魔法物品详述.htm",
+   "alsoIn": [],
+   "summary": "武器（匕首），传说，需同调。攻击+1、伤害+1；额外1d4黯蚀；词条：吸取活力、湮灭",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "匕首",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "1d4",
+     "type": "黯蚀",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:旅人杖",
+   "name": "旅人杖",
+   "en": "Voyager Staff",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/魔法物品详述.htm",
+   "alsoIn": [],
+   "summary": "法杖，极珍稀，需施法者同调。攻击+1、伤害+1；10充能，1d6+4 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "法杖",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true,
+    "by": "施法者"
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": {
+    "max": "10",
+    "regain": "1d6+4 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:析米克护符",
+   "name": "析米克护符",
+   "en": "Simic Charm",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/公会魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物。可施放强化属性；消耗品",
+   "uncertain": [
+    "rarity"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": null,
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "强化属性",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:欧佐夫护符",
+   "name": "欧佐夫护符",
+   "en": "Orzhov Charm",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/公会魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物。可施放降咒；消耗品",
+   "uncertain": [
+    "rarity"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": null,
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "降咒",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:波洛斯护符",
+   "name": "波洛斯护符",
+   "en": "Boros Charm",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/公会魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物。可施放光导箭；消耗品",
+   "uncertain": [
+    "rarity"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": null,
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "光导箭",
+     "level": 1,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:瑟雷尼亚护符",
+   "name": "瑟雷尼亚护符",
+   "en": "Selesyna Charm",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/公会魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物。可施放活力灵光；消耗品",
+   "uncertain": [
+    "rarity"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": null,
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "活力灵光",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:米捷护甲",
+   "name": "米捷护甲",
+   "en": "Mizzium Armor",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/魔法物品详述.htm",
+   "alsoIn": [],
+   "summary": "护甲（中型或重型，非兽皮甲），珍稀。",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "中型或重型，非兽皮甲",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:米捷装置",
+   "name": "米捷装置",
+   "en": "Mizzium Apparatus",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/魔法物品详述.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:米捷轰击炮",
+   "name": "米捷轰击炮",
+   "en": "Mizzium Mortar",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/魔法物品详述.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀。4充能，1d4 每日黎明恢复；词条：热融喷射、米捷轰炸",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": {
+    "max": "4",
+    "regain": "1d4 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "5d4",
+     "type": "火焰"
+    },
+    {
+     "dice": "5d8",
+     "type": "火焰"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:缚空杖",
+   "name": "缚空杖",
+   "en": "Skyblinder Staff",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/魔法物品详述.htm",
+   "alsoIn": [],
+   "summary": "法杖，非普通，需同调。攻击+1、伤害+1",
+   "uncertain": [],
+   "itemType": "法杖",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:聚焰器",
+   "name": "聚焰器",
+   "en": "Pyroconvercer",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/魔法物品详述.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "4d6",
+     "type": "火焰"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:葛加理护符",
+   "name": "葛加理护符",
+   "en": "Golgari Charm",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/公会魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物。可施放解除魔法；消耗品",
+   "uncertain": [
+    "rarity"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": null,
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "解除魔法",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": true
+  },
+  {
+   "id": "item:貌纹绘彩",
+   "name": "貌纹绘彩",
+   "en": "Moodmark Paint",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/魔法物品详述.htm",
+   "alsoIn": [],
+   "summary": "奇物，普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:贱民之盾",
+   "name": "贱民之盾",
+   "en": "Pariah's shield",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/魔法物品详述.htm",
+   "alsoIn": [],
+   "summary": "护甲（盾牌），珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "盾牌",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:远祖之剑",
+   "name": "远祖之剑",
+   "en": "Sword of the Paruns",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/魔法物品详述.htm",
+   "alsoIn": [],
+   "summary": "武器（长剑），极珍稀，需同调。攻击+1、伤害+1",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "长剑",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:铸阳锤",
+   "name": "铸阳锤",
+   "en": "Sunforger",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/魔法物品详述.htm",
+   "alsoIn": [],
+   "summary": "武器（战锤），珍稀，需同调。攻击+2、伤害+2",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "战锤",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 2,
+    "damage": 2
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "6d6",
+     "type": "火焰"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:间谍低语",
+   "name": "间谍低语",
+   "en": "Spies' Murmur",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/魔法物品详述.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需同调。涉及失能",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [
+    "incapacitated"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:隼面",
+   "name": "隼面",
+   "en": "Peregrine Mask",
+   "aliases": [],
+   "source": "拉尼卡公会长指南",
+   "section": "setting",
+   "path": "topics/拉尼卡公会长指南/魔法物品详述.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

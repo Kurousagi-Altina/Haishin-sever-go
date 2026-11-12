@@ -1,0 +1,518 @@
+{
+ "category": "feat",
+ "type": "专长",
+ "source": "巨人之荣耀",
+ "generated": "2026-11-09",
+ "count": 8,
+ "entries": [
+  {
+   "id": "feat:云巨人之诡诈",
+   "name": "云巨人之诡诈",
+   "en": "Guile of the Cloud Giant",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/角色选项/专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；反应：对被命中的攻击获得伤害抗性并传送30尺。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "巨人打击（云雾打击）专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "con",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "迷云逃逸",
+     "trigger": "当一个你可见的生物以攻击检定命中你时",
+     "action": "reaction",
+     "effect": "抗性；传送",
+     "uses": "熟练加值",
+     "recharge": "long"
+    }
+   ]
+  },
+  {
+   "id": "feat:山丘巨人之健强",
+   "name": "山丘巨人之健强",
+   "en": "Vigor of the Hill Giant",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/角色选项/专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；反应：免于被移动或倒地；短休进食额外回复。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "巨人打击（山丘打击）专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "con",
+     "wis"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "不动如山",
+     "trigger": "当你受到一次让你移动至少5尺、或给予你 倒地Prone 状态的效应时",
+     "action": "reaction",
+     "effect": "状态:prone",
+     "uses": null,
+     "recharge": null,
+     "conditions": [
+      "prone"
+     ]
+    },
+    {
+     "name": "钢铁肠胃",
+     "trigger": "当你在短休时进食",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:巨人打击",
+   "name": "巨人打击",
+   "en": "Strike of the Giants",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/角色选项/专长.htm",
+   "alsoIn": [],
+   "summary": "选一种巨人打击；每回合一次命中时附加元素伤害并触发豁免效应，次数为熟练加值。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "军用武器熟练或巨人养子背景"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "云雾打击",
+     "trigger": "每回合一次，近战武器或投掷武器攻击命中时",
+     "action": "passive",
+     "effect": "骰:1d4；伤害:雷鸣；豁免:wis DC ",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "dice": "1d4",
+     "damageTypes": [
+      "雷鸣"
+     ],
+     "save": {
+      "ability": "wis",
+      "dc": "8+熟练+str或con"
+     }
+    },
+    {
+     "name": "火焰打击",
+     "trigger": "每回合一次，近战武器或投掷武器攻击命中时",
+     "action": "passive",
+     "effect": "骰:1d10；伤害:火焰",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "dice": "1d10",
+     "damageTypes": [
+      "火焰"
+     ]
+    },
+    {
+     "name": "寒霜打击",
+     "trigger": "每回合一次，近战武器或投掷武器攻击命中时",
+     "action": "passive",
+     "effect": "骰:1d6；伤害:寒冷；豁免:con DC ",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "dice": "1d6",
+     "damageTypes": [
+      "寒冷"
+     ],
+     "save": {
+      "ability": "con",
+      "dc": "8+熟练+str或con"
+     }
+    },
+    {
+     "name": "山丘打击",
+     "trigger": "每回合一次，近战武器或投掷武器攻击命中时",
+     "action": "passive",
+     "effect": "骰:1d6；豁免:str DC ；状态:prone",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "dice": "1d6",
+     "conditions": [
+      "prone"
+     ],
+     "save": {
+      "ability": "str",
+      "dc": "8+熟练+str或con"
+     }
+    },
+    {
+     "name": "岩石打击",
+     "trigger": "每回合一次，近战武器或投掷武器攻击命中时",
+     "action": "passive",
+     "effect": "骰:1d6；伤害:力场；豁免:str DC ",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "dice": "1d6",
+     "damageTypes": [
+      "力场"
+     ],
+     "save": {
+      "ability": "str",
+      "dc": "8+熟练+str或con"
+     }
+    },
+    {
+     "name": "风暴打击",
+     "trigger": "每回合一次，近战武器或投掷武器攻击命中时",
+     "action": "passive",
+     "effect": "骰:1d6；伤害:闪电；豁免:con DC 8+熟练+str或con",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "dice": "1d6",
+     "damageTypes": [
+      "闪电"
+     ],
+     "save": {
+      "ability": "con",
+      "dc": "8+熟练+str或con"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:火巨人之余烬",
+   "name": "火巨人之余烬",
+   "en": "Ember of the Fire Giant",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/角色选项/专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；火焰抗性；以攻击替换为15尺半径火焰爆发，敏捷豁免，致盲。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "巨人打击（火焰打击）专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "con",
+     "wis"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "抗性:火焰"
+   ],
+   "mechanics": [
+    {
+     "name": "生于烈焰",
+     "trigger": "",
+     "action": "passive",
+     "effect": "伤害:火焰；抗性",
+     "uses": null,
+     "recharge": null,
+     "damageTypes": [
+      "火焰"
+     ]
+    },
+    {
+     "name": "炽热灼烧",
+     "trigger": "当你在你的回合中执行攻击动作时",
+     "action": "passive",
+     "effect": "骰:1d8；伤害:火焰；豁免:dex DC 8+熟练+提升属性；状态:blinded",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "dice": "1d8",
+     "damageTypes": [
+      "火焰"
+     ],
+     "conditions": [
+      "blinded"
+     ],
+     "save": {
+      "ability": "dex",
+      "dc": "8+熟练+提升属性"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:石巨人之敏锐",
+   "name": "石巨人之敏锐",
+   "en": "Keenness of the Stone Giant",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/角色选项/专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；60尺黑暗视觉；附赠动作投石法术攻击1d10力场并可击倒。",
+   "uncertain": [
+    "mechanics"
+   ],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "巨人打击（岩石打击）专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "con",
+     "wis"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "黑暗视觉",
+    "动作"
+   ],
+   "mechanics": [
+    {
+     "name": "洞穴视觉",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "投掷石块",
+     "trigger": "",
+     "action": "action",
+     "effect": "骰:1d10；伤害:力场；豁免:str DC 8+熟练+提升属性；状态:prone",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "dice": "1d10",
+     "damageTypes": [
+      "力场"
+     ],
+     "conditions": [
+      "prone"
+     ],
+     "save": {
+      "ability": "str",
+      "dc": "8+熟练+提升属性"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:符文塑形者",
+   "name": "符文塑形者",
+   "en": "Rune Shaper",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/角色选项/专长.htm",
+   "alsoIn": [],
+   "summary": "得通晓语言；长休刻印符文临时习得对应1环法术，另可免费无材料施放其一次。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "施法特性或符文雕刻者背景"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:通晓语言",
+    "法术:云雾术Fog 《"
+   ],
+   "mechanics": [
+    {
+     "name": "通晓语言",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:通晓语言",
+     "uses": "1",
+     "recharge": "long"
+    },
+    {
+     "name": "符文魔法",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:云雾术Fog 《",
+     "uses": "1",
+     "recharge": "long"
+    }
+   ]
+  },
+  {
+   "id": "feat:霜巨人之狂怒",
+   "name": "霜巨人之狂怒",
+   "en": "Fury of the Frost Giant",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/角色选项/专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；寒冷抗性；反应对攻击者造成寒冷伤害并使其速度归零（体质豁免）。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "巨人打击（寒霜打击）专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "con",
+     "wis"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "抗性:寒冷",
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "生于冰霜",
+     "trigger": "",
+     "action": "passive",
+     "effect": "伤害:寒冷；抗性",
+     "uses": null,
+     "recharge": null,
+     "damageTypes": [
+      "寒冷"
+     ]
+    },
+    {
+     "name": "霜寒回击",
+     "trigger": "当一个30尺内你可见的生物以攻击检定命中你",
+     "action": "reaction",
+     "effect": "骰:1d8；伤害:寒冷；豁免:con DC 8+熟练+提升属性",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "dice": "1d8",
+     "damageTypes": [
+      "寒冷"
+     ],
+     "save": {
+      "ability": "con",
+      "dc": "8+熟练+提升属性"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:风暴巨人之灵魂",
+   "name": "风暴巨人之灵魂",
+   "en": "Soul of the Storm Giant",
+   "aliases": [],
+   "source": "巨人之荣耀",
+   "section": "official",
+   "path": "topics/巨人之荣耀/角色选项/专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；附赠动作开风暴光环：闪电/雷鸣抗性，攻击你有劣势，使进入者减速。",
+   "uncertain": [
+    "mechanics"
+   ],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "巨人打击（风暴打击）专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "抗性:闪电",
+    "抗性:雷鸣",
+    "动作"
+   ],
+   "mechanics": [
+    {
+     "name": "旋涡灵光",
+     "trigger": "",
+     "action": "action",
+     "effect": "伤害:闪电/雷鸣；豁免:str DC 8+熟练+提升属性；状态:incapacitated；抗性；劣势",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "damageTypes": [
+      "闪电",
+      "雷鸣"
+     ],
+     "conditions": [
+      "incapacitated"
+     ],
+     "save": {
+      "ability": "str",
+      "dc": "8+熟练+提升属性"
+     }
+    }
+   ]
+  }
+ ]
+}

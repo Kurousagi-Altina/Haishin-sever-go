@@ -1,0 +1,388 @@
+{
+ "category": "feat",
+ "type": "专长",
+ "source": "龙枪：龙后之影",
+ "generated": "2026-11-09",
+ "count": 9,
+ "entries": [
+  {
+   "id": "feat:圣剑骑士",
+   "name": "圣剑骑士",
+   "en": "Knight of The Sword",
+   "aliases": [],
+   "source": "龙枪：龙后之影",
+   "section": "setting",
+   "path": "topics/龙枪：龙后之影/创立角色/新专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；命中可令目标感知豁免否则恐慌，成功则下次攻击劣势，次数为熟练加值。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "索兰尼亚扈从专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "丧志打击",
+     "trigger": "当你以武器攻击检定命中一个生物时",
+     "action": "passive",
+     "effect": "豁免:wis DC 8+熟练+提升属性；状态:frightened；劣势",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "conditions": [
+      "frightened"
+     ],
+     "save": {
+      "ability": "wis",
+      "dc": "8+熟练+提升属性"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:玫瑰骑士",
+   "name": "玫瑰骑士",
+   "en": "Knight of The Rose",
+   "aliases": [],
+   "source": "龙枪：龙后之影",
+   "section": "setting",
+   "path": "topics/龙枪：龙后之影/创立角色/新专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；附赠动作给30尺内生物1d8+熟练+属性临时生命值，次数为熟练加值。",
+   "uncertain": [
+    "mechanics"
+   ],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "索兰尼亚扈从专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "con",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "熟练",
+    "动作"
+   ],
+   "mechanics": [
+    {
+     "name": "振奋集结",
+     "trigger": "",
+     "action": "action",
+     "effect": "骰:1d8；临时HP",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "dice": "1d8"
+    }
+   ]
+  },
+  {
+   "id": "feat:白袍入道",
+   "name": "白袍入道",
+   "en": "Adept of The White Robes",
+   "aliases": [],
+   "source": "龙枪：龙后之影",
+   "section": "setting",
+   "path": "topics/龙枪：龙后之影/创立角色/新专长.htm",
+   "alsoIn": [],
+   "summary": "得一个防护/预言2环法术（免费一次）；消耗法术位反应为30尺内目标减伤。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "高等术法入门（索林那瑞）专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "防护魔法",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": "1",
+     "recharge": "long"
+    },
+    {
+     "name": "防护结界",
+     "trigger": "当你或者一个你可见的距你30尺内的生物受到伤害时",
+     "action": "reaction",
+     "effect": "骰:d6",
+     "uses": null,
+     "recharge": null,
+     "dice": "d6"
+    }
+   ]
+  },
+  {
+   "id": "feat:皇冠骑士",
+   "name": "皇冠骑士",
+   "en": "Knight of The Crown",
+   "aliases": [],
+   "source": "龙枪：龙后之影",
+   "section": "setting",
+   "path": "topics/龙枪：龙后之影/创立角色/新专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；附赠动作令30尺内盟友反应攻击，命中加d8，次数为熟练加值。",
+   "uncertain": [
+    "mechanics"
+   ],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "索兰尼亚扈从专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "动作"
+   ],
+   "mechanics": [
+    {
+     "name": "号令集结",
+     "trigger": "",
+     "action": "action",
+     "effect": "骰:d8",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "dice": "d8"
+    }
+   ]
+  },
+  {
+   "id": "feat:神恩眷顾",
+   "name": "神恩眷顾",
+   "en": "Divinely Favored",
+   "aliases": [],
+   "source": "龙枪：龙后之影",
+   "section": "setting",
+   "path": "topics/龙枪：龙后之影/创立角色/新专长.htm",
+   "alsoIn": [],
+   "summary": "得一个牧师戏法与一个1环法术及卜筮术，可免费施放；可用圣徽作法器。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "龙枪战役"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:卜筮术"
+   ],
+   "mechanics": [
+    {
+     "name": "神恩眷顾",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:卜筮术",
+     "uses": "1",
+     "recharge": "long"
+    }
+   ]
+  },
+  {
+   "id": "feat:索兰尼亚扈从",
+   "name": "索兰尼亚扈从",
+   "en": "Squire of Solamnia",
+   "aliases": [],
+   "source": "龙枪：龙后之影",
+   "section": "setting",
+   "path": "topics/龙枪：龙后之影/创立角色/新专长.htm",
+   "alsoIn": [],
+   "summary": "上下坐骑只耗5尺；每回合一次攻击有优势并在命中时加d8，次数为熟练加值。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "龙枪战役，并且是战士、圣武士或索兰尼亚骑士背景"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "快速骑乘",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "精准打击",
+     "trigger": "当你对一个生物进行武器攻击检定时",
+     "action": "passive",
+     "effect": "骰:d8；优势",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "dice": "d8"
+    }
+   ]
+  },
+  {
+   "id": "feat:红袍入道",
+   "name": "红袍入道",
+   "en": "Adept of The Red Robes",
+   "aliases": [],
+   "source": "龙枪：龙后之影",
+   "section": "setting",
+   "path": "topics/龙枪：龙后之影/创立角色/新专长.htm",
+   "alsoIn": [],
+   "summary": "得一个幻术/变化2环法术（免费一次）；d20低于10可视为10，次数为熟练加值。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "高等术法入门（努林塔瑞）专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "洞见魔法",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": "1",
+     "recharge": "long"
+    },
+    {
+     "name": "魔法均衡",
+     "trigger": "当你进行攻击检定或是属性检定时",
+     "action": "passive",
+     "effect": "",
+     "uses": "熟练加值",
+     "recharge": "long"
+    }
+   ]
+  },
+  {
+   "id": "feat:高等术法入门",
+   "name": "高等术法入门",
+   "en": "Initiate of High Sorcery",
+   "aliases": [],
+   "source": "龙枪：龙后之影",
+   "section": "setting",
+   "path": "topics/龙枪：龙后之影/创立角色/新专长.htm",
+   "alsoIn": [],
+   "summary": "选一个月亮得一个法师戏法与两个1环法术（可各免费施放一次），自选施法属性。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "龙枪战役，并且是术士、法师或高等术法会大法师背景"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "戏法"
+   ],
+   "mechanics": [
+    {
+     "name": "高等术法入门",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": "1",
+     "recharge": "long"
+    }
+   ]
+  },
+  {
+   "id": "feat:黑袍入道",
+   "name": "黑袍入道",
+   "en": "Adept of the Black Robes",
+   "aliases": [],
+   "source": "龙枪：龙后之影",
+   "section": "setting",
+   "path": "topics/龙枪：龙后之影/创立角色/新专长.htm",
+   "alsoIn": [],
+   "summary": "得一个惑控/死灵2环法术（免费一次）；可花生命骰为伤害法术增伤。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "高等术法入门（努塔瑞）专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "雄心魔法",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": "1",
+     "recharge": "long"
+    },
+    {
+     "name": "生命引导",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  }
+ ]
+}

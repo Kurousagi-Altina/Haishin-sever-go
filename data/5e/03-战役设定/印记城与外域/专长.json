@@ -1,0 +1,351 @@
+{
+ "category": "feat",
+ "type": "专长",
+ "source": "印记城与外域",
+ "generated": "2026-11-09",
+ "count": 7,
+ "entries": [
+  {
+   "id": "feat:位面漫游者",
+   "name": "位面漫游者",
+   "en": "Planar Wanderer",
+   "aliases": [],
+   "source": "印记城与外域",
+   "section": "setting",
+   "path": "topics/印记城与外域/第一章/专长.htm",
+   "alsoIn": [],
+   "summary": "长休选酸/寒/火抗性；DC20奥秘检定开关传送门；感知附近传送门。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "外层位面后裔专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "抗性:强酸",
+    "抗性:寒冷",
+    "抗性:火焰",
+    "动作"
+   ],
+   "mechanics": [
+    {
+     "name": "位面适应",
+     "trigger": "当你完成一次长休时",
+     "action": "passive",
+     "effect": "伤害:火焰；抗性",
+     "uses": null,
+     "recharge": null,
+     "damageTypes": [
+      "火焰"
+     ]
+    },
+    {
+     "name": "传送门骇客",
+     "trigger": "",
+     "action": "action",
+     "effect": "骰:3d8；伤害:心灵；DC 20；传送",
+     "uses": "1",
+     "recharge": "long",
+     "dice": "3d8",
+     "damageTypes": [
+      "心灵"
+     ],
+     "save": {
+      "ability": null,
+      "dc": "20"
+     }
+    },
+    {
+     "name": "传送门感知",
+     "trigger": "",
+     "action": "action",
+     "effect": "传送",
+     "uses": "1",
+     "recharge": "long"
+    }
+   ]
+  },
+  {
+   "id": "feat:公义传承者",
+   "name": "公义传承者",
+   "en": "Righteous Heritor",
+   "aliases": [],
+   "source": "印记城与外域",
+   "section": "setting",
+   "path": "topics/印记城与外域/第一章/专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；反应：为自己或30尺内受伤生物减伤1d10+熟练加值，次数为熟练加值。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "外层位面后裔（善良外层位面）专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "舒缓伤痛",
+     "trigger": "当你或你周围30尺范围内的生物受到伤害时",
+     "action": "reaction",
+     "effect": "骰:1d10",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "dice": "1d10"
+    }
+   ]
+  },
+  {
+   "id": "feat:外域使节",
+   "name": "外域使节",
+   "en": "Outlands Envoy",
+   "aliases": [],
+   "source": "印记城与外域",
+   "section": "setting",
+   "path": "topics/印记城与外域/第一章/专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；得迷踪步和巧言术各可免费施放一次，巧言术免材料。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "外层位面后裔（外域）专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "法术:迷踪步",
+    "法术:巧言术"
+   ],
+   "mechanics": [
+    {
+     "name": "交路使者",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:迷踪步/巧言术",
+     "uses": null,
+     "recharge": "long"
+    }
+   ]
+  },
+  {
+   "id": "feat:外层位面后裔",
+   "name": "外层位面后裔",
+   "en": "Scion of the Outer Planes",
+   "aliases": [],
+   "source": "印记城与外域",
+   "section": "setting",
+   "path": "topics/印记城与外域/第一章/专长.htm",
+   "alsoIn": [],
+   "summary": "择一外层位面类型，得对应伤害抗性与一个戏法；是后续位面专长的前置。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "异度风景战役"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "戏法"
+   ],
+   "mechanics": [
+    {
+     "name": "外层位面后裔",
+     "trigger": "",
+     "action": "passive",
+     "effect": "抗性",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:恶意后继者",
+   "name": "恶意后继者",
+   "en": "Baleful Scion",
+   "aliases": [],
+   "source": "印记城与外域",
+   "section": "setting",
+   "path": "topics/印记城与外域/第一章/专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；每回合一次对60尺内目标额外1d6+熟练加值黯蚀伤害并自身回血。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "外层位面后裔（邪恶外层位面）专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "贪婪之攫",
+     "trigger": "当你对你周围60尺范围内的一个你可见的生物造成伤害时",
+     "action": "passive",
+     "effect": "骰:1d6；伤害:黯蚀；治疗",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "dice": "1d6",
+     "damageTypes": [
+      "黯蚀"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "feat:混乱与共者",
+   "name": "混乱与共者",
+   "en": "Cohort of Chaos",
+   "aliases": [],
+   "source": "印记城与外域",
+   "section": "setting",
+   "path": "topics/印记城与外域/第一章/专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；攻击/豁免掷出1或20时掷d4触发混乱耀斑四种效应之一。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "外层位面后裔（混乱外层位面）专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "混乱耀斑",
+     "trigger": "当你在一次攻击检定或豁免检定中骰出了1或20时",
+     "action": "passive",
+     "effect": "骰:D4；传送",
+     "uses": null,
+     "recharge": null,
+     "dice": "D4"
+    }
+   ]
+  },
+  {
+   "id": "feat:秩序代行者",
+   "name": "秩序代行者",
+   "en": "Agent of Order",
+   "aliases": [],
+   "source": "印记城与外域",
+   "section": "setting",
+   "path": "topics/印记城与外域/第一章/专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；每回合一次追加1d8力场伤害并以感知豁免束缚目标，次数为熟练加值。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "外层位面后裔（守序外层位面）专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "凝滞打击",
+     "trigger": "当你对你周围60尺范围内的一个你可见的生物造成伤害时",
+     "action": "passive",
+     "effect": "骰:1d8；伤害:力场；豁免:wis DC 8+熟练+你外层位面后裔专长的施法属性；状态:restrained",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "dice": "1d8",
+     "damageTypes": [
+      "力场"
+     ],
+     "conditions": [
+      "restrained"
+     ],
+     "save": {
+      "ability": "wis",
+      "dc": "8+熟练+你外层位面后裔专长的施法属性"
+     }
+    }
+   ]
+  }
+ ]
+}

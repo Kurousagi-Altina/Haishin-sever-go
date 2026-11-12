@@ -1,0 +1,42 @@
+{
+ "category": "feat",
+ "type": "专长",
+ "source": "剑湾冒险者指南",
+ "generated": "2026-11-09",
+ "count": 1,
+ "entries": [
+  {
+   "id": "feat:斯奈布力魔法",
+   "name": "斯奈布力魔法",
+   "en": "",
+   "aliases": [],
+   "source": "剑湾冒险者指南",
+   "section": "setting",
+   "path": "topics/剑湾冒险者指南/种族/地底侏儒.htm",
+   "alsoIn": [],
+   "summary": "地底侏儒专长；随意施放回避侦测（免材料），目盲/耳聋、朦胧术、易容术各可免费施放一次，智力施法。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "侏儒（地底侏儒）"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "斯奈布力魔法",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": "1",
+     "recharge": "long"
+    }
+   ]
+  }
+ ]
+}

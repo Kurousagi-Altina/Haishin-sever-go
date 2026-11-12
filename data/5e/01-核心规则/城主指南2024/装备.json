@@ -1,0 +1,571 @@
+{
+ "category": "equipment",
+ "type": "装备",
+ "source": "城主指南2024",
+ "generated": "2026-11-09",
+ "count": 17,
+ "entries": [
+  {
+   "id": "weapon:半自动手枪",
+   "type": "weapon",
+   "name": "半自动手枪",
+   "en": "Semiautomatic Pistol",
+   "aliases": [],
+   "source": "城主指南2024",
+   "section": "core",
+   "path": "topics/城主指南2024/3.地下城主工具箱/枪械与爆炸物.htm",
+   "alsoIn": [],
+   "summary": "军用远程武器，2d6穿刺，精通侵扰；词条：弹药、换弹。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "ranged",
+   "damage": {
+    "dice": "2d6",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "弹药",
+    "换弹"
+   ],
+   "range": {
+    "normal": 50,
+    "long": 150
+   },
+   "mastery": "侵扰",
+   "weight": 3.0,
+   "cost": null,
+   "ammo": "子弹",
+   "reload": 15,
+   "firearm": true,
+   "note": "城主指南：现代/未来枪械，出售时按魔法物品对待（现代珍稀、未来极珍稀），无标价"
+  },
+  {
+   "id": "weapon:反物质步枪",
+   "type": "weapon",
+   "name": "反物质步枪",
+   "en": "Antimatter Rifle",
+   "aliases": [],
+   "source": "城主指南2024",
+   "section": "core",
+   "path": "topics/城主指南2024/3.地下城主工具箱/枪械与爆炸物.htm",
+   "alsoIn": [],
+   "summary": "军用远程武器，6d8黯蚀，精通削弱；词条：弹药、换弹、双手。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "ranged",
+   "damage": {
+    "dice": "6d8",
+    "type": "黯蚀"
+   },
+   "versatile": null,
+   "properties": [
+    "弹药",
+    "换弹",
+    "双手"
+   ],
+   "range": {
+    "normal": 120,
+    "long": 360
+   },
+   "mastery": "削弱",
+   "weight": 10.0,
+   "cost": null,
+   "ammo": "能量电池",
+   "reload": 2,
+   "firearm": true,
+   "note": "城主指南：现代/未来枪械，出售时按魔法物品对待（现代珍稀、未来极珍稀），无标价"
+  },
+  {
+   "id": "weapon:左轮枪",
+   "type": "weapon",
+   "name": "左轮枪",
+   "en": "Revolver",
+   "aliases": [],
+   "source": "城主指南2024",
+   "section": "core",
+   "path": "topics/城主指南2024/3.地下城主工具箱/枪械与爆炸物.htm",
+   "alsoIn": [],
+   "summary": "军用远程武器，2d8穿刺，精通削弱；词条：弹药、换弹。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "ranged",
+   "damage": {
+    "dice": "2d8",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "弹药",
+    "换弹"
+   ],
+   "range": {
+    "normal": 40,
+    "long": 120
+   },
+   "mastery": "削弱",
+   "weight": 3.0,
+   "cost": null,
+   "ammo": "子弹",
+   "reload": 6,
+   "firearm": true,
+   "note": "城主指南：现代/未来枪械，出售时按魔法物品对待（现代珍稀、未来极珍稀），无标价"
+  },
+  {
+   "id": "weapon:榴弹发射器",
+   "type": "weapon",
+   "name": "榴弹发射器",
+   "en": "Grenade Launcher",
+   "aliases": [],
+   "source": "城主指南2024",
+   "section": "core",
+   "path": "topics/城主指南2024/3.地下城主工具箱/枪械与爆炸物.htm",
+   "alsoIn": [],
+   "summary": "发射榴弹的器械，榴弹射程至多1000尺。",
+   "uncertain": [],
+   "category": null,
+   "kind": "explosive",
+   "damage": null,
+   "versatile": null,
+   "properties": [],
+   "range": {
+    "normal": 1000,
+    "long": null
+   },
+   "mastery": null,
+   "weight": 7.0,
+   "cost": null,
+   "save": null,
+   "area": null
+  },
+  {
+   "id": "weapon:激光手枪",
+   "type": "weapon",
+   "name": "激光手枪",
+   "en": "Laser Pistol",
+   "aliases": [],
+   "source": "城主指南2024",
+   "section": "core",
+   "path": "topics/城主指南2024/3.地下城主工具箱/枪械与爆炸物.htm",
+   "alsoIn": [],
+   "summary": "军用远程武器，3d6光耀，精通侵扰；词条：弹药、换弹。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "ranged",
+   "damage": {
+    "dice": "3d6",
+    "type": "光耀"
+   },
+   "versatile": null,
+   "properties": [
+    "弹药",
+    "换弹"
+   ],
+   "range": {
+    "normal": 40,
+    "long": 120
+   },
+   "mastery": "侵扰",
+   "weight": 2.0,
+   "cost": null,
+   "ammo": "能量电池",
+   "reload": 50,
+   "firearm": true,
+   "note": "城主指南：现代/未来枪械，出售时按魔法物品对待（现代珍稀、未来极珍稀），无标价"
+  },
+  {
+   "id": "weapon:激光步枪",
+   "type": "weapon",
+   "name": "激光步枪",
+   "en": "Laser Rifle",
+   "aliases": [],
+   "source": "城主指南2024",
+   "section": "core",
+   "path": "topics/城主指南2024/3.地下城主工具箱/枪械与爆炸物.htm",
+   "alsoIn": [],
+   "summary": "军用远程武器，3d8光耀，精通缓速；词条：弹药、换弹、双手。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "ranged",
+   "damage": {
+    "dice": "3d8",
+    "type": "光耀"
+   },
+   "versatile": null,
+   "properties": [
+    "弹药",
+    "换弹",
+    "双手"
+   ],
+   "range": {
+    "normal": 100,
+    "long": 300
+   },
+   "mastery": "缓速",
+   "weight": 7.0,
+   "cost": null,
+   "ammo": "能量电池",
+   "reload": 30,
+   "firearm": true,
+   "note": "城主指南：现代/未来枪械，出售时按魔法物品对待（现代珍稀、未来极珍稀），无标价"
+  },
+  {
+   "id": "weapon:火药（小桶）",
+   "type": "weapon",
+   "name": "火药（小桶）",
+   "en": "Gunpowder (Keg)",
+   "aliases": [],
+   "source": "城主指南2024",
+   "section": "core",
+   "path": "topics/城主指南2024/3.地下城主工具箱/枪械与爆炸物.htm",
+   "alsoIn": [],
+   "summary": "点燃后爆炸，10尺半径球内DC12敏捷豁免，失败受7d6火焰，成功减半。",
+   "uncertain": [],
+   "category": null,
+   "kind": "explosive",
+   "damage": {
+    "dice": "7d6",
+    "type": "火焰"
+   },
+   "versatile": null,
+   "properties": [],
+   "range": null,
+   "mastery": null,
+   "weight": 20.0,
+   "cost": {
+    "amount": 250,
+    "unit": "GP"
+   },
+   "save": {
+    "dc": 12,
+    "ability": "dex",
+    "onSave": "half"
+   },
+   "area": {
+    "shape": "sphere",
+    "radius": 10
+   }
+  },
+  {
+   "id": "weapon:火药（角瓶）",
+   "type": "weapon",
+   "name": "火药（角瓶）",
+   "en": "Gunpowder (Horn)",
+   "aliases": [],
+   "source": "城主指南2024",
+   "section": "core",
+   "path": "topics/城主指南2024/3.地下城主工具箱/枪械与爆炸物.htm",
+   "alsoIn": [],
+   "summary": "点燃后爆炸，10尺半径球内DC12敏捷豁免，失败受3d6火焰，成功减半。",
+   "uncertain": [],
+   "category": null,
+   "kind": "explosive",
+   "damage": {
+    "dice": "3d6",
+    "type": "火焰"
+   },
+   "versatile": null,
+   "properties": [],
+   "range": null,
+   "mastery": null,
+   "weight": 2.0,
+   "cost": {
+    "amount": 35,
+    "unit": "GP"
+   },
+   "save": {
+    "dc": 12,
+    "ability": "dex",
+    "onSave": "half"
+   },
+   "area": {
+    "shape": "sphere",
+    "radius": 10
+   }
+  },
+  {
+   "id": "weapon:炸弹",
+   "type": "weapon",
+   "name": "炸弹",
+   "en": "Bomb",
+   "aliases": [],
+   "source": "城主指南2024",
+   "section": "core",
+   "path": "topics/城主指南2024/3.地下城主工具箱/枪械与爆炸物.htm",
+   "alsoIn": [],
+   "summary": "点燃后投出至多60尺，5尺半径球内生物DC12敏捷豁免，失败受3d6火焰，成功减半。",
+   "uncertain": [],
+   "category": null,
+   "kind": "explosive",
+   "damage": {
+    "dice": "3d6",
+    "type": "火焰"
+   },
+   "versatile": null,
+   "properties": [],
+   "range": {
+    "normal": 60,
+    "long": null
+   },
+   "mastery": null,
+   "weight": 1.0,
+   "cost": {
+    "amount": 100,
+    "unit": "GP"
+   },
+   "save": {
+    "dc": 12,
+    "ability": "dex",
+    "onSave": "half"
+   },
+   "area": {
+    "shape": "sphere",
+    "radius": 5
+   }
+  },
+  {
+   "id": "weapon:烟雾榴弹",
+   "type": "weapon",
+   "name": "烟雾榴弹",
+   "en": "Smoke Grenade",
+   "aliases": [],
+   "source": "城主指南2024",
+   "section": "core",
+   "path": "topics/城主指南2024/3.地下城主工具箱/枪械与爆炸物.htm",
+   "alsoIn": [],
+   "summary": "落点20尺半径球被烟雾笼罩，重度遮蔽持续1分钟，强风可吹散。",
+   "uncertain": [],
+   "category": null,
+   "kind": "explosive",
+   "damage": null,
+   "versatile": null,
+   "properties": [],
+   "range": {
+    "normal": 60,
+    "long": null
+   },
+   "mastery": null,
+   "weight": 2.0,
+   "cost": {
+    "amount": 50,
+    "unit": "GP"
+   },
+   "save": null,
+   "area": {
+    "shape": "sphere",
+    "radius": 20
+   }
+  },
+  {
+   "id": "weapon:狩猎步枪",
+   "type": "weapon",
+   "name": "狩猎步枪",
+   "en": "Hunting Rifle",
+   "aliases": [],
+   "source": "城主指南2024",
+   "section": "core",
+   "path": "topics/城主指南2024/3.地下城主工具箱/枪械与爆炸物.htm",
+   "alsoIn": [],
+   "summary": "军用远程武器，2d10穿刺，精通缓速；词条：弹药、换弹、双手。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "ranged",
+   "damage": {
+    "dice": "2d10",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "弹药",
+    "换弹",
+    "双手"
+   ],
+   "range": {
+    "normal": 80,
+    "long": 240
+   },
+   "mastery": "缓速",
+   "weight": 8.0,
+   "cost": null,
+   "ammo": "子弹",
+   "reload": 5,
+   "firearm": true,
+   "note": "城主指南：现代/未来枪械，出售时按魔法物品对待（现代珍稀、未来极珍稀），无标价"
+  },
+  {
+   "id": "weapon:破片榴弹",
+   "type": "weapon",
+   "name": "破片榴弹",
+   "en": "Fragmentation Grenade",
+   "aliases": [],
+   "source": "城主指南2024",
+   "section": "core",
+   "path": "topics/城主指南2024/3.地下城主工具箱/枪械与爆炸物.htm",
+   "alsoIn": [],
+   "summary": "投出至多60尺（发射器1000尺），20尺半径球内DC15敏捷豁免，失败受5d6穿刺，成功减半。",
+   "uncertain": [],
+   "category": null,
+   "kind": "explosive",
+   "damage": {
+    "dice": "5d6",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [],
+   "range": {
+    "normal": 60,
+    "long": null
+   },
+   "mastery": null,
+   "weight": 1.0,
+   "cost": null,
+   "save": {
+    "dc": 15,
+    "ability": "dex",
+    "onSave": "half"
+   },
+   "area": {
+    "shape": "sphere",
+    "radius": 20
+   }
+  },
+  {
+   "id": "weapon:自动步枪",
+   "type": "weapon",
+   "name": "自动步枪",
+   "en": "Automatic Rifle",
+   "aliases": [],
+   "source": "城主指南2024",
+   "section": "core",
+   "path": "topics/城主指南2024/3.地下城主工具箱/枪械与爆炸物.htm",
+   "alsoIn": [],
+   "summary": "军用远程武器，2d8穿刺，精通缓速；词条：弹药、扫射、换弹、双手。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "ranged",
+   "damage": {
+    "dice": "2d8",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "弹药",
+    "扫射",
+    "换弹",
+    "双手"
+   ],
+   "range": {
+    "normal": 80,
+    "long": 240
+   },
+   "mastery": "缓速",
+   "weight": 8.0,
+   "cost": null,
+   "ammo": "子弹",
+   "reload": 30,
+   "firearm": true,
+   "note": "城主指南：现代/未来枪械，出售时按魔法物品对待（现代珍稀、未来极珍稀），无标价"
+  },
+  {
+   "id": "weapon:雷管",
+   "type": "weapon",
+   "name": "雷管",
+   "en": "Dynamite Stick",
+   "aliases": [],
+   "source": "城主指南2024",
+   "section": "core",
+   "path": "topics/城主指南2024/3.地下城主工具箱/枪械与爆炸物.htm",
+   "alsoIn": [],
+   "summary": "点燃后投出至多60尺，5尺半径球内DC12敏捷豁免，失败受3d6力场，成功减半；多根捆绑每根加1d6（至多10d6）、半径加5尺（至多20尺）。",
+   "uncertain": [],
+   "category": null,
+   "kind": "explosive",
+   "damage": {
+    "dice": "3d6",
+    "type": "力场"
+   },
+   "versatile": null,
+   "properties": [],
+   "range": {
+    "normal": 60,
+    "long": null
+   },
+   "mastery": null,
+   "weight": 1.0,
+   "cost": null,
+   "save": {
+    "dc": 12,
+    "ability": "dex",
+    "onSave": "half"
+   },
+   "area": {
+    "shape": "sphere",
+    "radius": 5
+   }
+  },
+  {
+   "id": "weapon:霰弹枪",
+   "type": "weapon",
+   "name": "霰弹枪",
+   "en": "Shotgun",
+   "aliases": [],
+   "source": "城主指南2024",
+   "section": "core",
+   "path": "topics/城主指南2024/3.地下城主工具箱/枪械与爆炸物.htm",
+   "alsoIn": [],
+   "summary": "军用远程武器，2d8穿刺，精通推离；词条：弹药、换弹、双手。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "ranged",
+   "damage": {
+    "dice": "2d8",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "弹药",
+    "换弹",
+    "双手"
+   ],
+   "range": {
+    "normal": 30,
+    "long": 90
+   },
+   "mastery": "推离",
+   "weight": 7.0,
+   "cost": null,
+   "ammo": "子弹",
+   "reload": 2,
+   "firearm": true,
+   "note": "城主指南：现代/未来枪械，出售时按魔法物品对待（现代珍稀、未来极珍稀），无标价"
+  },
+  {
+   "id": "weaponProperty:扫射",
+   "type": "weaponProperty",
+   "name": "扫射",
+   "en": "Burst Fire",
+   "aliases": [],
+   "source": "城主指南2024",
+   "section": "core",
+   "path": "topics/城主指南2024/3.地下城主工具箱/枪械与爆炸物.htm",
+   "alsoIn": [],
+   "summary": "用一个动作消耗10发弹药，向常规射程内10尺立方区域扫射，区域内生物DC15敏捷豁免，失败者受一次该武器伤害掷骰的伤害。",
+   "uncertain": [],
+   "rule": "用一个动作消耗10发弹药，向常规射程内10尺立方区域扫射，区域内生物DC15敏捷豁免，失败者受一次该武器伤害掷骰的伤害。"
+  },
+  {
+   "id": "weaponProperty:换弹",
+   "type": "weaponProperty",
+   "name": "换弹",
+   "en": "Reload",
+   "aliases": [],
+   "source": "城主指南2024",
+   "section": "core",
+   "path": "topics/城主指南2024/3.地下城主工具箱/枪械与爆炸物.htm",
+   "alsoIn": [],
+   "summary": "只能发射有限次数（括号内为发数）；打完后需用动作或附赠动作重新装弹。",
+   "uncertain": [],
+   "rule": "只能发射有限次数（括号内为发数）；打完后需用动作或附赠动作重新装弹。"
+  }
+ ]
+}

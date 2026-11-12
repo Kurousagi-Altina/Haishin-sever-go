@@ -1,0 +1,688 @@
+{
+ "category": "feat",
+ "type": "专长",
+ "source": "珊娜萨的万事指南",
+ "generated": "2026-11-09",
+ "count": 15,
+ "entries": [
+  {
+   "id": "feat:低身机敏",
+   "name": "低身机敏",
+   "en": "Squat Nimbleness",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/种族专长.html",
+   "alsoIn": [],
+   "summary": "矮人或小型种族；力量或敏捷+1；速度+5；运动或特技熟练；脱离擒抱有优势。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "矮人或小型种族"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "技能熟练"
+   ],
+   "mechanics": [
+    {
+     "name": "低身机敏",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "低身机敏",
+     "trigger": "",
+     "action": "passive",
+     "effect": "优势",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:兽人狂怒",
+   "name": "兽人狂怒",
+   "en": "Orcish Fury",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/种族专长.html",
+   "alsoIn": [],
+   "summary": "半兽人；力量或体质+1；命中时多掷一枚武器伤害骰；坚韧不屈后可反应攻击。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "半兽人"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "con"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "兽人狂怒",
+     "trigger": "当你用简易武器或军用武器发动的攻击命中时",
+     "action": "passive",
+     "effect": "",
+     "uses": "1",
+     "recharge": "short"
+    },
+    {
+     "name": "兽人狂怒",
+     "trigger": "",
+     "action": "reaction",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:匿影无踪",
+   "name": "匿影无踪",
+   "en": "Fade Away",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/种族专长.html",
+   "alsoIn": [],
+   "summary": "侏儒；敏捷或智力+1；受伤后反应隐形至下回合结束，短休或长休恢复。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "侏儒"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "dex",
+     "int"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "匿影无踪",
+     "trigger": "当你受到伤害之后",
+     "action": "reaction",
+     "effect": "",
+     "uses": "1",
+     "recharge": "short"
+    }
+   ]
+  },
+  {
+   "id": "feat:天赋异禀",
+   "name": "天赋异禀",
+   "en": "Prodigy",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/种族专长.html",
+   "alsoIn": [],
+   "summary": "半精灵/半兽人/人类；得一项技能、一项工具熟练、一种语言，并给一项技能专精。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "半精灵、半兽人、或人类"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "工具熟练",
+    "技能熟练",
+    "语言",
+    "专精"
+   ],
+   "mechanics": [
+    {
+     "name": "天赋异禀",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "天赋异禀",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:妖精传送",
+   "name": "妖精传送",
+   "en": "Fey Teleportation",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/种族专长.html",
+   "alsoIn": [],
+   "summary": "高等精灵；智力或魅力+1；学木族语；得迷踪步免费施放，短/长休恢复。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "精灵（高等精灵）"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "int",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "妖精传送",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "妖精传送",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": "1",
+     "recharge": "short"
+    }
+   ]
+  },
+  {
+   "id": "feat:弗莱格索斯之焰",
+   "name": "弗莱格索斯之焰",
+   "en": "Flames of Phlegethos",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/种族专长.html",
+   "alsoIn": [],
+   "summary": "提夫林；属性+1；火焰法术可重掷1；施法后火环发光并反伤1d4火焰。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "提夫林"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "int",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "弗莱格索斯之焰",
+     "trigger": "当你为你施展的法术投掷火焰伤害时",
+     "action": "passive",
+     "effect": "伤害:火焰",
+     "uses": null,
+     "recharge": null,
+     "damageTypes": [
+      "火焰"
+     ]
+    },
+    {
+     "name": "弗莱格索斯之焰",
+     "trigger": "每当你施展造成火焰伤害的法术时",
+     "action": "passive",
+     "effect": "骰:1d4；伤害:火焰",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4",
+     "damageTypes": [
+      "火焰"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "feat:慷慨吉运",
+   "name": "慷慨吉运",
+   "en": "Bountiful Luck",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/种族专长.html",
+   "alsoIn": [],
+   "summary": "反应：30尺内盟友d20掷出1时让其重掷（半身人，影响幸运特质）。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "半身人"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "慷慨吉运",
+     "trigger": "",
+     "action": "reaction",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:木精灵魔法",
+   "name": "木精灵魔法",
+   "en": "Wood Elf Magic",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/种族专长.html",
+   "alsoIn": [],
+   "summary": "木精灵；得一个德鲁伊戏法，大步奔行和行动无踪各可免费施放一次，感知施法。",
+   "uncertain": [
+    "mechanics"
+   ],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "精灵（木精灵）"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "戏法"
+   ],
+   "mechanics": [
+    {
+     "name": "木精灵魔法",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:炼狱体质",
+   "name": "炼狱体质",
+   "en": "Infernal Constitution",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/种族专长.html",
+   "alsoIn": [],
+   "summary": "提夫林；体质+1；寒冷和毒素抗性；抵抗中毒豁免有优势。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "提夫林"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "con"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "抗性:寒冷",
+    "抗性:毒素"
+   ],
+   "mechanics": [
+    {
+     "name": "炼狱体质",
+     "trigger": "",
+     "action": "passive",
+     "effect": "伤害:寒冷/毒素；抗性",
+     "uses": null,
+     "recharge": null,
+     "damageTypes": [
+      "寒冷",
+      "毒素"
+     ]
+    },
+    {
+     "name": "炼狱体质",
+     "trigger": "",
+     "action": "passive",
+     "effect": "优势",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:矮人坚毅",
+   "name": "矮人坚毅",
+   "en": "Dwarven Fortitude",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/种族专长.html",
+   "alsoIn": [],
+   "summary": "矮人；体质+1；执行回避时可花生命骰回血。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "矮人"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "con"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "矮人坚毅",
+     "trigger": "当你在战斗中执行 回避Dodge 动作时",
+     "action": "passive",
+     "effect": "治疗",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:精灵之准",
+   "name": "精灵之准",
+   "en": "Elven Accuracy",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/种族专长.html",
+   "alsoIn": [],
+   "summary": "精灵/半精灵；属性+1；以敏/智/感/魅攻击且有优势时可重掷一枚骰。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "精灵或半精灵"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "dex",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "精灵之准",
+     "trigger": "当你在攻击检定上具有优势",
+     "action": "passive",
+     "effect": "优势",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:花开二度",
+   "name": "花开二度",
+   "en": "Second Chance",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/种族专长.html",
+   "alsoIn": [],
+   "summary": "半身人；属性+1；反应：迫使命中你的攻击重掷，先攻/短休/长休恢复。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "半身人"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "dex",
+     "con",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "先攻",
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "花开二度",
+     "trigger": "当一个你可见的生物以攻击检定命中你时",
+     "action": "reaction",
+     "effect": "",
+     "uses": "1",
+     "recharge": "short"
+    }
+   ]
+  },
+  {
+   "id": "feat:高等卓尔魔法",
+   "name": "高等卓尔魔法",
+   "en": "Drow High Magic",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/种族专长.html",
+   "alsoIn": [],
+   "summary": "卓尔；随意施放侦测魔法，浮空术和解除魔法各可免费一次，魅力施法。",
+   "uncertain": [
+    "mechanics"
+   ],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "精灵（卓尔）"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "高等卓尔魔法",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:龙之威怖",
+   "name": "龙之威怖",
+   "en": "Dragon Fear",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/种族专长.html",
+   "alsoIn": [],
+   "summary": "龙裔；属性+1；消耗吐息次数改为30尺咆哮，感知豁免否则恐慌1分钟。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "龙裔"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "con",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "龙之威怖",
+     "trigger": "",
+     "action": "passive",
+     "effect": "豁免:wis DC 8+熟练+cha；状态:frightened",
+     "uses": null,
+     "recharge": null,
+     "conditions": [
+      "frightened"
+     ],
+     "save": {
+      "ability": "wis",
+      "dc": "8+熟练+cha"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:龙之鳞爪",
+   "name": "龙之鳞爪",
+   "en": "Dragon Hide",
+   "aliases": [],
+   "source": "珊娜萨的万事指南",
+   "section": "official",
+   "path": "topics/珊娜萨的万事指南/角色选项/种族专长.html",
+   "alsoIn": [],
+   "summary": "龙裔；属性+1；无甲AC为13+敏捷；伸缩利爪徒手1d4+力量挥砍。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "龙裔"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "con",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "龙之鳞爪",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "龙之鳞爪",
+     "trigger": "",
+     "action": "passive",
+     "effect": "骰:1d4；伤害:钝击/挥砍",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4",
+     "damageTypes": [
+      "钝击",
+      "挥砍"
+     ]
+    }
+   ]
+  }
+ ]
+}

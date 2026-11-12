@@ -38,6 +38,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to init tabletop directory %s: %v", cfg.TabletopDir, err)
 	}
+	tabletop.LoadRules(cfg.RulesDir)
 
 	mux := http.NewServeMux()
 
@@ -69,6 +70,7 @@ func main() {
 	protected.HandleFunc("/api/tabletop/5e/page", tabletop.Handle5ePage)
 	protected.HandleFunc("/api/tabletop/5e/bestiary", tabletop.HandleBestiary)
 	protected.HandleFunc("/api/tabletop/5e/deploy", tabletop.HandleDeploy)
+	protected.HandleFunc("/api/tabletop/5e/rules", tabletop.HandleRules)
 	protected.HandleFunc("/api/dice/roll", handler.HandleDiceRoll)
 	protected.HandleFunc("/api/dice/rolls", handler.HandleDiceRolls)
 	protected.HandleFunc("/api/dice/clear", handler.HandleDiceClear)

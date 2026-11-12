@@ -1,0 +1,109 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "印记城与外域",
+ "generated": "2026-11-09",
+ "count": 3,
+ "entries": [
+  {
+   "id": "item:传送门罗盘",
+   "name": "传送门罗盘",
+   "en": "Portal Compass",
+   "aliases": [],
+   "source": "印记城与外域",
+   "section": "setting",
+   "path": "topics/印记城与外域/第一章/新魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:感知石",
+   "name": "感知石",
+   "en": "Sensory Stone",
+   "aliases": [],
+   "source": "印记城与外域",
+   "section": "setting",
+   "path": "topics/印记城与外域/第一章/新魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通。涉及恐慌；词条：记录感知、虹吸感知",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [
+    "frightened"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:智颅",
+   "name": "智颅",
+   "en": "Mimir",
+   "aliases": [],
+   "source": "印记城与外域",
+   "section": "setting",
+   "path": "topics/印记城与外域/第一章/新魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。可施放通晓传奇；DC22豁免；词条：秘传学识、位面学识",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "通晓传奇",
+     "level": 5,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 22,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

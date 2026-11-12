@@ -614,7 +614,7 @@ function renderStatusBar() {
         var hp = '';
         if (t.hpMax > 0) {
             var pct = Math.max(0, Math.min(100, (t.hp || 0) / t.hpMax * 100));
-            hp = '<span class="sb-hp">' + (t.hpPct ? Math.round(t.hp || 0) + '%' : (t.hp || 0) + '/' + t.hpMax) + (t.hpTemp ? ' <i>+' + t.hpTemp + '</i>' : '') + '</span>';
+            hp = '<span class="sb-hp">' + (t.hpPct ? Math.round(t.hp || 0) + '%' : hpNumText(t)) + '</span>';
             hp += '</div><div class="sb-hpbar"><i style="width:' + pct + '%;background:' + (pct > 50 ? '#43a047' : pct > 25 ? '#fbc02d' : '#e53935') + '"></i>';
         }
         var x = '<div class="sb-card' + (c && c.turn === t.id ? ' cur' : '') + '"><div class="sb-head"><a class="sb-name" data-sbfocus="' + t.id + '" title="选中并居中">' +

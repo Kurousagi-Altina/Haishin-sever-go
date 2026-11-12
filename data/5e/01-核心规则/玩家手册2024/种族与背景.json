@@ -1,0 +1,3375 @@
+{
+ "category": "feature",
+ "type": "种族与背景",
+ "source": "玩家手册2024",
+ "generated": "2026-11-09",
+ "count": 81,
+ "entries": [
+  {
+   "id": "feature:歌利亚·云巨人·云之远迹",
+   "type": "feature",
+   "name": "云之远迹",
+   "en": "",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/歌利亚.htm",
+   "alsoIn": [],
+   "summary": "附赠动作传送至30尺内可见空位。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "歌利亚",
+    "option": "云巨人"
+   },
+   "level": null,
+   "action": "bonus",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "附赠动作传送至30尺内可见空位。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "species:人类",
+   "type": "species",
+   "name": "人类",
+   "en": "Human",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/人类.htm",
+   "alsoIn": [],
+   "summary": "人类：类人，小型/中型，步行30尺；特性3项。",
+   "uncertain": [],
+   "size": [
+    "小型",
+    "中型"
+   ],
+   "speed": {
+    "walk": 30
+   },
+   "darkvision": null,
+   "creatureType": "类人",
+   "traitIds": [
+    "feature:人类·适应力",
+    "feature:人类·技能",
+    "feature:人类·多才多艺"
+   ],
+   "options": [],
+   "abilityIncrease": null,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:龙裔·伤害抗性",
+   "type": "feature",
+   "name": "伤害抗性",
+   "en": "Damage Resistance",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/龙裔.htm",
+   "alsoIn": [],
+   "summary": "按所选龙种获得对应伤害类型抗性。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "龙裔",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "按所选龙种获得对应伤害类型抗性。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "background:侍僧",
+   "type": "background",
+   "name": "侍僧",
+   "en": "Acolyte",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/背景/侍僧.htm",
+   "alsoIn": [],
+   "summary": "侍僧背景：属性可选int/wis/cha；起源专长魔法学徒(牧师)；技能洞悉、宗教；工具书法工具",
+   "uncertain": [],
+   "abilityScores": [
+    "int",
+    "wis",
+    "cha"
+   ],
+   "feat": "魔法学徒",
+   "featParam": "牧师",
+   "skills": [
+    "洞悉",
+    "宗教"
+   ],
+   "skillsNote": null,
+   "tool": "书法工具",
+   "languages": null,
+   "equipment": "选择A或B：（A）书法工具、书籍（祈祷文）、圣徽、羊皮纸（10张）、长袍、8GP；或（B）50GP。",
+   "featureName": null,
+   "edition": "2024"
+  },
+  {
+   "id": "species:侏儒",
+   "type": "species",
+   "name": "侏儒",
+   "en": "Gnome",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/侏儒.htm",
+   "alsoIn": [],
+   "summary": "侏儒：类人，小型，步行30尺，黑暗视觉60尺；特性3项，可选2种变体/血统。",
+   "uncertain": [],
+   "size": [
+    "小型"
+   ],
+   "speed": {
+    "walk": 30
+   },
+   "darkvision": 60,
+   "creatureType": "类人",
+   "traitIds": [
+    "feature:侏儒·黑暗视觉",
+    "feature:侏儒·侏儒狡黠",
+    "feature:侏儒·侏儒血系"
+   ],
+   "options": [
+    {
+     "name": "森林侏儒",
+     "en": "Forest Gnome",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/侏儒.htm",
+     "traitIds": [
+      "feature:侏儒·森林侏儒·森林侏儒血系"
+     ],
+     "edition": "2024"
+    },
+    {
+     "name": "岩石侏儒",
+     "en": "Rock Gnome",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/侏儒.htm",
+     "traitIds": [
+      "feature:侏儒·岩石侏儒·岩石侏儒血系"
+     ],
+     "edition": "2024"
+    }
+   ],
+   "abilityIncrease": null,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:侏儒·侏儒狡黠",
+   "type": "feature",
+   "name": "侏儒狡黠",
+   "en": "Gnomish Cunning",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/侏儒.htm",
+   "alsoIn": [],
+   "summary": "智力、感知、魅力豁免具有优势。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "侏儒",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "智力、感知、魅力豁免具有优势。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:侏儒·侏儒血系",
+   "type": "feature",
+   "name": "侏儒血系",
+   "en": "Gnomish Lineage",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/侏儒.htm",
+   "alsoIn": [],
+   "summary": "选森林或岩石血系，并选智/感/魅之一作施法属性。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "侏儒",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "选森林或岩石血系，并选智/感/魅之一作施法属性。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:阿斯莫·光辉掌者",
+   "type": "feature",
+   "name": "光辉掌者",
+   "en": "Light Bearer",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/阿斯莫.htm",
+   "alsoIn": [],
+   "summary": "习得光亮术戏法，施法属性魅力。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "阿斯莫",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "习得光亮术戏法，施法属性魅力。",
+   "resist": [],
+   "immune": [],
+   "spells": [
+    "光亮术"
+   ],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "species:兽人",
+   "type": "species",
+   "name": "兽人",
+   "en": "Orc",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/兽人.htm",
+   "alsoIn": [
+    "多元宇宙的怪物",
+    "荒洲探险家指南",
+    "艾伯伦：从终末战争中崛起"
+   ],
+   "summary": "兽人：类人，中型，步行30尺，黑暗视觉120尺；特性3项。",
+   "uncertain": [],
+   "size": [
+    "中型"
+   ],
+   "speed": {
+    "walk": 30
+   },
+   "darkvision": 120,
+   "creatureType": "类人",
+   "traitIds": [
+    "feature:兽人·激昂冲锋",
+    "feature:兽人·黑暗视觉",
+    "feature:兽人·坚韧不屈"
+   ],
+   "options": [],
+   "abilityIncrease": null,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:阿斯莫·内耀辉光·内耀辉光",
+   "type": "feature",
+   "name": "内耀辉光",
+   "en": "",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/阿斯莫.htm",
+   "alsoIn": [],
+   "summary": "变身选项：散发光照，回合结束时10尺内生物受熟练加值点光耀伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "阿斯莫",
+    "option": "内耀辉光"
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [
+    {
+     "dice": "熟练加值",
+     "type": "光耀"
+    }
+   ],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "变身选项：散发光照，回合结束时10尺内生物受熟练加值点光耀伤害。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "background:农民",
+   "type": "background",
+   "name": "农民",
+   "en": "Farmer",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/背景/农民.htm",
+   "alsoIn": [],
+   "summary": "农民背景：属性可选str/con/wis；起源专长健壮；技能驯兽、自然；工具木匠工具",
+   "uncertain": [],
+   "abilityScores": [
+    "str",
+    "con",
+    "wis"
+   ],
+   "feat": "健壮",
+   "featParam": null,
+   "skills": [
+    "驯兽",
+    "自然"
+   ],
+   "skillsNote": null,
+   "tool": "木匠工具",
+   "languages": null,
+   "equipment": "选择A或B：（A）镰刀、木匠工具、医疗包、铁锅、铲子、旅行服装、30GP；或（B）50GP",
+   "featureName": null,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:精灵·出神",
+   "type": "feature",
+   "name": "出神",
+   "en": "Trance",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/精灵.htm",
+   "alsoIn": [],
+   "summary": "无需睡眠且魔法无法令你入睡，4小时即可完成长休。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "精灵",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": {
+    "count": null,
+    "recharge": "long"
+   },
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "无需睡眠且魔法无法令你入睡，4小时即可完成长休。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:半身人·勇气",
+   "type": "feature",
+   "name": "勇气",
+   "en": "Brave",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/半身人.htm",
+   "alsoIn": [],
+   "summary": "对抗或结束恐慌状态的豁免具有优势。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "半身人",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [
+    "frightened"
+   ],
+   "resource": null,
+   "mechanics": "对抗或结束恐慌状态的豁免具有优势。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "species:半身人",
+   "type": "species",
+   "name": "半身人",
+   "en": "Halfling",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/半身人.htm",
+   "alsoIn": [
+    "荒洲探险家指南"
+   ],
+   "summary": "半身人：类人，小型，步行30尺；特性4项，可选2种变体/血统。",
+   "uncertain": [],
+   "size": [
+    "小型"
+   ],
+   "speed": {
+    "walk": 30
+   },
+   "darkvision": null,
+   "creatureType": "类人",
+   "traitIds": [
+    "feature:半身人·勇气",
+    "feature:半身人·半身人灵巧",
+    "feature:半身人·幸运",
+    "feature:半身人·天生善匿"
+   ],
+   "options": [
+    {
+     "name": "莲源半身人",
+     "en": "",
+     "source": "荒洲探险家指南",
+     "path": "topics/荒洲探险家指南/角色选项/种族/半身人.htm",
+     "traitIds": [
+      "feature:半身人·莲源半身人·树林之子",
+      "feature:半身人·莲源半身人·林行者"
+     ],
+     "edition": "2014"
+    },
+    {
+     "name": "鬼智半身人",
+     "en": "",
+     "source": "剑湾冒险者指南",
+     "path": "topics/剑湾冒险者指南/种族/鬼智半身人.htm",
+     "traitIds": [
+      "feature:半身人·鬼智半身人·鬼灵言语"
+     ],
+     "edition": "2014"
+    }
+   ],
+   "abilityIncrease": null,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:半身人·半身人灵巧",
+   "type": "feature",
+   "name": "半身人灵巧",
+   "en": "Halfling Nimbleness",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/半身人.htm",
+   "alsoIn": [],
+   "summary": "可穿过比自己大的生物所在空间。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "半身人",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "可穿过比自己大的生物所在空间。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:精灵·卓尔·卓尔血系",
+   "type": "feature",
+   "name": "卓尔血系",
+   "en": "",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/精灵.htm",
+   "alsoIn": [],
+   "summary": "黑暗视觉升至120尺；习得舞光术；3级妖火，5级黑暗术。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "精灵",
+    "option": "卓尔"
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "黑暗视觉升至120尺；习得舞光术；3级妖火，5级黑暗术。",
+   "resist": [],
+   "immune": [],
+   "spells": [
+    "舞光术",
+    "妖火",
+    "黑暗术"
+   ],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:龙裔·吐息武器",
+   "type": "feature",
+   "name": "吐息武器",
+   "en": "Breath Weapon",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/龙裔.htm",
+   "alsoIn": [],
+   "summary": "攻击动作替换为15尺锥或30尺线，敏捷豁免，失败1d10(5/11/17级升至2/3/4d10)，成功减半；次数等于熟练加值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "龙裔",
+    "option": null
+   },
+   "level": null,
+   "action": "action",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "long"
+   },
+   "dice": [
+    [
+     1,
+     "1d10"
+    ],
+    [
+     5,
+     "2d10"
+    ],
+    [
+     11,
+     "3d10"
+    ],
+    [
+     17,
+     "4d10"
+    ]
+   ],
+   "save": {
+    "ability": "dex",
+    "dc": "8+熟练+con"
+   },
+   "damage": [
+    {
+     "dice": "1d10",
+     "type": "按龙种"
+    }
+   ],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "攻击动作替换为15尺锥或30尺线，敏捷豁免，失败1d10(5/11/17级升至2/3/4d10)，成功减半；次数等于熟练加值。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "background:向导",
+   "type": "background",
+   "name": "向导",
+   "en": "Guide",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/背景/向导.htm",
+   "alsoIn": [],
+   "summary": "向导背景：属性可选dex/con/wis；起源专长魔法学徒(德鲁伊)；技能隐匿、求生；工具制图工具",
+   "uncertain": [],
+   "abilityScores": [
+    "dex",
+    "con",
+    "wis"
+   ],
+   "feat": "魔法学徒",
+   "featParam": "德鲁伊",
+   "skills": [
+    "隐匿",
+    "求生"
+   ],
+   "skillsNote": null,
+   "tool": "制图工具",
+   "languages": null,
+   "equipment": "选择A或B：（A）短弓、20支箭、制图工具、铺盖、箭袋、帐篷、旅行服装、3GP；或（B）50GP",
+   "featureName": null,
+   "edition": "2024"
+  },
+  {
+   "id": "background:商人",
+   "type": "background",
+   "name": "商人",
+   "en": "Merchant",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/背景/商人.htm",
+   "alsoIn": [],
+   "summary": "商人背景：属性可选con/int/cha；起源专长幸运；技能驯兽、游说；工具领航工具",
+   "uncertain": [],
+   "abilityScores": [
+    "con",
+    "int",
+    "cha"
+   ],
+   "feat": "幸运",
+   "featParam": null,
+   "skills": [
+    "驯兽",
+    "游说"
+   ],
+   "skillsNote": null,
+   "tool": "领航工具",
+   "languages": null,
+   "equipment": "选择A或B：（A）领航工具、2个小包、旅行服装、22GP；或（B）50GP",
+   "featureName": null,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:兽人·坚韧不屈",
+   "type": "feature",
+   "name": "坚韧不屈",
+   "en": "Relentless Endurance",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/兽人.htm",
+   "alsoIn": [],
+   "summary": "生命降到0时可改为留1点，长休后恢复使用。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "兽人",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   },
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "生命降到0时可改为留1点，长休后恢复使用。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "background:士兵",
+   "type": "background",
+   "name": "士兵",
+   "en": "Soldier",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/背景/士兵.htm",
+   "alsoIn": [],
+   "summary": "士兵背景：属性可选str/dex/con；起源专长凶蛮打手；技能运动、威吓；工具选择一种赌具（见第六章）",
+   "uncertain": [],
+   "abilityScores": [
+    "str",
+    "dex",
+    "con"
+   ],
+   "feat": "凶蛮打手",
+   "featParam": null,
+   "skills": [
+    "运动",
+    "威吓"
+   ],
+   "skillsNote": null,
+   "tool": "选择一种赌具（见第六章）",
+   "languages": null,
+   "equipment": "选择A或B：（A）矛、短弓、20支箭、赌具（同上所选）、医疗包、箭袋、旅行服装、14GP；或（B）50GP",
+   "featureName": null,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:人类·多才多艺",
+   "type": "feature",
+   "name": "多才多艺",
+   "en": "Versatile",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/人类.htm",
+   "alsoIn": [],
+   "summary": "额外获得一个起源专长，推荐熟习。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "人类",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "额外获得一个起源专长，推荐熟习。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:歌利亚·大型形态",
+   "type": "feature",
+   "name": "大型形态",
+   "en": "Large Form",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/歌利亚.htm",
+   "alsoIn": [],
+   "summary": "5级起附赠动作变为大型10分钟：力量检定优势，速度+10尺；长休恢复。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "歌利亚",
+    "option": null
+   },
+   "level": 5,
+   "action": "bonus",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   },
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "5级起附赠动作变为大型10分钟：力量检定优势，速度+10尺；长休恢复。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:阿斯莫·天启",
+   "type": "feature",
+   "name": "天启",
+   "en": "Celestial Revelation",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/阿斯莫.htm",
+   "alsoIn": [],
+   "summary": "3级起附赠动作变身1分钟，每回合一次额外伤害等于熟练加值；长休恢复。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "阿斯莫",
+    "option": null
+   },
+   "level": 3,
+   "action": "bonus",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   },
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "3级起附赠动作变身1分钟，每回合一次额外伤害等于熟练加值；长休恢复。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:阿斯莫·天堂飞翼·天堂飞翼",
+   "type": "feature",
+   "name": "天堂飞翼",
+   "en": "",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/阿斯莫.htm",
+   "alsoIn": [],
+   "summary": "变身选项：获得等于速度的飞行；每回合一次额外光耀伤害等于熟练加值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "阿斯莫",
+    "option": "天堂飞翼"
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [
+    {
+     "dice": "熟练加值",
+     "type": "光耀"
+    }
+   ],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "变身选项：获得等于速度的飞行；每回合一次额外光耀伤害等于熟练加值。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:半身人·天生善匿",
+   "type": "feature",
+   "name": "天生善匿",
+   "en": "Naturally Stealthy",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/半身人.htm",
+   "alsoIn": [],
+   "summary": "可借比自己大一级以上的生物遮蔽来躲藏。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "半身人",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "可借比自己大一级以上的生物遮蔽来躲藏。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:阿斯莫·天界抗性",
+   "type": "feature",
+   "name": "天界抗性",
+   "en": "Celestial Resistance",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/阿斯莫.htm",
+   "alsoIn": [],
+   "summary": "光耀与黯蚀伤害抗性。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "阿斯莫",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "光耀与黯蚀伤害抗性。",
+   "resist": [
+    "光耀",
+    "黯蚀"
+   ],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:精灵·妖精血统",
+   "type": "feature",
+   "name": "妖精血统",
+   "en": "Fey Ancestry",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/精灵.htm",
+   "alsoIn": [],
+   "summary": "避免或结束魅惑的豁免具优势。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "精灵",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [
+    "charmed"
+   ],
+   "resource": null,
+   "mechanics": "避免或结束魅惑的豁免具优势。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:歌利亚·山丘巨人·山之翻撞",
+   "type": "feature",
+   "name": "山之翻撞",
+   "en": "",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/歌利亚.htm",
+   "alsoIn": [],
+   "summary": "攻击命中不超过大型的生物时可令其倒地。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "歌利亚",
+    "option": "山丘巨人"
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [
+    "prone"
+   ],
+   "resource": null,
+   "mechanics": "攻击命中不超过大型的生物时可令其倒地。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:歌利亚·风暴巨人·岚之暴鸣",
+   "type": "feature",
+   "name": "岚之暴鸣",
+   "en": "",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/歌利亚.htm",
+   "alsoIn": [],
+   "summary": "被60尺内生物伤害时反应造成1d8雷鸣伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "歌利亚",
+    "option": "风暴巨人"
+   },
+   "level": null,
+   "action": "reaction",
+   "uses": null,
+   "dice": "1d8",
+   "save": null,
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": "雷鸣"
+    }
+   ],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "被60尺内生物伤害时反应造成1d8雷鸣伤害。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:侏儒·岩石侏儒·岩石侏儒血系",
+   "type": "feature",
+   "name": "岩石侏儒血系",
+   "en": "",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/侏儒.htm",
+   "alsoIn": [],
+   "summary": "习得修复术与魔法伎俩；可花10分钟造微型发条装置(AC5、HP1)，最多三台。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "侏儒",
+    "option": "岩石侏儒"
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "习得修复术与魔法伎俩；可花10分钟造微型发条装置(AC5、HP1)，最多三台。",
+   "resist": [],
+   "immune": [],
+   "spells": [
+    "修复术",
+    "魔法伎俩"
+   ],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "background:工匠",
+   "type": "background",
+   "name": "工匠",
+   "en": "Artisan",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/背景/工匠.htm",
+   "alsoIn": [],
+   "summary": "工匠背景：属性可选str/dex/int；起源专长巧匠；技能调查、游说；工具选择一种工匠工具（参见第六章",
+   "uncertain": [],
+   "abilityScores": [
+    "str",
+    "dex",
+    "int"
+   ],
+   "feat": "巧匠",
+   "featParam": null,
+   "skills": [
+    "调查",
+    "游说"
+   ],
+   "skillsNote": null,
+   "tool": "选择一种工匠工具（参见第六章）",
+   "languages": null,
+   "equipment": "选择A或B：（A）工匠工具（同上所选）、2小包、旅行服装、32GP；或（B）50GP。",
+   "featureName": null,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:歌利亚·巨人先祖",
+   "type": "feature",
+   "name": "巨人先祖",
+   "en": "Giant Ancestry",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/歌利亚.htm",
+   "alsoIn": [],
+   "summary": "选一种巨人恩惠，次数等于熟练加值，长休恢复。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "歌利亚",
+    "option": null
+   },
+   "level": null,
+   "action": "special",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "long"
+   },
+   "dice": "1d10",
+   "save": null,
+   "damage": [
+    {
+     "dice": "1d10",
+     "type": "火焰"
+    },
+    {
+     "dice": "1d6",
+     "type": "寒冷"
+    },
+    {
+     "dice": "1d8",
+     "type": "雷鸣"
+    }
+   ],
+   "heal": null,
+   "conditions": [
+    "prone"
+   ],
+   "resource": null,
+   "mechanics": "选一种巨人恩惠，次数等于熟练加值，长休恢复。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:半身人·幸运",
+   "type": "feature",
+   "name": "幸运",
+   "en": "Lucky",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/半身人.htm",
+   "alsoIn": [],
+   "summary": "d20检定掷出1时可重掷并采用新结果。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "半身人",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "d20检定掷出1时可重掷并采用新结果。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:提夫林·幽冥·幽冥遗赠",
+   "type": "feature",
+   "name": "幽冥遗赠",
+   "en": "",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/提夫林.htm",
+   "alsoIn": [],
+   "summary": "黯蚀抗性；习得颤栗之触；3级虚假生命，5级衰弱射线。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "提夫林",
+    "option": "幽冥"
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "黯蚀抗性；习得颤栗之触；3级虚假生命，5级衰弱射线。",
+   "resist": [
+    "黯蚀"
+   ],
+   "immune": [],
+   "spells": [
+    "颤栗之触",
+    "虚假生命",
+    "衰弱射线"
+   ],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:提夫林·异界存在",
+   "type": "feature",
+   "name": "异界存在",
+   "en": "Otherworldly Presence",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/提夫林.htm",
+   "alsoIn": [],
+   "summary": "习得奇术戏法，施法属性同遗赠。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "提夫林",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "习得奇术戏法，施法属性同遗赠。",
+   "resist": [],
+   "immune": [],
+   "spells": [
+    "你习得戏法奇术"
+   ],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:人类·技能",
+   "type": "feature",
+   "name": "技能",
+   "en": "Skillful",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/人类.htm",
+   "alsoIn": [],
+   "summary": "额外获得任一技能的熟练。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "人类",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "额外获得任一技能的熟练。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "background:抄写员",
+   "type": "background",
+   "name": "抄写员",
+   "en": "Scribe",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/背景/抄写员.htm",
+   "alsoIn": [],
+   "summary": "抄写员背景：属性可选dex/int/wis；起源专长熟习；技能调查、察觉；工具书法工具",
+   "uncertain": [],
+   "abilityScores": [
+    "dex",
+    "int",
+    "wis"
+   ],
+   "feat": "熟习",
+   "featParam": null,
+   "skills": [
+    "调查",
+    "察觉"
+   ],
+   "skillsNote": null,
+   "tool": "书法工具",
+   "languages": null,
+   "equipment": "选择A或B：（A）书法工具、高档服装、油灯、燃油（3扁瓶）、羊皮纸（12张）、23GP；或（B）50GP",
+   "featureName": null,
+   "edition": "2024"
+  },
+  {
+   "id": "species:提夫林",
+   "type": "species",
+   "name": "提夫林",
+   "en": "Tiefling",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/提夫林.htm",
+   "alsoIn": [],
+   "summary": "提夫林：类人，小型/中型，步行30尺，黑暗视觉60尺；特性3项，可选4种变体/血统。",
+   "uncertain": [],
+   "size": [
+    "小型",
+    "中型"
+   ],
+   "speed": {
+    "walk": 30
+   },
+   "darkvision": 60,
+   "creatureType": "类人",
+   "traitIds": [
+    "feature:提夫林·黑暗视觉",
+    "feature:提夫林·邪魔遗赠",
+    "feature:提夫林·异界存在"
+   ],
+   "options": [
+    {
+     "name": "深渊",
+     "en": "Abyssal",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/提夫林.htm",
+     "traitIds": [
+      "feature:提夫林·深渊·深渊遗赠"
+     ],
+     "edition": "2024"
+    },
+    {
+     "name": "幽冥",
+     "en": "Chthonic",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/提夫林.htm",
+     "traitIds": [
+      "feature:提夫林·幽冥·幽冥遗赠"
+     ],
+     "edition": "2024"
+    },
+    {
+     "name": "炼狱",
+     "en": "Infernal",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/提夫林.htm",
+     "traitIds": [
+      "feature:提夫林·炼狱·炼狱遗赠"
+     ],
+     "edition": "2024"
+    },
+    {
+     "name": "提夫林变体",
+     "en": "",
+     "source": "剑湾冒险者指南",
+     "path": "topics/剑湾冒险者指南/种族/提夫林变体.htm",
+     "traitIds": [
+      "feature:提夫林·提夫林变体·外观",
+      "feature:提夫林·提夫林变体·野性",
+      "feature:提夫林·提夫林变体·魔鬼之舌",
+      "feature:提夫林·提夫林变体·地狱之火",
+      "feature:提夫林·提夫林变体·飞翼"
+     ],
+     "edition": "2014"
+    }
+   ],
+   "abilityIncrease": null,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:精灵·敏锐感官",
+   "type": "feature",
+   "name": "敏锐感官",
+   "en": "Keen Senses",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/精灵.htm",
+   "alsoIn": [],
+   "summary": "洞悉、察觉、求生中选一项熟练。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "精灵",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "洞悉、察觉、求生中选一项熟练。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "background:智者",
+   "type": "background",
+   "name": "智者",
+   "en": "Sage",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/背景/智者.htm",
+   "alsoIn": [],
+   "summary": "智者背景：属性可选con/int/wis；起源专长魔法学徒(法师)；技能奥秘、历史；工具书法工具",
+   "uncertain": [],
+   "abilityScores": [
+    "con",
+    "int",
+    "wis"
+   ],
+   "feat": "魔法学徒",
+   "featParam": "法师",
+   "skills": [
+    "奥秘",
+    "历史"
+   ],
+   "skillsNote": null,
+   "tool": "书法工具",
+   "languages": null,
+   "equipment": "选择A或B：（A）长棍、书法工具、书籍（历史）、羊皮纸（8张）、长袍、8GP；或（B）50GP",
+   "featureName": null,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:精灵·木精灵·木精灵血系",
+   "type": "feature",
+   "name": "木精灵血系",
+   "en": "",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/精灵.htm",
+   "alsoIn": [],
+   "summary": "速度升至35尺；习得德鲁伊伎俩；3级大步奔行，5级行动无踪。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "精灵",
+    "option": "木精灵"
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "速度升至35尺；习得德鲁伊伎俩；3级大步奔行，5级行动无踪。",
+   "resist": [],
+   "immune": [],
+   "spells": [
+    "德鲁伊伎俩",
+    "大步奔行",
+    "行动无踪"
+   ],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:侏儒·森林侏儒·森林侏儒血系",
+   "type": "feature",
+   "name": "森林侏儒血系",
+   "en": "",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/侏儒.htm",
+   "alsoIn": [],
+   "summary": "习得次级幻象；始终备有动物交谈，次数等于熟练加值时免费施展。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "侏儒",
+    "option": "森林侏儒"
+   },
+   "level": null,
+   "action": "passive",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": null
+   },
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "习得次级幻象；始终备有动物交谈，次数等于熟练加值时免费施展。",
+   "resist": [],
+   "immune": [],
+   "spells": [
+    "次级幻象",
+    "动物交谈"
+   ],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "species:歌利亚",
+   "type": "species",
+   "name": "歌利亚",
+   "en": "Goliath",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/歌利亚.htm",
+   "alsoIn": [
+    "多元宇宙的怪物",
+    "荒洲探险家指南"
+   ],
+   "summary": "歌利亚：类人，中型，步行35尺；特性3项，可选6种变体/血统。",
+   "uncertain": [],
+   "size": [
+    "中型"
+   ],
+   "speed": {
+    "walk": 35
+   },
+   "darkvision": null,
+   "creatureType": "类人",
+   "traitIds": [
+    "feature:歌利亚·巨人先祖",
+    "feature:歌利亚·大型形态",
+    "feature:歌利亚·身强力壮"
+   ],
+   "options": [
+    {
+     "name": "云巨人",
+     "en": "Cloud",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/歌利亚.htm",
+     "traitIds": [
+      "feature:歌利亚·云巨人·云之远迹"
+     ],
+     "edition": "2024"
+    },
+    {
+     "name": "火巨人",
+     "en": "Fire",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/歌利亚.htm",
+     "traitIds": [
+      "feature:歌利亚·火巨人·火之燃烧"
+     ],
+     "edition": "2024"
+    },
+    {
+     "name": "霜巨人",
+     "en": "Frost",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/歌利亚.htm",
+     "traitIds": [
+      "feature:歌利亚·霜巨人·霜之刺骨"
+     ],
+     "edition": "2024"
+    },
+    {
+     "name": "山丘巨人",
+     "en": "Hill",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/歌利亚.htm",
+     "traitIds": [
+      "feature:歌利亚·山丘巨人·山之翻撞"
+     ],
+     "edition": "2024"
+    },
+    {
+     "name": "石巨人",
+     "en": "Stone",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/歌利亚.htm",
+     "traitIds": [
+      "feature:歌利亚·石巨人·石之坚韧"
+     ],
+     "edition": "2024"
+    },
+    {
+     "name": "风暴巨人",
+     "en": "Storm",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/歌利亚.htm",
+     "traitIds": [
+      "feature:歌利亚·风暴巨人·岚之暴鸣"
+     ],
+     "edition": "2024"
+    }
+   ],
+   "abilityIncrease": null,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:阿斯莫·死灵环绕·死灵环绕",
+   "type": "feature",
+   "name": "死灵环绕",
+   "en": "",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/阿斯莫.htm",
+   "alsoIn": [],
+   "summary": "变身选项：10尺内敌人魅力豁免(DC 8+熟练+魅力)失败则恐慌；额外黯蚀伤害等于熟练加值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "阿斯莫",
+    "option": "死灵环绕"
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": {
+    "ability": "cha",
+    "dc": "8+熟练+cha"
+   },
+   "damage": [
+    {
+     "dice": "熟练加值",
+     "type": "黯蚀"
+    }
+   ],
+   "heal": null,
+   "conditions": [
+    "frightened"
+   ],
+   "resource": null,
+   "mechanics": "变身选项：10尺内敌人魅力豁免(DC 8+熟练+魅力)失败则恐慌；额外黯蚀伤害等于熟练加值。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "background:水手",
+   "type": "background",
+   "name": "水手",
+   "en": "Sailor",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/背景/水手.htm",
+   "alsoIn": [],
+   "summary": "水手背景：属性可选str/dex/wis；起源专长酒馆斗殴者；技能特技、察觉；工具领航工具",
+   "uncertain": [],
+   "abilityScores": [
+    "str",
+    "dex",
+    "wis"
+   ],
+   "feat": "酒馆斗殴者",
+   "featParam": null,
+   "skills": [
+    "特技",
+    "察觉"
+   ],
+   "skillsNote": null,
+   "tool": "领航工具",
+   "languages": null,
+   "equipment": "选择A或B：（A）匕首、领航工具、绳索、旅行服装、20GP；或（B）50GP",
+   "featureName": null,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:阿斯莫·治愈之手",
+   "type": "feature",
+   "name": "治愈之手",
+   "en": "Healing Hands",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/阿斯莫.htm",
+   "alsoIn": [],
+   "summary": "魔法动作触碰生物，恢复熟练加值个d4生命；长休恢复。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "阿斯莫",
+    "option": null
+   },
+   "level": null,
+   "action": "action",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   },
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": "熟练加值d4",
+   "conditions": [],
+   "resource": null,
+   "mechanics": "魔法动作触碰生物，恢复熟练加值个d4生命；长休恢复。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "background:流浪者",
+   "type": "background",
+   "name": "流浪者",
+   "en": "Wayfarer",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/背景/流浪者.htm",
+   "alsoIn": [],
+   "summary": "流浪者背景：属性可选dex/wis/cha；起源专长幸运；技能洞悉、隐匿；工具盗贼工具",
+   "uncertain": [],
+   "abilityScores": [
+    "dex",
+    "wis",
+    "cha"
+   ],
+   "feat": "幸运",
+   "featParam": null,
+   "skills": [
+    "洞悉",
+    "隐匿"
+   ],
+   "skillsNote": null,
+   "tool": "盗贼工具",
+   "languages": null,
+   "equipment": "选择A或B：（A）2匕首、盗贼工具、赌具（任意）、铺盖、2小包、旅行服装、16GP；或（B）50GP",
+   "featureName": null,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:提夫林·深渊·深渊遗赠",
+   "type": "feature",
+   "name": "深渊遗赠",
+   "en": "",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/提夫林.htm",
+   "alsoIn": [],
+   "summary": "毒素抗性；习得毒气喷涌；3级致病射线，5级定身类人。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "提夫林",
+    "option": "深渊"
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "毒素抗性；习得毒气喷涌；3级致病射线，5级定身类人。",
+   "resist": [
+    "毒素"
+   ],
+   "immune": [],
+   "spells": [
+    "毒气喷涌",
+    "致病射线",
+    "定身类人"
+   ],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:兽人·激昂冲锋",
+   "type": "feature",
+   "name": "激昂冲锋",
+   "en": "Adrenaline Rush",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/兽人.htm",
+   "alsoIn": [],
+   "summary": "附赠动作疾走并获得等同熟练加值的临时生命，次数等于熟练加值，短休或长休恢复。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "兽人",
+    "option": null
+   },
+   "level": null,
+   "action": "bonus",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "short"
+   },
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "附赠动作疾走并获得等同熟练加值的临时生命，次数等于熟练加值，短休或长休恢复。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": true,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:歌利亚·火巨人·火之燃烧",
+   "type": "feature",
+   "name": "火之燃烧",
+   "en": "",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/歌利亚.htm",
+   "alsoIn": [],
+   "summary": "攻击命中时额外1d10火焰伤害。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "歌利亚",
+    "option": "火巨人"
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": "1d10",
+   "save": null,
+   "damage": [
+    {
+     "dice": "1d10",
+     "type": "火焰"
+    }
+   ],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "攻击命中时额外1d10火焰伤害。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:提夫林·炼狱·炼狱遗赠",
+   "type": "feature",
+   "name": "炼狱遗赠",
+   "en": "",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/提夫林.htm",
+   "alsoIn": [],
+   "summary": "火焰抗性；习得火焰箭；3级炼狱叱喝，5级黑暗术。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "提夫林",
+    "option": "炼狱"
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "火焰抗性；习得火焰箭；3级炼狱叱喝，5级黑暗术。",
+   "resist": [
+    "火焰"
+   ],
+   "immune": [],
+   "spells": [
+    "火焰箭",
+    "炼狱叱喝",
+    "黑暗术"
+   ],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "species:矮人",
+   "type": "species",
+   "name": "矮人",
+   "en": "Dwarf",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/矮人.htm",
+   "alsoIn": [],
+   "summary": "矮人：类人，中型，步行30尺，黑暗视觉120尺；特性4项。",
+   "uncertain": [],
+   "size": [
+    "中型"
+   ],
+   "speed": {
+    "walk": 30
+   },
+   "darkvision": 120,
+   "creatureType": "类人",
+   "traitIds": [
+    "feature:矮人·黑暗视觉",
+    "feature:矮人·矮人体魄",
+    "feature:矮人·矮人刚毅",
+    "feature:矮人·石中精妙"
+   ],
+   "options": [],
+   "abilityIncrease": null,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:矮人·矮人体魄",
+   "type": "feature",
+   "name": "矮人体魄",
+   "en": "Dwarven Resilience",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/矮人.htm",
+   "alsoIn": [],
+   "summary": "毒素抗性；避免或结束中毒的豁免具优势。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "矮人",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [
+    "poisoned"
+   ],
+   "resource": null,
+   "mechanics": "毒素抗性；避免或结束中毒的豁免具优势。",
+   "resist": [
+    "毒素"
+   ],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:矮人·矮人刚毅",
+   "type": "feature",
+   "name": "矮人刚毅",
+   "en": "Dwarven Toughness",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/矮人.htm",
+   "alsoIn": [],
+   "summary": "生命上限+1，之后每次升级再+1。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "矮人",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "生命上限+1，之后每次升级再+1。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:矮人·石中精妙",
+   "type": "feature",
+   "name": "石中精妙",
+   "en": "Stonecunning",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/矮人.htm",
+   "alsoIn": [],
+   "summary": "附赠动作获得60尺震颤感知，持续10分钟；次数等于熟练加值，长休恢复。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "矮人",
+    "option": null
+   },
+   "level": null,
+   "action": "bonus",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "long"
+   },
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "附赠动作获得60尺震颤感知，持续10分钟；次数等于熟练加值，长休恢复。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:歌利亚·石巨人·石之坚韧",
+   "type": "feature",
+   "name": "石之坚韧",
+   "en": "",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/歌利亚.htm",
+   "alsoIn": [],
+   "summary": "受伤时以反应掷d12，伤害减少结果加体质调整值。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "歌利亚",
+    "option": "石巨人"
+   },
+   "level": null,
+   "action": "reaction",
+   "uses": null,
+   "dice": "1d12",
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "受伤时以反应掷d12，伤害减少结果加体质调整值。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "species:精灵",
+   "type": "species",
+   "name": "精灵",
+   "en": "Elf",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/精灵.htm",
+   "alsoIn": [
+    "荒洲探险家指南"
+   ],
+   "summary": "精灵：类人，中型，步行30尺，黑暗视觉60尺；特性5项，可选4种变体/血统。",
+   "uncertain": [],
+   "size": [
+    "中型"
+   ],
+   "speed": {
+    "walk": 30
+   },
+   "darkvision": 60,
+   "creatureType": "类人",
+   "traitIds": [
+    "feature:精灵·黑暗视觉",
+    "feature:精灵·精灵血系",
+    "feature:精灵·妖精血统",
+    "feature:精灵·敏锐感官",
+    "feature:精灵·出神"
+   ],
+   "options": [
+    {
+     "name": "卓尔",
+     "en": "Drow",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/精灵.htm",
+     "traitIds": [
+      "feature:精灵·卓尔·卓尔血系"
+     ],
+     "edition": "2024"
+    },
+    {
+     "name": "高等精灵",
+     "en": "High Elf",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/精灵.htm",
+     "traitIds": [
+      "feature:精灵·高等精灵·高等精灵血系"
+     ],
+     "edition": "2024"
+    },
+    {
+     "name": "木精灵",
+     "en": "Wood Elf",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/精灵.htm",
+     "traitIds": [
+      "feature:精灵·木精灵·木精灵血系"
+     ],
+     "edition": "2024"
+    },
+    {
+     "name": "苍白精灵",
+     "en": "",
+     "source": "荒洲探险家指南",
+     "path": "topics/荒洲探险家指南/角色选项/种族/精灵.htm",
+     "traitIds": [
+      "feature:精灵·苍白精灵·锐析感官",
+      "feature:精灵·苍白精灵·织月者的祝福"
+     ],
+     "edition": "2014"
+    }
+   ],
+   "abilityIncrease": null,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:精灵·精灵血系",
+   "type": "feature",
+   "name": "精灵血系",
+   "en": "Elven Lineage",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/精灵.htm",
+   "alsoIn": [],
+   "summary": "选卓尔/高等精灵/木精灵，获得1级加成，3、5级各得一道法术。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "精灵",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   },
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "选卓尔/高等精灵/木精灵，获得1级加成，3、5级各得一道法术。",
+   "resist": [],
+   "immune": [],
+   "spells": [
+    "精灵血系",
+    "卓尔",
+    "你习得戏法舞光术",
+    "妖火",
+    "黑暗术",
+    "高等精灵",
+    "你知晓戏法魔法伎俩",
+    "侦测魔法"
+   ],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "background:罪犯",
+   "type": "background",
+   "name": "罪犯",
+   "en": "Criminal",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/背景/罪犯.htm",
+   "alsoIn": [],
+   "summary": "罪犯背景：属性可选dex/con/int；起源专长警戒；技能巧手、隐匿；工具盗贼工具",
+   "uncertain": [],
+   "abilityScores": [
+    "dex",
+    "con",
+    "int"
+   ],
+   "feat": "警戒",
+   "featParam": null,
+   "skills": [
+    "巧手",
+    "隐匿"
+   ],
+   "skillsNote": null,
+   "tool": "盗贼工具",
+   "languages": null,
+   "equipment": "选择A或B：（A）2匕首、盗贼工具、撬棍、2小包、旅行服装、16GP；或（B）50GP",
+   "featureName": null,
+   "edition": "2024"
+  },
+  {
+   "id": "background:艺人",
+   "type": "background",
+   "name": "艺人",
+   "en": "Entertainer",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/背景/艺人.htm",
+   "alsoIn": [],
+   "summary": "艺人背景：属性可选str/dex/cha；起源专长音乐家；技能特技、表演；工具选择一种乐器（见第六章）",
+   "uncertain": [],
+   "abilityScores": [
+    "str",
+    "dex",
+    "cha"
+   ],
+   "feat": "音乐家",
+   "featParam": null,
+   "skills": [
+    "特技",
+    "表演"
+   ],
+   "skillsNote": null,
+   "tool": "选择一种乐器（见第六章）",
+   "languages": null,
+   "equipment": "选择A或B：（A）乐器（同上所选）、2件表演服装、镜子、香水、旅行服装、11GP；或（B）50GP",
+   "featureName": null,
+   "edition": "2024"
+  },
+  {
+   "id": "background:警卫",
+   "type": "background",
+   "name": "警卫",
+   "en": "Guard",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/背景/警卫.htm",
+   "alsoIn": [],
+   "summary": "警卫背景：属性可选str/int/wis；起源专长警戒；技能运动、察觉；工具选择一种赌具（见第六章）",
+   "uncertain": [],
+   "abilityScores": [
+    "str",
+    "int",
+    "wis"
+   ],
+   "feat": "警戒",
+   "featParam": null,
+   "skills": [
+    "运动",
+    "察觉"
+   ],
+   "skillsNote": null,
+   "tool": "选择一种赌具（见第六章）",
+   "languages": null,
+   "equipment": "选择A或B：（A）矛，轻弩，20弩矢，赌具（同上所选），附盖提灯，镣铐，箭袋（译注：原文如此），旅行服装，12GP；或（B）50GP。",
+   "featureName": null,
+   "edition": "2024"
+  },
+  {
+   "id": "background:贵族",
+   "type": "background",
+   "name": "贵族",
+   "en": "Noble",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/背景/贵族.htm",
+   "alsoIn": [],
+   "summary": "贵族背景：属性可选str/int/cha；起源专长熟习；技能历史、游说；工具选择一种赌具（见第六章）",
+   "uncertain": [],
+   "abilityScores": [
+    "str",
+    "int",
+    "cha"
+   ],
+   "feat": "熟习",
+   "featParam": null,
+   "skills": [
+    "历史",
+    "游说"
+   ],
+   "skillsNote": null,
+   "tool": "选择一种赌具（见第六章）",
+   "languages": null,
+   "equipment": "选择A或B：（A）赌具（同上所选）、高档服装、香水、29GP；或（B）50GP",
+   "featureName": null,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:歌利亚·身强力壮",
+   "type": "feature",
+   "name": "身强力壮",
+   "en": "Powerful Build",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/歌利亚.htm",
+   "alsoIn": [],
+   "summary": "结束受擒的检定具优势，载重按大一级体型算。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "歌利亚",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [
+    "grappled"
+   ],
+   "resource": null,
+   "mechanics": "结束受擒的检定具优势，载重按大一级体型算。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:人类·适应力",
+   "type": "feature",
+   "name": "适应力",
+   "en": "Resourceful",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/人类.htm",
+   "alsoIn": [],
+   "summary": "每次长休后获得英雄激励。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "人类",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   },
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "每次长休后获得英雄激励。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:提夫林·邪魔遗赠",
+   "type": "feature",
+   "name": "邪魔遗赠",
+   "en": "Fiendish Legacy",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/提夫林.htm",
+   "alsoIn": [],
+   "summary": "选深渊/幽冥/炼狱遗赠，获得对应抗性、戏法，3级和5级各得一道法术。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "提夫林",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   },
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "选深渊/幽冥/炼狱遗赠，获得对应抗性、戏法，3级和5级各得一道法术。",
+   "resist": [
+    "毒素",
+    "火焰",
+    "黯蚀"
+   ],
+   "immune": [],
+   "spells": [
+    "邪魔遗赠",
+    "深渊",
+    "你习得戏法毒气喷涌",
+    "致病射线",
+    "定身类人",
+    "幽冥",
+    "你习得戏法颤栗之触",
+    "虚假生命"
+   ],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "species:阿斯莫",
+   "type": "species",
+   "name": "阿斯莫",
+   "en": "Aasimar",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/阿斯莫.htm",
+   "alsoIn": [
+    "多元宇宙的怪物",
+    "荒洲探险家指南"
+   ],
+   "summary": "阿斯莫：类人，小型/中型，步行30尺，黑暗视觉60尺；特性5项，可选6种变体/血统。",
+   "uncertain": [],
+   "size": [
+    "小型",
+    "中型"
+   ],
+   "speed": {
+    "walk": 30
+   },
+   "darkvision": 60,
+   "creatureType": "类人",
+   "traitIds": [
+    "feature:阿斯莫·天界抗性",
+    "feature:阿斯莫·黑暗视觉",
+    "feature:阿斯莫·治愈之手",
+    "feature:阿斯莫·光辉掌者",
+    "feature:阿斯莫·天启"
+   ],
+   "options": [
+    {
+     "name": "天堂飞翼",
+     "en": "Heavenly Wings",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/阿斯莫.htm",
+     "traitIds": [
+      "feature:阿斯莫·天堂飞翼·天堂飞翼"
+     ],
+     "edition": "2024"
+    },
+    {
+     "name": "内耀辉光",
+     "en": "Inner Radiance",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/阿斯莫.htm",
+     "traitIds": [
+      "feature:阿斯莫·内耀辉光·内耀辉光"
+     ],
+     "edition": "2024"
+    },
+    {
+     "name": "死灵环绕",
+     "en": "Necrotic Shroud",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/阿斯莫.htm",
+     "traitIds": [
+      "feature:阿斯莫·死灵环绕·死灵环绕"
+     ],
+     "edition": "2024"
+    },
+    {
+     "name": "守护阿斯莫",
+     "en": "",
+     "source": "荒洲探险家指南",
+     "path": "topics/荒洲探险家指南/角色选项/种族/阿斯莫.htm",
+     "traitIds": [
+      "feature:阿斯莫·守护阿斯莫·光辉灵魂"
+     ],
+     "edition": "2014"
+    },
+    {
+     "name": "天罚阿斯莫",
+     "en": "",
+     "source": "荒洲探险家指南",
+     "path": "topics/荒洲探险家指南/角色选项/种族/阿斯莫.htm",
+     "traitIds": [
+      "feature:阿斯莫·天罚阿斯莫·光辉焚化"
+     ],
+     "edition": "2014"
+    },
+    {
+     "name": "堕落阿斯莫",
+     "en": "",
+     "source": "荒洲探险家指南",
+     "path": "topics/荒洲探险家指南/角色选项/种族/阿斯莫.htm",
+     "traitIds": [
+      "feature:阿斯莫·堕落阿斯莫·死灵环绕"
+     ],
+     "edition": "2014"
+    }
+   ],
+   "abilityIncrease": null,
+   "edition": "2024"
+  },
+  {
+   "id": "background:隐士",
+   "type": "background",
+   "name": "隐士",
+   "en": "Hermit",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/背景/隐士.htm",
+   "alsoIn": [],
+   "summary": "隐士背景：属性可选con/wis/cha；起源专长医疗师；技能医药、宗教；工具草药工具",
+   "uncertain": [],
+   "abilityScores": [
+    "con",
+    "wis",
+    "cha"
+   ],
+   "feat": "医疗师",
+   "featParam": null,
+   "skills": [
+    "医药",
+    "宗教"
+   ],
+   "skillsNote": null,
+   "tool": "草药工具",
+   "languages": null,
+   "equipment": "选择A或B：（A）长棍、草药工具、铺盖、书籍（哲学）、油灯、燃油（3扁瓶）、旅行服装、16GP；或（B）50GP",
+   "featureName": null,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:歌利亚·霜巨人·霜之刺骨",
+   "type": "feature",
+   "name": "霜之刺骨",
+   "en": "",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/歌利亚.htm",
+   "alsoIn": [],
+   "summary": "攻击命中时额外1d6寒冷伤害并令目标速度-10尺至你下回合开始。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "歌利亚",
+    "option": "霜巨人"
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": "1d6",
+   "save": null,
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "寒冷"
+    }
+   ],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "攻击命中时额外1d6寒冷伤害并令目标速度-10尺至你下回合开始。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "background:骗子",
+   "type": "background",
+   "name": "骗子",
+   "en": "Charlatan",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/背景/骗子.htm",
+   "alsoIn": [],
+   "summary": "骗子背景：属性可选dex/con/cha；起源专长熟习；技能欺瞒、巧手；工具文书伪造工具",
+   "uncertain": [],
+   "abilityScores": [
+    "dex",
+    "con",
+    "cha"
+   ],
+   "feat": "熟习",
+   "featParam": null,
+   "skills": [
+    "欺瞒",
+    "巧手"
+   ],
+   "skillsNote": null,
+   "tool": "文书伪造工具",
+   "languages": null,
+   "equipment": "选择A或B：（A）文书伪造工具，戏服，高档服装，15GP；或（B）50GP",
+   "featureName": null,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:精灵·高等精灵·高等精灵血系",
+   "type": "feature",
+   "name": "高等精灵血系",
+   "en": "",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/精灵.htm",
+   "alsoIn": [],
+   "summary": "习得魔法伎俩(长休可换法师戏法)；3级侦测魔法，5级迷踪步。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "精灵",
+    "option": "高等精灵"
+   },
+   "level": null,
+   "action": "passive",
+   "uses": {
+    "count": null,
+    "recharge": "long"
+   },
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "习得魔法伎俩(长休可换法师戏法)；3级侦测魔法，5级迷踪步。",
+   "resist": [],
+   "immune": [],
+   "spells": [
+    "魔法伎俩",
+    "侦测魔法",
+    "迷踪步"
+   ],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:侏儒·黑暗视觉",
+   "type": "feature",
+   "name": "黑暗视觉",
+   "en": "Darkvision",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/侏儒.htm",
+   "alsoIn": [],
+   "summary": "拥有60尺黑暗视觉。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "侏儒",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "拥有60尺黑暗视觉。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:兽人·黑暗视觉",
+   "type": "feature",
+   "name": "黑暗视觉",
+   "en": "Darkvision",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/兽人.htm",
+   "alsoIn": [],
+   "summary": "拥有120尺黑暗视觉。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "兽人",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "拥有120尺黑暗视觉。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:提夫林·黑暗视觉",
+   "type": "feature",
+   "name": "黑暗视觉",
+   "en": "Darkvision",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/提夫林.htm",
+   "alsoIn": [],
+   "summary": "拥有60尺黑暗视觉。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "提夫林",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "拥有60尺黑暗视觉。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:矮人·黑暗视觉",
+   "type": "feature",
+   "name": "黑暗视觉",
+   "en": "Darkvision",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/矮人.htm",
+   "alsoIn": [],
+   "summary": "拥有120尺黑暗视觉。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "矮人",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "拥有120尺黑暗视觉。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:精灵·黑暗视觉",
+   "type": "feature",
+   "name": "黑暗视觉",
+   "en": "Darkvision",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/精灵.htm",
+   "alsoIn": [],
+   "summary": "拥有60尺黑暗视觉。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "精灵",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "拥有60尺黑暗视觉。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:阿斯莫·黑暗视觉",
+   "type": "feature",
+   "name": "黑暗视觉",
+   "en": "Darkvision",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/阿斯莫.htm",
+   "alsoIn": [],
+   "summary": "拥有60尺黑暗视觉。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "阿斯莫",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "拥有60尺黑暗视觉。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:龙裔·黑暗视觉",
+   "type": "feature",
+   "name": "黑暗视觉",
+   "en": "Darkvision",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/龙裔.htm",
+   "alsoIn": [],
+   "summary": "拥有60尺黑暗视觉。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "龙裔",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "拥有60尺黑暗视觉。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:龙裔·龙族血统",
+   "type": "feature",
+   "name": "龙族血统",
+   "en": "Draconic Ancestry",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/龙裔.htm",
+   "alsoIn": [],
+   "summary": "选一种龙，决定吐息伤害类型与伤害抗性。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "龙裔",
+    "option": null
+   },
+   "level": null,
+   "action": "passive",
+   "uses": null,
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [],
+   "resource": null,
+   "mechanics": "选一种龙，决定吐息伤害类型与伤害抗性。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "feature:龙裔·龙族飞翼",
+   "type": "feature",
+   "name": "龙族飞翼",
+   "en": "Draconic Flight",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/龙裔.htm",
+   "alsoIn": [],
+   "summary": "5级起附赠动作长出翅膀10分钟，获得等同速度的飞行；长休恢复。",
+   "uncertain": [],
+   "owner": {
+    "kind": "species",
+    "class": "",
+    "subclass": "",
+    "species": "龙裔",
+    "option": null
+   },
+   "level": 5,
+   "action": "bonus",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   },
+   "dice": null,
+   "save": null,
+   "damage": [],
+   "heal": null,
+   "conditions": [
+    "incapacitated"
+   ],
+   "resource": null,
+   "mechanics": "5级起附赠动作长出翅膀10分钟，获得等同速度的飞行；长休恢复。",
+   "resist": [],
+   "immune": [],
+   "spells": [],
+   "tempHp": false,
+   "edition": "2024"
+  },
+  {
+   "id": "species:龙裔",
+   "type": "species",
+   "name": "龙裔",
+   "en": "Dragonborn",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/角色起源/种族/龙裔.htm",
+   "alsoIn": [
+    "荒洲探险家指南"
+   ],
+   "summary": "龙裔：类人，中型，步行30尺，黑暗视觉60尺；特性5项，可选15种变体/血统。",
+   "uncertain": [],
+   "size": [
+    "中型"
+   ],
+   "speed": {
+    "walk": 30
+   },
+   "darkvision": 60,
+   "creatureType": "类人",
+   "traitIds": [
+    "feature:龙裔·龙族血统",
+    "feature:龙裔·吐息武器",
+    "feature:龙裔·伤害抗性",
+    "feature:龙裔·黑暗视觉",
+    "feature:龙裔·龙族飞翼"
+   ],
+   "options": [
+    {
+     "name": "白龙",
+     "en": "White",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/龙裔.htm",
+     "traitIds": [],
+     "damageType": "寒冷",
+     "resist": [
+      "寒冷"
+     ],
+     "breathDamage": "1d10寒冷",
+     "edition": "2024"
+    },
+    {
+     "name": "黑龙",
+     "en": "Black",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/龙裔.htm",
+     "traitIds": [],
+     "damageType": "强酸",
+     "resist": [
+      "强酸"
+     ],
+     "breathDamage": "1d10强酸",
+     "edition": "2024"
+    },
+    {
+     "name": "绿龙",
+     "en": "Green",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/龙裔.htm",
+     "traitIds": [],
+     "damageType": "毒素",
+     "resist": [
+      "毒素"
+     ],
+     "breathDamage": "1d10毒素",
+     "edition": "2024"
+    },
+    {
+     "name": "蓝龙",
+     "en": "Blue",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/龙裔.htm",
+     "traitIds": [],
+     "damageType": "闪电",
+     "resist": [
+      "闪电"
+     ],
+     "breathDamage": "1d10闪电",
+     "edition": "2024"
+    },
+    {
+     "name": "红龙",
+     "en": "Red",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/龙裔.htm",
+     "traitIds": [],
+     "damageType": "火焰",
+     "resist": [
+      "火焰"
+     ],
+     "breathDamage": "1d10火焰",
+     "edition": "2024"
+    },
+    {
+     "name": "黄铜龙",
+     "en": "Brass",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/龙裔.htm",
+     "traitIds": [],
+     "damageType": "火焰",
+     "resist": [
+      "火焰"
+     ],
+     "breathDamage": "1d10火焰",
+     "edition": "2024"
+    },
+    {
+     "name": "赤铜龙",
+     "en": "Copper",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/龙裔.htm",
+     "traitIds": [],
+     "damageType": "强酸",
+     "resist": [
+      "强酸"
+     ],
+     "breathDamage": "1d10强酸",
+     "edition": "2024"
+    },
+    {
+     "name": "青铜龙",
+     "en": "Bronze",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/龙裔.htm",
+     "traitIds": [],
+     "damageType": "闪电",
+     "resist": [
+      "闪电"
+     ],
+     "breathDamage": "1d10闪电",
+     "edition": "2024"
+    },
+    {
+     "name": "银龙",
+     "en": "Silver",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/龙裔.htm",
+     "traitIds": [],
+     "damageType": "寒冷",
+     "resist": [
+      "寒冷"
+     ],
+     "breathDamage": "1d10寒冷",
+     "edition": "2024"
+    },
+    {
+     "name": "金龙",
+     "en": "Gold",
+     "source": "玩家手册2024",
+     "path": "topics/玩家手册2024/角色起源/种族/龙裔.htm",
+     "traitIds": [],
+     "damageType": "火焰",
+     "resist": [
+      "火焰"
+     ],
+     "breathDamage": "1d10火焰",
+     "edition": "2024"
+    },
+    {
+     "name": "宝石龙裔",
+     "en": "",
+     "source": "费资本的巨龙宝库",
+     "path": "topics/费资本的巨龙宝库/玩家选项/宝石龙裔.htm",
+     "traitIds": [
+      "feature:龙裔·宝石龙裔·宝石龙起源",
+      "feature:龙裔·宝石龙裔·吐息武器",
+      "feature:龙裔·宝石龙裔·龙族抗性",
+      "feature:龙裔·宝石龙裔·灵能心智",
+      "feature:龙裔·宝石龙裔·宝石之翼"
+     ],
+     "edition": "2014"
+    },
+    {
+     "name": "色彩龙裔",
+     "en": "",
+     "source": "费资本的巨龙宝库",
+     "path": "topics/费资本的巨龙宝库/玩家选项/色彩龙裔.htm",
+     "traitIds": [
+      "feature:龙裔·色彩龙裔·色彩龙起源",
+      "feature:龙裔·色彩龙裔·吐息武器",
+      "feature:龙裔·色彩龙裔·龙族抗性",
+      "feature:龙裔·色彩龙裔·繁彩防护"
+     ],
+     "edition": "2014"
+    },
+    {
+     "name": "金属龙裔",
+     "en": "",
+     "source": "费资本的巨龙宝库",
+     "path": "topics/费资本的巨龙宝库/玩家选项/金属龙裔.htm",
+     "traitIds": [
+      "feature:龙裔·金属龙裔·金属龙起源",
+      "feature:龙裔·金属龙裔·吐息武器",
+      "feature:龙裔·金属龙裔·龙族抗性",
+      "feature:龙裔·金属龙裔·金属龙吐息武器"
+     ],
+     "edition": "2014"
+    },
+    {
+     "name": "龙血裔",
+     "en": "",
+     "source": "荒洲探险家指南",
+     "path": "topics/荒洲探险家指南/角色选项/种族/龙裔.htm",
+     "traitIds": [
+      "feature:龙裔·龙血裔·黑暗视觉",
+      "feature:龙裔·龙血裔·盛气凌人"
+     ],
+     "edition": "2014"
+    },
+    {
+     "name": "峡谷裔",
+     "en": "",
+     "source": "荒洲探险家指南",
+     "path": "topics/荒洲探险家指南/角色选项/种族/龙裔.htm",
+     "traitIds": [
+      "feature:龙裔·峡谷裔·黑暗视觉",
+      "feature:龙裔·峡谷裔·复仇突击"
+     ],
+     "edition": "2014"
+    }
+   ],
+   "abilityIncrease": null,
+   "edition": "2024"
+  }
+ ]
+}

@@ -1,0 +1,278 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "深水城：龙金劫",
+ "generated": "2026-11-09",
+ "count": 7,
+ "entries": [
+  {
+   "id": "item:BRACER OF FLYING DAGGERS",
+   "name": "BRACER OF FLYING DAGGERS",
+   "en": "BRACER OF FLYING DAGGERS",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/深水城：龙金劫/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。",
+   "uncertain": [
+    "name"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:DRAGONSTAFF OF AHGHAIRON",
+   "name": "DRAGONSTAFF OF AHGHAIRON",
+   "en": "DRAGONSTAFF OF AHGHAIRON",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/深水城：龙金劫/魔法物品.html",
+   "alsoIn": [],
+   "summary": "法杖，传说，需同调。10充能，1d10 每日黎明恢复；可施放命令术",
+   "uncertain": [
+    "name"
+   ],
+   "itemType": "法杖",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "10",
+    "regain": "1d10 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "命令术",
+     "level": 1,
+     "cost": 1
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:格罗之石",
+   "name": "格罗之石",
+   "en": "STONE OF GOLORR",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/深水城：龙金劫/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，神器，需同调。3充能，1d3 每日黎明恢复；可施放通晓传奇、移除诅咒、高等复原术；DC16感知豁免",
+   "uncertain": [
+    "spells"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "通晓传奇",
+     "level": 5,
+     "cost": 1
+    },
+    {
+     "name": "移除诅咒",
+     "level": 3,
+     "cost": null
+    },
+    {
+     "name": "高等复原术",
+     "level": 5,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 16,
+    "ability": "wis"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:烟雾火药",
+   "name": "烟雾火药",
+   "en": "SMOKEPOWDER",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/深水城：龙金劫/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通。可施放解除魔法；DC12敏捷豁免",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "解除魔法",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "9d6",
+     "type": "火焰"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 12,
+    "ability": "dex"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:真言戒指",
+   "name": "真言戒指",
+   "en": "RING OF TRUTH 'TELLING",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/深水城：龙金劫/魔法物品.html",
+   "alsoIn": [],
+   "summary": "戒指，非普通，需同调。",
+   "uncertain": [],
+   "itemType": "戒指",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:纸鹤",
+   "name": "纸鹤",
+   "en": "PAPER BIRD",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/深水城：龙金劫/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通。免疫毒素/心灵",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [
+    "毒素",
+    "心灵"
+   ],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:黑杖",
+   "name": "黑杖",
+   "en": "BLACKSTAFF",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/深水城：龙金劫/魔法物品.html",
+   "alsoIn": [],
+   "summary": "法杖，传说，需身为法师的黑杖继承人同调。1充能；可施放解除魔法",
+   "uncertain": [
+    "spells"
+   ],
+   "itemType": "法杖",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true,
+    "by": "身为法师的黑杖继承人"
+   },
+   "bonus": null,
+   "charges": {
+    "max": "1",
+    "regain": null
+   },
+   "spells": [
+    {
+     "name": "解除魔法",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

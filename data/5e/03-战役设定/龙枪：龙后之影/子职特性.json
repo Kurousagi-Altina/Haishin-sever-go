@@ -1,0 +1,157 @@
+{
+ "category": "feature",
+ "type": "子职特性",
+ "source": "龙枪：龙后之影",
+ "generated": "2026-11-09",
+ "count": 6,
+ "entries": [
+  {
+   "id": "feature:月之术法·月之化身",
+   "name": "月之化身",
+   "en": "Lunar Embodiment",
+   "aliases": [],
+   "source": "龙枪：龙后之影",
+   "section": "setting",
+   "path": "topics/龙枪：龙后之影/创立角色/术士-月之术法.htm",
+   "alsoIn": [],
+   "summary": "额外术士法术分满月/朔月/新月三组；长休选一种月相，可免费施放该月相的一个一环法术一次。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "月之术法"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "额外术士法术分满月/朔月/新月三组；长休选一种月相，可免费施放该月相的一个一环法术一次。",
+   "uses": {
+    "count": "1",
+    "recharge": "long"
+   }
+  },
+  {
+   "id": "feature:月之术法·月之异象",
+   "name": "月之异象",
+   "en": "Lunar Phenomenon",
+   "aliases": [],
+   "source": "龙枪：龙后之影",
+   "section": "setting",
+   "path": "topics/龙枪：龙后之影/创立角色/术士-月之术法.htm",
+   "alsoIn": [],
+   "summary": "附赠动作30尺爆发：满月令敌体质豁免失败目盲并治疗3d8；朔月敏捷豁免失败受3d10黯蚀；新月传送并获全伤害抗性。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "月之术法"
+   },
+   "level": 18,
+   "action": "bonus",
+   "mechanics": "附赠动作30尺爆发：满月令敌体质豁免失败目盲并治疗3d8；朔月敏捷豁免失败受3d10黯蚀；新月传送并获全伤害抗性。",
+   "uses": {
+    "count": "1(耗5术法点可再用)",
+    "recharge": "long"
+   },
+   "save": {
+    "ability": "con",
+    "dc": "法术豁免DC"
+   },
+   "damage": [
+    {
+     "dice": "3d10",
+     "type": "黯蚀"
+    }
+   ],
+   "heal": "3d8",
+   "conditions": [
+    "blinded"
+   ]
+  },
+  {
+   "id": "feature:月之术法·月之恩泽",
+   "name": "月之恩泽",
+   "en": "Lunar Boons",
+   "aliases": [],
+   "source": "龙枪：龙后之影",
+   "section": "setting",
+   "path": "topics/龙枪：龙后之影/创立角色/术士-月之术法.htm",
+   "alsoIn": [],
+   "summary": "对所处月相对应学派的法术用超魔法时，术法点消耗可减1点。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "月之术法"
+   },
+   "level": 6,
+   "action": "passive",
+   "mechanics": "对所处月相对应学派的法术用超魔法时，术法点消耗可减1点。",
+   "uses": {
+    "count": "熟练加值",
+    "recharge": "long"
+   },
+   "resource": "术法点"
+  },
+  {
+   "id": "feature:月之术法·月之赋能",
+   "name": "月之赋能",
+   "en": "Lunar Empowerment",
+   "aliases": [],
+   "source": "龙枪：龙后之影",
+   "section": "setting",
+   "path": "topics/龙枪：龙后之影/创立角色/术士-月之术法.htm",
+   "alsoIn": [],
+   "summary": "满月：10尺明亮光照且调查察觉有优势；朔月：隐匿有优势，黑暗中被攻击劣势；新月：黯蚀与光耀抗性。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "月之术法"
+   },
+   "level": 14,
+   "action": "passive",
+   "mechanics": "满月：10尺明亮光照且调查察觉有优势；朔月：隐匿有优势，黑暗中被攻击劣势；新月：黯蚀与光耀抗性。"
+  },
+  {
+   "id": "feature:月之术法·月火",
+   "name": "月火",
+   "en": "Moon Fire",
+   "aliases": [],
+   "source": "龙枪：龙后之影",
+   "section": "setting",
+   "path": "topics/龙枪：龙后之影/创立角色/术士-月之术法.htm",
+   "alsoIn": [],
+   "summary": "学会圣火术(不占戏法数)，施放时可选两个相距5尺内的目标。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "月之术法"
+   },
+   "level": 1,
+   "action": "passive",
+   "mechanics": "学会圣火术(不占戏法数)，施放时可选两个相距5尺内的目标。"
+  },
+  {
+   "id": "feature:月之术法·阴晴圆缺",
+   "name": "阴晴圆缺",
+   "en": "Waxing And Waning",
+   "aliases": [],
+   "source": "龙枪：龙后之影",
+   "section": "setting",
+   "path": "topics/龙枪：龙后之影/创立角色/术士-月之术法.htm",
+   "alsoIn": [],
+   "summary": "附赠动作花1术法点切换月相；每个月相的一环法术可免费施放一次。",
+   "uncertain": [],
+   "owner": {
+    "kind": "subclass",
+    "class": "术士",
+    "subclass": "月之术法"
+   },
+   "level": 6,
+   "action": "bonus",
+   "mechanics": "附赠动作花1术法点切换月相；每个月相的一环法术可免费施放一次。",
+   "resource": "术法点"
+  }
+ ]
+}

@@ -1,0 +1,282 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "湮灭之墓",
+ "generated": "2026-11-09",
+ "count": 7,
+ "entries": [
+  {
+   "id": "item:书签",
+   "name": "书签",
+   "en": "Bookmark",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/湮灭之墓/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（匕首），传说，需同调。可施放强迫术；DC15豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "武器",
+   "baseItem": "匕首",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "强迫术",
+     "level": 4,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:冬之戒",
+   "name": "冬之戒",
+   "en": "Ring of Winter",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/湮灭之墓/魔法物品.html",
+   "alsoIn": [],
+   "summary": "戒指，神器，需同调。12充能，全部 每日黎明恢复；免疫寒冷/毒素；DC17豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "戒指",
+   "baseItem": null,
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "12",
+    "regain": "全部 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [
+    "寒冷",
+    "毒素"
+   ],
+   "conditionsImmune": [
+    "exhaustion"
+   ],
+   "save": {
+    "dc": 17,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:刺尾狮甲胄",
+   "name": "刺尾狮甲胄",
+   "en": "Scorpion Armor",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/湮灭之墓/魔法物品.html",
+   "alsoIn": [],
+   "summary": "护甲（板甲），珍稀，需同调。DC15体质豁免；涉及失能",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "板甲",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "con"
+   },
+   "conditions": [
+    "incapacitated"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:遗忘者法杖",
+   "name": "遗忘者法杖",
+   "en": "Staff of The Forgotten One",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/湮灭之墓/魔法物品.html",
+   "alsoIn": [],
+   "summary": "法杖，神器。7充能，1d4+3 每日黎明恢复；DC20魅力豁免",
+   "uncertain": [],
+   "itemType": "法杖",
+   "baseItem": null,
+   "rarity": "神器",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": {
+    "max": "7",
+    "regain": "1d4+3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [
+    "blinded",
+    "charmed",
+    "deafened",
+    "frightened",
+    "petrified",
+    "stunned"
+   ],
+   "save": {
+    "dc": 20,
+    "ability": "cha"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:野兽面具",
+   "name": "野兽面具",
+   "en": "Mask of The Beast",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/湮灭之墓/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通。3充能，全部 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "全部 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:魂灵提灯",
+   "name": "魂灵提灯",
+   "en": "Spirit Lantern",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/湮灭之墓/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。可施放法师之手、驱逐善恶",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "法师之手",
+     "level": 0,
+     "cost": null
+    },
+    {
+     "name": "驱逐善恶",
+     "level": 5,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:黑颅骨护符",
+   "name": "黑颅骨护符",
+   "en": "Amulet of The Black Skull",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/湮灭之墓/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。6充能，1d6 每日黎明恢复；可施放移除诅咒；DC16体质豁免",
+   "uncertain": [
+    "spells"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "6",
+    "regain": "1d6 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "移除诅咒",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 16,
+    "ability": "con"
+   },
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

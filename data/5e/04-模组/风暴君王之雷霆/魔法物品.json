@@ -1,0 +1,517 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "风暴君王之雷霆",
+ "generated": "2026-11-09",
+ "count": 14,
+ "entries": [
+  {
+   "id": "item:ild符文蛋白石",
+   "name": "ild符文蛋白石",
+   "en": "OPAL OF THE lLD RUNE",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/风暴君王之雷霆/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。额外1d6火焰；抗寒冷",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "1d6",
+     "type": "火焰",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [
+    "寒冷"
+   ],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:ise符文碎片",
+   "name": "ise符文碎片",
+   "en": "SHARD OF THE ISE RUNE",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/风暴君王之雷霆/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。可施放雪雨暴；抗火焰；DC17豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "雪雨暴",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [
+    "火焰"
+   ],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 17,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:krig符文之旗",
+   "name": "krig符文之旗",
+   "en": "BANNER OF THE KRIG RUNE",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/风暴君王之雷霆/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。攻击+1、伤害+1、AC+1",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1,
+    "ac": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:skold符文铸块",
+   "name": "skold符文铸块",
+   "en": "INGOT OF THE SKOLD RUNE",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/风暴君王之雷霆/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。攻击+3、伤害+3、AC+1；10充能，每日黎明恢复；可施放短讯术、传送术；词条：符文之盾",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 3,
+    "damage": 3,
+    "ac": 1
+   },
+   "charges": {
+    "max": "10",
+    "regain": "每日黎明"
+   },
+   "spells": [
+    {
+     "name": "短讯术",
+     "level": 3,
+     "cost": 2
+    },
+    {
+     "name": "传送术",
+     "level": 7,
+     "cost": 3
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:stein符文之球",
+   "name": "stein符文之球",
+   "en": "ORB OF THE STEIN RUNE",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/风暴君王之雷霆/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。可施放融身入石；DC12力量豁免",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "融身入石",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 12,
+    "ability": "str"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:venn符文木槌",
+   "name": "venn符文木槌",
+   "en": "GAVEL OF THE VENN RUNE",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/风暴君王之雷霆/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。攻击+1、伤害+1；额外2d12挥砍；DC13豁免；词条：仲裁者之盾",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "2d12",
+     "type": "挥砍",
+     "when": "命中时"
+    }
+   ],
+   "damage": [
+    {
+     "dice": "3d12",
+     "type": "挥砍"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 13,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:vind符文三角旗",
+   "name": "vind符文三角旗",
+   "en": "PENNANT OF THE VIND RUNE",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/风暴君王之雷霆/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。可施放浮空术、羽落术",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "浮空术",
+     "level": 2,
+     "cost": null
+    },
+    {
+     "name": "羽落术",
+     "level": 1,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:wyrm符文之爪",
+   "name": "wyrm符文之爪",
+   "en": "CLAW OF THE WYRM RUNE",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/风暴君王之雷霆/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。DC15体质豁免",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "con"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:传送海螺",
+   "name": "传送海螺",
+   "en": "CONCH OF TELEPORTATION",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/风暴君王之雷霆/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。可施放传送术",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "传送术",
+     "level": 7,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:导航球",
+   "name": "导航球",
+   "en": "NAVIGATION ORB",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/风暴君王之雷霆/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:梵宁铎权杖",
+   "name": "梵宁铎权杖",
+   "en": "ROD OF THE VONINDOD",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/风暴君王之雷霆/魔法物品.html",
+   "alsoIn": [],
+   "summary": "权杖，珍稀，需同调。10充能，1d6+4 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "权杖",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "10",
+    "regain": "1d6+4 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:蛇袍",
+   "name": "蛇袍",
+   "en": "ROBE OF SERPENTS",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/风暴君王之雷霆/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:血石",
+   "name": "血石",
+   "en": "BLOD STONE",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/风暴君王之雷霆/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:龙颅王座",
+   "name": "龙颅王座",
+   "en": "WYRMSKULL THRONE",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/风暴君王之雷霆/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，神器。9充能，全部 每日黎明恢复；DC21敏捷豁免；涉及麻痹",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "神器",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": {
+    "max": "9",
+    "regain": "全部 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 21,
+    "ability": "dex"
+   },
+   "conditions": [
+    "paralyzed"
+   ],
+   "consumable": false
+  }
+ ]
+}

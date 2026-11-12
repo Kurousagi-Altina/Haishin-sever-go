@@ -362,6 +362,8 @@ function applySlotLevel(a, lv) {
     if (!a.upcast) return;
     var n = Math.max(0, lv - a.upcast.from);
     if (a.upcast.dice) a.damage = addDice(a.baseDamage, a.upcast.dice, n);
+    else if (a.upcast.flat) a.damage = a.baseDamage;
+    if (a.upcast.flat && n > 0) a.damage = addToDamage(a.damage, '+' + a.upcast.flat * n);
     if (a.upcast.extra) a.targets = (a.baseTargets || 1) + n;
 }
 
@@ -389,6 +391,43 @@ function castFromSheet(sh, ds) {
     if (ds.kind === 'atk') { openActionDialog(actionFromAttack(sh, sh.attacks[+ds.idx]), caster, sh); return; }
     if (ds.kind === 'spell') {
         var sp = sh.spells[+ds.idx];
+        // 本地规则库（data/5e）里有这道法术：直接用结构化数据，不用联网，也不靠文字猜
+        ruleLookup('法术', sp.name).then(function(rule) {
+            if (!rule) { castSpellFromText(sh, sp, caster); return; }
+            var a = spellActionFromRule(rule, sh, sp);
+            pickSpellSlot(a, sh);
+            openActionDialog(a, caster, sh);
+            // 结构化数据里没有的细节（每回合限一次、回合结束重复豁免、回合开始伤害）从说明文字补上
+            var extra = function(text) {
+                if (!text || !act || act.a !== a) return;
+                var t = parseActionText(sp.name, text, '');
+                if (t.repeatSave && !$('acRepeat').checked) { a.repeatSave = true; $('acRepeat').checked = true; }
+                if (t.dot && !$('acDot').value) { a.dot = t.dot; $('acDot').value = t.dot; }
+                if (t.oncePerTurn && !$('acOnce').checked) { a.oncePerTurn = true; $('acOnce').checked = true; }
+            };
+            if (sp.text) extra(sp.text);
+            else findSpell(sp.name, sp.level).then(function(found) { if (found) extra(found.text); }).catch(function() { /* 离线也能用 */ });
+        });
+        return;
+    }
+    var en = ds.kind === 'entry' ? sh.sections[+ds.sec].entries[+ds.idx] : sh.features[+ds.idx];
+    var name = (en.name || '').replace(/。$/, '');
+    var ea = finishAction(parseActionText(name, en.text, ''), sh);
+    if (ea.kind === 'attack' && sheetHasEntry(sh, /魔法武器|magicweapons/i)) ea.magic = true;
+    openActionDialog(ea, caster, sh);
+}
+
+// 有法术位时默认选能用的最低一环
+function pickSpellSlot(a, sh) {
+    if (a.spellLevel > 0 && sh.slots && sh.slots.length) {
+        for (var lv = a.spellLevel; lv <= 9; lv++) { var s = slotOf(sh, lv); if (s && s.cur > 0) { applySlotLevel(a, lv); break; } }
+        a.useSlot = canEditSheet(sh);
+    }
+}
+
+// 规则库里没有：按原来的方式从说明文字识别（角色卡带的文字，或在线查不全书）
+function castSpellFromText(sh, sp, caster) {
+    {
         var go = function(text, meta) {
             var a = parseActionText(sp.name, text, meta);
             if (!a.kind && /法术攻击/.test(text)) a.kind = 'attack';
@@ -406,13 +445,86 @@ function castFromSheet(sh, ds) {
             if (found) go(found.text, found.meta);
             else { notice('没找到法术说明，请手动填写', true); openActionDialog(finishAction({ name: sp.name, area: { shape: '', size: 0, width: 5 }, targets: 1 }, sh), caster, sh); }
         });
-        return;
     }
-    var en = ds.kind === 'entry' ? sh.sections[+ds.sec].entries[+ds.idx] : sh.features[+ds.idx];
-    var name = (en.name || '').replace(/。$/, '');
-    var ea = finishAction(parseActionText(name, en.text, ''), sh);
-    if (ea.kind === 'attack' && sheetHasEntry(sh, /魔法武器|magicweapons/i)) ea.magic = true;
-    openActionDialog(ea, caster, sh);
+}
+
+// ===== 本地规则库（data/5e，服务器 /api/tabletop/5e/rules） =====
+var ruleCache = {};
+function ruleLookup(type, name) {
+    var key = type + '|' + String(name || '').trim();
+    if (!String(name || '').trim()) return Promise.resolve(null);
+    if (!ruleCache[key]) {
+        ruleCache[key] = api('/api/tabletop/5e/rules?type=' + enc(type) + '&name=' + enc(String(name).trim()), 'GET')
+            .then(function(d) { return d && d.entries && d.entries[0] || null; })
+            .catch(function() { delete ruleCache[key]; return null; });
+    }
+    return ruleCache[key];
+}
+
+// 规则库的范围形状 → 行动框的形状
+var RULE_AREA = { sphere: 'circle', cylinder: 'circle', emanation: 'circle', cube: 'cube', cone: 'cone', line: 'line', wall: 'wall', path: 'path' };
+
+// 结构化的法术数据 → 行动框（伤害 / 治疗 / 豁免 / 范围 / 射程 / 专注 / 升环 / 戏法强化 / 消耗都按数据填）
+function spellActionFromRule(r, sh, sp) {
+    var a = { name: r.name, range: 0, area: { shape: '', size: 0, width: 5, self: false }, targets: r.targets || 1, fromRules: r.source || true };
+    var dmg = (r.damage || []).filter(function(d) { return d && /^\d*d\d+([+\-]\d+)?$|^\d+$/.test(String(d.dice || '').replace(/\s/g, '')); });
+    if (r.attack) { a.kind = 'attack'; a.spellAttack = true; }
+    else if (r.save) { a.kind = 'save'; a.save = r.save; a.half = r.onSave === 'half'; }
+    else if (r.heal) { a.kind = 'heal'; a.heal = String(r.heal); a.healMod = !!r.healAddsMod; }
+    else if (r.tempHp) { a.kind = 'temp'; a.temp = String(r.tempHp); }
+    else if (dmg.length) a.kind = 'auto';
+    else a.kind = 'effect';
+    if (dmg.length && a.kind !== 'heal' && a.kind !== 'temp') {
+        // 数据里的多条伤害不一定同时生效（「光耀或黯蚀」二选一、焚烧术之后每回合的 4d6……）；
+        // 只有摘要里用「+」连在一起的（冰风暴「2d10钝击+4d6寒冷」）才算附加伤害
+        var oneType = function(t) { t = String(t || '').split(/[\/或]/)[0]; return t === '暗蚀' ? '黯蚀' : t; };
+        var sum = String(r.summary || '').replace(/\s|点/g, '');
+        a.damage = String(dmg[0].dice).replace(/\s/g, '');
+        a.dtype = oneType(dmg[0].type);
+        a.parts = dmg.slice(1).filter(function(d) {
+            return sum.indexOf('+' + String(d.dice).replace(/\s/g, '') + oneType(d.type)) >= 0;
+        }).slice(0, 4).map(function(d) { return { dice: String(d.dice).replace(/\s/g, ''), type: oneType(d.type) }; });
+    }
+    var cond = (r.conditions || []).filter(function(c) { return STATUS_BY_ID[c]; })[0];
+    if (SPELL_BUFFS[r.name]) a.status = SPELL_BUFFS[r.name];
+    else if (cond) a.status = cond;
+    if (a.kind === 'effect' && !a.status && !a.damage) a.kind = 'effect';
+    var rg = r.range || {};
+    if (rg.type === 'ft' && rg.ft > 0) a.range = rg.ft;
+    else if (rg.type === 'touch') a.reach = 5;
+    var ar = r.area;
+    if (ar && RULE_AREA[ar.shape]) {
+        a.area = { shape: RULE_AREA[ar.shape], size: num(ar.size, 0), width: num(ar.width, 0) || 5, self: ar.origin === 'self' || ar.shape === 'emanation' || (rg.type === 'self' && ar.shape !== 'wall') };
+        if (ar.shape === 'line' && !ar.width) a.area.width = 5;
+        if (ar.shape === 'wall' && ar.width) a.area.width = ar.width;
+    }
+    var du = r.duration || {};
+    a.conc = !!du.concentration;
+    var ct = r.castingTime || {};
+    a.cost = ct.unit === 'bonus' ? 'b' : ct.unit === 'reaction' ? 'r' : 'a';
+    a.school = r.school || '';
+    a = finishAction(a, sh);
+    // 环阶、升环、戏法强化
+    a.spellLevel = parseInt(r.level, 10) || 0;
+    a.isSpell = true;
+    a.magic = true;
+    if (a.spellLevel === 0 && r.cantripScaling && a.damage) {
+        var lv = parseInt(sh && sh.level, 10) || 1, pick = null;
+        r.cantripScaling.forEach(function(t) { if (lv >= t[0]) pick = t[1]; });
+        if (pick) { a.damage = a.damage.replace(/^\d*d\d+/, pick); a.scaleNote = '戏法强化：' + lv + ' 级 → ' + pick; }
+    }
+    var up = r.upcast;
+    if (a.spellLevel > 0 && up && (up.perLevelDice || up.perLevelTargets > 0 || up.perLevelFlat > 0)) {
+        a.upcast = { from: parseInt(up.from, 10) || a.spellLevel, dice: up.perLevelDice || '', extra: up.perLevelTargets > 0, flat: up.perLevelFlat || 0 };
+    }
+    a.slotLevel = a.spellLevel;
+    a.baseDamage = a.damage || '';
+    a.baseTargets = a.targets || 1;
+    a.lasting = !!(a.area && a.area.shape) && !du.instant && (!!du.concentration || /分钟|小时|轮|天/.test(du.text || ''));
+    a.zone = a.lasting;
+    var src = r.source ? '数据：' + r.source : '';
+    a.scaleNote = [a.scaleNote, src].filter(Boolean).join(' · ');
+    return a;
 }
 
 function sheetHasEntry(sh, re) {

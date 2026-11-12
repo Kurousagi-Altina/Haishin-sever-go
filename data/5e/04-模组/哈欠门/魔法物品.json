@@ -1,0 +1,520 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "哈欠门",
+ "generated": "2026-11-09",
+ "count": 15,
+ "entries": [
+  {
+   "id": "item:厄运石",
+   "name": "厄运石",
+   "en": "Stone of Ill Luck",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/哈欠门/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需同调。词条：诅咒",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:反噬之矛",
+   "name": "反噬之矛",
+   "en": "Spear of Backbiting",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/哈欠门/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（矛或标枪），极珍稀，需同调。攻击+2、伤害+2；词条：诅咒",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "矛或标枪",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 2,
+    "damage": 2
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:和谐天平",
+   "name": "和谐天平",
+   "en": "Balance of Harmony",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/哈欠门/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通。可施放侦测善恶",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "侦测善恶",
+     "level": 1,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:唤夜者",
+   "name": "唤夜者",
+   "en": "Night Caller",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/哈欠门/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通。可施放活化死尸；DC20豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "活化死尸",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 20,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:地狱犬斗篷",
+   "name": "地狱犬斗篷",
+   "en": "Hell Hound Cloak",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/哈欠门/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。DC15魅力豁免；词条：诅咒",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "cha"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:开辟者",
+   "name": "开辟者",
+   "en": "Waythe",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/哈欠门/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（巨剑），传说，需同调。攻击+1、伤害+1；有充能，全部 每日黎明恢复；DC15力量豁免；涉及倒地；词条：智能、个性",
+   "uncertain": [
+    "charges"
+   ],
+   "itemType": "武器",
+   "baseItem": "巨剑",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": {
+    "max": null,
+    "regain": "全部 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "str"
+   },
+   "conditions": [
+    "prone"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:心灵控制药水",
+   "name": "心灵控制药水",
+   "en": "Potion of Mind Control",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/哈欠门/魔法物品.html",
+   "alsoIn": [],
+   "summary": "药水，稀有度多种。DC15豁免；消耗品",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "药水",
+   "baseItem": null,
+   "rarity": "多种",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": true,
+   "rarityList": []
+  },
+  {
+   "id": "item:时空之镜",
+   "name": "时空之镜",
+   "en": "Mirror of The Past",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/哈欠门/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:盛夏法袍",
+   "name": "盛夏法袍",
+   "en": "Robe of Summer",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/哈欠门/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:石化手镯",
+   "name": "石化手镯",
+   "en": "Bracelet of Rock Magic",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/哈欠门/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。可施放石化术、塑石术；DC15豁免；词条：诅咒",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "石化术",
+     "level": 6,
+     "cost": null
+    },
+    {
+     "name": "塑石术",
+     "level": 4,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:碎棘",
+   "name": "碎棘",
+   "en": "Shatterspike",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/哈欠门/魔法物品.html",
+   "alsoIn": [],
+   "summary": "武器（长剑），非普通，需同调。攻击+1、伤害+1",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "长剑",
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:纠缠魔杖",
+   "name": "纠缠魔杖",
+   "en": "Wand of Entangle",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/哈欠门/魔法物品.html",
+   "alsoIn": [],
+   "summary": "魔杖，非普通，需施法者同调。7充能，1d6+1 每日黎明恢复；可施放纠缠术；DC15豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "魔杖",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true,
+    "by": "施法者"
+   },
+   "bonus": null,
+   "charges": {
+    "max": "7",
+    "regain": "1d6+1 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "纠缠术",
+     "level": 1,
+     "cost": 1
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:负载石",
+   "name": "负载石",
+   "en": "Load Stone",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/哈欠门/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀。词条：诅咒",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:防护驱散护符",
+   "name": "防护驱散护符",
+   "en": "Amulet of Protection From Turning",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/哈欠门/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:鹰哨",
+   "name": "鹰哨",
+   "en": "Eagle Whistle",
+   "aliases": [],
+   "source": "模组",
+   "section": "adventure",
+   "path": "topics/模组/哈欠门/魔法物品.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

@@ -1,0 +1,1578 @@
+{
+ "category": "feat",
+ "type": "专长",
+ "source": "艾伯伦：奇械锻炉",
+ "generated": "2026-11-09",
+ "count": 28,
+ "entries": [
+  {
+   "id": "feat:侦测龙纹",
+   "name": "侦测龙纹",
+   "en": "Mark of Detection",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/龙纹专长.htm",
+   "alsoIn": [],
+   "summary": "智力调查/感知洞悉检定+1d4；免费施放侦测魔法和侦测毒性和疾病，3级加识破隐形；龙纹法术表。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "龙纹",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "艾伯伦战役，不具有其他龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:侦测魔法",
+    "法术:侦测毒性和疾病",
+    "法术:识破隐形"
+   ],
+   "mechanics": [
+    {
+     "name": "推理直觉",
+     "trigger": "当你进行智力（调查）或感知（洞悉）检定时",
+     "action": "passive",
+     "effect": "骰:1d4",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4"
+    },
+    {
+     "name": "魔法侦测",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:侦测魔法/侦测毒性和疾病/识破隐形",
+     "uses": null,
+     "recharge": "long"
+    },
+    {
+     "name": "龙纹法术",
+     "trigger": "若你具有施法或契约魔法特性",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:创造龙纹",
+   "name": "创造龙纹",
+   "en": "Mark of Making",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/龙纹专长.htm",
+   "alsoIn": [],
+   "summary": "奥秘/工匠工具检定+1d4；学修复术并免费施放魔化武器；龙纹法术表。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "龙纹",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "艾伯伦战役，不具有其他龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:修复术",
+    "法术:魔化武器"
+   ],
+   "mechanics": [
+    {
+     "name": "工匠直觉",
+     "trigger": "当你进行智力（奥秘）检定或使用工匠工具的属性检定时",
+     "action": "passive",
+     "effect": "骰:1d4",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4"
+    },
+    {
+     "name": "法术匠人",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:修复术/魔化武器",
+     "uses": null,
+     "recharge": "long"
+    },
+    {
+     "name": "龙纹法术",
+     "trigger": "若你具有施法或契约魔法特性",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:医疗龙纹",
+   "name": "医疗龙纹",
+   "en": "Mark of Healing",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/龙纹专长.htm",
+   "alsoIn": [],
+   "summary": "感知医药/草药检定+1d4；免费施放疗伤术，3级加次等复原术；龙纹法术表。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "龙纹",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "艾伯伦战役，不具有其他龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:疗伤术",
+    "法术:次等复原术"
+   ],
+   "mechanics": [
+    {
+     "name": "医学直觉",
+     "trigger": "当你进行感知（医药）检定或使用草药工具的属性检定时",
+     "action": "passive",
+     "effect": "骰:1d4",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4"
+    },
+    {
+     "name": "治愈之触",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:疗伤术/次等复原术",
+     "uses": null,
+     "recharge": "long"
+    },
+    {
+     "name": "龙纹法术",
+     "trigger": "若你具有施法或契约魔法特性",
+     "action": "passive",
+     "effect": "治疗",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:哨戒龙纹",
+   "name": "哨戒龙纹",
+   "en": "Mark of Sentinel",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/龙纹专长.htm",
+   "alsoIn": [],
+   "summary": "洞悉/察觉检定+1d4；免费施放护盾术；反应与被命中的生物换位替其承受。",
+   "uncertain": [
+    "mechanics"
+   ],
+   "category": "其他",
+   "subCategory": "龙纹",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "艾伯伦战役，不具有其他龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:护盾术",
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "哨戒直觉",
+     "trigger": "当你进行感知（洞悉或察觉）检定时",
+     "action": "passive",
+     "effect": "骰:1d4",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4"
+    },
+    {
+     "name": "卫护之盾",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:护盾术",
+     "uses": null,
+     "recharge": "long"
+    },
+    {
+     "name": "警戒哨卫",
+     "trigger": "当一名位于你5尺内你可见的生物被攻击检定命中时",
+     "action": "reaction",
+     "effect": "",
+     "uses": "熟练加值",
+     "recharge": "long"
+    },
+    {
+     "name": "龙纹法术",
+     "trigger": "若你具有施法或契约魔法特性",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:守御龙纹",
+   "name": "守御龙纹",
+   "en": "Mark of Warding",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/龙纹专长.htm",
+   "alsoIn": [],
+   "summary": "调查/盗贼工具检定+1d4；免费施放警报术与法师护甲；龙纹法术表。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "龙纹",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "艾伯伦战役，不具有其他龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:警报术",
+    "法术:法师护甲",
+    "法术:秘法锁"
+   ],
+   "mechanics": [
+    {
+     "name": "御护直觉",
+     "trigger": "当你进行智力（调查）检定或使用盗贼工具的属性检定时",
+     "action": "passive",
+     "effect": "骰:1d4",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4"
+    },
+    {
+     "name": "缄守封护",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:警报术/法师护甲/秘法锁",
+     "uses": null,
+     "recharge": "long"
+    },
+    {
+     "name": "龙纹法术",
+     "trigger": "若你具有施法或契约魔法特性",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:异种龙纹",
+   "name": "异种龙纹",
+   "en": "Aberrant Dragonmark",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/龙纹专长.htm",
+   "alsoIn": [
+    "艾伯伦：从终末战争中崛起"
+   ],
+   "summary": "体质豁免失败时反应加1d4；得一个术士戏法和一个1环术士法术（免费一次）；法术时可生命骰触发浪涌。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "龙纹",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "艾伯伦战役，不具有其他龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "戏法",
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "异种坚韧",
+     "trigger": "当你体质豁免失败时",
+     "action": "reaction",
+     "effect": "骰:1d4；豁免:con DC ",
+     "uses": "1",
+     "recharge": "long",
+     "dice": "1d4",
+     "save": {
+      "ability": "con",
+      "dc": null
+     }
+    },
+    {
+     "name": "异种魔法",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": "long"
+    },
+    {
+     "name": "异种浪涌",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:强效龙纹",
+   "name": "强效龙纹",
+   "en": "Potent Dragonmark",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/通用专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；始终准备龙纹法术；获得额外法术位专用于龙纹专长法术，短休恢复。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "任意龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "龙纹准备",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "龙纹施法",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:抄录龙纹",
+   "name": "抄录龙纹",
+   "en": "Mark of Scribing",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/龙纹专长.htm",
+   "alsoIn": [],
+   "summary": "历史/书法工具检定+1d4；学传讯术，免费施放通晓语言；龙纹法术表。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "龙纹",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "艾伯伦战役，不具有其他龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:传讯术",
+    "法术:通晓语言",
+    "法术:魔嘴术"
+   ],
+   "mechanics": [
+    {
+     "name": "天才文员",
+     "trigger": "当你进行智力（历史）检定或使用书法工具的属性检定时",
+     "action": "passive",
+     "effect": "骰:1d4",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4"
+    },
+    {
+     "name": "文员洞见",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:传讯术/通晓语言/魔嘴术",
+     "uses": null,
+     "recharge": "long"
+    },
+    {
+     "name": "龙纹法术",
+     "trigger": "若你具有施法或契约魔法特性",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:招待龙纹",
+   "name": "招待龙纹",
+   "en": "Mark of Hospitality",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/龙纹专长.htm",
+   "alsoIn": [],
+   "summary": "游说/酿酒/烹饪检定+1d4；免费施放净化饮食和隐形仆役；龙纹法术表。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "龙纹",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "艾伯伦战役，不具有其他龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:净化饮食",
+    "法术:隐形仆役",
+    "法术:安定心神"
+   ],
+   "mechanics": [
+    {
+     "name": "永恒款待",
+     "trigger": "当你进行魅力（游说）检定或使用酿酒工具或厨师工具的属性检定时",
+     "action": "passive",
+     "effect": "骰:1d4",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4"
+    },
+    {
+     "name": "掌柜魔法",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:净化饮食/隐形仆役/安定心神",
+     "uses": null,
+     "recharge": "long"
+    },
+    {
+     "name": "龙纹法术",
+     "trigger": "若你具有施法或契约魔法特性",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:探寻龙纹",
+   "name": "探寻龙纹",
+   "en": "Mark of Finding",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/龙纹专长.htm",
+   "alsoIn": [],
+   "summary": "感知察觉/求生检定+1d4；探寻魔法免费法术；龙纹法术表。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "龙纹",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "艾伯伦战役，不具有其他龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:猎人印记",
+    "法术:物件定位术"
+   ],
+   "mechanics": [
+    {
+     "name": "猎手直觉",
+     "trigger": "当你进行感知（察觉或求生）检定时",
+     "action": "passive",
+     "effect": "骰:1d4",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4"
+    },
+    {
+     "name": "探寻魔法",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:猎人印记/物件定位术",
+     "uses": null,
+     "recharge": "long"
+    },
+    {
+     "name": "龙纹法术",
+     "trigger": "若你具有施法或契约魔法特性",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:暴风龙纹",
+   "name": "暴风龙纹",
+   "en": "Mark of Storm",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/龙纹专长.htm",
+   "alsoIn": [],
+   "summary": "特技/领航检定+1d4；闪电抗性；学鸣雷破，3级起免费施放造风术；龙纹法术表。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "龙纹",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "艾伯伦战役，不具有其他龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:鸣雷破",
+    "法术:造风术",
+    "抗性:闪电"
+   ],
+   "mechanics": [
+    {
+     "name": "风骑直觉",
+     "trigger": "当你进行敏捷（特技）检定或使用领航工具的属性检定时",
+     "action": "passive",
+     "effect": "骰:1d4",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4"
+    },
+    {
+     "name": "暴风恩惠",
+     "trigger": "",
+     "action": "passive",
+     "effect": "伤害:闪电；抗性",
+     "uses": null,
+     "recharge": null,
+     "damageTypes": [
+      "闪电"
+     ]
+    },
+    {
+     "name": "暴风魔法",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:鸣雷破/造风术",
+     "uses": null,
+     "recharge": "long"
+    },
+    {
+     "name": "龙纹法术",
+     "trigger": "若你具有施法或契约魔法特性",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:畜牧龙纹",
+   "name": "畜牧龙纹",
+   "en": "Mark of Handling",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/龙纹专长.htm",
+   "alsoIn": [],
+   "summary": "自然/驯兽检定+1d4；免费施放化兽为友与动物交谈，3级可作用于怪兽；龙纹法术表。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "龙纹",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "艾伯伦战役，不具有其他龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:化兽为友",
+    "法术:动物交谈"
+   ],
+   "mechanics": [
+    {
+     "name": "野性直觉",
+     "trigger": "当你进行智力（自然）或感知（驯兽）检定时",
+     "action": "passive",
+     "effect": "骰:1d4",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4"
+    },
+    {
+     "name": "原初联结",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:化兽为友/动物交谈",
+     "uses": null,
+     "recharge": "long"
+    },
+    {
+     "name": "异兽联结",
+     "trigger": "当你角色等级到达3级时",
+     "action": "passive",
+     "effect": "法术:化兽为友/动物交谈",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "龙纹法术",
+     "trigger": "若你具有施法或契约魔法特性",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:西伯瑞斯之恩惠",
+   "name": "西伯瑞斯之恩惠",
+   "en": "Boon of Siberys",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/传奇恩惠.htm",
+   "alsoIn": [],
+   "summary": "属性+1；选一道不高于8环的术士法术或西伯瑞斯龙纹表法术，免费施放一次。",
+   "uncertain": [],
+   "category": "传奇恩惠",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 19,
+    "ability": {},
+    "other": "艾伯伦战役"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 30
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "异种魔法",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": "long"
+    }
+   ]
+  },
+  {
+   "id": "feat:通行龙纹",
+   "name": "通行龙纹",
+   "en": "Mark of Passage",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/龙纹专长.htm",
+   "alsoIn": [],
+   "summary": "速度+5尺；运动/特技检定+1d4；免费施放迷踪步；龙纹法术表。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "龙纹",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "艾伯伦战役，不具有其他龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:迷踪步"
+   ],
+   "mechanics": [
+    {
+     "name": "信使极速",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "直觉行动",
+     "trigger": "当你进行力量（运动）或敏捷（特技）检定时",
+     "action": "passive",
+     "effect": "骰:1d4",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4"
+    },
+    {
+     "name": "魔法通行",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:迷踪步",
+     "uses": null,
+     "recharge": "long"
+    },
+    {
+     "name": "龙纹法术",
+     "trigger": "若你具有施法或契约魔法特性",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:阴影龙纹",
+   "name": "阴影龙纹",
+   "en": "Mark of Shadow",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/龙纹专长.htm",
+   "alsoIn": [],
+   "summary": "隐匿/表演检定+1d4；学次级幻象，免费施放隐形术；龙纹法术表。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": "龙纹",
+   "edition": "2024",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": "艾伯伦战役，不具有其他龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "法术:次级幻象",
+    "法术:隐形术"
+   ],
+   "mechanics": [
+    {
+     "name": "狡黠直觉",
+     "trigger": "当你进行敏捷（隐匿）或魅力（表演）检定时",
+     "action": "passive",
+     "effect": "骰:1d4",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4"
+    },
+    {
+     "name": "阴影塑形",
+     "trigger": "",
+     "action": "passive",
+     "effect": "法术:次级幻象/隐形术",
+     "uses": null,
+     "recharge": "long"
+    },
+    {
+     "name": "龙纹法术",
+     "trigger": "若你具有施法或契约魔法特性",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:高等侦测龙纹",
+   "name": "高等侦测龙纹",
+   "en": "Greater Mark of Detection",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/通用专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；侦测直觉改d6；识破隐形可同时让30尺内一名生物受益。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "侦测龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "法术:识破隐形"
+   ],
+   "mechanics": [
+    {
+     "name": "直觉锐化",
+     "trigger": "当你使用你侦测龙纹的推理直觉增益时",
+     "action": "passive",
+     "effect": "骰:1d4/1d6",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4/1d6"
+    },
+    {
+     "name": "有识同享",
+     "trigger": "当你使用你侦测龙纹的魔法侦测增益不消耗法术位地施展法术《识破隐形See Invisibi",
+     "action": "passive",
+     "effect": "法术:识破隐形",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:高等创造龙纹",
+   "name": "高等创造龙纹",
+   "en": "Greater Mark of Making",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/通用专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；工匠直觉改d6；免费魔化武器以3环施放。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "创造龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "法术:魔化武器"
+   ],
+   "mechanics": [
+    {
+     "name": "直觉锐化",
+     "trigger": "当你使用你创造龙纹的工匠直觉增益时",
+     "action": "passive",
+     "effect": "骰:1d4/1d6",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4/1d6"
+    },
+    {
+     "name": "鬼斧神造",
+     "trigger": "当你使用你创造龙纹的法术匠人增益不消耗法术位地施展法术《魔化武器Magic Weapon",
+     "action": "passive",
+     "effect": "法术:魔化武器",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:高等医疗龙纹",
+   "name": "高等医疗龙纹",
+   "en": "Greater Mark of Healing",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/通用专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；医学直觉改d6；疗伤术免费次数等于熟练加值，治疗骰1和2按3算。",
+   "uncertain": [
+    "mechanics"
+   ],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "医疗龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "法术:疗伤术"
+   ],
+   "mechanics": [
+    {
+     "name": "直觉锐化",
+     "trigger": "当你使用你医药龙纹的医学直觉增益时",
+     "action": "passive",
+     "effect": "骰:1d4/1d6",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4/1d6"
+    },
+    {
+     "name": "妙手回春",
+     "trigger": "",
+     "action": "passive",
+     "effect": "治疗；法术:疗伤术",
+     "uses": null,
+     "recharge": "long"
+    }
+   ]
+  },
+  {
+   "id": "feat:高等哨戒龙纹",
+   "name": "高等哨戒龙纹",
+   "en": "Greater Mark of Sentinel",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/通用专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；哨戒直觉改d6；换位反应时可顺带发动一次攻击。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "哨戒龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [],
+   "mechanics": [
+    {
+     "name": "直觉锐化",
+     "trigger": "当你使用你哨戒龙纹的哨戒直觉增益时",
+     "action": "passive",
+     "effect": "骰:1d4/1d6",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4/1d6"
+    },
+    {
+     "name": "枕戈待旦",
+     "trigger": "当你使用你哨戒龙纹的警戒哨卫增益时",
+     "action": "passive",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:高等守御龙纹",
+   "name": "高等守御龙纹",
+   "en": "Greater Mark of Warding",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/通用专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；御护直觉改d6；反应对攻击你或30尺内者的攻击检定施加劣势。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "守御龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "直觉锐化",
+     "trigger": "当你使用你守御龙纹的御护直觉增益时",
+     "action": "passive",
+     "effect": "骰:1d4/1d6",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4/1d6"
+    },
+    {
+     "name": "固若金汤",
+     "trigger": "当一名生物对你或位于你30尺内你可见的生物进行攻击检定时",
+     "action": "reaction",
+     "effect": "",
+     "uses": "熟练加值",
+     "recharge": "long"
+    }
+   ]
+  },
+  {
+   "id": "feat:高等异种龙纹",
+   "name": "高等异种龙纹",
+   "en": "Greater Aberrant Mark",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/通用专长.htm",
+   "alsoIn": [],
+   "summary": "体质+1；异种坚韧改用d6且短休也恢复；施法时花生命骰给自己临时HP或伤害他人。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "异种龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "con"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "戏法"
+   ],
+   "mechanics": [
+    {
+     "name": "直觉锐化",
+     "trigger": "当你使用你异种龙纹的异种坚韧增益时",
+     "action": "passive",
+     "effect": "骰:1d4/1d6",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4/1d6"
+    },
+    {
+     "name": "灵感龙纹",
+     "trigger": "当你施展一道戏法时",
+     "action": "passive",
+     "effect": "伤害:力场；临时HP",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "damageTypes": [
+      "力场"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "feat:高等抄录龙纹",
+   "name": "高等抄录龙纹",
+   "en": "Greater Mark of Scribing",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/通用专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；文员直觉改d6；通晓语言可群体共享并获心灵感应。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "抄录龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "法术:通晓语言",
+    "心灵感应"
+   ],
+   "mechanics": [
+    {
+     "name": "直觉锐化",
+     "trigger": "当你使用你抄录龙纹的天才文员增益时",
+     "action": "passive",
+     "effect": "骰:1d4/1d6",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4/1d6"
+    },
+    {
+     "name": "刻神牍心",
+     "trigger": "当你施展法术《通晓语言Comprehend Languages》 时",
+     "action": "passive",
+     "effect": "法术:通晓语言",
+     "uses": "1",
+     "recharge": "long"
+    }
+   ]
+  },
+  {
+   "id": "feat:高等招待龙纹",
+   "name": "高等招待龙纹",
+   "en": "Greater Mark of Hospitality",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/通用专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；款待直觉改d6；净化饮食可群体恢复，减力竭并给临时生命值。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "招待龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "法术:净化饮食"
+   ],
+   "mechanics": [
+    {
+     "name": "直觉锐化",
+     "trigger": "当你使用你招待龙纹的永恒款待增益时",
+     "action": "passive",
+     "effect": "骰:1d4/1d6",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4/1d6"
+    },
+    {
+     "name": "宾至如归",
+     "trigger": "当你施展法术《净化饮食Purify Food and Drink》 时",
+     "action": "passive",
+     "effect": "临时HP；法术:净化饮食",
+     "uses": "1",
+     "recharge": "long"
+    }
+   ]
+  },
+  {
+   "id": "feat:高等探寻龙纹",
+   "name": "高等探寻龙纹",
+   "en": "Greater Mark of Finding",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/通用专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；探寻直觉改d6；猎人印记射程翻倍且目标无法借隐形。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "探寻龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "法术:猎人印记"
+   ],
+   "mechanics": [
+    {
+     "name": "直觉锐化",
+     "trigger": "当你使用你探寻龙纹的猎手直觉增益时",
+     "action": "passive",
+     "effect": "骰:1d4/1d6",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4/1d6"
+    },
+    {
+     "name": "探幽索隐",
+     "trigger": "当你使用你探寻龙纹的探寻魔法增益不消耗法术位地施展法术《猎人印记Hunter's Mar",
+     "action": "passive",
+     "effect": "状态:invisible；法术:猎人印记",
+     "uses": null,
+     "recharge": null,
+     "conditions": [
+      "invisible"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "feat:高等暴风龙纹",
+   "name": "高等暴风龙纹",
+   "en": "Greater Mark of Storm",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/通用专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；风骑直觉改d6；免费造风术期间获得60尺飞行速度。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "暴风龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "法术:造风术",
+    "飞行速度"
+   ],
+   "mechanics": [
+    {
+     "name": "直觉锐化",
+     "trigger": "当你使用你暴风龙纹的风骑直觉增益时",
+     "action": "passive",
+     "effect": "骰:1d4/1d6",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4/1d6"
+    },
+    {
+     "name": "长风化翼",
+     "trigger": "当你使用你暴风龙纹的暴风魔法增益不消耗法术位地施展法术《造风术Gust of Wind》",
+     "action": "passive",
+     "effect": "法术:造风术",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:高等畜牧龙纹",
+   "name": "高等畜牧龙纹",
+   "en": "Greater Mark of Handling",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/通用专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；野性直觉改d6；骑乘时坐骑可反应移动或攻击；魔法动作恐吓野兽怪兽。",
+   "uncertain": [
+    "mechanics"
+   ],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "畜牧龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "反应",
+    "动作"
+   ],
+   "mechanics": [
+    {
+     "name": "直觉锐化",
+     "trigger": "当你使用你畜牧龙纹的野性直觉增益时",
+     "action": "passive",
+     "effect": "骰:1d4/1d6",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4/1d6"
+    },
+    {
+     "name": "万畜牧首",
+     "trigger": "",
+     "action": "reaction",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    },
+    {
+     "name": "震服万兽",
+     "trigger": "",
+     "action": "action",
+     "effect": "豁免:wis DC 8+wis+熟练；状态:frightened",
+     "uses": "熟练加值",
+     "recharge": "long",
+     "conditions": [
+      "frightened"
+     ],
+     "save": {
+      "ability": "wis",
+      "dc": "8+wis+熟练"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:高等通行龙纹",
+   "name": "高等通行龙纹",
+   "en": "Greater Mark of Passage",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/通用专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；通行直觉改d6；迷踪步可带至多两名盟友以反应传送30尺。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "通行龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "法术:迷踪步",
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "直觉锐化",
+     "trigger": "当你使用你通行龙纹的直觉行动增益时",
+     "action": "passive",
+     "effect": "骰:1d4/1d6",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4/1d6"
+    },
+    {
+     "name": "比翼生花",
+     "trigger": "当你使用你通行龙纹的魔法通行增益不消耗法术位地施展法术《迷踪步Misty Step》 时",
+     "action": "reaction",
+     "effect": "传送；法术:迷踪步",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  },
+  {
+   "id": "feat:高等阴影龙纹",
+   "name": "高等阴影龙纹",
+   "en": "Greater Mark of Shadow",
+   "aliases": [],
+   "source": "艾伯伦：奇械锻炉",
+   "section": "setting",
+   "path": "topics/艾伯伦：奇械锻炉/第二章/通用专长.htm",
+   "alsoIn": [],
+   "summary": "属性+1；狡黠直觉改d6；免费隐形术以3环施放。",
+   "uncertain": [],
+   "category": "通用",
+   "subCategory": null,
+   "edition": "2024",
+   "prerequisite": {
+    "level": 4,
+    "ability": {},
+    "other": "阴影龙纹专长"
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "法术:隐形术"
+   ],
+   "mechanics": [
+    {
+     "name": "直觉锐化",
+     "trigger": "当你使用你阴影龙纹的狡黠直觉增益时",
+     "action": "passive",
+     "effect": "骰:1d4/1d6",
+     "uses": null,
+     "recharge": null,
+     "dice": "1d4/1d6"
+    },
+    {
+     "name": "幽邃匿影",
+     "trigger": "当你使用你阴影龙纹的阴影塑形增益不消耗法术位地施展法术《隐形术Invisibility》",
+     "action": "passive",
+     "effect": "法术:隐形术",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,2210 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "万象无常书",
+ "generated": "2026-11-09",
+ "count": 58,
+ "entries": [
+  {
+   "id": "item:万事万象无常牌",
+   "name": "万事万象无常牌",
+   "en": "Deck of Many More Things",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/贤者/万事万象无常牌.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说。可施放时间停止、异界之门、复生术、完全复生术；DC30豁免；涉及石化/昏迷；词条：异怪、野兽、书籍、桥梁",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "时间停止",
+     "level": 9,
+     "cost": null
+    },
+    {
+     "name": "异界之门",
+     "level": 9,
+     "cost": null
+    },
+    {
+     "name": "复生术",
+     "level": 7,
+     "cost": null
+    },
+    {
+     "name": "完全复生术",
+     "level": 9,
+     "cost": null
+    },
+    {
+     "name": "祈愿术",
+     "level": 9,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 30,
+    "ability": null
+   },
+   "conditions": [
+    "petrified",
+    "unconscious"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:力场解构者武器",
+   "name": "力场解构者武器",
+   "en": "Forcebreaker Weapon",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（任意造成钝击伤害的武器），极珍稀。攻击+2、伤害+2",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意造成钝击伤害的武器",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "attack": 2,
+    "damage": 2
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:反魔法装甲",
+   "name": "反魔法装甲",
+   "en": "Antimagic Armor",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "护甲（轻甲、中甲、或重甲），极珍稀，需同调。可施放反魔法场",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "轻甲、中甲、或重甲",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "反魔法场",
+     "level": 8,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:命运主宰之牌",
+   "name": "命运主宰之牌",
+   "en": "Fate Dealer's Deck",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/命运/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀/极珍稀/传说，需牧师或圣武士同调。加值随稀有度变化",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "多种",
+   "attunement": {
+    "required": true,
+    "by": "牧师或圣武士"
+   },
+   "bonus": [
+    {
+     "rarity": "珍稀",
+     "spellAttack": 1,
+     "spellDC": 1
+    },
+    {
+     "rarity": "极珍稀",
+     "spellAttack": 2,
+     "spellDC": 2
+    },
+    {
+     "rarity": "传说",
+     "spellAttack": 3,
+     "spellDC": 3
+    }
+   ],
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false,
+   "rarityList": [
+    "珍稀",
+    "极珍稀",
+    "传说"
+   ]
+  },
+  {
+   "id": "item:命运修枝剪",
+   "name": "命运修枝剪",
+   "en": "Fate Cutter Shears",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/命运/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "武器（匕首），极珍稀，需同调。额外1d6力场；词条：永远锋利、断丝命剪",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "匕首",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "1d6",
+     "type": "力场",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:命运纺锤",
+   "name": "命运纺锤",
+   "en": "Spindle of Fate",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/传说.htm",
+   "alsoIn": [],
+   "summary": "魔杖，传说，需同调。6充能，1d6 每日黎明恢复；词条：战斗预知、末日前兆、扭曲命运",
+   "uncertain": [],
+   "itemType": "魔杖",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "6",
+    "regain": "1d6 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:回旋战盾",
+   "name": "回旋战盾",
+   "en": "Boomerang Shield",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/非普通.htm",
+   "alsoIn": [],
+   "summary": "护甲（盾牌），非普通，需同调。",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "盾牌",
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "挥砍"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:地狱火焰权杖",
+   "name": "地狱火焰权杖",
+   "en": "Rod of Hellish Flames",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "权杖，极珍稀，需施法者同调。可施放炼狱叱喝；抗火焰/黯蚀；DC16豁免；词条：炼狱抗性、灼热叱喝、硫磺浪涌",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "权杖",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true,
+    "by": "施法者"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "炼狱叱喝",
+     "level": 4,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [
+    "火焰",
+    "黯蚀"
+   ],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 16,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:城堡之裂界珠",
+   "name": "城堡之裂界珠",
+   "en": "Donjon's Sundering Sphere",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。攻击+1、伤害+1；DC16魅力豁免；词条：次元锚、隔离斩",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 16,
+    "ability": "cha"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:头骨盔",
+   "name": "头骨盔",
+   "en": "Skull Helm",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。可施放死神灵魄；抗寒冷/毒素/黯蚀",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "死神灵魄",
+     "level": 4,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [
+    "寒冷",
+    "毒素",
+    "黯蚀"
+   ],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:奇迹牌组",
+   "name": "奇迹牌组",
+   "en": "Deck of Wonder",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/贤者/奇迹牌组.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通。攻击+1、伤害+1、豁免+1；可施放卜筮术、敲击术；DC11体质豁免；词条：开始、勇士、大臣、混沌",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1,
+    "save": 1
+   },
+   "charges": null,
+   "spells": [
+    {
+     "name": "卜筮术",
+     "level": 2,
+     "cost": null
+    },
+    {
+     "name": "敲击术",
+     "level": 2,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 11,
+    "ability": "con"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:妖精锻甲",
+   "name": "妖精锻甲",
+   "en": "Feywrought Armor",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/珍稀.htm",
+   "alsoIn": [],
+   "summary": "护甲（轻甲、中甲、或重甲），珍稀，需同调。3充能，1d3 每日黎明恢复；可施放强迫术；DC15豁免",
+   "uncertain": [
+    "save",
+    "spells"
+   ],
+   "itemType": "护甲",
+   "baseItem": "轻甲、中甲、或重甲",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "强迫术",
+     "level": 4,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:射星弩",
+   "name": "射星弩",
+   "en": "Starshot Crossbow",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（任意弩），珍稀，需同调。3充能，1d3 每日黎明恢复；词条：星座、平衡、火焰、浪客",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意弩",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "2d8",
+     "type": "火焰"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:小丑面具",
+   "name": "小丑面具",
+   "en": "Jester's Mask",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/传说.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说。攻击+3、伤害+3、豁免+3、法术攻击+3、法术DC+3；词条：魅力焦点、非凡逃脱、颠倒黑白",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "attack": 3,
+    "damage": 3,
+    "save": 3,
+    "spellAttack": 3,
+    "spellDC": 3
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:尖啸腿甲",
+   "name": "尖啸腿甲",
+   "en": "Shrieking Greaves",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/火焰/诅咒魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。3充能，1d3 每日黎明恢复；可施放移除诅咒；DC15体质豁免；涉及恐慌；词条：诅咒",
+   "uncertain": [
+    "spells"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "移除诅咒",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "con"
+   },
+   "conditions": [
+    "frightened"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:尤瑞艾莉之庇护",
+   "name": "尤瑞艾莉之庇护",
+   "en": "Euryale's Aegis",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/传说.htm",
+   "alsoIn": [],
+   "summary": "护甲（盾牌），传说，需同调。DC20体质豁免；词条：尤瑞艾莉的祝福、石化纹章、施法",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "盾牌",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [
+    "petrified"
+   ],
+   "save": {
+    "dc": 20,
+    "ability": "con"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:巨人陨落之投石索",
+   "name": "巨人陨落之投石索",
+   "en": "Sling of Giant Felling",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/非普通.htm",
+   "alsoIn": [],
+   "summary": "武器（投石索），非普通。DC18体质豁免",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "投石索",
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 18,
+    "ability": "con"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:带翼弹药",
+   "name": "带翼弹药",
+   "en": "Winged Ammunition",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/非普通.htm",
+   "alsoIn": [],
+   "summary": "武器（任意弹药），非普通。",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意弹药",
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:平衡胸甲",
+   "name": "平衡胸甲",
+   "en": "Breastplate of Balance",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/珍稀.htm",
+   "alsoIn": [],
+   "summary": "护甲（胸甲），珍稀，需同调。4充能，1d4 每日黎明恢复；可施放次等复原术；词条：均衡、抹除不均",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "胸甲",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "4",
+    "regain": "1d4 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "次等复原术",
+     "level": 2,
+     "cost": 2
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:幻奏琴弓",
+   "name": "幻奏琴弓",
+   "en": "Bow of Melodies",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（任意弓），极珍稀，需同调。词条：精准旋律、回响旋律",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意弓",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:幽影锻甲",
+   "name": "幽影锻甲",
+   "en": "Gloomwrought Armor",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/珍稀.htm",
+   "alsoIn": [],
+   "summary": "护甲（轻甲、中甲、或重甲），珍稀，需同调。3充能，1d3 每日黎明恢复；可施放安定心神；DC15豁免",
+   "uncertain": [
+    "save",
+    "spells"
+   ],
+   "itemType": "护甲",
+   "baseItem": "轻甲、中甲、或重甲",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "安定心神",
+     "level": 2,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:异界神剑",
+   "name": "异界神剑",
+   "en": "Sword of the Planes",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/传说.htm",
+   "alsoIn": [],
+   "summary": "武器（任意剑），传说，需同调。攻击+3、伤害+3",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意剑",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 3,
+    "damage": 3
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:恶意利爪",
+   "name": "恶意利爪",
+   "en": "Baleful Talon",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（匕首），极珍稀。攻击+1、伤害+1；DC15体质豁免",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "匕首",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "6d6",
+     "type": "黯蚀"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "con"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:愚者之刃",
+   "name": "愚者之刃",
+   "en": "Fool's Blade",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（任意剑），极珍稀，需同调。攻击+2、伤害+2；DC15智力豁免；词条：愚者佯攻、转向",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意剑",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 2,
+    "damage": 2
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "int"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:攫之鞭",
+   "name": "攫之鞭",
+   "en": "Grasping Whip",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（鞭），珍稀。攻击+1、伤害+1",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "鞭",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:无重力护甲",
+   "name": "无重力护甲",
+   "en": "Armor of Weightlessness",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/非普通.htm",
+   "alsoIn": [],
+   "summary": "护甲（轻甲、中甲、或重甲），非普通，需同调。5充能，1d4+1 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "轻甲、中甲、或重甲",
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "5",
+    "regain": "1d4+1 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:机关械甲",
+   "name": "机关械甲",
+   "en": "Clockwork Armor",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "护甲（重甲），极珍稀，需同调。4充能，1d4 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "重甲",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "4",
+    "regain": "1d4 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:杂烩牌组",
+   "name": "杂烩牌组",
+   "en": "Deck of Miscellany",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/浪客/魔法牌组.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:武者的万能钥匙",
+   "name": "武者的万能钥匙",
+   "en": "Warrior's Passkey",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。攻击+1、伤害+1；可施放敲击术；词条：转化钥匙",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [
+    {
+     "name": "敲击术",
+     "level": 2,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d10",
+     "type": "力场"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:毁灭链枷",
+   "name": "毁灭链枷",
+   "en": "Ruinous Flail",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（链枷），珍稀，需同调。攻击+1、伤害+1；DC15体质豁免",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "链枷",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "2d4",
+     "type": "黯蚀"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "con"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:水蛭干",
+   "name": "水蛭干",
+   "en": "Dried Leech",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/非普通.htm",
+   "alsoIn": [],
+   "summary": "武器（任意弹药），非普通。",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意弹药",
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d4",
+     "type": "穿刺"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:浪客斗篷",
+   "name": "浪客斗篷",
+   "en": "Rogue's Mantle",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。可施放敌意术；DC15豁免；词条：黑暗视觉、阴影移动、刻意树敌",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "敌意术",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:涌潮者三叉戟",
+   "name": "涌潮者三叉戟",
+   "en": "Tidecaller Trident",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（三叉戟），极珍稀，需同调。攻击+2、伤害+2；3充能，1d3 每日黎明恢复；可施放操控水体、海啸术；DC15豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "武器",
+   "baseItem": "三叉戟",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 2,
+    "damage": 2
+   },
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "操控水体",
+     "level": 4,
+     "cost": 1
+    },
+    {
+     "name": "海啸术",
+     "level": 8,
+     "cost": 3
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:灼日法杖",
+   "name": "灼日法杖",
+   "en": "Sun Staff",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/珍稀.htm",
+   "alsoIn": [],
+   "summary": "法杖，珍稀。攻击+1、伤害+1；额外1d8火焰；词条：聚日法器、晴辉",
+   "uncertain": [],
+   "itemType": "法杖",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "1d8",
+     "type": "火焰",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:爆裂目镜",
+   "name": "爆裂目镜",
+   "en": "Blasted Goggles",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/火焰/诅咒魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需同调。3充能，1d3 每日黎明恢复；可施放移除诅咒；DC15敏捷豁免；涉及目盲；词条：诅咒",
+   "uncertain": [
+    "spells"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "移除诅咒",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "3d6",
+     "type": "火焰"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "dex"
+   },
+   "conditions": [
+    "blinded"
+   ],
+   "consumable": false
+  },
+  {
+   "id": "item:狂野牌组",
+   "name": "狂野牌组",
+   "en": "Deck of Wild Cards",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/浪客/魔法牌组.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀。DC15敏捷豁免",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "2d8",
+     "type": "火焰"
+    },
+    {
+     "dice": "1d6",
+     "type": "闪电"
+    },
+    {
+     "dice": "1d10",
+     "type": "寒冷"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "dex"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:王座之旨武器",
+   "name": "王座之旨武器",
+   "en": "Weapon of Throne's Command",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（任意），极珍稀，需同调。攻击+1、伤害+1；5充能，1d4 每日黎明恢复；DC16豁免；词条：施法",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "武器",
+   "baseItem": "任意",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": {
+    "max": "5",
+    "regain": "1d4 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 16,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:石匠战镐",
+   "name": "石匠战镐",
+   "en": "Stonemaker War Pick",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（战镐），极珍稀，需同调。攻击+1、伤害+1；1充能；可施放融身入石；DC15体质豁免；词条：融身入石、石化",
+   "uncertain": [
+    "spells"
+   ],
+   "itemType": "武器",
+   "baseItem": "战镐",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": {
+    "max": "1",
+    "regain": null
+   },
+   "spells": [
+    {
+     "name": "融身入石",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "con"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:神功绑带",
+   "name": "神功绑带",
+   "en": "Wraps of Unarmed Prowess",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/多种稀有度.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通/珍稀/极珍稀。加值随稀有度变化",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "多种",
+   "attunement": {
+    "required": false
+   },
+   "bonus": [
+    {
+     "rarity": "非普通",
+     "attack": 1,
+     "damage": 1
+    },
+    {
+     "rarity": "珍稀",
+     "attack": 2,
+     "damage": 2
+    },
+    {
+     "rarity": "极珍稀",
+     "attack": 3,
+     "damage": 3
+    }
+   ],
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false,
+   "rarityList": [
+    "非普通",
+    "珍稀",
+    "极珍稀"
+   ]
+  },
+  {
+   "id": "item:神谕之牌",
+   "name": "神谕之牌",
+   "en": "Deck of Oracles",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/命运/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需同调。可施放预言术",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "预言术",
+     "level": 4,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:符铸战锤",
+   "name": "符铸战锤",
+   "en": "Hammer of Runic Focus",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（战锤），极珍稀，需同调。攻击+3、伤害+3；3充能，1d3 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "战锤",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 3,
+    "damage": 3
+   },
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:纸牌屋",
+   "name": "纸牌屋",
+   "en": "House of Cards",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/命运/魔法物品.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通。免疫毒素/心灵",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [
+    "毒素",
+    "心灵"
+   ],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:老千牌组",
+   "name": "老千牌组",
+   "en": "Card Sharp's Deck",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/浪客/魔法牌组.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通。可施放卡牌喷射；DC15豁免；词条：致命发牌、卡牌喷射",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "卡牌喷射",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": "力场"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:莹月弓",
+   "name": "莹月弓",
+   "en": "Glimmering Moonbow",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（任意弓），珍稀，需同调。攻击+1、伤害+1；额外1d6光耀；抗钝击/穿刺/挥砍",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意弓",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "1d6",
+     "type": "光耀",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [
+    "钝击",
+    "穿刺",
+    "挥砍"
+   ],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:蕈孢木甲",
+   "name": "蕈孢木甲",
+   "en": "Armor of Fungal Spores",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/非普通.htm",
+   "alsoIn": [],
+   "summary": "护甲（中甲），非普通。DC15体质豁免",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "中甲",
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "con"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:虚空行者护甲",
+   "name": "虚空行者护甲",
+   "en": "Voidwalker Armor",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/珍稀.htm",
+   "alsoIn": [],
+   "summary": "护甲（镶钉皮甲），珍稀，需同调。DC11魅力豁免；词条：诅咒",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "镶钉皮甲",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 11,
+    "ability": "cha"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:血怒巨斧",
+   "name": "血怒巨斧",
+   "en": "Bloodrage Greataxe",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/非普通.htm",
+   "alsoIn": [],
+   "summary": "武器（巨斧），非普通。攻击+2、伤害+2",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "巨斧",
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": {
+    "attack": 2,
+    "damage": 2
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:血踪弹药",
+   "name": "血踪弹药",
+   "en": "Bloodseeker Ammunition",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（任意弹药），极珍稀。",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意弹药",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:诸空牌组",
+   "name": "诸空牌组",
+   "en": "Deck of Dimensions",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/浪客/魔法牌组.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。6充能，1d6 每日黎明恢复；可施放秘法门；词条：记号牌、对切之门、洗切之行",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "6",
+    "regain": "1d6 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "秘法门",
+     "level": 6,
+     "cost": 3
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:谜题急智戒指",
+   "name": "谜题急智戒指",
+   "en": "Ring of Puzzler's Wit",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/非普通.htm",
+   "alsoIn": [],
+   "summary": "戒指，非普通。3充能，1d4-1 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "戒指",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d4-1 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:贤者印记",
+   "name": "贤者印记",
+   "en": "Sage's Signet",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/多种稀有度.htm",
+   "alsoIn": [],
+   "summary": "戒指，稀有度多种，需施法者同调。可施放卜筮术",
+   "uncertain": [],
+   "itemType": "戒指",
+   "baseItem": null,
+   "rarity": "多种",
+   "attunement": {
+    "required": true,
+    "by": "施法者"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "卜筮术",
+     "level": 2,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false,
+   "rarityList": []
+  },
+  {
+   "id": "item:赫炎之弓",
+   "name": "赫炎之弓",
+   "en": "Bow of Conflagration",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/珍稀.htm",
+   "alsoIn": [],
+   "summary": "武器（任意弓），珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "任意弓",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d6",
+     "type": "火焰"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:跃迁望远镜",
+   "name": "跃迁望远镜",
+   "en": "Telescopic Transporter",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/星辰/望远镜之旅.htm",
+   "alsoIn": [],
+   "summary": "奇物，传说。可施放转生术；DC17豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "传说",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "转生术",
+     "level": 5,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "8d6",
+     "type": "黯蚀"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 17,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:阵亡者护甲",
+   "name": "阵亡者护甲",
+   "en": "Armor of the Fallen",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/非普通.htm",
+   "alsoIn": [],
+   "summary": "护甲（中甲或重甲），非普通，需同调。可施放死者交谈",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "中甲或重甲",
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "死者交谈",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:飞旋彗星之冠",
+   "name": "飞旋彗星之冠",
+   "en": "Crown of Whirling Comets",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/极珍稀.htm",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需同调。6充能，1d6 每日黎明恢复；可施放冰风暴；DC16豁免；词条：星翔、星光打击、飞旋冰雹",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "6",
+    "regain": "1d6 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "冰风暴",
+     "level": 4,
+     "cost": 3
+    }
+   ],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "2d4",
+     "type": "寒冷"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 16,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:骑士扈从板甲",
+   "name": "骑士扈从板甲",
+   "en": "Plate of Knight's Fellowship",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/非普通.htm",
+   "alsoIn": [],
+   "summary": "护甲（板甲），非普通，需同调。",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "板甲",
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:骗术宝石",
+   "name": "骗术宝石",
+   "en": "Fabulist Gem",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/宝石/非普通.htm",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需同调。词条：假币、时尚幻象",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:龟壳重盾",
+   "name": "龟壳重盾",
+   "en": "Shield of the Tortoise",
+   "aliases": [],
+   "source": "万象无常书",
+   "section": "official",
+   "path": "topics/万象无常书/骑士/非普通.htm",
+   "alsoIn": [],
+   "summary": "护甲（盾牌），非普通，需同调。AC+1；可施放移除诅咒；词条：诅咒",
+   "uncertain": [],
+   "itemType": "护甲",
+   "baseItem": "盾牌",
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "ac": 1
+   },
+   "charges": null,
+   "spells": [
+    {
+     "name": "移除诅咒",
+     "level": 3,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

@@ -1,0 +1,1666 @@
+{
+ "category": "item",
+ "type": "魔法物品",
+ "source": "塔莎的万事坩埚",
+ "generated": "2026-11-09",
+ "count": 43,
+ "entries": [
+  {
+   "id": "item:万能工具",
+   "name": "万能工具",
+   "en": "All-Purpose Tool",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/非普通.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通/珍稀/极珍稀，需奇械师同调。加值随稀有度变化",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "多种",
+   "attunement": {
+    "required": true,
+    "by": "奇械师"
+   },
+   "bonus": [
+    {
+     "rarity": "非普通",
+     "spellAttack": 1,
+     "spellDC": 1
+    },
+    {
+     "rarity": "珍稀",
+     "spellAttack": 2,
+     "spellDC": 2
+    },
+    {
+     "rarity": "极珍稀",
+     "spellAttack": 3,
+     "spellDC": 3
+    }
+   ],
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false,
+   "rarityList": [
+    "非普通",
+    "珍稀",
+    "极珍稀"
+   ]
+  },
+  {
+   "id": "item:两面花言",
+   "name": "两面花言",
+   "en": "Duplicitous Manuscript",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/珍稀.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需法师同调。3充能，1d3 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "法师"
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:伪装刺青",
+   "name": "伪装刺青",
+   "en": "Masquerade Tattoo",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/魔法刺青.html",
+   "alsoIn": [],
+   "summary": "奇物（刺青），普通，需同调。可施放易容术；DC13豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": "刺青",
+   "rarity": "普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "易容术",
+     "level": 1,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 13,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:元素精粹碎晶",
+   "name": "元素精粹碎晶",
+   "en": "Elemental Essence Shard",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/珍稀.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需术士同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "术士"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "2d10",
+     "type": "火焰"
+    },
+    {
+     "dice": "2d6",
+     "type": "寒冷"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:凝晶年纪",
+   "name": "凝晶年纪",
+   "en": "Crystalline Chronicle",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/极珍稀.html",
+   "alsoIn": [],
+   "summary": "奇物，极珍稀，需法师同调。3充能，1d3 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true,
+    "by": "法师"
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:吸收刺青",
+   "name": "吸收刺青",
+   "en": "Absorbing Tattoo",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/魔法刺青.html",
+   "alsoIn": [],
+   "summary": "奇物（刺青），极珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": "刺青",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:命源刺青",
+   "name": "命源刺青",
+   "en": "Lifewell Tattoo",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/魔法刺青.html",
+   "alsoIn": [],
+   "summary": "奇物（刺青），极珍稀，需同调。抗黯蚀",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": "刺青",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [
+    "黯蚀"
+   ],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:堕影冥界印记刺青",
+   "name": "堕影冥界印记刺青",
+   "en": "Shadowfell Brand Tattoo",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/魔法刺青.html",
+   "alsoIn": [],
+   "summary": "奇物（刺青），珍稀，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": "刺青",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:堕影冥界碎晶",
+   "name": "堕影冥界碎晶",
+   "en": "Shadowfell Shard",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/珍稀.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需术士同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "术士"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:外界精粹碎晶",
+   "name": "外界精粹碎晶",
+   "en": "Outer Essence Shard",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/珍稀.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需术士同调。额外3d6黯蚀",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "术士"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "3d6",
+     "type": "黯蚀",
+     "when": "额外"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:奉献香炉",
+   "name": "奉献香炉",
+   "en": "Devotee's Censer",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/珍稀.html",
+   "alsoIn": [],
+   "summary": "武器（链枷），珍稀，需牧师或圣武士同调。额外1d8光耀",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "链枷",
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "牧师或圣武士"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "1d8",
+     "type": "光耀",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:奥法秘典",
+   "name": "奥法秘典",
+   "en": "Arcane Grimoire",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/非普通.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通/珍稀/极珍稀，需法师同调。加值随稀有度变化",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "多种",
+   "attunement": {
+    "required": true,
+    "by": "法师"
+   },
+   "bonus": [
+    {
+     "rarity": "非普通",
+     "spellAttack": 1,
+     "spellDC": 1
+    },
+    {
+     "rarity": "珍稀",
+     "spellAttack": 2,
+     "spellDC": 2
+    },
+    {
+     "rarity": "极珍稀",
+     "spellAttack": 3,
+     "spellDC": 3
+    }
+   ],
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false,
+   "rarityList": [
+    "非普通",
+    "珍稀",
+    "极珍稀"
+   ]
+  },
+  {
+   "id": "item:妖精荒野碎晶",
+   "name": "妖精荒野碎晶",
+   "en": "Feywild Shard",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/非普通.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通，需术士同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "非普通",
+   "attunement": {
+    "required": true,
+    "by": "术士"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:守御诗篇",
+   "name": "守御诗篇",
+   "en": "Protective Verses",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/珍稀.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需法师同调。3充能，1d3 每日黎明恢复；可施放秘法锁；DC20豁免",
+   "uncertain": [
+    "save",
+    "spells"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "法师"
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "秘法锁",
+     "level": 2,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 20,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:守护者纹章",
+   "name": "守护者纹章",
+   "en": "Guardian Emblem",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/非普通.html",
+   "alsoIn": [],
+   "summary": "奇物（圣徽），非普通，需牧师或圣武士同调。3充能，全部 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": "圣徽",
+   "rarity": "非普通",
+   "attunement": {
+    "required": true,
+    "by": "牧师或圣武士"
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "全部 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:寰宇图纂",
+   "name": "寰宇图纂",
+   "en": "Atlas of Endless Horizons",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/珍稀.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需法师同调。3充能，1d3 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "法师"
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:屏障刺青",
+   "name": "屏障刺青",
+   "en": "Barrier Tattoo",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/魔法刺青.html",
+   "alsoIn": [],
+   "summary": "奇物（刺青），稀有度多种，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": "刺青",
+   "rarity": "多种",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false,
+   "rarityList": []
+  },
+  {
+   "id": "item:建筑里拉琴",
+   "name": "建筑里拉琴",
+   "en": "Lyre of Building",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/珍稀.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需吟游诗人同调。可施放修复术、鬼斧神工",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "吟游诗人"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "修复术",
+     "level": 0,
+     "cost": null
+    },
+    {
+     "name": "鬼斧神工",
+     "level": 4,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:异界行访录",
+   "name": "异界行访录",
+   "en": "Planecaller's Codex",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/珍稀.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需法师同调。3充能，1d3 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "法师"
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:拉奥圣杖",
+   "name": "拉奥圣杖",
+   "en": "Crook of Rao",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/神器.html",
+   "alsoIn": [],
+   "summary": "奇物，神器，需同调。6充能，1d6 每日黎明恢复；DC18豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "6",
+    "regain": "1d6 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 18,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:星卜编集",
+   "name": "星卜编集",
+   "en": "Astromancy Archive",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/珍稀.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需法师同调。3充能，1d3 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "法师"
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:星界碎晶",
+   "name": "星界碎晶",
+   "en": "Astral Shard",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/珍稀.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需术士同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "术士"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:月镰",
+   "name": "月镰",
+   "en": "Moon Sickle",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/非普通.html",
+   "alsoIn": [],
+   "summary": "武器（镰刀），非普通/珍稀/极珍稀，需德鲁伊或游侠同调。加值随稀有度变化",
+   "uncertain": [],
+   "itemType": "武器",
+   "baseItem": "镰刀",
+   "rarity": "多种",
+   "attunement": {
+    "required": true,
+    "by": "德鲁伊或游侠"
+   },
+   "bonus": [
+    {
+     "rarity": "非普通",
+     "spellAttack": 1,
+     "spellDC": 1
+    },
+    {
+     "rarity": "珍稀",
+     "spellAttack": 2,
+     "spellDC": 2
+    },
+    {
+     "rarity": "极珍稀",
+     "spellAttack": 3,
+     "spellDC": 3
+    }
+   ],
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false,
+   "rarityList": [
+    "非普通",
+    "珍稀",
+    "极珍稀"
+   ]
+  },
+  {
+   "id": "item:灵肉圣契",
+   "name": "灵肉圣契",
+   "en": "Libram of Souls and Flesh",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/珍稀.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需法师同调。3充能，1d3 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "法师"
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:炼金总纲",
+   "name": "炼金总纲",
+   "en": "Alchemical Compendium",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/珍稀.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需法师同调。3充能，1d3 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "法师"
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:爆鸣专论",
+   "name": "爆鸣专论",
+   "en": "Fulminating Treatise",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/珍稀.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需法师同调。3充能，1d3 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "法师"
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "2d6",
+     "type": "力场"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:狂宴手风琴",
+   "name": "狂宴手风琴",
+   "en": "Reveler's Concertina",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/珍稀.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需吟游诗人同调。豁免+2；可施放奥图迷舞",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "吟游诗人"
+   },
+   "bonus": {
+    "save": 2
+   },
+   "charges": null,
+   "spells": [
+    {
+     "name": "奥图迷舞",
+     "level": 6,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:琉克欧的非凡机仆",
+   "name": "琉克欧的非凡机仆",
+   "en": "Mighty Servant of Leuk-O",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/神器.html",
+   "alsoIn": [],
+   "summary": "奇物，神器，需同调。可施放敲击术；DC20感知豁免",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [
+    {
+     "name": "敲击术",
+     "level": 2,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [
+    "invisible",
+    "prone"
+   ],
+   "save": {
+    "dc": 20,
+    "ability": "wis"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:织心入门",
+   "name": "织心入门",
+   "en": "Heart Weaver's Primer",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/珍稀.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需法师同调。3充能，1d3 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "法师"
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:缠爪刺青",
+   "name": "缠爪刺青",
+   "en": "Coiling Grasp Tattoo",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/魔法刺青.html",
+   "alsoIn": [],
+   "summary": "奇物（刺青），非普通，需同调。DC14力量豁免",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": "刺青",
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "3d6",
+     "type": "力场"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 14,
+    "ability": "str"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:芭芭雅嘎的臼与杵",
+   "name": "芭芭雅嘎的臼与杵",
+   "en": "Baba Yaga's Mortar and Pestle",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/神器.html",
+   "alsoIn": [],
+   "summary": "奇物，神器，需同调。12充能，全部 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "12",
+    "regain": "全部 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d8",
+     "type": "力场"
+    },
+    {
+     "dice": "4d10",
+     "type": "力场"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:蕴法刺青",
+   "name": "蕴法刺青",
+   "en": "Spell wrought Tattoo",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/魔法刺青.html",
+   "alsoIn": [],
+   "summary": "奇物（刺青），稀有度多种。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": "刺青",
+   "rarity": "多种",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false,
+   "rarityList": []
+  },
+  {
+   "id": "item:虔信护符",
+   "name": "虔信护符",
+   "en": "Amulet of the Devout",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/非普通.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通/珍稀/极珍稀，需牧师或圣武士同调。加值随稀有度变化",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "多种",
+   "attunement": {
+    "required": true,
+    "by": "牧师或圣武士"
+   },
+   "bonus": [
+    {
+     "rarity": "非普通",
+     "spellAttack": 1,
+     "spellDC": 1
+    },
+    {
+     "rarity": "珍稀",
+     "spellAttack": 2,
+     "spellDC": 2
+    },
+    {
+     "rarity": "极珍稀",
+     "spellAttack": 3,
+     "spellDC": 3
+    }
+   ],
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false,
+   "rarityList": [
+    "非普通",
+    "珍稀",
+    "极珍稀"
+   ]
+  },
+  {
+   "id": "item:血怒刺青",
+   "name": "血怒刺青",
+   "en": "Blood Fury Tattoo",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/魔法刺青.html",
+   "alsoIn": [],
+   "summary": "奇物（刺青），传说，需同调。10充能，全部 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": "刺青",
+   "rarity": "传说",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "10",
+    "regain": "全部 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "4d6",
+     "type": "黯蚀"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:血源瓶",
+   "name": "血源瓶",
+   "en": "Bloodwell Vial",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/非普通.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通/珍稀/极珍稀，需术士同调。加值随稀有度变化",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "多种",
+   "attunement": {
+    "required": true,
+    "by": "术士"
+   },
+   "bonus": [
+    {
+     "rarity": "非普通",
+     "spellAttack": 1,
+     "spellDC": 1
+    },
+    {
+     "rarity": "珍稀",
+     "spellAttack": 2,
+     "spellDC": 2
+    },
+    {
+     "rarity": "极珍稀",
+     "spellAttack": 3,
+     "spellDC": 3
+    }
+   ],
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false,
+   "rarityList": [
+    "非普通",
+    "珍稀",
+    "极珍稀"
+   ]
+  },
+  {
+   "id": "item:解文刺青",
+   "name": "解文刺青",
+   "en": "Illuminator's tattoo",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/魔法刺青.html",
+   "alsoIn": [],
+   "summary": "奇物（刺青），普通，需同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": "刺青",
+   "rarity": "普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:调律者之鼓",
+   "name": "调律者之鼓",
+   "en": "Rhythm-Maker's Drum",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/非普通.html",
+   "alsoIn": [],
+   "summary": "奇物，非普通/珍稀/极珍稀，需吟游诗人同调。加值随稀有度变化",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "多种",
+   "attunement": {
+    "required": true,
+    "by": "吟游诗人"
+   },
+   "bonus": [
+    {
+     "rarity": "非普通",
+     "spellAttack": 1,
+     "spellDC": 1
+    },
+    {
+     "rarity": "珍稀",
+     "spellAttack": 2,
+     "spellDC": 2
+    },
+    {
+     "rarity": "极珍稀",
+     "spellAttack": 3,
+     "spellDC": 3
+    }
+   ],
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false,
+   "rarityList": [
+    "非普通",
+    "珍稀",
+    "极珍稀"
+   ]
+  },
+  {
+   "id": "item:达文-纳之牙",
+   "name": "达文-纳之牙",
+   "en": "Teeth of Dahlver-Nar",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/神器.html",
+   "alsoIn": [],
+   "summary": "奇物，神器。8充能；可施放回生术、庇护术、侦测思想、艾伐黑触手；免疫雷鸣；DC15体质豁免",
+   "uncertain": [
+    "spells"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "神器",
+   "attunement": {
+    "required": false
+   },
+   "bonus": null,
+   "charges": {
+    "max": "8",
+    "regain": null
+   },
+   "spells": [
+    {
+     "name": "回生术",
+     "level": 3,
+     "cost": 1
+    },
+    {
+     "name": "庇护术",
+     "level": 1,
+     "cost": null
+    },
+    {
+     "name": "侦测思想",
+     "level": 2,
+     "cost": null
+    },
+    {
+     "name": "艾伐黑触手",
+     "level": 4,
+     "cost": null
+    },
+    {
+     "name": "摄心目光",
+     "level": 6,
+     "cost": null
+    },
+    {
+     "name": "侦测魔法",
+     "level": 1,
+     "cost": null
+    },
+    {
+     "name": "活化死尸",
+     "level": 3,
+     "cost": null
+    },
+    {
+     "name": "支配怪物",
+     "level": 8,
+     "cost": null
+    }
+   ],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "3d10",
+     "type": "挥砍"
+    },
+    {
+     "dice": "1d6",
+     "type": "穿刺"
+    },
+    {
+     "dice": "3d6",
+     "type": "黯蚀"
+    },
+    {
+     "dice": "26d6",
+     "type": "火焰"
+    }
+   ],
+   "resist": [],
+   "immune": [
+    "雷鸣"
+   ],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 15,
+    "ability": "con"
+   },
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:遥远国度碎晶",
+   "name": "遥远国度碎晶",
+   "en": "Far Realm Shard",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/珍稀.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需术士同调。",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "术士"
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "3d6",
+     "type": "心灵"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:钟铃圣枝",
+   "name": "钟铃圣枝",
+   "en": "Bell Branch",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/珍稀.html",
+   "alsoIn": [],
+   "summary": "奇物，珍稀，需魔契师或德鲁伊同调。3充能，1d3 每日黎明恢复；可施放防护善恶",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "珍稀",
+   "attunement": {
+    "required": true,
+    "by": "魔契师或德鲁伊"
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "1d3 每日黎明"
+   },
+   "spells": [
+    {
+     "name": "防护善恶",
+     "level": 1,
+     "cost": 1
+    }
+   ],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:鬼步刺青",
+   "name": "鬼步刺青",
+   "en": "Ghost Step Tattoo",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/魔法刺青.html",
+   "alsoIn": [],
+   "summary": "奇物（刺青），极珍稀，需同调。3充能，全部 每日黎明恢复",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": "刺青",
+   "rarity": "极珍稀",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": {
+    "max": "3",
+    "regain": "全部 每日黎明"
+   },
+   "spells": [],
+   "extraDamage": [],
+   "damage": [
+    {
+     "dice": "1d10",
+     "type": "力场"
+    }
+   ],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:魔能爪刺青",
+   "name": "魔能爪刺青",
+   "en": "Eldritch Claw Tattoo",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/魔法刺青.html",
+   "alsoIn": [],
+   "summary": "奇物（刺青），非普通，需同调。攻击+1、伤害+1；额外1d6力场",
+   "uncertain": [],
+   "itemType": "奇物",
+   "baseItem": "刺青",
+   "rarity": "非普通",
+   "attunement": {
+    "required": true
+   },
+   "bonus": {
+    "attack": 1,
+    "damage": 1
+   },
+   "charges": null,
+   "spells": [],
+   "extraDamage": [
+    {
+     "dice": "1d6",
+     "type": "力场",
+     "when": "命中时"
+    }
+   ],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": null,
+   "conditions": [],
+   "consumable": false
+  },
+  {
+   "id": "item:鲁芭的灵魂塔罗卡",
+   "name": "鲁芭的灵魂塔罗卡",
+   "en": "Luba's Tarokka of Souls",
+   "aliases": [],
+   "source": "塔莎的万事坩埚",
+   "section": "official",
+   "path": "topics/塔莎的万事坩埚/魔法物品/魔法物品详述/神器.html",
+   "alsoIn": [],
+   "summary": "奇物，神器，需同调。DC18豁免",
+   "uncertain": [
+    "save"
+   ],
+   "itemType": "奇物",
+   "baseItem": null,
+   "rarity": "神器",
+   "attunement": {
+    "required": true
+   },
+   "bonus": null,
+   "charges": null,
+   "spells": [],
+   "extraDamage": [],
+   "damage": [],
+   "resist": [],
+   "immune": [],
+   "conditionsImmune": [],
+   "save": {
+    "dc": 18,
+    "ability": null
+   },
+   "conditions": [],
+   "consumable": false
+  }
+ ]
+}

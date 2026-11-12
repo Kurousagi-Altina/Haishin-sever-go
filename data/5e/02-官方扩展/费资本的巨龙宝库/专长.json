@@ -1,0 +1,159 @@
+{
+ "category": "feat",
+ "type": "专长",
+ "source": "费资本的巨龙宝库",
+ "generated": "2026-11-09",
+ "count": 3,
+ "entries": [
+  {
+   "id": "feat:宝石龙赋礼",
+   "name": "宝石龙赋礼",
+   "en": "Gift of the Gem Dragon",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/龙类专长.html",
+   "alsoIn": [],
+   "summary": "属性+1；反应：被10尺内生物伤害时念力还击，力量豁免否则2d8力场并推开。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": {
+    "choices": [
+     "int",
+     "wis",
+     "cha"
+    ],
+    "amount": 1,
+    "max": 20
+   },
+   "grants": [
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "念力报复Telekinetic Reprisal.",
+     "trigger": "当你受到来自距离你10尺内的生物的伤害时",
+     "action": "reaction",
+     "effect": "骰:2d8；伤害:力场；豁免:str DC 8+熟练+提升属性",
+     "uses": null,
+     "recharge": null,
+     "dice": "2d8",
+     "damageTypes": [
+      "力场"
+     ],
+     "save": {
+      "ability": "str",
+      "dc": "8+熟练+提升属性"
+     }
+    }
+   ]
+  },
+  {
+   "id": "feat:色彩龙赋礼",
+   "name": "色彩龙赋礼",
+   "en": "Gift of the Chromatic Dragon",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/龙类专长.html",
+   "alsoIn": [],
+   "summary": "附赠动作给武器注入元素，命中额外1d4；反应获得一种元素伤害抗性，次数为熟练加值。",
+   "uncertain": [
+    "mechanics"
+   ],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "抗性:强酸",
+    "抗性:寒冷",
+    "抗性:火焰",
+    "抗性:闪电",
+    "抗性:毒素",
+    "反应",
+    "动作"
+   ],
+   "mechanics": [
+    {
+     "name": "繁彩注魔",
+     "trigger": "",
+     "action": "action",
+     "effect": "骰:1d4",
+     "uses": "1",
+     "recharge": "long",
+     "dice": "1d4"
+    },
+    {
+     "name": "反应抗性",
+     "trigger": "当你受到强酸",
+     "action": "reaction",
+     "effect": "伤害:毒素；抗性",
+     "uses": null,
+     "recharge": null,
+     "damageTypes": [
+      "毒素"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "feat:金属龙赋礼",
+   "name": "金属龙赋礼",
+   "en": "Gift of the Metallic Dragon",
+   "aliases": [],
+   "source": "费资本的巨龙宝库",
+   "section": "official",
+   "path": "topics/费资本的巨龙宝库/玩家选项/龙类专长.html",
+   "alsoIn": [],
+   "summary": "得疗伤术免费施放一次；反应为被命中者AC+熟练加值，次数为熟练加值。",
+   "uncertain": [],
+   "category": "其他",
+   "subCategory": null,
+   "edition": "2014",
+   "prerequisite": {
+    "level": null,
+    "ability": {},
+    "other": ""
+   },
+   "repeatable": false,
+   "abilityIncrease": null,
+   "grants": [
+    "熟练",
+    "反应"
+   ],
+   "mechanics": [
+    {
+     "name": "龙类治疗",
+     "trigger": "",
+     "action": "passive",
+     "effect": "",
+     "uses": "1",
+     "recharge": "long"
+    },
+    {
+     "name": "庇护之翼",
+     "trigger": "",
+     "action": "reaction",
+     "effect": "",
+     "uses": null,
+     "recharge": null
+    }
+   ]
+  }
+ ]
+}

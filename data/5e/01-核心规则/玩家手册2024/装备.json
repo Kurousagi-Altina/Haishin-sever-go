@@ -1,0 +1,1865 @@
+{
+ "category": "equipment",
+ "type": "装备",
+ "source": "玩家手册2024",
+ "generated": "2026-11-09",
+ "count": 69,
+ "entries": [
+  {
+   "id": "armor:兽皮甲",
+   "type": "armor",
+   "name": "兽皮甲",
+   "en": "Hide Armor",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/护甲.htm",
+   "alsoIn": [],
+   "summary": "中型护甲，AC 12+敏捷调整值（最大2）。",
+   "uncertain": [],
+   "category": "medium",
+   "ac": {
+    "base": 12,
+    "addDex": true,
+    "dexMax": 2,
+    "bonus": 0
+   },
+   "strength": null,
+   "stealthDisadvantage": false,
+   "weight": 12.0,
+   "cost": {
+    "amount": 10,
+    "unit": "GP"
+   },
+   "don": "5分钟",
+   "doff": "1分钟"
+  },
+  {
+   "id": "armor:半身板甲",
+   "type": "armor",
+   "name": "半身板甲",
+   "en": "Half Plate Armor",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/护甲.htm",
+   "alsoIn": [],
+   "summary": "中型护甲，AC 15+敏捷调整值（最大2），隐匿劣势。",
+   "uncertain": [],
+   "category": "medium",
+   "ac": {
+    "base": 15,
+    "addDex": true,
+    "dexMax": 2,
+    "bonus": 0
+   },
+   "strength": null,
+   "stealthDisadvantage": true,
+   "weight": 40.0,
+   "cost": {
+    "amount": 750,
+    "unit": "GP"
+   },
+   "don": "5分钟",
+   "doff": "1分钟"
+  },
+  {
+   "id": "armor:布甲",
+   "type": "armor",
+   "name": "布甲",
+   "en": "Padded Armor",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/护甲.htm",
+   "alsoIn": [],
+   "summary": "轻型护甲，AC 11+敏捷调整值，隐匿劣势。",
+   "uncertain": [],
+   "category": "light",
+   "ac": {
+    "base": 11,
+    "addDex": true,
+    "dexMax": null,
+    "bonus": 0
+   },
+   "strength": null,
+   "stealthDisadvantage": true,
+   "weight": 8.0,
+   "cost": {
+    "amount": 5,
+    "unit": "GP"
+   },
+   "don": "1分钟",
+   "doff": "1分钟"
+  },
+  {
+   "id": "armor:板条甲",
+   "type": "armor",
+   "name": "板条甲",
+   "en": "Splint Armor",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/护甲.htm",
+   "alsoIn": [],
+   "summary": "重型护甲，AC 17，需力量15，隐匿劣势。",
+   "uncertain": [],
+   "category": "heavy",
+   "ac": {
+    "base": 17,
+    "addDex": false,
+    "dexMax": null,
+    "bonus": 0
+   },
+   "strength": 15,
+   "stealthDisadvantage": true,
+   "weight": 60.0,
+   "cost": {
+    "amount": 200,
+    "unit": "GP"
+   },
+   "don": "10分钟",
+   "doff": "5分钟"
+  },
+  {
+   "id": "armor:板甲",
+   "type": "armor",
+   "name": "板甲",
+   "en": "Plate Armor",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/护甲.htm",
+   "alsoIn": [],
+   "summary": "重型护甲，AC 18，需力量15，隐匿劣势。",
+   "uncertain": [],
+   "category": "heavy",
+   "ac": {
+    "base": 18,
+    "addDex": false,
+    "dexMax": null,
+    "bonus": 0
+   },
+   "strength": 15,
+   "stealthDisadvantage": true,
+   "weight": 65.0,
+   "cost": {
+    "amount": 1500,
+    "unit": "GP"
+   },
+   "don": "10分钟",
+   "doff": "5分钟"
+  },
+  {
+   "id": "armor:环甲",
+   "type": "armor",
+   "name": "环甲",
+   "en": "Ring Mail",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/护甲.htm",
+   "alsoIn": [],
+   "summary": "重型护甲，AC 14，隐匿劣势。",
+   "uncertain": [],
+   "category": "heavy",
+   "ac": {
+    "base": 14,
+    "addDex": false,
+    "dexMax": null,
+    "bonus": 0
+   },
+   "strength": null,
+   "stealthDisadvantage": true,
+   "weight": 40.0,
+   "cost": {
+    "amount": 30,
+    "unit": "GP"
+   },
+   "don": "10分钟",
+   "doff": "5分钟"
+  },
+  {
+   "id": "armor:皮甲",
+   "type": "armor",
+   "name": "皮甲",
+   "en": "Leather Armor",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/护甲.htm",
+   "alsoIn": [],
+   "summary": "轻型护甲，AC 11+敏捷调整值。",
+   "uncertain": [],
+   "category": "light",
+   "ac": {
+    "base": 11,
+    "addDex": true,
+    "dexMax": null,
+    "bonus": 0
+   },
+   "strength": null,
+   "stealthDisadvantage": false,
+   "weight": 10.0,
+   "cost": {
+    "amount": 10,
+    "unit": "GP"
+   },
+   "don": "1分钟",
+   "doff": "1分钟"
+  },
+  {
+   "id": "armor:盾牌",
+   "type": "armor",
+   "name": "盾牌",
+   "en": "Shield",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/护甲.htm",
+   "alsoIn": [],
+   "summary": "盾牌，AC+2。",
+   "uncertain": [],
+   "category": "shield",
+   "ac": {
+    "base": null,
+    "addDex": false,
+    "dexMax": null,
+    "bonus": 2
+   },
+   "strength": null,
+   "stealthDisadvantage": false,
+   "weight": 6.0,
+   "cost": {
+    "amount": 10,
+    "unit": "GP"
+   },
+   "don": "1个动作",
+   "doff": "1个动作"
+  },
+  {
+   "id": "armor:胸甲",
+   "type": "armor",
+   "name": "胸甲",
+   "en": "Breastplate",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/护甲.htm",
+   "alsoIn": [],
+   "summary": "中型护甲，AC 14+敏捷调整值（最大2）。",
+   "uncertain": [],
+   "category": "medium",
+   "ac": {
+    "base": 14,
+    "addDex": true,
+    "dexMax": 2,
+    "bonus": 0
+   },
+   "strength": null,
+   "stealthDisadvantage": false,
+   "weight": 20.0,
+   "cost": {
+    "amount": 400,
+    "unit": "GP"
+   },
+   "don": "5分钟",
+   "doff": "1分钟"
+  },
+  {
+   "id": "armor:链甲",
+   "type": "armor",
+   "name": "链甲",
+   "en": "Chain Mail",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/护甲.htm",
+   "alsoIn": [],
+   "summary": "重型护甲，AC 16，需力量13，隐匿劣势。",
+   "uncertain": [],
+   "category": "heavy",
+   "ac": {
+    "base": 16,
+    "addDex": false,
+    "dexMax": null,
+    "bonus": 0
+   },
+   "strength": 13,
+   "stealthDisadvantage": true,
+   "weight": 55.0,
+   "cost": {
+    "amount": 75,
+    "unit": "GP"
+   },
+   "don": "10分钟",
+   "doff": "5分钟"
+  },
+  {
+   "id": "armor:链甲衫",
+   "type": "armor",
+   "name": "链甲衫",
+   "en": "Chain Shirt",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/护甲.htm",
+   "alsoIn": [],
+   "summary": "中型护甲，AC 13+敏捷调整值（最大2）。",
+   "uncertain": [],
+   "category": "medium",
+   "ac": {
+    "base": 13,
+    "addDex": true,
+    "dexMax": 2,
+    "bonus": 0
+   },
+   "strength": null,
+   "stealthDisadvantage": false,
+   "weight": 20.0,
+   "cost": {
+    "amount": 50,
+    "unit": "GP"
+   },
+   "don": "5分钟",
+   "doff": "1分钟"
+  },
+  {
+   "id": "armor:镶钉皮甲",
+   "type": "armor",
+   "name": "镶钉皮甲",
+   "en": "Studded Leather Armor",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/护甲.htm",
+   "alsoIn": [],
+   "summary": "轻型护甲，AC 12+敏捷调整值。",
+   "uncertain": [],
+   "category": "light",
+   "ac": {
+    "base": 12,
+    "addDex": true,
+    "dexMax": null,
+    "bonus": 0
+   },
+   "strength": null,
+   "stealthDisadvantage": false,
+   "weight": 13.0,
+   "cost": {
+    "amount": 45,
+    "unit": "GP"
+   },
+   "don": "1分钟",
+   "doff": "1分钟"
+  },
+  {
+   "id": "armor:鳞甲",
+   "type": "armor",
+   "name": "鳞甲",
+   "en": "Scale Mail",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/护甲.htm",
+   "alsoIn": [],
+   "summary": "中型护甲，AC 14+敏捷调整值（最大2），隐匿劣势。",
+   "uncertain": [],
+   "category": "medium",
+   "ac": {
+    "base": 14,
+    "addDex": true,
+    "dexMax": 2,
+    "bonus": 0
+   },
+   "strength": null,
+   "stealthDisadvantage": true,
+   "weight": 45.0,
+   "cost": {
+    "amount": 50,
+    "unit": "GP"
+   },
+   "don": "5分钟",
+   "doff": "1分钟"
+  },
+  {
+   "id": "mastery:侵扰",
+   "type": "mastery",
+   "name": "侵扰",
+   "en": "Vex",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/精通词条.htm",
+   "alsoIn": [],
+   "summary": "命中并造成伤害后，你对该生物的下一次攻击检定具优势，持续到你下回合结束。",
+   "uncertain": [],
+   "rule": "命中并造成伤害后，你对该生物的下一次攻击检定具优势，持续到你下回合结束。"
+  },
+  {
+   "id": "mastery:削弱",
+   "type": "mastery",
+   "name": "削弱",
+   "en": "Sap",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/精通词条.htm",
+   "alsoIn": [],
+   "summary": "命中后，该生物的下一次攻击检定具劣势，持续到你下一回合开始。",
+   "uncertain": [],
+   "rule": "命中后，该生物的下一次攻击检定具劣势，持续到你下一回合开始。"
+  },
+  {
+   "id": "mastery:失衡",
+   "type": "mastery",
+   "name": "失衡",
+   "en": "Topple",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/精通词条.htm",
+   "alsoIn": [],
+   "summary": "命中后可令目标做体质豁免（DC=8+攻击所用调整值+熟练加值），失败则倒地。",
+   "uncertain": [],
+   "rule": "命中后可令目标做体质豁免（DC=8+攻击所用调整值+熟练加值），失败则倒地。"
+  },
+  {
+   "id": "mastery:推离",
+   "type": "mastery",
+   "name": "推离",
+   "en": "Push",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/精通词条.htm",
+   "alsoIn": [],
+   "summary": "命中体型不超过大型的生物时，可将其直线推离自己至多10尺。",
+   "uncertain": [],
+   "rule": "命中体型不超过大型的生物时，可将其直线推离自己至多10尺。"
+  },
+  {
+   "id": "mastery:擦掠",
+   "type": "mastery",
+   "name": "擦掠",
+   "en": "Graze",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/精通词条.htm",
+   "alsoIn": [],
+   "summary": "攻击失手时，仍对目标造成等于所用属性调整值的伤害，类型同武器。",
+   "uncertain": [],
+   "rule": "攻击失手时，仍对目标造成等于所用属性调整值的伤害，类型同武器。"
+  },
+  {
+   "id": "mastery:横扫",
+   "type": "mastery",
+   "name": "横扫",
+   "en": "Cleave",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/精通词条.htm",
+   "alsoIn": [],
+   "summary": "近战命中一个生物后，可对其5尺内且在你触及内的另一生物追加一次近战攻击，命中伤害不加属性调整值（负值除外）；每回合一次。",
+   "uncertain": [],
+   "rule": "近战命中一个生物后，可对其5尺内且在你触及内的另一生物追加一次近战攻击，命中伤害不加属性调整值（负值除外）；每回合一次。"
+  },
+  {
+   "id": "mastery:缓速",
+   "type": "mastery",
+   "name": "缓速",
+   "en": "Slow",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/精通词条.htm",
+   "alsoIn": [],
+   "summary": "命中并造成伤害时，目标速度减少10尺直至你下回合开始；多次命中不叠加。",
+   "uncertain": [],
+   "rule": "命中并造成伤害时，目标速度减少10尺直至你下回合开始；多次命中不叠加。"
+  },
+  {
+   "id": "mastery:迅击",
+   "type": "mastery",
+   "name": "迅击",
+   "en": "Nick",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/精通词条.htm",
+   "alsoIn": [],
+   "summary": "轻型词条的额外攻击改为攻击动作的一部分，不占附赠动作；每回合仍只能一次。",
+   "uncertain": [],
+   "rule": "轻型词条的额外攻击改为攻击动作的一部分，不占附赠动作；每回合仍只能一次。"
+  },
+  {
+   "id": "weapon:三叉戟",
+   "type": "weapon",
+   "name": "三叉戟",
+   "en": "Trident",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用近战武器，1d8穿刺，精通失衡；词条：投掷、多用。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d8",
+    "type": "穿刺"
+   },
+   "versatile": "1d10",
+   "properties": [
+    "投掷",
+    "多用"
+   ],
+   "range": {
+    "normal": 20,
+    "long": 60
+   },
+   "mastery": "失衡",
+   "weight": 4.0,
+   "cost": {
+    "amount": 5,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:刺剑",
+   "type": "weapon",
+   "name": "刺剑",
+   "en": "Rapier",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用近战武器，1d8穿刺，精通侵扰；词条：灵巧。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d8",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "灵巧"
+   ],
+   "range": null,
+   "mastery": "侵扰",
+   "weight": 2.0,
+   "cost": {
+    "amount": 25,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:匕首",
+   "type": "weapon",
+   "name": "匕首",
+   "en": "Dagger",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "简易近战武器，1d4穿刺，精通迅击；词条：灵巧、轻型、投掷。",
+   "uncertain": [],
+   "category": "simple",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d4",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "灵巧",
+    "轻型",
+    "投掷"
+   ],
+   "range": {
+    "normal": 20,
+    "long": 60
+   },
+   "mastery": "迅击",
+   "weight": 1.0,
+   "cost": {
+    "amount": 2,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:吹箭筒",
+   "type": "weapon",
+   "name": "吹箭筒",
+   "en": "Blowgun",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用远程武器，1穿刺，精通侵扰；词条：弹药、装填。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "ranged",
+   "damage": {
+    "dice": "1",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "弹药",
+    "装填"
+   ],
+   "range": {
+    "normal": 25,
+    "long": 100
+   },
+   "mastery": "侵扰",
+   "weight": 1.0,
+   "cost": {
+    "amount": 10,
+    "unit": "GP"
+   },
+   "ammo": "吹矢"
+  },
+  {
+   "id": "weapon:巨剑",
+   "type": "weapon",
+   "name": "巨剑",
+   "en": "Greatsword",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用近战武器，2d6挥砍，精通擦掠；词条：重型、双手。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "melee",
+   "damage": {
+    "dice": "2d6",
+    "type": "挥砍"
+   },
+   "versatile": null,
+   "properties": [
+    "重型",
+    "双手"
+   ],
+   "range": null,
+   "mastery": "擦掠",
+   "weight": 6.0,
+   "cost": {
+    "amount": 50,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:巨斧",
+   "type": "weapon",
+   "name": "巨斧",
+   "en": "Greataxe",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用近战武器，1d12挥砍，精通横扫；词条：重型、双手。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d12",
+    "type": "挥砍"
+   },
+   "versatile": null,
+   "properties": [
+    "重型",
+    "双手"
+   ],
+   "range": null,
+   "mastery": "横扫",
+   "weight": 7.0,
+   "cost": {
+    "amount": 30,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:巨棒",
+   "type": "weapon",
+   "name": "巨棒",
+   "en": "Greatclub",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "简易近战武器，1d8钝击，精通推离；词条：双手。",
+   "uncertain": [],
+   "category": "simple",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d8",
+    "type": "钝击"
+   },
+   "versatile": null,
+   "properties": [
+    "双手"
+   ],
+   "range": null,
+   "mastery": "推离",
+   "weight": 10.0,
+   "cost": {
+    "amount": 2,
+    "unit": "SP"
+   }
+  },
+  {
+   "id": "weapon:巨锤",
+   "type": "weapon",
+   "name": "巨锤",
+   "en": "Maul",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用近战武器，2d6钝击，精通失衡；词条：重型、双手。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "melee",
+   "damage": {
+    "dice": "2d6",
+    "type": "钝击"
+   },
+   "versatile": null,
+   "properties": [
+    "重型",
+    "双手"
+   ],
+   "range": null,
+   "mastery": "失衡",
+   "weight": 10.0,
+   "cost": {
+    "amount": 10,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:弯刀",
+   "type": "weapon",
+   "name": "弯刀",
+   "en": "Scimitar",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用近战武器，1d6挥砍，精通迅击；词条：灵巧、轻型。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d6",
+    "type": "挥砍"
+   },
+   "versatile": null,
+   "properties": [
+    "灵巧",
+    "轻型"
+   ],
+   "range": null,
+   "mastery": "迅击",
+   "weight": 3.0,
+   "cost": {
+    "amount": 25,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:战斧",
+   "type": "weapon",
+   "name": "战斧",
+   "en": "Battleaxe",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用近战武器，1d8挥砍，精通失衡；词条：多用。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d8",
+    "type": "挥砍"
+   },
+   "versatile": "1d10",
+   "properties": [
+    "多用"
+   ],
+   "range": null,
+   "mastery": "失衡",
+   "weight": 4.0,
+   "cost": {
+    "amount": 10,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:战锤",
+   "type": "weapon",
+   "name": "战锤",
+   "en": "Warhammer",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用近战武器，1d8钝击，精通推离；词条：多用。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d8",
+    "type": "钝击"
+   },
+   "versatile": "1d10",
+   "properties": [
+    "多用"
+   ],
+   "range": null,
+   "mastery": "推离",
+   "weight": 5.0,
+   "cost": {
+    "amount": 15,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:战镐",
+   "type": "weapon",
+   "name": "战镐",
+   "en": "Warpick",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用近战武器，1d8穿刺，精通削弱；词条：多用。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d8",
+    "type": "穿刺"
+   },
+   "versatile": "1d10",
+   "properties": [
+    "多用"
+   ],
+   "range": null,
+   "mastery": "削弱",
+   "weight": 2.0,
+   "cost": {
+    "amount": 5,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:戟",
+   "type": "weapon",
+   "name": "戟",
+   "en": "Halberd",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用近战武器，1d10挥砍，精通横扫；词条：重型、触及、双手。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d10",
+    "type": "挥砍"
+   },
+   "versatile": null,
+   "properties": [
+    "重型",
+    "触及",
+    "双手"
+   ],
+   "range": null,
+   "mastery": "横扫",
+   "weight": 6.0,
+   "cost": {
+    "amount": 20,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:手弩",
+   "type": "weapon",
+   "name": "手弩",
+   "en": "Hand Crossbow",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用远程武器，1d6穿刺，精通侵扰；词条：弹药、轻型、装填。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "ranged",
+   "damage": {
+    "dice": "1d6",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "弹药",
+    "轻型",
+    "装填"
+   ],
+   "range": {
+    "normal": 30,
+    "long": 120
+   },
+   "mastery": "侵扰",
+   "weight": 3.0,
+   "cost": {
+    "amount": 75,
+    "unit": "GP"
+   },
+   "ammo": "弩矢"
+  },
+  {
+   "id": "weapon:手斧",
+   "type": "weapon",
+   "name": "手斧",
+   "en": "Handaxe",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "简易近战武器，1d6挥砍，精通侵扰；词条：轻型、投掷。",
+   "uncertain": [],
+   "category": "simple",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d6",
+    "type": "挥砍"
+   },
+   "versatile": null,
+   "properties": [
+    "轻型",
+    "投掷"
+   ],
+   "range": {
+    "normal": 20,
+    "long": 60
+   },
+   "mastery": "侵扰",
+   "weight": 2.0,
+   "cost": {
+    "amount": 5,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:手铳",
+   "type": "weapon",
+   "name": "手铳",
+   "en": "Pistol",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用远程武器，1d10穿刺，精通侵扰；词条：弹药、装填。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "ranged",
+   "damage": {
+    "dice": "1d10",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "弹药",
+    "装填"
+   ],
+   "range": {
+    "normal": 30,
+    "long": 90
+   },
+   "mastery": "侵扰",
+   "weight": 3.0,
+   "cost": {
+    "amount": 250,
+    "unit": "GP"
+   },
+   "ammo": "子弹"
+  },
+  {
+   "id": "weapon:投石索",
+   "type": "weapon",
+   "name": "投石索",
+   "en": "Sling",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "简易远程武器，1d4钝击，精通缓速；词条：弹药。",
+   "uncertain": [],
+   "category": "simple",
+   "kind": "ranged",
+   "damage": {
+    "dice": "1d4",
+    "type": "钝击"
+   },
+   "versatile": null,
+   "properties": [
+    "弹药"
+   ],
+   "range": {
+    "normal": 30,
+    "long": 120
+   },
+   "mastery": "缓速",
+   "weight": null,
+   "cost": {
+    "amount": 1,
+    "unit": "SP"
+   },
+   "ammo": "子弹"
+  },
+  {
+   "id": "weapon:标枪",
+   "type": "weapon",
+   "name": "标枪",
+   "en": "Javelin",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "简易近战武器，1d6穿刺，精通缓速；词条：投掷。",
+   "uncertain": [],
+   "category": "simple",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d6",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "投掷"
+   ],
+   "range": {
+    "normal": 30,
+    "long": 120
+   },
+   "mastery": "缓速",
+   "weight": 2.0,
+   "cost": {
+    "amount": 5,
+    "unit": "SP"
+   }
+  },
+  {
+   "id": "weapon:火铳",
+   "type": "weapon",
+   "name": "火铳",
+   "en": "Musket",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用远程武器，1d12穿刺，精通缓速；词条：弹药、装填、双手。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "ranged",
+   "damage": {
+    "dice": "1d12",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "弹药",
+    "装填",
+    "双手"
+   ],
+   "range": {
+    "normal": 40,
+    "long": 120
+   },
+   "mastery": "缓速",
+   "weight": 10.0,
+   "cost": {
+    "amount": 500,
+    "unit": "GP"
+   },
+   "ammo": "子弹"
+  },
+  {
+   "id": "weapon:矛",
+   "type": "weapon",
+   "name": "矛",
+   "en": "Spear",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "简易近战武器，1d6穿刺，精通削弱；词条：投掷、多用。",
+   "uncertain": [],
+   "category": "simple",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d6",
+    "type": "穿刺"
+   },
+   "versatile": "1d8",
+   "properties": [
+    "投掷",
+    "多用"
+   ],
+   "range": {
+    "normal": 20,
+    "long": 60
+   },
+   "mastery": "削弱",
+   "weight": 3.0,
+   "cost": {
+    "amount": 1,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:短剑",
+   "type": "weapon",
+   "name": "短剑",
+   "en": "Shortsword",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用近战武器，1d6穿刺，精通侵扰；词条：灵巧、轻型。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d6",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "灵巧",
+    "轻型"
+   ],
+   "range": null,
+   "mastery": "侵扰",
+   "weight": 2.0,
+   "cost": {
+    "amount": 10,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:短弓",
+   "type": "weapon",
+   "name": "短弓",
+   "en": "Shortbow",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "简易远程武器，1d6穿刺，精通侵扰；词条：弹药、双手。",
+   "uncertain": [],
+   "category": "simple",
+   "kind": "ranged",
+   "damage": {
+    "dice": "1d6",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "弹药",
+    "双手"
+   ],
+   "range": {
+    "normal": 80,
+    "long": 320
+   },
+   "mastery": "侵扰",
+   "weight": 2.0,
+   "cost": {
+    "amount": 25,
+    "unit": "GP"
+   },
+   "ammo": "箭矢"
+  },
+  {
+   "id": "weapon:短棒",
+   "type": "weapon",
+   "name": "短棒",
+   "en": "Club",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "简易近战武器，1d4钝击，精通缓速；词条：轻型。",
+   "uncertain": [],
+   "category": "simple",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d4",
+    "type": "钝击"
+   },
+   "versatile": null,
+   "properties": [
+    "轻型"
+   ],
+   "range": null,
+   "mastery": "缓速",
+   "weight": 2.0,
+   "cost": {
+    "amount": 1,
+    "unit": "SP"
+   }
+  },
+  {
+   "id": "weapon:硬头锤",
+   "type": "weapon",
+   "name": "硬头锤",
+   "en": "Mace",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "简易近战武器，1d6钝击，精通削弱。",
+   "uncertain": [],
+   "category": "simple",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d6",
+    "type": "钝击"
+   },
+   "versatile": null,
+   "properties": [],
+   "range": null,
+   "mastery": "削弱",
+   "weight": 4.0,
+   "cost": {
+    "amount": 5,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:轻弩",
+   "type": "weapon",
+   "name": "轻弩",
+   "en": "Light Crossbow",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "简易远程武器，1d8穿刺，精通缓速；词条：弹药、装填、双手。",
+   "uncertain": [],
+   "category": "simple",
+   "kind": "ranged",
+   "damage": {
+    "dice": "1d8",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "弹药",
+    "装填",
+    "双手"
+   ],
+   "range": {
+    "normal": 80,
+    "long": 320
+   },
+   "mastery": "缓速",
+   "weight": 5.0,
+   "cost": {
+    "amount": 25,
+    "unit": "GP"
+   },
+   "ammo": "弩矢"
+  },
+  {
+   "id": "weapon:轻锤",
+   "type": "weapon",
+   "name": "轻锤",
+   "en": "Light Hammer",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "简易近战武器，1d4钝击，精通迅击；词条：轻型、投掷。",
+   "uncertain": [],
+   "category": "simple",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d4",
+    "type": "钝击"
+   },
+   "versatile": null,
+   "properties": [
+    "轻型",
+    "投掷"
+   ],
+   "range": {
+    "normal": 20,
+    "long": 60
+   },
+   "mastery": "迅击",
+   "weight": 2.0,
+   "cost": {
+    "amount": 2,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:重弩",
+   "type": "weapon",
+   "name": "重弩",
+   "en": "Heavy Crossbow",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用远程武器，1d10穿刺，精通推离；词条：弹药、重型、装填、双手。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "ranged",
+   "damage": {
+    "dice": "1d10",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "弹药",
+    "重型",
+    "装填",
+    "双手"
+   ],
+   "range": {
+    "normal": 100,
+    "long": 400
+   },
+   "mastery": "推离",
+   "weight": 18.0,
+   "cost": {
+    "amount": 50,
+    "unit": "GP"
+   },
+   "ammo": "弩矢"
+  },
+  {
+   "id": "weapon:钉头锤",
+   "type": "weapon",
+   "name": "钉头锤",
+   "en": "Morningstar",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用近战武器，1d8穿刺，精通削弱。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d8",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [],
+   "range": null,
+   "mastery": "削弱",
+   "weight": 4.0,
+   "cost": {
+    "amount": 15,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:链枷",
+   "type": "weapon",
+   "name": "链枷",
+   "en": "Flail",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用近战武器，1d8钝击，精通削弱。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d8",
+    "type": "钝击"
+   },
+   "versatile": null,
+   "properties": [],
+   "range": null,
+   "mastery": "削弱",
+   "weight": 2.0,
+   "cost": {
+    "amount": 10,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:镰刀",
+   "type": "weapon",
+   "name": "镰刀",
+   "en": "Sickle",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "简易近战武器，1d4挥砍，精通迅击；词条：轻型。",
+   "uncertain": [],
+   "category": "simple",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d4",
+    "type": "挥砍"
+   },
+   "versatile": null,
+   "properties": [
+    "轻型"
+   ],
+   "range": null,
+   "mastery": "迅击",
+   "weight": 2.0,
+   "cost": {
+    "amount": 1,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:长剑",
+   "type": "weapon",
+   "name": "长剑",
+   "en": "Longsword",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用近战武器，1d8挥砍，精通削弱；词条：多用。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d8",
+    "type": "挥砍"
+   },
+   "versatile": "1d10",
+   "properties": [
+    "多用"
+   ],
+   "range": null,
+   "mastery": "削弱",
+   "weight": 3.0,
+   "cost": {
+    "amount": 15,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:长弓",
+   "type": "weapon",
+   "name": "长弓",
+   "en": "Longbow",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用远程武器，1d8穿刺，精通缓速；词条：弹药、重型、双手。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "ranged",
+   "damage": {
+    "dice": "1d8",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "弹药",
+    "重型",
+    "双手"
+   ],
+   "range": {
+    "normal": 150,
+    "long": 600
+   },
+   "mastery": "缓速",
+   "weight": 2.0,
+   "cost": {
+    "amount": 50,
+    "unit": "GP"
+   },
+   "ammo": "箭矢"
+  },
+  {
+   "id": "weapon:长柄刀",
+   "type": "weapon",
+   "name": "长柄刀",
+   "en": "Glaive",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用近战武器，1d10挥砍，精通擦掠；词条：重型、触及、双手。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d10",
+    "type": "挥砍"
+   },
+   "versatile": null,
+   "properties": [
+    "重型",
+    "触及",
+    "双手"
+   ],
+   "range": null,
+   "mastery": "擦掠",
+   "weight": 6.0,
+   "cost": {
+    "amount": 20,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:长棍",
+   "type": "weapon",
+   "name": "长棍",
+   "en": "Quarterstaff",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "简易近战武器，1d6钝击，精通失衡；词条：多用。",
+   "uncertain": [],
+   "category": "simple",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d6",
+    "type": "钝击"
+   },
+   "versatile": "1d8",
+   "properties": [
+    "多用"
+   ],
+   "range": null,
+   "mastery": "失衡",
+   "weight": 4.0,
+   "cost": {
+    "amount": 2,
+    "unit": "SP"
+   }
+  },
+  {
+   "id": "weapon:长矛",
+   "type": "weapon",
+   "name": "长矛",
+   "en": "Pike",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用近战武器，1d10穿刺，精通推离；词条：重型、触及、双手。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d10",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "重型",
+    "触及",
+    "双手"
+   ],
+   "range": null,
+   "mastery": "推离",
+   "weight": 18.0,
+   "cost": {
+    "amount": 5,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:鞭",
+   "type": "weapon",
+   "name": "鞭",
+   "en": "Whip",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用近战武器，1d4挥砍，精通缓速；词条：灵巧、触及。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d4",
+    "type": "挥砍"
+   },
+   "versatile": null,
+   "properties": [
+    "灵巧",
+    "触及"
+   ],
+   "range": null,
+   "mastery": "缓速",
+   "weight": 3.0,
+   "cost": {
+    "amount": 2,
+    "unit": "GP"
+   }
+  },
+  {
+   "id": "weapon:飞镖",
+   "type": "weapon",
+   "name": "飞镖",
+   "en": "Dart",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "简易远程武器，1d4穿刺，精通侵扰；词条：灵巧、投掷。",
+   "uncertain": [],
+   "category": "simple",
+   "kind": "ranged",
+   "damage": {
+    "dice": "1d4",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "灵巧",
+    "投掷"
+   ],
+   "range": {
+    "normal": 20,
+    "long": 60
+   },
+   "mastery": "侵扰",
+   "weight": 0.25,
+   "cost": {
+    "amount": 5,
+    "unit": "CP"
+   }
+  },
+  {
+   "id": "weapon:骑枪",
+   "type": "weapon",
+   "name": "骑枪",
+   "en": "Lance",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/武器.htm",
+   "alsoIn": [],
+   "summary": "军用近战武器，1d10穿刺，精通失衡；词条：重型、触及、双手。",
+   "uncertain": [],
+   "category": "martial",
+   "kind": "melee",
+   "damage": {
+    "dice": "1d10",
+    "type": "穿刺"
+   },
+   "versatile": null,
+   "properties": [
+    "重型",
+    "触及",
+    "双手"
+   ],
+   "range": null,
+   "mastery": "失衡",
+   "weight": 6.0,
+   "cost": {
+    "amount": 10,
+    "unit": "GP"
+   },
+   "twoHandedNote": "骑乘期间除外"
+  },
+  {
+   "id": "weaponProperty:双手",
+   "type": "weaponProperty",
+   "name": "双手",
+   "en": "Two-Handed",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/词条.htm",
+   "alsoIn": [],
+   "summary": "攻击时需要双手同时持握。",
+   "uncertain": [],
+   "rule": "攻击时需要双手同时持握。"
+  },
+  {
+   "id": "weaponProperty:多用",
+   "type": "weaponProperty",
+   "name": "多用",
+   "en": "Versatile",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/词条.htm",
+   "alsoIn": [],
+   "summary": "可单手或双手持用，括号内伤害骰为双手近战时的伤害。",
+   "uncertain": [],
+   "rule": "可单手或双手持用，括号内伤害骰为双手近战时的伤害。"
+  },
+  {
+   "id": "weaponProperty:射程",
+   "type": "weaponProperty",
+   "name": "射程",
+   "en": "Range",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/词条.htm",
+   "alsoIn": [],
+   "summary": "括号内为常规射程与最大射程；打常规射程外目标攻击具劣势，超出最大射程则无法攻击。",
+   "uncertain": [],
+   "rule": "括号内为常规射程与最大射程；打常规射程外目标攻击具劣势，超出最大射程则无法攻击。"
+  },
+  {
+   "id": "weaponProperty:弹药",
+   "type": "weaponProperty",
+   "name": "弹药",
+   "en": "Ammunition",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/词条.htm",
+   "alsoIn": [],
+   "summary": "远程攻击需消耗一枚对应弹药（取出算攻击一部分，单手武器装填需空手）；战后花1分钟可回收一半（向下取整）。",
+   "uncertain": [],
+   "rule": "远程攻击需消耗一枚对应弹药（取出算攻击一部分，单手武器装填需空手）；战后花1分钟可回收一半（向下取整）。"
+  },
+  {
+   "id": "weaponProperty:投掷",
+   "type": "weaponProperty",
+   "name": "投掷",
+   "en": "Thrown",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/词条.htm",
+   "alsoIn": [],
+   "summary": "可投掷武器进行远程攻击（拔出算攻击一部分）；投掷近战武器时沿用近战所用的属性调整值。",
+   "uncertain": [],
+   "rule": "可投掷武器进行远程攻击（拔出算攻击一部分）；投掷近战武器时沿用近战所用的属性调整值。"
+  },
+  {
+   "id": "weaponProperty:灵巧",
+   "type": "weaponProperty",
+   "name": "灵巧",
+   "en": "Finesse",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/词条.htm",
+   "alsoIn": [],
+   "summary": "攻击检定与伤害可选力量或敏捷调整值，但两者须用同一个。",
+   "uncertain": [],
+   "rule": "攻击检定与伤害可选力量或敏捷调整值，但两者须用同一个。"
+  },
+  {
+   "id": "weaponProperty:装填",
+   "type": "weaponProperty",
+   "name": "装填",
+   "en": "Loading",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/词条.htm",
+   "alsoIn": [],
+   "summary": "用动作、附赠动作或反应射击时，无论有多少次攻击，只能射出一发弹药。",
+   "uncertain": [],
+   "rule": "用动作、附赠动作或反应射击时，无论有多少次攻击，只能射出一发弹药。"
+  },
+  {
+   "id": "weaponProperty:触及",
+   "type": "weaponProperty",
+   "name": "触及",
+   "en": "Reach",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/词条.htm",
+   "alsoIn": [],
+   "summary": "使用该武器时触及增加5尺，借机攻击同样适用。",
+   "uncertain": [],
+   "rule": "使用该武器时触及增加5尺，借机攻击同样适用。"
+  },
+  {
+   "id": "weaponProperty:轻型",
+   "type": "weaponProperty",
+   "name": "轻型",
+   "en": "Light",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/词条.htm",
+   "alsoIn": [],
+   "summary": "自己回合用攻击动作以轻型武器攻击后，可用附赠动作以另一把轻型武器再攻击一次，该次伤害不加属性调整值（负值除外）。",
+   "uncertain": [],
+   "rule": "自己回合用攻击动作以轻型武器攻击后，可用附赠动作以另一把轻型武器再攻击一次，该次伤害不加属性调整值（负值除外）。"
+  },
+  {
+   "id": "weaponProperty:重型",
+   "type": "weaponProperty",
+   "name": "重型",
+   "en": "Heavy",
+   "aliases": [],
+   "source": "玩家手册2024",
+   "section": "core",
+   "path": "topics/玩家手册2024/装备/词条.htm",
+   "alsoIn": [],
+   "summary": "力量低于13时重型近战武器攻击具劣势；敏捷低于13时重型远程武器攻击具劣势。",
+   "uncertain": [],
+   "rule": "力量低于13时重型近战武器攻击具劣势；敏捷低于13时重型远程武器攻击具劣势。"
+  }
+ ]
+}

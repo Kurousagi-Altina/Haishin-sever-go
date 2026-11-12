@@ -627,9 +627,9 @@ function hpMini(it) {
     if (!(it.hpMax > 0)) return '';
     var cur = Math.max(0, num(it.hp, it.hpMax)), r = Math.min(1, cur / it.hpMax);
     var color = r > 0.5 ? '#43a047' : r > 0.25 ? '#fb8c00' : '#e53935';
-    var showNum = me.gm || canEdit(it) || (it.sheet && sheets[it.sheet] && sheets[it.sheet].kind === 'pc');
-    return '<span class="hp-mini" title="' + (showNum ? 'HP ' + cur + ' / ' + it.hpMax : '') + '"><i style="width:' + Math.round(r * 100) + '%;background:' + color + '"></i></span>' +
-        (showNum ? '<span class="tt-hint">' + cur + '/' + it.hpMax + '</span>' : '');
+    var showNum = hpNumVisible(it);
+    return '<span class="hp-mini" title="' + (showNum ? 'HP ' + hpNumText(it) : '') + '"><i style="width:' + Math.round(r * 100) + '%;background:' + color + '"></i></span>' +
+        (showNum ? '<span class="tt-hint">' + hpNumText(it) + '</span>' : '');
 }
 
 function renderCombat() {
@@ -858,7 +858,8 @@ function drawTurnRing() {
 function drawTokenBadges(it) {
     var g = gridSize(), w = it.w || g, h = it.h || g, x = it.x || 0, y = it.y || 0;
     if (Math.min(w, h) * view.s < 26) return;
-    if (it.ac != null && it.ac !== '') {
+    var acv = tokenAC(it); // 棋子上的 AC，没填时用人物卡的（玩家之间互相可见）
+    if (acv != null && acv !== '') {
         var s = toScreen(x + w, y);
         ctx.save();
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -877,7 +878,7 @@ function drawTokenBadges(it) {
         ctx.font = 'bold 10px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(String(it.ac), bx, by + 9);
+        ctx.fillText(String(acv), bx, by + 9);
         ctx.restore();
     }
     var res = (it.res || []).filter(function(r) { return r.type === 'count' && num(r.max, 0) > 0 && num(r.max, 0) <= 12; });

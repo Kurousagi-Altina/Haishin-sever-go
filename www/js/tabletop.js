@@ -1284,6 +1284,20 @@ function drawToken(it) {
             ctx.fillStyle = '#4dd0e1';
             ctx.fillRect(x + w * cur / total, by, w * temp / total, bh);
         }
+        if (isPC(it) && hpNumVisible(it) && w * view.s >= 30) { // 玩家角色：血条上写「生命+临时/上限」，所有人可见
+            var hs = toScreen(x + w / 2, by);
+            ctx.save();
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.font = 'bold 10px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = 'rgba(0,0,0,0.85)';
+            ctx.strokeText(hpNumText(it), hs.x, hs.y - 1);
+            ctx.fillStyle = temp > 0 ? '#b2ebf2' : '#fff';
+            ctx.fillText(hpNumText(it), hs.x, hs.y - 1);
+            ctx.restore();
+        }
     }
     if (it.label) drawLabel(it.label, x + w / 2, y + h, it.hidden ? '#ba68c8' : '#fff', true);
     drawTokenBadges(it);
@@ -2602,6 +2616,7 @@ function renderSelPanel() {
     var h = '<h4>' + title + ' <button class="tt-btn small" data-act="close">✕</button></h4>';
     if (!edit) {
         h += '<div class="tt-hint">' + escapeHtml(it.label || '') + (it.owner ? '<br>控制者：' + escapeHtml(it.owner) : '') +
+            (it.kind === 'token' && isPC(it) && (hpNumVisible(it) || tokenAC(it) != null) ? '<br>' + [hpNumVisible(it) ? 'HP ' + hpNumText(it) : '', tokenAC(it) != null ? 'AC ' + escapeHtml(String(tokenAC(it))) : ''].filter(Boolean).join(' · ') : '') +
             '<br>' + (it.locked ? '已锁定' : (it.kind === 'token' ? '可拖动移动' : '只读')) + '</div>';
         if (it.kind === 'token') {
             h += '<div class="prop-btns"><button class="tt-btn small' + (target.id === it.id ? ' primary' : '') + '" data-act="target">' +
@@ -2769,6 +2784,20 @@ function tokenHpPatch(it, delta) {
 // 从 0 恢复：去掉昏迷 / 死亡 / 稳定，清空死亡豁免
 // 玩家角色：玩家控制的棋子，或关联了人物卡。只有玩家角色在 0 生命值时做死亡豁免，其他直接死亡
 function isPC(it) { return !!it.owner || !!(it.sheet && sheets[it.sheet] && sheets[it.sheet].kind === 'pc'); }
+
+// 血量文字「生命+临时 / 上限」，临时生命为 0 时不显示 +0
+function hpNumText(it) {
+    var cur = Math.max(0, Math.round(num(it.hp, it.hpMax))), t = Math.max(0, Math.round(num(it.hpTemp, 0)));
+    return cur + (t > 0 ? '+' + t : '') + '/' + it.hpMax;
+}
+// 精确血量谁看得到：GM、自己控制的，以及所有玩家角色（玩家之间互相可见）；服务器给玩家的 GM 怪物只有百分比
+function hpNumVisible(it) { return it.hpMax > 0 && !it.hpPct && (me.gm || canEdit(it) || isPC(it)); }
+// AC：棋子上填的，没填时用关联人物卡的
+function tokenAC(it) {
+    if (it.ac != null && it.ac !== '') return it.ac;
+    var sh = it.sheet && sheets[it.sheet];
+    return sh && sh.kind === 'pc' && sh.ac != null && String(sh.ac).trim() !== '' ? String(sh.ac).replace(/[（(].*$/, '').trim() : null;
+}
 
 function zeroHpStatus(it, hp, patch) {
     if (it.kind !== 'token' || !(it.hpMax > 0) || it.hpPct) return;

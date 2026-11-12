@@ -1,0 +1,993 @@
+{
+ "category": "spell",
+ "type": "法术",
+ "source": "荒洲探险家指南",
+ "generated": "2026-11-09",
+ "count": 15,
+ "entries": [
+  {
+   "id": "spell:不动物件",
+   "name": "不动物件",
+   "en": "Immovable Object",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/秘迹学法术/秘迹学法术详述.htm",
+   "alsoIn": [],
+   "summary": "把10磅内物件固定于空中，需力量检定才能移动。",
+   "uncertain": [],
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "法师"
+   ],
+   "subclasses": [
+    "重力"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "touch",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "至少价值25gp的金尘，在施法时消耗。",
+    "mCost": 25,
+    "mConsumed": true
+   },
+   "duration": {
+    "text": "1小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 0,
+    "text": "4-5环：DC+5、承重8000磅、持续24小时；6环起：DC+10、承重20000磅、持续至解除",
+    "step": 1,
+    "from": 2
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:削弱芒刺",
+   "name": "削弱芒刺",
+   "en": "Sapping Sting",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/秘迹学法术/秘迹学法术详述.htm",
+   "alsoIn": [],
+   "summary": "目标进行体质豁免，失败受1d4黯蚀伤害并陷入倒地，成功不受伤",
+   "uncertain": [],
+   "level": 0,
+   "school": "死灵",
+   "classes": [
+    "法师"
+   ],
+   "subclasses": [
+    "时间",
+    "重力"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 30
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "none",
+   "damage": [
+    {
+     "dice": "1d4",
+     "type": "黯蚀"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [
+    "prone"
+   ],
+   "upcast": null,
+   "cantripScaling": [
+    [
+     5,
+     "2d4"
+    ],
+    [
+     11,
+     "3d4"
+    ],
+    [
+     17,
+     "4d4"
+    ]
+   ],
+   "lasting": false
+  },
+  {
+   "id": "spell:命运宠儿",
+   "name": "命运宠儿",
+   "en": "Fortune's Favor",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/秘迹学法术/秘迹学法术详述.htm",
+   "alsoIn": [],
+   "summary": "被选生物可结束法术，在一次d20检定上多投一颗d20选用。",
+   "uncertain": [],
+   "level": 2,
+   "school": "预言",
+   "classes": [
+    "法师"
+   ],
+   "subclasses": [
+    "时间",
+    "重力"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "minute",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一颗至少价值100GP的白色珍珠，作为本法术的耗材",
+    "mCost": 100,
+    "mConsumed": true
+   },
+   "duration": {
+    "text": "1小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 1,
+    "text": "每高1环：目标/数量+1",
+    "step": 1,
+    "from": 2
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:崩坏现实",
+   "name": "崩坏现实",
+   "en": "Reality Break",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/秘迹学法术/秘迹学法术详述.htm",
+   "alsoIn": [],
+   "summary": "专注：撕裂现实，目标感知豁免，失败陷入震慑并受多种伤害，之后每回合触发随机效果。",
+   "uncertain": [
+    "conditions"
+   ],
+   "level": 8,
+   "school": "咒法",
+   "classes": [
+    "法师"
+   ],
+   "subclasses": [
+    "时间"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多一分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "wis",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "6d12",
+     "type": "心灵"
+    },
+    {
+     "dice": "8d12",
+     "type": "力场"
+    },
+    {
+     "dice": "10d12",
+     "type": "力场"
+    },
+    {
+     "dice": "10d12",
+     "type": "寒冷"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [
+    "stunned",
+    "prone",
+    "blinded"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:引力裂沟",
+   "name": "引力裂沟",
+   "en": "Gravity Sinkhole",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/秘迹学法术/秘迹学法术详述.htm",
+   "alsoIn": [],
+   "summary": "半径20尺球形内的生物进行体质豁免，失败受5d10力场伤害，成功减半",
+   "uncertain": [],
+   "level": 4,
+   "school": "塑能",
+   "classes": [
+    "法师"
+   ],
+   "subclasses": [
+    "重力"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 120
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一块黑色的大理石",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "5d10",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "sphere",
+    "size": 20,
+    "height": null,
+    "width": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d10",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d10",
+    "step": 1,
+    "from": 4
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:扩大重力",
+   "name": "扩大重力",
+   "en": "Magnify Gravity",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/秘迹学法术/秘迹学法术详述.htm",
+   "alsoIn": [],
+   "summary": "半径10尺球形内的生物进行体质豁免，失败受2d8力场伤害，成功减半",
+   "uncertain": [],
+   "level": 1,
+   "school": "变化",
+   "classes": [
+    "法师"
+   ],
+   "subclasses": [
+    "重力"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "一轮",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "2d8",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "sphere",
+    "size": 10,
+    "height": null,
+    "width": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d8",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d8",
+    "step": 1,
+    "from": 1
+   },
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:时光蹂躏",
+   "name": "时光蹂躏",
+   "en": "Time Ravage",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/秘迹学法术/秘迹学法术详述.htm",
+   "alsoIn": [],
+   "summary": "体质豁免：失败受12d10黯蚀伤害并老化衰弱，成功半伤。",
+   "uncertain": [],
+   "level": 9,
+   "school": "死灵",
+   "classes": [
+    "法师"
+   ],
+   "subclasses": [
+    "时间"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 90
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一个装满了钻石粉尘的沙漏，其合计价值至少为5000金币，作为本法术的耗材",
+    "mCost": 5000,
+    "mConsumed": true
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "12d10",
+     "type": "黯蚀"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:时流刹转",
+   "name": "时流刹转",
+   "en": "Temporal Shunt",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/秘迹学法术/秘迹学法术详述.htm",
+   "alsoIn": [],
+   "summary": "反应：感知豁免失败的生物被放逐到下回合开始，攻击或法术作废。",
+   "uncertain": [],
+   "level": 5,
+   "school": "变化",
+   "classes": [
+    "法师"
+   ],
+   "subclasses": [
+    "时间"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "reaction",
+    "reactionTrigger": "当你看到一个生物进行一次攻击检定或开始施展一个法术时使用"
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 120
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "1轮",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": "wis",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": null,
+    "perLevelTargets": 1,
+    "text": "每高1环：目标/数量+1",
+    "step": 1,
+    "from": 5
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:暗黑星辰",
+   "name": "暗黑星辰",
+   "en": "Dark Star",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/秘迹学法术/秘迹学法术详述.htm",
+   "alsoIn": [],
+   "summary": "目标进行体质豁免，失败受8d10力场伤害并陷入耳聋，成功减半；需专注",
+   "uncertain": [],
+   "level": 8,
+   "school": "塑能",
+   "classes": [
+    "法师"
+   ],
+   "subclasses": [
+    "重力"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 150
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一小块碎玛瑙与一滴施法者的血液，作为本法术的耗材",
+    "mCost": 0,
+    "mConsumed": true
+   },
+   "duration": {
+    "text": "专注，至多一分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "8d10",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [
+    "deafened"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:灵敏之赐",
+   "name": "灵敏之赐",
+   "en": "Gift of Alacrity",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/秘迹学法术/秘迹学法术详述.htm",
+   "alsoIn": [],
+   "summary": "触碰自愿生物，8小时内其先攻检定额外加1d8。",
+   "uncertain": [],
+   "level": 1,
+   "school": "预言",
+   "classes": [
+    "法师"
+   ],
+   "subclasses": [
+    "时间"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "minute",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "touch",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "8小时",
+    "concentration": false,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:系结本源",
+   "name": "系结本源",
+   "en": "Tether Essence",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/秘迹学法术/秘迹学法术详述.htm",
+   "alsoIn": [],
+   "summary": "专注：两名生物体质豁免失败则伤害与治疗共享。",
+   "uncertain": [],
+   "level": 7,
+   "school": "死灵",
+   "classes": [
+    "法师"
+   ],
+   "subclasses": [
+    "时间",
+    "重力"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 60
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一卷至少价值250金币的铂金丝线，作为本法术的耗材",
+    "mCost": 250,
+    "mConsumed": true
+   },
+   "duration": {
+    "text": "专注，至多一小时",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "special",
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": null,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:脉冲波动",
+   "name": "脉冲波动",
+   "en": "Pulse Wave",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/秘迹学法术/秘迹学法术详述.htm",
+   "alsoIn": [],
+   "summary": "30尺锥形内的生物进行体质豁免，失败受6d6力场伤害，成功减半",
+   "uncertain": [],
+   "level": 3,
+   "school": "塑能",
+   "classes": [
+    "法师"
+   ],
+   "subclasses": [
+    "时间",
+    "重力"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "6d6",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "cone",
+    "size": 30,
+    "width": null,
+    "height": null,
+    "origin": "self"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d6",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d6",
+    "step": 1,
+    "from": 3
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:重力分裂",
+   "name": "重力分裂",
+   "en": "Gravity Fissure",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/秘迹学法术/秘迹学法术详述.htm",
+   "alsoIn": [],
+   "summary": "100尺长直线内的生物进行体质豁免，失败受8d8力场伤害，成功减半",
+   "uncertain": [],
+   "level": 6,
+   "school": "塑能",
+   "classes": [
+    "法师"
+   ],
+   "subclasses": [
+    "重力"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一把铁料",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "立即",
+    "concentration": false,
+    "instant": true
+   },
+   "attack": null,
+   "save": "con",
+   "onSave": "half",
+   "damage": [
+    {
+     "dice": "8d8",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "line",
+    "size": 100,
+    "width": 5,
+    "height": null,
+    "origin": "self"
+   },
+   "targets": null,
+   "conditions": [],
+   "upcast": {
+    "perLevelDice": "1d8",
+    "perLevelTargets": 0,
+    "text": "每高1环：伤害/效果骰+1d8",
+    "step": 1,
+    "from": 6
+   },
+   "cantripScaling": null,
+   "lasting": false
+  },
+  {
+   "id": "spell:饕餮虚空",
+   "name": "饕餮虚空",
+   "en": "Ravenous Void",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/秘迹学法术/秘迹学法术详述.htm",
+   "alsoIn": [],
+   "summary": "半径20尺球形内的生物进行力量豁免，失败受5d10力场伤害并陷入束缚，成功不受伤；需专注",
+   "uncertain": [],
+   "level": 9,
+   "school": "塑能",
+   "classes": [
+    "法师"
+   ],
+   "subclasses": [
+    "重力"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "ft",
+    "ft": 1000
+   },
+   "components": {
+    "v": true,
+    "s": true,
+    "m": "一只铁制的小九芒星",
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多1分钟",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": "str",
+   "onSave": "none",
+   "damage": [
+    {
+     "dice": "5d10",
+     "type": "力场"
+    }
+   ],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": {
+    "shape": "sphere",
+    "size": 20,
+    "height": null,
+    "width": null,
+    "origin": "point"
+   },
+   "targets": null,
+   "conditions": [
+    "restrained"
+   ],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": true
+  },
+  {
+   "id": "spell:魔袋术",
+   "name": "魔袋术",
+   "en": "Wristpocket",
+   "aliases": [],
+   "source": "荒洲探险家指南",
+   "section": "setting",
+   "path": "topics/荒洲探险家指南/角色选项/秘迹学法术/秘迹学法术详述.htm",
+   "alsoIn": [],
+   "summary": "把一件5磅内物品送进异次元袋，随时用动作取回。",
+   "uncertain": [],
+   "level": 2,
+   "school": "咒法",
+   "classes": [
+    "法师"
+   ],
+   "subclasses": [
+    "仪式；时间",
+    "重力"
+   ],
+   "castingTime": {
+    "amount": 1,
+    "unit": "action",
+    "reactionTrigger": ""
+   },
+   "ritual": false,
+   "range": {
+    "type": "self",
+    "ft": null
+   },
+   "components": {
+    "v": false,
+    "s": true,
+    "m": null,
+    "mCost": 0,
+    "mConsumed": false
+   },
+   "duration": {
+    "text": "专注，至多一小时",
+    "concentration": true,
+    "instant": false
+   },
+   "attack": null,
+   "save": null,
+   "onSave": null,
+   "damage": [],
+   "heal": null,
+   "healAddsMod": false,
+   "tempHp": null,
+   "area": null,
+   "targets": 1,
+   "conditions": [],
+   "upcast": null,
+   "cantripScaling": null,
+   "lasting": false
+  }
+ ]
+}
