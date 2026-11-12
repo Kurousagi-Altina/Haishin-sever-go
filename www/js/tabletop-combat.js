@@ -920,6 +920,7 @@ function combatPanelHtml(it, row) {
     h += row('速度', '<input class="tt-input narrow" data-prop="speed" type="number" min="0" step="5" value="' + (it.speed > 0 ? it.speed : '') + '" placeholder="' + (tokenSpeed(it) || '—') + '"> 尺' +
         (combatState() && combatState().turn === it.id ? '<span class="tt-hint">本回合已移动 ' + fmtDist(movedThisTurn(it)) + '</span>' : ''));
     h += unarmedRowHtml(it); // 徒手打击 / 擒抱 / 推撞（tabletop-fight.js）
+    h += classRowHtml(it);   // 狂暴 / 回气 / 动作如潮 / 诗人激励
     h += row('阵营', '<select class="tt-select" data-prop="side" title="借机攻击按阵营判断：自动 = 玩家控制的是友方，GM 控制的是敌方">' +
         [['', '自动'], ['ally', '友方'], ['enemy', '敌方'], ['neutral', '中立']].map(function(o) { return '<option value="' + o[0] + '"' + ((it.side || '') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') +
         '</select><span class="tt-hint">触及</span><input class="tt-input narrow" data-prop="reach" type="number" min="0" step="5" value="' + (it.reach > 0 ? it.reach : '') + '" placeholder="' + meleeReach(it) + '"> 尺');

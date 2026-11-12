@@ -13,7 +13,7 @@ var ECON = [['a', '动作'], ['b', '附赠'], ['r', '反应']];
 function econHudHtml(cur) {
     if (!hintOn('hintEcon') || !cur || !isCreatureToken(cur)) return '';
     var e = cur.econ || {}, edit = canEdit(cur);
-    return '<span class="hud-econ">' + ECON.map(function(k) {
+    return '<span class="hud-econ">' + (e.surge ? '<i class="econ" title="动作如潮：本回合多一个动作">如潮</i>' : '') + ECON.map(function(k) {
         return '<i class="econ' + (e[k[0]] ? ' used' : '') + (edit ? ' click' : '') + '"' + (edit ? ' data-econ="' + k[0] + '"' : '') +
             ' title="' + k[1] + (e[k[0]] ? '：已用（点击取消）' : '：可用（点击标记为已用）') + '">' + k[1] + '</i>';
     }).join('') + '</span>';
@@ -165,7 +165,7 @@ function fightLogBtns(e) {
 // 行动记录里每个目标后面的按钮：专注豁免、传奇抗性
 function fightTargetBtns(e, t, r) {
     if (!t.id || !e.id) return '';
-    var mb = masteryBtns(e, t, r) + shoveBtns(e, t, r); // 武器精通 / 推撞（出手的人看得到）
+    var mb = masteryBtns(e, t, r) + sneakBtns(e, t, r) + shoveBtns(e, t, r); // 武器精通 / 偷袭 / 推撞（出手的人看得到）
     var tok = scene.items[t.id];
     if (mb && !(tok && (me.gm || (tok.owner && tok.owner === me.name)))) return mb;
     if (!tok || !(me.gm || (tok.owner && tok.owner === me.name))) return '';
@@ -188,6 +188,7 @@ function fightLogClick(el) {
     if (d.dot) { op({ op: 'fight.dot', ids: [d.dot], text: d.st }); el.disabled = true; return true; }
     if (d.concsave) { op({ op: 'fight.save', ids: [d.concsave], mode: 'conc', dc: parseInt(d.dc, 10) || 10, text: d.log || '' }); el.remove(); return true; }
     if (d.mst) return masteryClick(el);
+    if (d.sa) return sneakClick(el);
     if (d.shove) { masteryDone[d.log + ':' + d.shove + ':push'] = true; el.remove(); pushToken(d.shove, d.from, 5); return true; }
     if (d.lause) {
         var t = scene.items[d.lause];
@@ -327,7 +328,8 @@ function onMultiBarClick(e) {
 // ===================== 设置：战斗提示开关 =====================
 var HINT_KEYS = [['hintOA', '借机攻击提示', '拖动棋子离开敌人触及范围时提示'], ['hintEcon', '动作经济', '先攻条显示动作 / 附赠 / 反应，结算时自动勾选'],
     ['hintTurn', '回合开始 / 结束效果', '闪避 / 撤离自动结束，重复豁免和持续伤害提示'], ['hintLegend', '传奇动作与充能', '传奇动作提示与恢复、传奇抗性按钮、充能自动掷骰'],
-    ['hintMastery', '武器精通', '攻击命中 / 失手后按武器精通给出后续按钮（侵扰、削弱、失衡、推离、擦掠、横扫、缓速）']];
+    ['hintMastery', '武器精通', '攻击命中 / 失手后按武器精通给出后续按钮（侵扰、削弱、失衡、推离、擦掠、横扫、缓速）'],
+    ['hintClass', '职业特性', '偷袭按钮、狂暴伤害自动加值、属性面板里的狂暴 / 回气 / 动作如潮 / 诗人激励']];
 
 function renderFightHints() {
     var box = $('fightHintBox');
@@ -501,6 +503,7 @@ function unarmedRowHtml(it) {
 }
 
 function fightSelAct(act0, ids) {
+    if (classSelAct(act0, ids)) return true; // 职业特性一键
     if (act0 !== 'unarmed' && act0 !== 'grapple' && act0 !== 'shove') return false;
     var it = scene.items[ids[0]];
     if (!it) return true;
@@ -525,4 +528,156 @@ function shoveBtns(e, t, r) {
     if (r.kind !== 'save' || !/^推撞/.test(r.name || '') || !(t.saved === 'no' || t.saved === 'auto') || !r.casterId || !(me.gm || e.who === me.name)) return '';
     if (masteryDone[e.id + ':' + t.id + ':push']) return '';
     return '<button class="tt-btn small react-btn" data-shove="' + escapeHtml(t.id) + '" data-log="' + escapeHtml(e.id) + '" data-from="' + escapeHtml(r.casterId) + '">推开 5 尺</button>';
+}
+
+// ===================== 7. 职业特性一键（2024 玩家手册） =====================
+// 偷袭（命中后记录里一键加伤，每回合一次）、狂暴（进入 / 结束；狂暴伤害在行动框里自动加）、
+// 回气、动作如潮、诗人激励。次数记在棋子资源里（没有就按等级表新建），都可以手动改。
+function byLevel(table, lv) { var v = table[0][1]; table.forEach(function(t) { if (lv >= t[0]) v = t[1]; }); return v; }
+var CF = {
+    rageUses: [[1, 2], [3, 3], [6, 4], [12, 5], [17, 6]],
+    rageDmg: [[1, 2], [9, 3], [16, 4]],
+    windUses: [[1, 2], [4, 3], [10, 4]],
+    surgeUses: [[2, 1], [17, 2]],
+    bardDie: [[1, 'd6'], [5, 'd8'], [10, 'd10'], [15, 'd12']]
+};
+
+// 职业等级：「战士 5」「战士 3 / 游荡者 2」；只写了职业名时用总等级
+function classLevel(sh, cn) {
+    if (!sh) return 0;
+    var cls = String(sh.class || '') + ' ' + String(sh.subclass || ''), m = cls.match(new RegExp(cn + '\\s*(\\d+)'));
+    if (m) return parseInt(m[1], 10);
+    return cls.indexOf(cn) >= 0 ? (parseInt(sh.level, 10) || 1) : 0;
+}
+
+// 棋子资源：按名字找（比如「回气」），没有就按等级表新建；返回 { res, r } 或 null
+function featRes(tok, name, max) {
+    var res = JSON.parse(JSON.stringify(tok.res || [])), r = res.filter(function(x) { return String(x.name || '').indexOf(name) >= 0; })[0];
+    if (!r && max > 0) { r = { id: genId(), name: name, type: 'count', cur: max, max: max, icon: 'gem' }; res.push(r); }
+    return r ? { res: res, r: r } : null;
+}
+function spendFeat(tok, name, max) {
+    var fr = featRes(tok, name, max);
+    if (!fr) return true;
+    if (num(fr.r.cur, 0) <= 0) { notice('「' + name + '」已经用完了（可以在棋子资源里改次数）', true); return false; }
+    fr.r.cur = num(fr.r.cur, 0) - 1;
+    patchItems([{ id: tok.id, res: fr.res }]);
+    notice(name + '：剩 ' + fr.r.cur + '/' + fr.r.max);
+    return true;
+}
+function featLeft(tok, name, max) { var fr = featRes(tok, name, max); return fr ? num(fr.r.cur, 0) + '/' + num(fr.r.max, 0) : ''; }
+
+function classRowHtml(it) {
+    var sh = it.sheet && sheets[it.sheet];
+    if (!sh || !canEdit(it) || !hintOn('hintClass')) return '';
+    var b = [], bar = classLevel(sh, '野蛮人'), fig = classLevel(sh, '战士'), bard = classLevel(sh, '吟游诗人');
+    if (sheetHasEntry(sh, /狂暴|rage/i) && (bar || /狂暴/.test(JSON.stringify(sh.features || [])))) {
+        var lvB = bar || parseInt(sh.level, 10) || 1;
+        b.push(hasStatus(it, 'raging') ? '<button class="tt-btn small" data-act="cf-rageend">结束狂暴</button>' :
+            '<button class="tt-btn small" data-act="cf-rage" title="附赠动作：钝穿挥抗性、力量检定与豁免优势、力量近战加伤 +' + byLevel(CF.rageDmg, lvB) + '">😡 狂暴（' + featLeft(it, '狂暴', byLevel(CF.rageUses, lvB)) + '）</button>');
+    }
+    if (sheetHasEntry(sh, /回气|secondwind/i)) {
+        var lvF = fig || parseInt(sh.level, 10) || 1;
+        b.push('<button class="tt-btn small" data-act="cf-wind" title="附赠动作：恢复 1d10 + 战士等级（' + lvF + '）生命">回气（' + featLeft(it, '回气', byLevel(CF.windUses, lvF)) + '）</button>');
+    }
+    if (sheetHasEntry(sh, /动作如潮|actionsurge/i)) {
+        var lvS = fig || parseInt(sh.level, 10) || 2;
+        b.push('<button class="tt-btn small" data-act="cf-surge" title="本回合额外获得一个动作（不能是魔法动作）">动作如潮（' + featLeft(it, '动作如潮', byLevel(CF.surgeUses, Math.max(2, lvS))) + '）</button>');
+    }
+    if (sheetHasEntry(sh, /诗人激励|吟游诗人激励|bardicinspiration/i)) {
+        var lvD = bard || parseInt(sh.level, 10) || 1, cha = Math.max(1, sheetAbilityMod(sh, 'cha'));
+        b.push('<button class="tt-btn small" data-act="cf-bardic" title="附赠动作：60 尺内一名其他生物获得一颗诗人激励骰（' + byLevel(CF.bardDie, lvD) + '）">🎵 诗人激励（' + featLeft(it, '诗人激励', cha) + '）</button>');
+    }
+    return b.length ? '<div class="prop-row"><label>职业</label><span class="prop-btns" style="margin:0;">' + b.join('') + '</span></div>' : '';
+}
+
+function classSelAct(act0, ids) {
+    if (!/^cf-/.test(act0 || '')) return false;
+    var it = scene.items[ids[0]], sh = it && it.sheet && sheets[it.sheet];
+    if (!it || !sh) return true;
+    var lv = function(cn, d) { return classLevel(sh, cn) || parseInt(sh.level, 10) || d; };
+    if (act0 === 'cf-rage') {
+        if (!spendFeat(it, '狂暴', byLevel(CF.rageUses, lv('野蛮人', 1)))) return true;
+        var st = statusList(it).filter(function(s) { return s.id !== 'raging'; }).concat([{ id: 'raging', name: '狂暴', icon: '😡', color: '#e53935' }]);
+        patchItems([{ id: it.id, status: st }]);
+        econAfterAction({ cost: 'b' }, it);
+    } else if (act0 === 'cf-rageend') {
+        patchItems([{ id: it.id, status: statusList(it).filter(function(s) { return s.id !== 'raging'; }) }]);
+    } else if (act0 === 'cf-wind') {
+        var lf = lv('战士', 1);
+        if (!spendFeat(it, '回气', byLevel(CF.windUses, lf))) return true;
+        openActionDialog({ name: '回气', kind: 'heal', damage: '1d10+' + lf, cost: 'b', area: { shape: '', size: 0, width: 5 }, targets: 1, scaleNote: '回气：1d10 + 战士等级 ' + lf }, it, sh);
+        act.presetTargets = [it.id];
+    } else if (act0 === 'cf-surge') {
+        if (!spendFeat(it, '动作如潮', byLevel(CF.surgeUses, Math.max(2, lv('战士', 2))))) return true;
+        var e = JSON.parse(JSON.stringify(it.econ || {}));
+        delete e.a;
+        e.surge = true;
+        patchItems([{ id: it.id, econ: e }]);
+        notice((it.label || '') + ' 动作如潮：本回合多一个动作（不能是魔法动作）');
+    } else if (act0 === 'cf-bardic') {
+        var die = byLevel(CF.bardDie, lv('吟游诗人', 1));
+        if (!spendFeat(it, '诗人激励', Math.max(1, sheetAbilityMod(sh, 'cha')))) return true;
+        openActionDialog({ name: '诗人激励（' + die + '）', kind: 'effect', status: 'bardic', range: 60, cost: 'b', area: { shape: '', size: 0, width: 5 }, targets: 1,
+            scaleNote: '诗人激励：目标之后 1 小时内可以把一颗 ' + die + ' 加到一次 d20 检定上' }, it, sh);
+    }
+    $('selPanel').dataset.ids = '';
+    renderSelPanel();
+    renderCombatHud();
+    return true;
+}
+
+// 行动框：狂暴中的野蛮人用力量近战攻击时，伤害加狂暴伤害（勾选框，可取消）
+function classDialogSync(a, caster, sh) {
+    var row = $('acClassRow');
+    if (!row) return;
+    row.style.display = 'none';
+    $('acRage').checked = false;
+    if (!hintOn('hintClass') || !caster || a.kind !== 'attack' || !hasStatus(caster, 'raging')) return;
+    var s = sh || (caster.sheet && sheets[caster.sheet]);
+    var n = byLevel(CF.rageDmg, classLevel(s, '野蛮人') || parseInt(s && s.level, 10) || 1);
+    $('acRageN').textContent = '+' + n;
+    $('acRage').dataset.n = n;
+    $('acRage').checked = !(a.range > 0 && !a.reach); // 远程（敏捷）攻击默认不加
+    row.style.display = '';
+}
+function classDialogApply(a) {
+    if ($('acClassRow').style.display === 'none' || !$('acRage').checked || a.rageAdded) return;
+    a.damage = addToDamage(a.damage || '', '+' + $('acRage').dataset.n);
+    a.rageAdded = true;
+}
+
+// 偷袭：命中后记录里的按钮（出手的人和 GM），每回合一次（任何人的回合都算一回合）
+function sneakBtns(e, t, r) {
+    if (r.kind !== 'attack' || !(t.hit === 'hit' || t.hit === 'crit') || !r.casterId || !(me.gm || e.who === me.name) || !hintOn('hintClass')) return '';
+    var c = scene.items[r.casterId], sh = c && c.sheet && sheets[c.sheet];
+    if (!sh || !sheetHasEntry(sh, /偷袭|sneakattack/i) || masteryDone[e.id + ':sa']) return '';
+    if (c.econ && c.econ.saKey && c.econ.saKey === turnKey()) return '';
+    var lvR = classLevel(sh, '游荡者') || parseInt(sh.level, 10) || 1, n = Math.ceil(lvR / 2) * (t.hit === 'crit' ? 2 : 1), tgt = scene.items[t.id];
+    var why = [], adv = /^2d20kh1/i.test(String(t.attack && t.attack.expr || '').replace(/\s/g, ''));
+    if (adv) why.push('有优势');
+    if (tgt && sortedItems().some(function(o) {
+        return o.kind === 'token' && o.id !== c.id && o.id !== tgt.id && isCreature(o) && tokenSide(o) === tokenSide(c) &&
+            !['incapacitated', 'paralyzed', 'stunned', 'unconscious', 'petrified'].some(function(s) { return hasStatus(o, s); }) && creatureDist(o, tgt) <= 5;
+    })) why.push('目标 5 尺内有盟友');
+    var ok = why.length > 0 && !/^2d20kl1/i.test(String(t.attack && t.attack.expr || '').replace(/\s/g, ''));
+    return '<button class="tt-btn small react-btn" data-sa="' + escapeHtml(t.id) + '" data-log="' + escapeHtml(e.id) + '" data-n="' + n + '" title="' +
+        escapeHtml('偷袭（每回合一次）：灵巧或远程武器命中，且有优势、或目标 5 尺内有你的盟友（且你没有劣势）。' + (why.length ? '当前：' + why.join('、') : '当前看不出满足条件，由 GM 判断')) + '">' +
+        '偷袭 +' + n + 'd6' + (ok ? '' : '？') + '</button>';
+}
+
+function sneakClick(el) {
+    var d = el.dataset, ent = logEntries.filter(function(x) { return x.id === d.log; })[0];
+    if (!ent || !ent.act) return true;
+    var r = ent.act, c = scene.items[r.casterId], tgt = scene.items[d.sa];
+    if (!c || !tgt) { notice('出手的棋子或目标不在当前场景', true); return true; }
+    masteryDone[d.log + ':sa'] = true;
+    el.remove();
+    var e = JSON.parse(JSON.stringify(c.econ || {}));
+    e.saKey = turnKey() || ('t' + Date.now());
+    patchItems([{ id: c.id, econ: e }]);
+    openActionDialog({ name: '偷袭（' + r.name + '）', kind: 'auto', damage: d.n + 'd6', dtype: r.damageType || '', cost: 'n', area: { shape: '', size: 0, width: 5 }, targets: 1,
+        scaleNote: '偷袭伤害与武器同类型；重击时骰子已经翻倍' }, c, c.sheet && sheets[c.sheet] || null);
+    act.presetTargets = [tgt.id];
+    return true;
 }
