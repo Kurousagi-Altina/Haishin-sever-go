@@ -883,7 +883,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		room.checkTriggers(sc, moved)
 		room.logHPChanges(u, sc, hpChanges)
 
-	case "fight.save", "fight.dot", "oa.hint", "fight.escape": // 战斗提示（tabletop_fight.go）
+	case "fight.save", "fight.dot", "oa.hint", "fight.escape", "fight.counter": // 战斗提示（tabletop_fight.go）
 		if st, msg := room.applyFight(u, gm, req); st != 0 {
 			return st, msg
 		}
@@ -1779,7 +1779,7 @@ var ttSettingKeys = map[string]bool{
 	"playerTokens": true, "playerDraw": true, "playerMoveOthers": true, "playerDoors": true,
 	"timeStop": true, "music": true,
 	// 战斗提示开关（tabletop_fight.go，默认开）
-	"hintOA": true, "hintEcon": true, "hintTurn": true, "hintLegend": true, "hintMastery": true, "hintClass": true,
+	"hintOA": true, "hintEcon": true, "hintTurn": true, "hintLegend": true, "hintMastery": true, "hintClass": true, "hintReact": true,
 }
 
 func ttRequestToken(r *http.Request) string {

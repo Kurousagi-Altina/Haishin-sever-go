@@ -353,6 +353,18 @@ func (room *TTRoom) traitsOf(it map[string]interface{}) *ttTraits {
 			t.condImmune["charmed"], t.condImmune["frightened"] = "无我狂暴", "无我狂暴"
 		}
 	}
+	for _, st := range ttStatusMaps(it) { // 状态带的临时抗性（吸收元素等）
+		if list, ok := st["resist"].([]interface{}); ok {
+			name, _ := st["name"].(string)
+			for _, x := range list {
+				if d, _ := x.(string); d != "" {
+					if _, has := t.resist[d]; !has {
+						t.resist[d] = name
+					}
+				}
+			}
+		}
+	}
 	if conds["petrified"] {
 		t.resist["全部"] = "石化"
 		t.immune["毒素"] = "石化"
@@ -590,7 +602,7 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) 
 			e = &room.Log[i]
 		}
 	}
-	if e == nil || e.Act == nil || (e.Act.Kind != "attack" && !(mode == "legendary" && e.Act.Kind == "save")) {
+	if e == nil || e.Act == nil || (e.Act.Kind != "attack" && !(mode == "legendary" && e.Act.Kind == "save") && mode != "absorb") {
 		return http.StatusBadRequest, "找不到这次结算（太久远的记录不能再反应）"
 	}
 	var h *TTActionHit
@@ -616,7 +628,7 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) 
 	if owner, _ := it["owner"].(string); !gm && (owner == "" || owner != u.name) {
 		return http.StatusForbidden, "只能替自己的棋子使用反应"
 	}
-	if mode != "legendary" && h.Hit != "hit" && h.Hit != "crit" {
+	if mode != "legendary" && mode != "absorb" && h.Hit != "hit" && h.Hit != "crit" {
 		return http.StatusBadRequest, "这次攻击没有命中"
 	}
 	sh := room.tokenSheet(it)
@@ -626,6 +638,7 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) 
 	}
 	var roll *TTDiceResult
 	name, note, back, after, removeStatus := "", "", 0, 0, false
+	absorbType := ""
 	switch mode {
 	case "deflect":
 		if !ttSheetHas(sh, "拨挡攻击", "拨挡飞弹", "拨挡", "deflectattacks", "deflectmissiles") {
@@ -689,6 +702,24 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) 
 		removeStatus = h.Status != ""
 		name = "盾牌术"
 		note = "AC " + strconv.Itoa(int(ac)) + "（+5），攻击 " + strconv.Itoa(h.Attack.Total) + " 改为未命中"
+	case "absorb": // 吸收元素：这次的强酸 / 寒冷 / 火焰 / 闪电 / 雷鸣伤害减半，并抗性到下回合开始
+		if !ttSheetHasSpell(sh, "吸收元素") && !ttSheetHas(sh, "吸收元素", "absorbelements") {
+			return http.StatusBadRequest, "角色卡上没有「吸收元素」"
+		}
+		best, amt := "", 0
+		for ty, v := range h.Types {
+			if ttElemental[ty] && v > amt {
+				best, amt = ty, v
+			}
+		}
+		if amt <= 0 {
+			return http.StatusBadRequest, "这次伤害里没有强酸 / 寒冷 / 火焰 / 闪电 / 雷鸣"
+		}
+		red := amt - amt/2
+		back, after = red, taken-red
+		absorbType = best
+		name = "吸收元素"
+		note = best + "伤害减半：" + strconv.Itoa(amt) + " → " + strconv.Itoa(amt/2) + "，直到下回合开始对" + best + "有抗性"
 	case "legendary": // 传奇抗性：豁免失败改为成功
 		if h.Saved != "no" {
 			return http.StatusBadRequest, "只有豁免失败时才能用传奇抗性"
@@ -767,6 +798,10 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) 
 			delete(it, "status")
 		}
 	}
+	if absorbType != "" { // 吸收元素：抗性持续到自己下回合开始（turnStart 去掉 until=start 的状态）
+		ttAddStatus(it, map[string]interface{}{"id": "absorb", "name": "吸收" + absorbType, "icon": "🛡", "color": "#4fc3f7",
+			"resist": []interface{}{absorbType}, "until": "start"})
+	}
 	room.broadcastItems([]map[string]interface{}{it})
 	ne := newLogEntry("action", u.name)
 	ne.Label = name
@@ -778,3 +813,6 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode string) 
 	room.rememberUndo(ne.ID, []ttUndoRec{snap})
 	return 0, ""
 }
+
+// ttElemental: the damage types 吸收元素 can absorb.
+var ttElemental = map[string]bool{"强酸": true, "寒冷": true, "火焰": true, "闪电": true, "雷鸣": true}

@@ -208,6 +208,13 @@ func (room *TTRoom) turnStart(sc *TTScene, it map[string]interface{}) {
 			ttRemoveStatus(it, "dodging")
 			changed = true
 		}
+		for _, st := range ttStatusMaps(it) { // 「直到你下回合开始」的状态（吸收元素的抗性等）
+			if st["until"] == "start" {
+				name, _ := st["name"].(string)
+				ttRemoveStatusNamed(it, name)
+				changed = true
+			}
+		}
 		for _, st := range ttStatusMaps(it) {
 			name, _ := st["name"].(string)
 			if dot, ok := st["dot"].(map[string]interface{}); ok && dot["when"] != "end" {
@@ -542,6 +549,96 @@ func (room *TTRoom) applyFight(u ttUser, gm bool, req *ttOpRequest) (int, string
 			e.Text = "失败，仍被擒抱"
 		}
 		room.addLog(e)
+
+	case "fight.counter": // 法术反制：施法者体质豁免对抗反制者的法术 DC，失败则这次施法作废
+		if !mine {
+			return http.StatusForbidden, "只能替自己的棋子施放法术反制"
+		}
+		var e *TTLogEntry
+		for i := range room.Log {
+			if room.Log[i].ID == req.Text {
+				e = &room.Log[i]
+			}
+		}
+		if e == nil || e.Act == nil || !e.Act.Spell {
+			return http.StatusBadRequest, "找不到这次施法（太久远的记录不能再反制）"
+		}
+		ref := "cs:" + req.Text
+		for _, x := range room.Log {
+			if x.Ref == ref {
+				return http.StatusBadRequest, "这道法术已经被反制过了"
+			}
+		}
+		sh := room.tokenSheet(it)
+		if !ttSheetHasSpell(sh, "法术反制") && !ttSheetHas(sh, "法术反制", "counterspell") {
+			return http.StatusBadRequest, "角色卡上没有「法术反制」"
+		}
+		if econ, _ := it["econ"].(map[string]interface{}); econ != nil && ttBool(econ["r"]) {
+			return http.StatusBadRequest, label + " 这一轮已经用过反应了"
+		}
+		caster := sc.Items[e.Act.CasterID]
+		if caster == nil {
+			return http.StatusBadRequest, "看不到施法者，请 GM 手动处理（撤销这次结算即可）"
+		}
+		dc := 0
+		if cs := ttSheetList(sh, "casting"); len(cs) > 0 {
+			v, _ := ttNum(strings.TrimSpace(ttStr(cs[0]["dc"])))
+			if v == 0 {
+				v, _ = ttNum(cs[0]["dc"])
+			}
+			dc = int(v)
+		}
+		if dc <= 0 {
+			return http.StatusBadRequest, "角色卡上没有法术豁免 DC"
+		}
+		r, notes, err := room.rollTokenSave(caster, "con", nil)
+		if err != nil {
+			return http.StatusBadRequest, err.Error()
+		}
+		econ, _ := it["econ"].(map[string]interface{})
+		if econ == nil {
+			econ = map[string]interface{}{}
+		}
+		econ["r"] = true
+		it["econ"] = econ
+		room.broadcastItems([]map[string]interface{}{it})
+		le := newLogEntry("roll", u.name)
+		le.Label = ttCleanName(label+"·法术反制 DC "+strconv.Itoa(dc), 50, "法术反制")
+		le.Roll = r
+		le.Ref = ref
+		if r != nil && r.Total >= dc {
+			le.Text = ttItemLabel(caster) + " 体质豁免成功，「" + e.Act.Name + "」照常生效"
+		} else {
+			le.Text = "反制成功：「" + e.Act.Name + "」被打断，效果作废"
+			if _, ok := room.revertAction(req.Text); !ok {
+				le.Text += "（结算记录太久远，请 GM 手动撤销效果）"
+			}
+			if lv := e.Act.SlotLevel; lv > 0 { // 2024：被反制的法术不消耗法术位
+				if csh := room.tokenSheet(caster); csh != nil {
+					for _, sl := range ttSheetList(csh, "slots") {
+						if l, _ := ttNum(sl["level"]); int(l) == lv {
+							cur, _ := ttNum(sl["cur"])
+							if cur == 0 {
+								cur, _ = ttNum(ttStr(sl["cur"]))
+							}
+							max, _ := ttNum(sl["max"])
+							if max == 0 {
+								max, _ = ttNum(ttStr(sl["max"]))
+							}
+							if cur < max {
+								sl["cur"] = strconv.Itoa(int(cur) + 1)
+								room.broadcastSheet(csh)
+								le.Text += "，" + strconv.Itoa(lv) + " 环法术位已退回"
+							}
+						}
+					}
+				}
+			}
+		}
+		if len(notes) > 0 {
+			le.Text += "（" + strings.Join(notes, " ") + "）"
+		}
+		room.addLog(le)
 
 	case "oa.hint":
 		if len(req.IDs) < 2 || !room.setting("hintOA", true) {

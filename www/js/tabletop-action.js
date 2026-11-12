@@ -600,6 +600,7 @@ function openActionDialog(a, caster, sh) {
     f('acCaster').textContent = caster ? (caster.label || '未命名棋子') : '（未指定：先在地图上选中你的棋子再打开，或不限距离）';
     syncActionDialog();
     classDialogSync(a, caster, sh); // 狂暴伤害（tabletop-fight.js）
+    applyActPreset(); // 反应法术：施放者 / 预选目标 / 消耗
     $('actDialog').style.display = 'flex';
 }
 
@@ -1092,7 +1093,7 @@ function confirmActionTargeting() {
         name: a.name, kind: a.kind, attack: a.attack || '', damage: a.damage || '', damageType: a.dtype || '',
         save: a.kind === 'save' ? a.save || '' : '', dc: a.kind === 'save' ? a.dc || 0 : 0, half: !!a.half,
         caster: m.caster && canEdit(m.caster) ? m.caster.id : '', concentration: !!a.conc, targets: targets, spell: !!a.isSpell,
-        magic: !!(a.magic || a.isSpell), school: a.school || '', parts: a.parts || [], mastery: a.kind === 'attack' ? a.mastery || '' : '',
+        magic: !!(a.magic || a.isSpell), school: a.school || '', parts: a.parts || [], mastery: a.kind === 'attack' ? a.mastery || '' : '', slotLevel: a.useSlot && a.slotLevel > 0 ? a.slotLevel : 0,
         status: def ? statusWithTurnEffects({ id: def.id, name: def.name, color: def.color, icon: def.icon, rounds: a.rounds || 0 }, a) : null
     } };
     if (isPathShape(a.area) && !m.locked && m.pts && m.pts.length > 1) finishPathShape();
@@ -1256,6 +1257,7 @@ function actionLogHtml(e) {
         parts.push(fightTargetBtns(e, t, r)); // 专注豁免 / 传奇抗性（tabletop-fight.js）
         h += '<div class="act-target">' + (r.kind === 'react' ? '🛡 ' : '🎯 ') + escapeHtml(t.name) + ' ' + parts.join(' ') + '</div>';
     });
+    h += counterBtns(e, r); // 法术反制（tabletop-fight.js）
     if (r.note) h += '<div class="tt-hint">' + escapeHtml(r.note) + '</div>';
     return h + '</div>';
 }
@@ -1288,6 +1290,7 @@ function reactButtons(e, t) {
 function useReaction(b) {
     var mode = b.dataset.react, tok = scene.items[b.dataset.tok];
     op({ op: 'action.react', text: b.dataset.log, target: b.dataset.tok, mode: mode }).then(function(ok) {
+        if (ok && mode === 'absorb' && tok) { spendSlotAtLeast(tok, 1); return; } // 吸收元素：一环法术位
         if (!ok || mode !== 'shield' || !tok) return;
         var sh = tok.sheet && sheets[tok.sheet];
         if (!sh || !canEditSheet(sh)) return;
