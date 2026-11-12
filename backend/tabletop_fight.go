@@ -282,6 +282,17 @@ func (room *TTRoom) turnEnd(sc *TTScene, it map[string]interface{}, order []map[
 			ttRemoveStatus(it, "disengaged")
 			room.broadcastItems([]map[string]interface{}{it})
 		}
+		ended := false
+		for _, st := range ttStatusMaps(it) { // 「直到本回合结束」的状态（哨兵的阻拦等）
+			if st["until"] == "end" {
+				name, _ := st["name"].(string)
+				ttRemoveStatusNamed(it, name)
+				ended = true
+			}
+		}
+		if ended {
+			room.broadcastItems([]map[string]interface{}{it})
+		}
 		for _, st := range ttStatusMaps(it) {
 			name, _ := st["name"].(string)
 			if sv, ok := st["save"].(map[string]interface{}); ok && sv["when"] != "start" {
@@ -342,7 +353,7 @@ func (room *TTRoom) ensureCombatRes(order []map[string]interface{}) {
 
 // rollTokenSave rolls a saving throw for a token like actions do: the sheet's save bonus, judgement
 // modifiers (bonuses and advantage), conditions, bless / bane and exhaustion. adv adds sources of advantage.
-func (room *TTRoom) rollTokenSave(it map[string]interface{}, ab string, adv []string) (*TTDiceResult, []string, error) {
+func (room *TTRoom) rollTokenSave(it map[string]interface{}, ab string, adv, disSrc []string) (*TTDiceResult, []string, error) {
 	conds := ttStatusIDs(it)
 	if (ab == "str" || ab == "dex") && (conds["paralyzed"] || conds["stunned"] || conds["unconscious"] || conds["petrified"]) {
 		return nil, []string{"自动失败"}, nil
@@ -352,14 +363,22 @@ func (room *TTRoom) rollTokenSave(it map[string]interface{}, ab string, adv []st
 	more, bonusNotes, advSrc := tr.saveMods(ab, false, false, "", "", conds)
 	sb += more
 	advSrc = append(advSrc, adv...)
+	if conds["lucky"] { // 幸运：用掉一个幸运点换来的优势
+		advSrc = append(advSrc, "幸运")
+		ttRemoveStatus(it, "lucky")
+		room.broadcastItems([]map[string]interface{}{it})
+	}
 	hasAdv := ab == "dex" && (conds["hasted"] || conds["dodging"]) || len(advSrc) > 0
-	dis := ab == "dex" && conds["restrained"]
+	dis := ab == "dex" && conds["restrained"] || len(disSrc) > 0
 	var notes []string
 	if len(bonusNotes) > 0 {
 		notes = append(notes, "豁免 "+ttJoinNotes(bonusNotes))
 	}
 	if len(advSrc) > 0 {
 		notes = append(notes, "优势："+ttJoinNotes(advSrc))
+	}
+	if len(disSrc) > 0 {
+		notes = append(notes, "劣势："+ttJoinNotes(disSrc))
 	}
 	expr := "1d20"
 	if hasAdv && !dis {
@@ -403,7 +422,7 @@ func (room *TTRoom) applyFight(u ttUser, gm bool, req *ttOpRequest) (int, string
 		}
 		var ab, title, statusName string
 		var dc int
-		var adv []string
+		var adv, dis []string
 		if req.Mode == "conc" {
 			if !ttStatusIDs(it)["concentration"] {
 				return http.StatusBadRequest, label + " 已经不在专注了"
@@ -415,8 +434,21 @@ func (room *TTRoom) applyFight(u ttUser, gm bool, req *ttOpRequest) (int, string
 			if dc > 30 {
 				dc = 30
 			}
-			if ttSheetHas(room.tokenSheet(it), "战争施法者", "warcaster") {
-				adv = append(adv, "战争施法者")
+			if ttSheetHas(room.tokenSheet(it), "战争施法者", "战地施法者", "warcaster") {
+				adv = append(adv, "战地施法者")
+			}
+			for i := len(room.Log) - 1; i >= 0 && ttIDRe.MatchString(req.Text); i-- { // 伤害来源有巫师杀手：劣势
+				if room.Log[i].ID != req.Text {
+					continue
+				}
+				if room.Log[i].Act != nil {
+					for _, h := range room.Log[i].Act.Targets {
+						if h.ID == req.IDs[0] && strings.Contains(h.Note, "巫师杀手") {
+							dis = append(dis, "巫师杀手")
+						}
+					}
+				}
+				break
 			}
 		} else {
 			st := ttStatusByName(it, req.Text)
@@ -431,7 +463,7 @@ func (room *TTRoom) applyFight(u ttUser, gm bool, req *ttOpRequest) (int, string
 				return http.StatusBadRequest, "状态的豁免设置不完整"
 			}
 		}
-		r, notes, err := room.rollTokenSave(it, ab, adv)
+		r, notes, err := room.rollTokenSave(it, ab, adv, dis)
 		if err != nil {
 			return http.StatusBadRequest, err.Error()
 		}
@@ -591,7 +623,7 @@ func (room *TTRoom) applyFight(u ttUser, gm bool, req *ttOpRequest) (int, string
 		if dc <= 0 {
 			return http.StatusBadRequest, "角色卡上没有法术豁免 DC"
 		}
-		r, notes, err := room.rollTokenSave(caster, "con", nil)
+		r, notes, err := room.rollTokenSave(caster, "con", nil, nil)
 		if err != nil {
 			return http.StatusBadRequest, err.Error()
 		}
@@ -652,13 +684,23 @@ func (room *TTRoom) applyFight(u ttUser, gm bool, req *ttOpRequest) (int, string
 			return http.StatusForbidden, "无权操作"
 		}
 		ref := "oa:" + req.IDs[0] + ":" + req.IDs[1]
+		if req.Mode == "enter" { // 进入触及（长柄武器大师）和离开触及分开去重
+			ref += ":in"
+		}
 		for i := len(room.Log) - 1; i >= 0 && i >= len(room.Log)-5; i-- { // 同一次移动不重复提示
 			if room.Log[i].Ref == ref {
 				return 0, ""
 			}
 		}
 		e := newLogEntry("sys", "⚔")
-		e.Text = ttItemLabel(mover) + " 离开了 " + label + " 的触及范围：" + label + " 可以用反应借机攻击"
+		switch req.Mode {
+		case "enter": // 长柄武器大师：进入触及范围
+			e.Text = ttItemLabel(mover) + " 进入了 " + label + " 的触及范围：" + label + " 可以用反应攻击（长柄武器大师）"
+		case "sentinel": // 哨兵：撤离也照样能借机
+			e.Text = ttItemLabel(mover) + " 撤离后离开了 " + label + " 的触及范围：" + label + " 有哨兵，仍可以用反应借机攻击"
+		default:
+			e.Text = ttItemLabel(mover) + " 离开了 " + label + " 的触及范围：" + label + " 可以用反应借机攻击"
+		}
 		e.GMOnly = true
 		e.For = owner
 		e.Ref = ref

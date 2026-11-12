@@ -32,6 +32,8 @@ var STATUS_DEFS = [
     { id: 'dodging', name: '闪避', icon: '🌪', color: '#4dd0e1', desc: '直到下回合开始：针对它的攻击检定劣势（能看见攻击者时），敏捷豁免优势。轮到它时自动去掉。' },
     { id: 'sapped', name: '削弱', icon: '🫠', color: '#8d6e63', desc: '武器精通「削弱」：下一次攻击检定具有劣势（攻击后自动去掉）。' },
     { id: 'slowed', name: '缓速', icon: '🐌', color: '#90a4ae', desc: '武器精通「缓速」：速度 −10 尺（不叠加）。' },
+    { id: 'halted', name: '阻拦', icon: '⛔', color: '#b71c1c', desc: '哨兵·阻拦：本回合剩余时间速度为 0。回合结束时自动去掉。' },
+    { id: 'lucky', name: '幸运', icon: '🍀', color: '#66bb6a', desc: '花了一个幸运点：下一次 D20 检定具有优势（攻击、由服务器掷的豁免用掉后自动去掉）。' },
     { id: 'disengaged', name: '撤离', icon: '🏃', color: '#80cbc4', desc: '执行了撤离动作：本回合的移动不会引发借机攻击。回合结束时自动去掉。' },
     { id: 'raging', name: '狂暴', icon: '😡', color: '#e53935', desc: '力量检定和豁免优势，近战伤害加值，对钝击、穿刺、挥砍伤害有抗性。' },
     { id: 'bardic', name: '诗人激励', icon: '🎵', color: '#7300ff', desc: '持有一枚诗人激励骰，可加到一次 d20 检定上。' },
@@ -185,6 +187,7 @@ function statusAttackMods(att, tgt, dist) {
     });
     if (statusList(att).some(function(s) { return s.id === 'vex' && s.vs === tgt.id; })) r.adv.push(aName + '侵扰（武器精通）');
     if (hasStatus(att, 'sapped')) r.dis.push(aName + '被削弱（武器精通）');
+    if (hasStatus(att, 'lucky')) r.adv.push(aName + '幸运');
     [['blinded', '目盲'], ['paralyzed', '麻痹'], ['petrified', '石化'], ['restrained', '束缚'], ['stunned', '震慑'], ['unconscious', '昏迷']].forEach(function(c) {
         if (hasStatus(tgt, c[0])) r.adv.push(tName + c[1]);
     });
