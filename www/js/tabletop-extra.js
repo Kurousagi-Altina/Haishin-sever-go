@@ -489,25 +489,114 @@ function onLogClick(e) {
 var tokMenuEl = null;
 function closeTokenMenu() { if (tokMenuEl) { tokMenuEl.remove(); tokMenuEl = null; } }
 
-function openTokenMenu(it, sx, sy) {
-    closeTokenMenu();
-    if (!it || it.kind !== 'token') return;
-    var edit = canEdit(it), h = '<div class="tm-title">' + escapeHtml(it.label || '棋子') + '</div>';
-    if (edit && it.hpMax > 0) h += '<div class="tm-row"><input class="tt-input narrow" data-tm-amt type="number" min="0" placeholder="数值">' +
-        '<button class="tt-btn small danger" data-tm="dmg">伤害</button><button class="tt-btn small" data-tm="heal">治疗</button></div>';
-    if (edit) h += '<div class="tm-row"><select class="tt-select" data-tm-status><option value="">＋ 添加状态…</option>' +
-        STATUS_DEFS.map(function(d) { return '<option value="' + d.id + '">' + d.icon + ' ' + d.name + '</option>'; }).join('') + '</select></div>';
-    h += '<button data-tm="target">' + (target.id === it.id ? '✖ 取消目标' : '🎯 设为目标') + '</button>';
-    if (edit && isCreatureToken(it)) h += '<button data-tm="init">' + (inInit(it) ? '🎲 重掷先攻' : '⚔ 加入先攻并掷骰') + '</button>';
-    if (edit) h += '<button data-tm="act">⚡ 以它行动…</button>';
-    if (it.sheet && sheets[it.sheet]) h += '<button data-tm="sheet">📜 查看角色卡</button>';
-    if (me.gm) h += '<button data-tm="hide">' + (it.hidden ? '👁 对玩家显示' : '🙈 对玩家隐藏') + '</button>' +
-        '<button data-tm="lock">' + (it.locked ? '🔓 解锁' : '🔒 锁定位置') + '</button>';
-    if (edit) h += '<button data-tm="del" class="tm-danger">🗑 删除</button>';
+
+// ===== 绘制的缩放 / 旋转（和棋子一样：选中后四角等比缩放、顶上的圆点旋转；直接改写坐标，撤销可回退）=====
+var DX_KEYS = ['x', 'y', 'points', 'r', 'width', 'size', 'shape'];
+function drawXformable(it) { return !!it && it.kind === 'draw' && !it.zone && !it.locked && canEdit(it); }
+
+function drawHandles(it) {
+    var b = itemBBox(it), pad = 6 / view.s, c = { x: (b.x0 + b.x1) / 2, y: (b.y0 + b.y1) / 2 };
+    var x0 = b.x0 - pad, y0 = b.y0 - pad, x1 = b.x1 + pad, y1 = b.y1 + pad;
+    var corners = [[x0, y0, -1, -1], [x1, y0, 1, -1], [x1, y1, 1, 1], [x0, y1, -1, 1]].map(function(q) { return { x: q[0], y: q[1], k: [q[2], q[3]] }; });
+    var top = { x: c.x, y: y0 };
+    return { id: it.id, c: c, a: 0, r: 6 / view.s, corners: corners, top: top, draw: true, box: [x0, y0, x1, y1],
+        rot: it.shape === 'text' ? null : { x: c.x, y: y0 - 28 / view.s } };
+}
+
+// 从原始几何 o 出发，绕 c 缩放 s 倍、旋转 deg 度，写回 it
+function drawXformApply(it, o, c, s, deg) {
+    var a = deg * Math.PI / 180, cos = Math.cos(a), sin = Math.sin(a);
+    var tf = function(x, y) { var dx = (x - c.x) * s, dy = (y - c.y) * s; return [c.x + dx * cos - dy * sin, c.y + dx * sin + dy * cos]; };
+    var ox = o.x || 0, oy = o.y || 0, anc = tf(ox, oy);
+    it.x = r1(anc[0]); it.y = r1(anc[1]);
+    if (o.shape === 'text') { it.size = r1(Math.max(4, num(o.size, gridSize() * 0.45) * s)); return; }
+    if (o.width != null) it.width = Math.max(0.5, r1(o.width * s));
+    if (o.shape === 'circle') { it.r = r1((o.r || 0) * s); return; }
+    var pts = o.points || [];
+    if (o.shape === 'cone') { // 顶点在 x,y，points[0] 是指向锥底中心的向量
+        it.points = pts.map(function(p) { return [r1((p[0] * cos - p[1] * sin) * s), r1((p[0] * sin + p[1] * cos) * s)]; });
+        return;
+    }
+    it.shape = o.shape;
+    if (o.shape === 'rect' && Math.round(deg) % 360 !== 0) { pts = shapePoints({ shape: 'rect', points: pts }); it.shape = 'poly'; } // 转过的矩形改成四边形
+    it.points = pts.map(function(p) { var q = tf(ox + p[0], oy + p[1]); return [r1(q[0] - it.x), r1(q[1] - it.y)]; });
+}
+
+function dxPatch(it) {
+    var p = { id: it.id };
+    DX_KEYS.forEach(function(k) { if (k in it) p[k] = it[k]; });
+    return p;
+}
+
+function dxStart(hh, start) {
+    var it = scene.items[hh.h.id], o = {};
+    DX_KEYS.forEach(function(k) { if (k in it) o[k] = JSON.parse(JSON.stringify(it[k])); });
+    var c = hh.h.c, p = hh.kind === 'rot' ? hh.h.rot : hh.corner;
+    return { type: 'dxform', mode: hh.kind === 'rot' ? 'rot' : 'scale', start: start, id: it.id, ids: idSet([it.id]), orig: o, c: c,
+        a0: Math.atan2(p.y - c.y, p.x - c.x), d0: Math.hypot(p.x - c.x, p.y - c.y) || 1, s: 1, deg: 0, lastSent: 0,
+        snap: snapshotItems([it.id], DX_KEYS) };
+}
+
+function dxMove(g, w, e) {
+    var it = scene.items[g.id];
+    if (!it) return;
+    if (g.mode === 'scale') {
+        g.s = Math.max(0.05, Math.hypot(w.x - g.c.x, w.y - g.c.y) / g.d0);
+        if (e.shiftKey) g.s = Math.max(0.25, Math.round(g.s * 4) / 4); // Shift：按 0.25 倍吸附
+    } else {
+        var deg = (Math.atan2(w.y - g.c.y, w.x - g.c.x) - g.a0) * 180 / Math.PI;
+        g.deg = e.altKey ? Math.round(deg) : Math.round(deg / 15) * 15; // 默认吸附 15°，Alt 自由
+    }
+    drawXformApply(it, g.orig, g.c, g.s, g.deg);
+    if (performance.now() - g.lastSent > 80) { g.lastSent = performance.now(); queueItems([dxPatch(it)]); }
+}
+
+function dxEnd(g) {
+    var it = scene.items[g.id];
+    if (!it || !g.start.moved) return;
+    queueItems([dxPatch(it)]);
+    pushUndo(g.snap || []);
+}
+
+function dxLabel(g) {
+    return g.mode === 'scale' ? '×' + (Math.round(g.s * 100) / 100) : (((g.deg % 360) + 360) % 360) + '°';
+}
+
+// 右键轻点 / 触屏长按：点到已选中的多个物件之一（或选区范围里的空地）→ 批量菜单；点到单个物件 → 它的菜单
+function rightTapMenu(w, sx, sy) {
+    var sel = selectedIds(), rh = hitTest(w, me.gm ? ['token', 'note', 'trigger', 'draw'] : ['token', 'draw']);
+    if (sel.length > 1 && (rh ? selected[rh.id] : pointInSelection(w, sel))) { openItemsMenu(sel, sx, sy); return true; }
+    if (rh) { openTokenMenu(rh, sx, sy); return true; }
+    return false;
+}
+
+function pointInSelection(w, ids) {
+    var b = null;
+    ids.forEach(function(id) {
+        var it = scene.items[id];
+        if (!it || it.kind === 'wall') return;
+        var r = itemBBox(it);
+        b = b ? { x0: Math.min(b.x0, r.x0), y0: Math.min(b.y0, r.y0), x1: Math.max(b.x1, r.x1), y1: Math.max(b.y1, r.y1) } : r;
+    });
+    return !!b && w.x >= b.x0 && w.x <= b.x1 && w.y >= b.y0 && w.y <= b.y1;
+}
+
+function itemKindName(it) {
+    if (it.kind === 'token') return it.label || '棋子';
+    if (it.kind === 'note') return '笔记' + (it.title ? '：' + it.title : '');
+    if (it.kind === 'trigger') return '触发区域' + (it.label ? '：' + it.label : '');
+    if (it.kind === 'fog') return '迷雾';
+    if (it.kind === 'wall') return '墙';
+    if (it.zone) return '区域：' + (it.label || '');
+    if (it.shape === 'text') return '文字：' + String(it.text || '').slice(0, 12);
+    return ({ pen: '画笔', line: '直线', rect: '矩形', circle: '圆形', cone: '锥形', poly: '多边形' })[it.shape] || '绘制';
+}
+
+function showItemMenu(h, sx, sy, data) {
     var el = document.createElement('div');
     el.className = 'token-menu';
     el.innerHTML = h;
-    el.dataset.id = it.id;
+    for (var k in data) el.dataset[k] = data[k];
     $('stage').appendChild(el);
     var st = $('stage');
     el.style.left = Math.max(4, Math.min(sx, st.clientWidth - el.offsetWidth - 4)) + 'px';
@@ -521,12 +610,95 @@ function openTokenMenu(it, sx, sy) {
         if (e.key === 'Enter' && e.target.dataset.tmAmt !== undefined) el.querySelector('[data-tm=dmg]').click();
         if (e.key === 'Escape') closeTokenMenu();
     });
+    return el;
+}
+
+// 框选后的批量菜单
+function openItemsMenu(ids, sx, sy) {
+    closeTokenMenu();
+    var items = ids.map(function(id) { return scene.items[id]; }).filter(Boolean);
+    var edit = items.filter(function(it) { return canEdit(it); });
+    var h = '<div class="tm-title">已选 ' + items.length + ' 个物件</div>';
+    if (edit.length) h += '<button data-tm="bdel" class="tm-danger">🗑 删除' + (edit.length < items.length ? '可删的 ' : '这 ') + edit.length + ' 个</button>';
+    if (me.gm) {
+        var anyShown = items.some(function(it) { return !it.hidden; }), anyFree = items.some(function(it) { return !it.locked; });
+        h += '<button data-tm="bhide">' + (anyShown ? '🙈 全部对玩家隐藏' : '👁 全部对玩家显示') + '</button>' +
+            '<button data-tm="block">' + (anyFree ? '🔒 全部锁定' : '🔓 全部解锁') + '</button>';
+    }
+    h += '<button data-tm="bnone">✖ 取消选择</button>';
+    showItemMenu(h, sx, sy, { ids: items.map(function(it) { return it.id; }).join(',') });
+}
+
+// 批量删除：删得多（> 3）或有在先攻里的，按钮要再点一次确认（内嵌浏览器会吞掉 confirm）
+function menuBatchDelete(b, ids) {
+    var del = ids.filter(function(id) { return scene.items[id] && canEdit(scene.items[id]); });
+    if (!del.length) return true;
+    var fighters = del.filter(function(id) { return inInit(scene.items[id]); }).length;
+    if ((del.length > 3 || fighters) && !b.dataset.armed) {
+        b.dataset.armed = '1';
+        b.textContent = '⚠ 再点一次删除 ' + del.length + ' 个' + (fighters ? '（' + fighters + ' 个在先攻里）' : '');
+        return false;
+    }
+    deleteItems(del);
+    selectOnly([]);
+    notice('已删除 ' + del.length + ' 个物件，Ctrl+Z 撤销');
+    return true;
+}
+
+function openTokenMenu(it, sx, sy) {
+    closeTokenMenu();
+    if (!it) return;
+    if (it.kind !== 'token') { openOtherMenu(it, sx, sy); return; }
+    var edit = canEdit(it), h = '<div class="tm-title">' + escapeHtml(it.label || '棋子') + '</div>';
+    if (edit && it.hpMax > 0) h += '<div class="tm-row"><input class="tt-input narrow" data-tm-amt type="number" min="0" placeholder="数值">' +
+        '<button class="tt-btn small danger" data-tm="dmg">伤害</button><button class="tt-btn small" data-tm="heal">治疗</button></div>';
+    if (edit) h += '<div class="tm-row"><select class="tt-select" data-tm-status><option value="">＋ 添加状态…</option>' +
+        STATUS_DEFS.map(function(d) { return '<option value="' + d.id + '">' + d.icon + ' ' + d.name + '</option>'; }).join('') + '</select></div>';
+    h += '<button data-tm="target">' + (target.id === it.id ? '✖ 取消目标' : '🎯 设为目标') + '</button>';
+    if (edit && isCreatureToken(it)) h += '<button data-tm="init">' + (inInit(it) ? '🎲 重掷先攻' : '⚔ 加入先攻并掷骰') + '</button>';
+    if (edit) h += '<button data-tm="act">⚡ 以它行动…</button>';
+    if (it.sheet && sheets[it.sheet]) h += '<button data-tm="sheet">📜 查看角色卡</button>';
+    if (me.gm) h += '<button data-tm="hide">' + (it.hidden ? '👁 对玩家显示' : '🙈 对玩家隐藏') + '</button>' +
+        '<button data-tm="lock">' + (it.locked ? '🔓 解锁' : '🔒 锁定位置') + '</button>';
+    if (edit) h += '<button data-tm="del" class="tm-danger">🗑 删除</button>';
+    var el = showItemMenu(h, sx, sy, { id: it.id });
     var amt = el.querySelector('[data-tm-amt]');
     if (amt && e2IsMouse()) amt.focus();
+}
+
+// 绘制 / 文字 / 区域 / 笔记 / 触发区域的右键菜单
+function openOtherMenu(it, sx, sy) {
+    var edit = canEdit(it), h = '<div class="tm-title">' + escapeHtml(itemKindName(it)) + '</div>';
+    if (it.kind === 'draw' && it.zone && edit) h += '<button data-tm="zone">⚡ 对区域内的生物结算</button>';
+    if (it.kind === 'draw' && edit && !it.zone && !it.locked) h += '<div class="tm-hint">' + (it.shape === 'text' ? '选中后拖四角缩放' : '选中后拖四角缩放、拖顶上的圆点旋转') + '</div>';
+    if (me.gm && it.kind === 'draw') h += '<button data-tm="hide">' + (it.hidden ? '👁 对玩家显示' : '🙈 对玩家隐藏') + '</button>';
+    if (me.gm) h += '<button data-tm="lock">' + (it.locked ? '🔓 解锁' : '🔒 锁定位置') + '</button>';
+    if (edit && it.kind === 'draw') h += '<button data-tm="top">⬆ 移到最上层</button><button data-tm="bottom">⬇ 移到最下层</button>';
+    if (edit) h += '<button data-tm="del" class="tm-danger">🗑 删除</button>';
+    else h += '<div class="tm-hint">这是别人画的，不能修改</div>';
+    showItemMenu(h, sx, sy, { id: it.id });
 }
 function e2IsMouse() { return !window.matchMedia || !window.matchMedia('(pointer: coarse)').matches; }
 
 function onTokenMenu(e) {
+    if (tokMenuEl && tokMenuEl.dataset.ids) { // 批量菜单
+        var bb = e.type === 'click' && e.target.closest('[data-tm]');
+        if (!bb) return;
+        var ids = tokMenuEl.dataset.ids.split(',').filter(function(id) { return scene.items[id]; }), bk = bb.dataset.tm;
+        if (bk === 'bdel' && !menuBatchDelete(bb, ids)) return;
+        if (bk === 'bhide') {
+            var hideAll = ids.some(function(id) { return !scene.items[id].hidden; });
+            patchItems(ids.map(function(id) { return { id: id, hidden: hideAll || null }; }));
+        }
+        if (bk === 'block') {
+            var lockAll = ids.some(function(id) { return !scene.items[id].locked; });
+            patchItems(ids.map(function(id) { return { id: id, locked: lockAll || null }; }));
+        }
+        if (bk === 'bnone') selectOnly([]);
+        closeTokenMenu();
+        requestRender();
+        return;
+    }
     var it = tokMenuEl && scene.items[tokMenuEl.dataset.id];
     if (!it) { closeTokenMenu(); return; }
     if (e.type === 'change' && e.target.dataset.tmStatus !== undefined) {
@@ -547,6 +719,11 @@ function onTokenMenu(e) {
     else if (act2 === 'sheet') openSheet(it.sheet, it.id);
     else if (act2 === 'hide') patchItems([{ id: it.id, hidden: !it.hidden || null }]);
     else if (act2 === 'lock') patchItems([{ id: it.id, locked: !it.locked || null }]);
+    else if (act2 === 'zone') zoneRetrigger(it);
+    else if (act2 === 'top' || act2 === 'bottom') {
+        var zs = sortedItems().filter(function(x) { return x.id !== it.id && x.kind === it.kind; }).map(function(x) { return x.z || 0; });
+        patchItems([{ id: it.id, z: act2 === 'top' ? (zs.length ? Math.max.apply(null, zs) + 1 : 0) : (zs.length ? Math.min.apply(null, zs) - 1 : 0) }]);
+    }
     else if (act2 === 'del') {
         if (inInit(it) && !confirm('「' + (it.label || '棋子') + '」在先攻里，确定删除？')) return;
         deleteItems([it.id]);

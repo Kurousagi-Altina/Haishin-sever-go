@@ -482,6 +482,7 @@ details.feature summary { cursor: pointer; font-size: 13px; }
 .token-menu > button { text-align: left; background: none; border: none; color: #ddd; padding: 6px 8px; border-radius: 5px; cursor: pointer; font-size: 13px; }
 .token-menu > button:hover { background: #2f333d; color: #fff; }
 .token-menu > button.tm-danger { color: #ef9a9a; }
+.token-menu .tm-hint { color: #9aa0a6; font-size: 11px; padding: 2px 8px 4px; }
 
 .action-bar .ab-size { display: inline-flex; align-items: center; gap: 4px; margin-right: 10px; white-space: nowrap; }
 
