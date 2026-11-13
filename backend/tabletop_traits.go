@@ -368,6 +368,13 @@ func (room *TTRoom) traitsOf(it map[string]interface{}) *ttTraits {
 		}
 		t.saveAdv = append(t.saveAdv, ttSaveAdv{ab: "all", vs: "poisoned", src: "构装坚韧"})
 	}
+	if race, _ := sh["race"].(string); autoTr && sh != nil && (strings.Contains(race, "龙裔") || strings.Contains(strings.ToLower(race), "dragonborn")) {
+		if dt := ttDragonAncestry(race); dt != "" { // 龙裔·伤害抗性：对血统的伤害类型有抗性
+			if _, ok := t.resist[dt]; !ok {
+				t.resist[dt] = "龙裔血统"
+			}
+		}
+	}
 	if conds["giantmight"] { // 符文骑士·巨人之力：力量豁免优势
 		t.saveAdv = append(t.saveAdv, ttSaveAdv{ab: "str", src: "巨人之力"})
 	}
@@ -1331,3 +1338,13 @@ func ttSheetProf(sh map[string]interface{}) int {
 
 // ttElemental: the damage types 吸收元素 can absorb.
 var ttElemental = map[string]bool{"强酸": true, "寒冷": true, "火焰": true, "闪电": true, "雷鸣": true}
+
+// ttDragonAncestry: 龙裔种族文字里的血统颜色 → 伤害类型（和 tabletop-class.js 的 DRAGON_TYPES 一致）
+func ttDragonAncestry(race string) string {
+	for _, p := range [][2]string{{"黑龙", "强酸"}, {"蓝龙", "闪电"}, {"黄铜", "火焰"}, {"青铜", "闪电"}, {"赤铜", "强酸"}, {"铜龙", "强酸"}, {"金龙", "火焰"}, {"绿龙", "毒素"}, {"红龙", "火焰"}, {"银龙", "寒冷"}, {"白龙", "寒冷"}} {
+		if strings.Contains(race, p[0]) {
+			return p[1]
+		}
+	}
+	return ""
+}

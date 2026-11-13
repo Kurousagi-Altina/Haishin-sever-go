@@ -56,8 +56,63 @@ function econAfterAction(a, caster) {
     patchItems([{ id: caster.id, econ: e }]);
 }
 
+// 用了「（充能 5~6）」这类能力：扣掉棋子上的「充能·X」计数，服务器在它回合开始时掷充能；还没充好只提示
+function rechargeAfterAction(a, caster) {
+    if (!caster || !canEdit(caster) || !hintOn('hintLegend')) return;
+    var base = String(a.name || '').replace(/[（(]\s*充能[^）)]*[)）]/, '').replace(/（借机）$/, '').trim();
+    if (!base) return;
+    var res = JSON.parse(JSON.stringify(caster.res || [])), hit = null;
+    res.forEach(function(r) {
+        var nm = /^充能·/.test(r.name || '') ? r.name.slice(3) : '';
+        if (!hit && nm && (base.indexOf(nm) >= 0 || nm.indexOf(base) >= 0)) hit = r;
+    });
+    if (!hit) return;
+    if (num(hit.cur, 0) <= 0) { notice('「' + base + '」还没充能好（只提示，这次照样结算了）', true, 5000); return; }
+    hit.cur = num(hit.cur, 0) - 1;
+    patchItems([{ id: caster.id, res: res }]);
+    if (combatState()) notice('「' + base + '」已用掉，它回合开始时自动掷充能', false, 3500);
+}
+
+// 行动框：这次的消耗（动作 / 附赠 / 反应）本回合已经用过、或这回合已用法术位施过法 → 提醒（不拦）
+function econWarnSync() {
+    var el = $('acEconWarn');
+    if (!el) return;
+    var w = [], c = act && act.caster, o = c && econOwner(c), e = (o && o.econ) || {}, cost = $('acCost').value;
+    if (o && hintOn('hintEcon') && combatState() && inInit(o)) {
+        if (cost === 'a' && e.a) w.push('本回合的动作已经用过');
+        if (cost === 'b' && e.b) w.push('本回合的附赠动作已经用过');
+        if (cost === 'r' && e.r) w.push('反应已经用过（到它下回合开始才恢复）');
+        if (act.a && act.a.spellLevel > 0 && $('acUseSlot') && $('acUseSlot').checked && e.slot) w.push('本回合已用法术位施过一次法（2024：每回合只能用法术位施一个法术）');
+    }
+    el.textContent = w.length ? '⚠ ' + w.join('；') + '（只提示，可以照常结算）' : '';
+    el.style.display = w.length ? '' : 'none';
+}
+
+// 记录到达时：自己的角色可以借机攻击、要做专注豁免 → 弹提示（只给控制它的玩家，GM 看记录）
+function fightNotice(entry) {
+    if (!entry || me.gm) return;
+    var own = function(id) { var t = scene.items[id]; return t && t.owner && t.owner === me.name ? t : null; };
+    var p = String(entry.ref || '').split(':');
+    if (p[0] === 'oa' && own(p[1])) { var mv = scene.items[p[2]]; notice('⚔ ' + (own(p[1]).label || '') + ' 可以借机攻击' + (mv ? '「' + (mv.label || '') + '」' : '') + '（在记录里点「借机攻击」，用掉反应）', false, 9000); }
+    var r = entry.act;
+    (r && r.targets || []).forEach(function(t) {
+        var m = String(t.note || '').match(/(?:需专注豁免|专注豁免改为) DC (\d+)/), tok = m && own(t.id);
+        if (tok) notice('🧠 ' + (tok.label || '') + ' 受伤了：需要专注豁免 DC ' + m[1] + '（在记录里点「专注豁免」）', false, 9000);
+    });
+}
+
 // ===================== 2. 借机攻击 =====================
-function tokenSide(t) { return t.side || (t.owner ? 'ally' : 'enemy'); }
+// 敌我：棋子上手动设的阵营 > 玩家控制 / 关联玩家角色卡（GM 代管的队友也算）/ 玩家角色的随从 = 友方 > 其他 = 敌方
+function tokenSide(t) {
+    if (!t) return 'enemy';
+    if (t.side) return t.side;
+    if (t.owner || isPC(t)) return 'ally';
+    var sh = t.sheet && sheets[t.sheet], m = sh && sh.kind === 'summon' && sh.master && sheets[sh.master];
+    return m && m.kind === 'pc' ? 'ally' : 'enemy';
+}
+function hostileTo(a, b) { var sa = tokenSide(a), sb = tokenSide(b); return sa !== sb && sa !== 'neutral' && sb !== 'neutral'; }
+// 已经死了（玩家角色倒地只是昏迷，不算）：不再是攻击 / 范围 / 后续效果的目标
+function isDeadToken(t) { return !!t && (hasStatus(t, 'dead') || (!isPC(t) && t.hpMax > 0 && num(t.hp, t.hpMax) <= 0)); }
 
 function canReact(t) {
     if (hasStatus(t, 'dead') || (t.hpMax > 0 && num(t.hp, t.hpMax) <= 0)) return false;
@@ -145,9 +200,11 @@ function startOA(enemyId, moverId) {
     act.caster = en;
     $('acCaster').textContent = en.label || '未命名棋子';
     act.a.cost = 'r';
+    act.a.oa = true;
     act.a.name = (act.a.name || '攻击') + '（借机）';
     $('acName').value = act.a.name;
     if ($('acCost')) $('acCost').value = 'r';
+    econWarnSync();
     act.presetTargets = scene.items[moverId] ? [moverId] : [];
 }
 
@@ -264,6 +321,7 @@ function statusWithTurnEffects(st, a) {
     if (a.repeatSave && a.kind === 'save' && a.save && a.dc) st.save = { ab: a.save, dc: a.dc, when: 'end' };
     var d = String(a.dot || '').trim().match(/^(\d*d\d+(?:[+\-]\d+)?)\s*(\S*)/i);
     if (d) st.dot = { dice: d[1], type: (d[2] || '').replace(/伤害$/, ''), when: 'start' };
+    if (a.until === 'srcEnd' || a.until === 'srcStart') st.exp = { when: a.until === 'srcEnd' ? 'end' : 'start' }; // 服务器记下施放者和回合
     return st;
 }
 
@@ -338,6 +396,7 @@ function onMultiBarClick(e) {
         castFromSheet(sh, p.atk != null ? { kind: 'atk', idx: String(p.atk) } : { kind: 'entry', sec: String(p.sec), idx: String(p.idx) });
     }
     if (p.left > 0) p.left--;
+    if (multi && multi.title && multi.plan.every(function(x) { return !(x.left > 0); })) multi = null; // 疾风连击等次数打完：收起
     renderMultiBar();
 }
 
@@ -345,7 +404,7 @@ function onMultiBarClick(e) {
 // 自动化分类（都默认开，关掉的写 false 存进房间设置）；规则和完整清单见 docs/战斗规则.md 第 13 节
 var AUTO_GROUPS = [
     { title: '判定与结算', items: [
-        ['autoTraits', '按特性名自动识别判定修正', '角色卡上的特性名自动生效：反射闪避、魔法抗性、矮人体魄、守护灵光、战俑构装坚韧、战争化身等。关掉后只用卡上手动加的「判定修正」'],
+        ['autoTraits', '按特性名自动识别判定修正', '角色卡上的特性名自动生效：反射闪避、魔法抗性、矮人体魄、守护灵光、战俑构装坚韧、龙裔血统抗性、战争化身等。关掉后只用卡上手动加的「判定修正」'],
         ['autoCond', '状态对攻击的影响', '攻击时按双方状态自动给优势 / 劣势 / 近身自动重击，以及祝福 / 灾祸 / 力竭的加减值'],
         ['autoCover', '自动掩护', '确认目标时按墙、门窗和挡路的生物自动算半身 / 四分之三 / 完全掩护']] },
     { title: '回合流程', items: [
@@ -767,7 +826,7 @@ function counterBtns(e, r) {
     var caster = r.casterId && scene.items[r.casterId];
     var list = sortedItems().filter(function(t) {
         return t.kind === 'token' && t.id !== r.casterId && (me.gm || (t.owner && t.owner === me.name)) && isCreatureToken(t) &&
-            canReact(t) && tokenHasSpell(t, '法术反制') && (!caster || creatureDist(t, caster) <= 60);
+            canReact(t) && tokenHasSpell(t, '法术反制') && (!caster || (hostileTo(t, caster) && creatureDist(t, caster) <= 60));
     });
     if (!list.length) return '';
     return '<div class="act-target">⛔ ' + list.map(function(t) {

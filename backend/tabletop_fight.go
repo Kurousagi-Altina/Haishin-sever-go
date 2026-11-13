@@ -203,6 +203,7 @@ func (room *TTRoom) turnStart(sc *TTScene, it map[string]interface{}) {
 	}
 	id, _ := it["id"].(string)
 	label := ttItemLabel(it)
+	room.expireBySource(sc, id, "start")
 	if room.setting("hintTurn", true) {
 		if ttStatusIDs(it)["dodging"] { // 闪避持续到自己下个回合开始
 			ttRemoveStatus(it, "dodging")
@@ -277,6 +278,7 @@ func (room *TTRoom) turnEnd(sc *TTScene, it map[string]interface{}, order []map[
 	}
 	id, _ := it["id"].(string)
 	label := ttItemLabel(it)
+	room.expireBySource(sc, id, "end")
 	if room.setting("hintTurn", true) {
 		if ttStatusIDs(it)["disengaged"] { // 撤离只在本回合有效
 			ttRemoveStatus(it, "disengaged")
@@ -755,4 +757,46 @@ func (room *TTRoom) applyFight(u ttUser, gm bool, req *ttOpRequest) (int, string
 		room.addLog(e)
 	}
 	return 0, ""
+}
+
+// ttCombatTurnKey: 当前回合的标识「轮数:行动者」
+func ttCombatTurnKey(c map[string]interface{}) string {
+	r, _ := ttNum(c["round"])
+	t, _ := c["turn"].(string)
+	return strconv.Itoa(int(r)) + ":" + t
+}
+
+// expireBySource: 施放者 src 的回合开始 / 结束时，移除它施加的「直到它的下一回合开始 / 结束」的状态。
+// 状态 exp = {id: 施放者, when: start|end, k: 施加时的回合}；在施加的同一个回合里不会结束（那是「下一」回合）。
+func (room *TTRoom) expireBySource(sc *TTScene, src, when string) {
+	c, _ := sc.Props["combat"].(map[string]interface{})
+	if c == nil || src == "" {
+		return
+	}
+	now := ttCombatTurnKey(c)
+	var changed []map[string]interface{}
+	for _, t := range sc.Items {
+		if t["kind"] != "token" {
+			continue
+		}
+		removed := false
+		for _, st := range ttStatusMaps(t) {
+			ex, _ := st["exp"].(map[string]interface{})
+			if ex == nil || ex["id"] != src || ex["when"] != when {
+				continue
+			}
+			if k, _ := ex["k"].(string); when == "end" && k == now {
+				continue // 本回合刚施加的：要到下一回合结束
+			}
+			name, _ := st["name"].(string)
+			ttRemoveStatusNamed(t, name)
+			removed = true
+		}
+		if removed {
+			changed = append(changed, t)
+		}
+	}
+	if len(changed) > 0 {
+		room.broadcastItems(changed)
+	}
 }

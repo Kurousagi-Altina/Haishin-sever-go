@@ -475,6 +475,7 @@ function handleMsg(m) {
         appendLog(m.entry, true);
         onTrigLog(m.entry);
         pendingSaveNotice(m.entry); // 手动豁免：提醒自己的角色要掷
+        fightNotice(m.entry);       // 借机攻击 / 专注豁免：提醒控制它的玩家
         break;
     case 'users':
         users = m.users;
@@ -553,6 +554,9 @@ function handleFx(m) {
     } else if (fx.t === 'banner') {
         var bs = users.filter(function(u) { return u.name === m.from; })[0];
         if (bs && bs.gm) showBanner(String(fx.text || '').slice(0, 40), fx.color);
+    } else if (fx.t === 'initask') { // GM 开战：提示自己掷先攻的玩家
+        var ia = users.filter(function(u) { return u.name === m.from; })[0];
+        if (ia && ia.gm) promptManualInit();
     } else if (fx.t === 'focus') { // GM：全员看这里
         var sender = users.filter(function(u) { return u.name === m.from; })[0];
         if (sender && sender.gm && isFinite(fx.x) && isFinite(fx.y)) {
@@ -983,7 +987,7 @@ function pasteItems() {
         c.x = (c.x || 0) + dx;
         c.y = (c.y || 0) + dy;
         c.z = z + i;
-        ['owner', 'init', 'initRolled', 'initTie', 'initHidden', 'follow', 'ds'].forEach(function(k) { delete c[k]; });
+        ['owner', 'init', 'initRolled', 'initTie', 'initHidden', 'initD20', 'initB', 'follow', 'ds'].forEach(function(k) { delete c[k]; });
         return c;
     });
     createItems(copies);

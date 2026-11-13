@@ -173,6 +173,19 @@ function changeSlot(sh, idx, delta) {
     sh.slots = slots;
     op({ op: 'sheet', sheet: { id: sh.id, slots: slots } });
     renderSheets();
+    syncSlotRes(sh, s.level, num(s.cur, 0));
+}
+
+// 放棋子时复制到棋子资源里的「N环法术位」跟着角色卡变
+function syncSlotRes(sh, level, cur) {
+    var name = level + '环法术位', patches = [];
+    sortedItems().forEach(function(t) {
+        if (t.kind !== 'token' || t.sheet !== sh.id || !canEdit(t) || !t.res) return;
+        var res = JSON.parse(JSON.stringify(t.res)), ch = false;
+        res.forEach(function(r) { if (r.name === name && num(r.cur, -1) !== cur) { r.cur = cur; ch = true; } });
+        if (ch) patches.push({ id: t.id, res: res });
+    });
+    if (patches.length) patchItems(patches);
 }
 
 function changeResource(sh, idx, delta) {
@@ -408,9 +421,13 @@ function placeSheetToken(sh, asset) {
     summonPlaceAdjust(sh, it);
     if (me.gm && gmPref('ttPlaceHidden', true) && !it.owner && sh.kind !== 'summon') it.hidden = true; // GM 从资料拉出来的棋子默认先对玩家隐藏（已分配给玩家的角色除外）
     var joining = me.gm && combatState() && sh.kind !== 'item' && !(sh.kind === 'summon' && sh.initMode !== 'own'); // 跟随主控的随从在主控回合行动，不自动掷先攻
+    var prevTok = sortedItems().filter(function(t) { return t.sheet === sh.id && t.kind === 'token'; })[0];
+    if (prevTok && prevTok.manualInit) it.manualInit = true; // 同一角色的其他棋子设了自己掷先攻
+    if (prevTok && prevTok.manualSave) it.manualSave = true;
     if (joining) { it.init = 0; it.initTie = Math.random(); }
     createItems([it]);
-    if (joining) setTimeout(function() { rollInit([it.id]); }, 600); // 战斗中放下的单位自动掷先攻加入
+    if (joining && !it.manualInit) setTimeout(function() { rollInit([it.id]); }, 600); // 战斗中放下的单位自动掷先攻加入
+    else if (joining) sendFx({ t: 'initask' }); // 自己掷先攻的角色：提示玩家
     setTool('select');
     selectOnly([it.id]);
     notice('已放置「' + it.label + '」' + (it.hidden ? '（对玩家隐藏，在属性面板取消勾选「对玩家隐藏」即可公开）' : '') + '，可把资产库里的图片拖到棋子上更换头像', false, 5000);
