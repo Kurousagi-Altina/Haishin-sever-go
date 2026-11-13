@@ -898,6 +898,11 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 			return st, msg
 		}
 
+	case "action.resolve": // 手动豁免：玩家自己掷完后结算（tabletop_traits.go）
+		if st, msg := room.resolveManualSave(u, gm, req.Text, req.Target, req.Mode); st != 0 {
+			return st, msg
+		}
+
 	case "action.undo":
 		if st, msg := room.undoAction(u, req.Text); st != 0 {
 			return st, msg
@@ -1787,6 +1792,9 @@ var ttSettingKeys = map[string]bool{
 	"timeStop": true, "music": true,
 	// 战斗提示开关（tabletop_fight.go，默认开）
 	"hintOA": true, "hintEcon": true, "hintTurn": true, "hintLegend": true, "hintMastery": true, "hintClass": true, "hintReact": true, "hintFeat": true,
+	// 自动化分类（www/js/tabletop-fight.js AUTO_GROUPS）：判定、种族、分职业
+	"autoTraits": true, "autoCond": true, "autoCover": true, "hintRace": true,
+	"hcFighter": true, "hcMonk": true, "hcCleric": true, "hcDruid": true, "hcWizard": true, "hcArtificer": true, "hcOther": true,
 }
 
 func ttRequestToken(r *http.Request) string {

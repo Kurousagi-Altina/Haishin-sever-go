@@ -472,6 +472,7 @@ function handleMsg(m) {
         if (logEntries.length > 300) logEntries.shift();
         appendLog(m.entry, true);
         onTrigLog(m.entry);
+        pendingSaveNotice(m.entry); // 手动豁免：提醒自己的角色要掷
         break;
     case 'users':
         users = m.users;

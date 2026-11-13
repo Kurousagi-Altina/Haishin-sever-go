@@ -6,6 +6,7 @@
 // 5. 多重攻击：怪物卡上一键列出这次要做的攻击
 
 function hintOn(key) { return roomSetting(key, true) !== false; }
+function clsOn(key) { return hintOn('hintClass') && hintOn(key); } // 职业特性：总开关 + 分职业开关
 
 // ===================== 1. 动作经济 =====================
 var ECON = [['a', '动作'], ['b', '附赠'], ['r', '反应']];
@@ -172,7 +173,8 @@ function fightTargetBtns(e, t, r) {
     if (!t.id || !e.id) return '';
     var mb = masteryBtns(e, t, r) + sneakBtns(e, t, r) + shoveBtns(e, t, r) + featAtkBtns(e, t, r); // 武器精通 / 偷袭 / 推撞 / 顺势斩 / 阻拦（出手的人看得到）
     var tok = scene.items[t.id], ic = interceptBtns(e, t, r) + cxTargetBtns(e, t, r); // 拦截、职业特性（各自判断谁看得到）
-    if (!tok || !(me.gm || (tok.owner && tok.owner === me.name))) return mb + ic;
+    var ps = pendingSaveHtml(e, t, r); // 手动豁免：提示要掷什么（tabletop-class.js）
+    if (!tok || !(me.gm || (tok.owner && tok.owner === me.name))) return ps + mb + ic;
     var h = '', m = String(t.note || '').match(/(?:需专注豁免|专注豁免改为) DC (\d+)/);
     if (m && hasStatus(tok, 'concentration') && !logEntries.some(function(x) { return x.ref === 'conc:' + e.id + ':' + t.id; }))
         h += '<button class="tt-btn small react-btn" data-concsave="' + escapeHtml(t.id) + '" data-dc="' + m[1] + '" data-log="' + escapeHtml(e.id) + '" title="由服务器掷体质豁免，失败自动结束专注">🎲 专注豁免</button>';
@@ -182,7 +184,7 @@ function fightTargetBtns(e, t, r) {
             h += '<button class="tt-btn small react-btn" data-react="legendary" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) +
                 '" data-react-ref="' + escapeHtml(e.id + ':' + t.id) + '" title="扣一次传奇抗性，把这次豁免改为成功并重新结算伤害和状态">传奇抗性（剩 ' + num(lr.cur, 0) + '）</button>';
     }
-    return mb + h + reactSpellBtns(e, t, r, tok) + featDefBtns(e, t, r, tok) + ic; // 炼狱叱喝 / 吸收元素 / 招架 / 介入盾牌 / 拦截
+    return ps + mb + h + reactSpellBtns(e, t, r, tok) + featDefBtns(e, t, r, tok) + ic; // 炼狱叱喝 / 吸收元素 / 招架 / 介入盾牌 / 拦截
 }
 
 function fightLogClick(el) {
@@ -195,6 +197,7 @@ function fightLogClick(el) {
     if (d.cs || d.hr) return reactSpellClick(el);
     if (d.ft) return featClick(el);
     if (d.cx) return cxClick(el);
+    if (d.psv) return pendingSaveClick(el);
     if (d.oaspell) return warCasterClick(el);
     if (d.sa) return sneakClick(el);
     if (d.shove) { masteryDone[d.log + ':' + d.shove + ':push'] = true; el.remove(); pushToken(d.shove, d.from, 5); return true; }
@@ -339,19 +342,47 @@ function onMultiBarClick(e) {
 }
 
 // ===================== 设置：战斗提示开关 =====================
-var HINT_KEYS = [['hintOA', '借机攻击提示', '拖动棋子离开敌人触及范围时提示'], ['hintEcon', '动作经济', '先攻条显示动作 / 附赠 / 反应，结算时自动勾选'],
-    ['hintTurn', '回合开始 / 结束效果', '闪避 / 撤离自动结束，重复豁免和持续伤害提示'], ['hintLegend', '传奇动作与充能', '传奇动作提示与恢复、传奇抗性按钮、充能自动掷骰'],
-    ['hintMastery', '武器精通', '攻击命中 / 失手后按武器精通给出后续按钮（侵扰、削弱、失衡、推离、擦掠、横扫、缓速）'],
-    ['hintClass', '职业特性', '偷袭按钮、狂暴伤害自动加值、属性面板里的狂暴 / 回气 / 动作如潮 / 诗人激励'],
-    ['hintReact', '反应法术', '施法后的法术反制按钮，受伤后的炼狱叱喝 / 吸收元素按钮'],
-    ['hintFeat', '专长', '巨武器大师加伤 / 顺势斩、长柄打击、哨兵、神射手 / 强弩专家 / 擒抱者的判定修正、战地施法者、幸运、防御式决斗、拦截、介入盾牌']];
+// 自动化分类（都默认开，关掉的写 false 存进房间设置）；规则和完整清单见 docs/战斗规则.md 第 13 节
+var AUTO_GROUPS = [
+    { title: '判定与结算', items: [
+        ['autoTraits', '按特性名自动识别判定修正', '角色卡上的特性名自动生效：反射闪避、魔法抗性、矮人体魄、守护灵光、战俑构装坚韧、战争化身等。关掉后只用卡上手动加的「判定修正」'],
+        ['autoCond', '状态对攻击的影响', '攻击时按双方状态自动给优势 / 劣势 / 近身自动重击，以及祝福 / 灾祸 / 力竭的加减值'],
+        ['autoCover', '自动掩护', '确认目标时按墙、门窗和挡路的生物自动算半身 / 四分之三 / 完全掩护']] },
+    { title: '回合流程', items: [
+        ['hintEcon', '动作经济', '先攻条显示动作 / 附赠 / 反应，结算时自动勾选；额外攻击按攻击动作计数'],
+        ['hintTurn', '回合开始 / 结束效果', '闪避 / 撤离 / 疾走自动结束，「直到回合结束 / 开始」的状态自动去掉，重复豁免和持续伤害提示'],
+        ['hintLegend', '传奇动作与充能', '传奇动作提示与恢复、传奇抗性按钮、充能自动掷骰']] },
+    { title: '战斗提示', items: [
+        ['hintOA', '借机攻击', '拖动棋子离开敌人触及范围时提示（哨兵、长柄武器大师、战地施法者也在这里）'],
+        ['hintMastery', '武器精通', '攻击命中 / 失手后按武器精通给出后续按钮（侵扰、削弱、失衡、推离、擦掠、横扫、缓速）'],
+        ['hintReact', '反应法术', '施法后的法术反制按钮，受伤后的炼狱叱喝 / 吸收元素按钮']] },
+    { title: '职业特性', master: ['hintClass', '职业特性（总开关）', '关掉后下面所有职业的按钮和自动处理都停止'], items: [
+        ['hcFighter', '战士 / 符文骑士', '回气、动作如潮、战术思维、战术转进、不屈、究明攻击；巨人之力、各种符文、符文之盾'],
+        ['hcMonk', '武僧 / 四象武者', '功力、武艺、疾风连击、坚强防御、疾步如风、运转周天、拨挡反弹、震慑拳、圆融自在；元素同调、元素爆破拳'],
+        ['hcCleric', '牧师 / 战争领域', '神圣火花、驱散亡灵、神圣打击、强力施法、神圣干预；战争祭司、导引打击、战神祝福'],
+        ['hcDruid', '德鲁伊 / 星辰结社', '荒野变形、荒野伙伴、荒野复苏、原力蛮击；星图、星耀形态（巨龙座专注豁免）、宇宙预兆'],
+        ['hcWizard', '法师 / 预言师', '奥术回想、招牌法术；预兆、专业预言、天眼通'],
+        ['hcArtificer', '奇械师 / 魔炮师', '灵光一闪；魔能炮台、奥法火器、要塞阵地'],
+        ['hcOther', '野蛮人 / 游荡者 / 吟游诗人', '狂暴（狂暴伤害自动加）、偷袭、诗人激励']] },
+    { title: '专长与种族', items: [
+        ['hintFeat', '专长', '巨武器大师 / 巨武器战斗、长柄武器大师、哨兵、神射手 / 强弩专家 / 擒抱者、战地施法者、幸运、防御式决斗、拦截、盾牌大师、徒手战斗 / 酒馆斗殴者'],
+        ['hintRace', '种族特性', '龙裔吐息武器 / 龙族飞翼、化兽者化兽 / 迅捷']] }
+];
+var HINT_KEYS = [];
+AUTO_GROUPS.forEach(function(g) { if (g.master) HINT_KEYS.push(g.master); HINT_KEYS = HINT_KEYS.concat(g.items); });
 
 function renderFightHints() {
     var box = $('fightHintBox');
     if (!box || !me.gm) return;
-    box.innerHTML = '<h5>战斗提示</h5>' + HINT_KEYS.map(function(k) {
-        return '<div class="set-row"><label title="' + escapeHtml(k[2]) + '">' + k[1] + '</label><input type="checkbox" data-hint="' + k[0] + '"' + (hintOn(k[0]) ? ' checked' : '') + '></div>';
-    }).join('') + '<div class="tt-hint">都只是提示，不会拦住任何操作；规则说明见项目里的 docs/战斗规则.md。</div>';
+    var row = function(k, sub, off) {
+        return '<div class="set-row"' + (sub ? ' style="padding-left:14px;' + (off ? 'opacity:.5;' : '') + '"' : '') + '><label title="' + escapeHtml(k[2]) + '">' + k[1] + '</label>' +
+            '<input type="checkbox" data-hint="' + k[0] + '"' + (hintOn(k[0]) ? ' checked' : '') + '></div>';
+    };
+    box.innerHTML = '<h5>战斗自动化</h5>' + AUTO_GROUPS.map(function(g) {
+        var off = g.master && !hintOn(g.master[0]);
+        return '<div class="tt-hint" style="margin:8px 0 2px;font-weight:bold;">' + g.title + '</div>' + (g.master ? row(g.master, false) : '') +
+            g.items.map(function(k) { return row(k, !!g.master, off); }).join('');
+    }).join('') + '<div class="tt-hint">都只是辅助，不会拦住任何操作；每个角色是否自动掷豁免在它的属性面板里设置。规则说明见项目里的 docs/战斗规则.md。</div>';
 }
 
 function initFight() {
@@ -591,20 +622,20 @@ function classRowHtml(it) {
     var sh = it.sheet && sheets[it.sheet];
     if (!sh || !canEdit(it) || !hintOn('hintClass')) return '';
     var b = [], bar = classLevel(sh, '野蛮人'), fig = classLevel(sh, '战士'), bard = classLevel(sh, '吟游诗人');
-    if (sheetHasEntry(sh, /狂暴|rage/i) && (bar || /狂暴/.test(JSON.stringify(sh.features || [])))) {
+    if (clsOn('hcOther') && sheetHasEntry(sh, /狂暴|rage/i) && (bar || /狂暴/.test(JSON.stringify(sh.features || [])))) {
         var lvB = bar || parseInt(sh.level, 10) || 1;
         b.push(hasStatus(it, 'raging') ? '<button class="tt-btn small" data-act="cf-rageend">结束狂暴</button>' :
             '<button class="tt-btn small" data-act="cf-rage" title="附赠动作：钝穿挥抗性、力量检定与豁免优势、力量近战加伤 +' + byLevel(CF.rageDmg, lvB) + '">😡 狂暴（' + featLeft(it, '狂暴', byLevel(CF.rageUses, lvB)) + '）</button>');
     }
-    if (sheetHasEntry(sh, /回气|secondwind/i)) {
+    if (clsOn('hcFighter') && sheetHasEntry(sh, /回气|secondwind/i)) {
         var lvF = fig || parseInt(sh.level, 10) || 1;
         b.push('<button class="tt-btn small" data-act="cf-wind" title="附赠动作：恢复 1d10 + 战士等级（' + lvF + '）生命">回气（' + featLeft(it, '回气', byLevel(CF.windUses, lvF)) + '）</button>');
     }
-    if (sheetHasEntry(sh, /动作如潮|actionsurge/i)) {
+    if (clsOn('hcFighter') && sheetHasEntry(sh, /动作如潮|actionsurge/i)) {
         var lvS = fig || parseInt(sh.level, 10) || 2;
         b.push('<button class="tt-btn small" data-act="cf-surge" title="本回合额外获得一个动作（不能是魔法动作）">动作如潮（' + featLeft(it, '动作如潮', byLevel(CF.surgeUses, Math.max(2, lvS))) + '）</button>');
     }
-    if (sheetHasEntry(sh, /诗人激励|吟游诗人激励|bardicinspiration/i)) {
+    if (clsOn('hcOther') && sheetHasEntry(sh, /诗人激励|吟游诗人激励|bardicinspiration/i)) {
         var lvD = bard || parseInt(sh.level, 10) || 1, cha = Math.max(1, sheetAbilityMod(sh, 'cha'));
         b.push('<button class="tt-btn small" data-act="cf-bardic" title="附赠动作：60 尺内一名其他生物获得一颗诗人激励骰（' + byLevel(CF.bardDie, lvD) + '）">🎵 诗人激励（' + featLeft(it, '诗人激励', cha) + '）</button>');
     }
@@ -629,7 +660,7 @@ function classSelAct(act0, ids) {
         if (!spendFeat(it, '回气', byLevel(CF.windUses, lf))) return true;
         openActionDialog({ name: '回气', kind: 'heal', damage: '1d10+' + lf, cost: 'b', area: { shape: '', size: 0, width: 5 }, targets: 1, scaleNote: '回气：1d10 + 战士等级 ' + lf }, it, sh);
         act.presetTargets = [it.id];
-        if (lf >= 5 && hintOn('hintClass')) { // 战术转进：用回气时可以移动至多一半速度，不引发借机攻击
+        if (lf >= 5 && clsOn('hcFighter')) { // 战术转进：用回气时可以移动至多一半速度，不引发借机攻击
             var dg = STATUS_BY_ID.disengaged;
             addStatusTo(it, { id: 'disengaged', name: dg.name, icon: dg.icon, color: dg.color });
             notice('战术转进：本回合可以移动至多一半速度，不会引发借机攻击（已挂上「撤离」）', false, 5000);
@@ -660,7 +691,7 @@ function classDialogSync(a, caster, sh) {
     if (!row) return;
     row.style.display = 'none';
     $('acRage').checked = false;
-    if (!hintOn('hintClass') || !caster || a.kind !== 'attack' || !hasStatus(caster, 'raging')) return;
+    if (!clsOn('hcOther') || !caster || a.kind !== 'attack' || !hasStatus(caster, 'raging')) return;
     var s = sh || (caster.sheet && sheets[caster.sheet]);
     var n = byLevel(CF.rageDmg, classLevel(s, '野蛮人') || parseInt(s && s.level, 10) || 1);
     $('acRageN').textContent = '+' + n;
@@ -676,7 +707,7 @@ function classDialogApply(a) {
 
 // 偷袭：命中后记录里的按钮（出手的人和 GM），每回合一次（任何人的回合都算一回合）
 function sneakBtns(e, t, r) {
-    if (r.kind !== 'attack' || !(t.hit === 'hit' || t.hit === 'crit') || !r.casterId || !(me.gm || e.who === me.name) || !hintOn('hintClass')) return '';
+    if (r.kind !== 'attack' || !(t.hit === 'hit' || t.hit === 'crit') || !r.casterId || !(me.gm || e.who === me.name) || !clsOn('hcOther')) return '';
     var c = scene.items[r.casterId], sh = c && c.sheet && sheets[c.sheet];
     if (!sh || !sheetHasEntry(sh, /偷袭|sneakattack/i) || masteryDone[e.id + ':sa']) return '';
     if (c.econ && c.econ.saKey && c.econ.saKey === turnKey()) return '';

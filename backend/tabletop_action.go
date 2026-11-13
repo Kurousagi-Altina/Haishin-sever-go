@@ -21,6 +21,8 @@ type TTActionTarget struct {
 	Extra    string `json:"extra"`    // attacker's +1d4 (bless) / -1d4 (bane)
 	Adj      int    `json:"adj"`      // attacker's flat adjustment (exhaustion)
 	Note     string `json:"note"`     // judgement notes from the client (神射手 ignoring cover etc.)
+	// set by the server only (手动豁免结算): "yes" / "no" = the player's own roll, "roll" = roll it now even if the token saves manually
+	Forced string `json:"-"`
 }
 
 type TTActionReq struct {
@@ -43,6 +45,7 @@ type TTActionReq struct {
 	SlotLevel     int                    `json:"slotLevel"` // spell slot spent on it (法术反制 gives it back)
 	Melee         bool                   `json:"melee"`     // a melee attack (防御式决斗, 顺势斩)
 	Targets       []TTActionTarget       `json:"targets"`
+	Ref           string                 `json:"-"` // server only: log ref of the resulting entry (手动豁免结算)
 }
 
 // TTDamagePart: one extra damage component, resisted separately.
@@ -576,6 +579,11 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 			}
 
 		case "save":
+			if t.Forced == "" && ttBool(it["manualSave"]) { // 这个角色自己掷豁免：先不结算，记录里提示
+				h.Saved = "pending"
+				addNote("等玩家自己掷豁免")
+				continue
+			}
 			ab := a.Save
 			if ab == "strdex" { // 擒抱 / 推撞：目标自己选力量或敏捷豁免 → 用加值高的那个
 				ab = "str"
@@ -589,7 +597,10 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 				sb += t.Cover
 			}
 			autoFail := (ab == "str" || ab == "dex") && (conds["paralyzed"] || conds["stunned"] || conds["unconscious"] || conds["petrified"])
-			if autoFail {
+			if t.Forced == "yes" || t.Forced == "no" { // 玩家用自己的骰子掷的结果
+				h.Saved = t.Forced
+				addNote(map[bool]string{true: "玩家自己掷：成功", false: "玩家自己掷：失败"}[t.Forced == "yes"])
+			} else if autoFail {
 				h.Saved = "auto"
 			} else {
 				// advantage / disadvantage from the target's conditions and traits (they cancel out)
@@ -829,6 +840,7 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 	e.Label = res.Name
 	e.Act = res
 	e.Hidden = hidden
+	e.Ref = a.Ref
 	room.addLog(e)
 	if len(changed) > 0 {
 		room.rememberUndo(e.ID, undo)
