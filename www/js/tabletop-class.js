@@ -206,9 +206,10 @@ function cxTargetBtns(e, t, r) {
     };
     if (clsOn('hcFighter') && r.kind === 'attack' && c && csh && mine && !r.spell) {
         var weapon = !/法术|戏法/.test(r.name || '');
-        if (hit && weapon && hasStatus(c, 'giantmight') && !masteryDone[e.id + ':gm'] && !(c.econ && c.econ.gmKey && c.econ.gmKey === turnKey()))
+        var alive = tok && !isDeadToken(tok);
+        if (hit && weapon && alive && hasStatus(c, 'giantmight') && !masteryDone[e.id + ':gm'] && !(c.econ && c.econ.gmKey && c.econ.gmKey === turnKey()))
             h += btn('giant', '巨人之力 +' + giantDie(csh), '巨人之力：每回合一次，武器或徒手命中时额外 ' + giantDie(csh) + ' 伤害（与武器同类型）');
-        if (hit && weapon && knownRune(csh, 'fire') && !masteryDone[e.id + ':' + t.id + ':fire'] && cxHas(c, runeRes(c, 'fire').re, '火焰符文', runeUses(csh)))
+        if (hit && weapon && alive && knownRune(csh, 'fire') && !masteryDone[e.id + ':' + t.id + ':fire'] && cxHas(c, runeRes(c, 'fire').re, '火焰符文', runeUses(csh)))
             h += btn('fire', '🔥 火焰符文', '火焰符文：武器命中后发动——目标力量豁免（DC ' + runeDC(csh) + '），失败则被火焰镣铐束缚 1 分钟，每回合开始受到 2d6 火焰伤害，每回合结束重复豁免');
         if (t.hit === 'miss' && clsLv(csh, '战士') >= 13 && !masteryDone[e.id + ':' + t.id + ':study'])
             h += btn('study', '究明攻击', '究明攻击（战士 13 级）：攻击失手后，直到你下个回合结束，你对这个生物的下一次攻击具有优势');
@@ -222,6 +223,8 @@ function cxTargetBtns(e, t, r) {
         sortedItems().forEach(function(o) {
             var osh = o.kind === 'token' && o.sheet && sheets[o.sheet];
             if (!clsOn('hcFighter') || !osh || !mineTok(o) || !isCreatureToken(o) || !canReact(o) || o.id === r.casterId || !isRuneKnight(osh)) return;
+            var atk = r.casterId && scene.items[r.casterId];
+            if (atk && !hostileTo(o, atk)) return; // 队友的攻击不用改
             var d = o.id === tok.id ? 0 : creatureDist(o, tok);
             if (o.id !== tok.id && clsLv(osh, '战士') >= 7 && d <= 60 && !cxRefUsed(e.id + ':' + t.id + ':rs') && cxHas(o, RE_RSHIELD, '符文之盾', sheetProf(osh)))
                 h += btn('rshield', '符文之盾（' + escapeHtml(chipName(o.label)) + '）', '符文之盾（反应）：让攻击者重掷 d20 并采用新结果；不再命中则这次伤害和状态作废', ' data-by="' + escapeHtml(o.id) + '" data-react-ref="' + escapeHtml(e.id + ':' + t.id + ':rs') + '"');
@@ -256,8 +259,10 @@ function cxClick(el) {
         if (!cxSpend(c, fr.re, fr.name, runeUses(csh))) return true;
         masteryDone[d.log + ':' + d.tok + ':fire'] = true;
         el.remove();
+        var crit = ((r.targets || []).filter(function(x) { return x.id === d.tok; })[0] || {}).hit === 'crit';
+        op({ op: 'action', act: { name: '火焰符文（灼热镣铐）', kind: 'auto', damage: crit ? '4d6' : '2d6', damageType: '火焰', caster: c.id, magic: true, targets: [{ id: tgt.id }] } });
         openActionDialog(cxBase({ name: '火焰符文', kind: 'save', save: 'str', dc: runeDC(csh), status: 'restrained', repeatSave: true, dot: '2d6 火焰', rounds: 10,
-            scaleNote: '火焰符文：失败则被火焰镣铐束缚 1 分钟，每回合开始受到 2d6 火焰伤害，每回合结束重复力量豁免。DC = 8 + 熟练 ' + sheetProf(csh) + ' + 体质 ' + signed(abilMod(csh, 'con')) }), c, csh);
+            scaleNote: '火焰符文：命中时额外 ' + (crit ? '4d6' : '2d6') + ' 火焰伤害已结算；失败则被火焰镣铐束缚 1 分钟，每回合开始受到 2d6 火焰伤害，每回合结束重复力量豁免。DC = 8 + 熟练 ' + sheetProf(csh) + ' + 体质 ' + signed(abilMod(csh, 'con')) }), c, csh);
         act.presetTargets = [tgt.id];
         break;
     case 'study':
@@ -464,7 +469,7 @@ function monkTargetBtns(e, t, r) {
     };
     var clv = monkLv(csh), tk = turnKey();
     if (r.kind === 'attack' && hit && mine && c && clv && !r.spell) {
-        if (clv >= 5 && !masteryDone[e.id + ':stun'] && !(c.econ && c.econ.stunKey && c.econ.stunKey === tk) && focusCur(c, csh) >= 1)
+        if (clv >= 5 && tok && !isDeadToken(tok) && !masteryDone[e.id + ':stun'] && !(c.econ && c.econ.stunKey && c.econ.stunKey === tk) && focusCur(c, csh) >= 1)
             h += btn('mkstun', '震慑拳（1 功力）', '震慑拳（每回合一次）：目标体质豁免（DC ' + monkDC(csh) + '），失败则震慑到你下个回合开始；成功则速度减半，下一次对它的攻击具有优势');
         if (isUnarmedAct(r) && hasStatus(c, 'attuned')) {
             if (!masteryDone[e.id + ':' + t.id + ':pull'])
@@ -840,7 +845,7 @@ function casterTargetBtns(e, t, r) {
     var btn = function(kind, label, title, attrs) {
         return '<button class="tt-btn small react-btn" data-cx="' + kind + '" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) + '"' + (attrs || '') + ' title="' + escapeHtml(title) + '">' + label + '</button>';
     };
-    if (r.kind === 'attack' && hit && mine && c && csh && !r.spell) {
+    if (r.kind === 'attack' && hit && mine && c && csh && !r.spell && tok && !isDeadToken(tok)) {
         var ds = clsOn('hcCleric') ? divineStrike(csh) : '', ps = clsOn('hcDruid') ? primalStrike(csh) : '';
         if (ds && !masteryDone[e.id + ':ds'] && !onceBtnUsed(c, 'dsKey')) h += btn('ccds', '神圣打击 +' + ds, '受祝击·神圣打击（每回合一次）：武器命中额外 ' + ds + ' 光耀或黯蚀伤害');
         if (ps && !masteryDone[e.id + ':ps'] && !onceBtnUsed(c, 'psKey')) h += btn('ccps', '原力蛮击 +' + ps, '元素之怒·原力蛮击（每回合一次）：武器或野兽形态攻击命中额外 ' + ps + ' 寒冷 / 火焰 / 闪电 / 雷鸣伤害');
@@ -852,7 +857,7 @@ function casterTargetBtns(e, t, r) {
         var osh = o.kind === 'token' && o.sheet && sheets[o.sheet];
         if (!osh || !mineTok(o) || clericLv(osh) < 3 || !isWarDomain(osh) || !cdHas(o, osh) || cxRefUsed(e.id + ':' + t.id + ':gs')) return;
         var self = o.id === c.id;
-        if (!self && (!canReact(o) || creatureDist(o, c) > 30)) return;
+        if (!self && (!canReact(o) || hostileTo(o, c) || tokenSide(o) !== tokenSide(c) || creatureDist(o, c) > 30)) return;
         h += btn('ccguide', '导引打击 +10' + (self ? '' : '（' + escapeHtml(chipName(o.label)) + '）'), '导引打击（1 次引导神力' + (self ? '' : '，用反应') + '）：这次攻击检定 +10，命中则由服务器结算伤害', ' data-by="' + escapeHtml(o.id) + '" data-react-ref="' + escapeHtml(e.id + ':' + t.id + ':gs') + '"');
     });
     // 预兆：服务器掷的豁免 / 攻击，预言师可以用一个预兆替换 d20（每回合一次）
@@ -946,7 +951,8 @@ function casterDialogSync(a, caster, sh) {
 }
 function casterDialogApply(a) {
     if (!$('acFirearmWrap') || $('acFirearmWrap').style.display === 'none' || !$('acFirearm').checked || a.firearmAdded) return;
-    a.damage = addToDamage(a.damage || '', '1d8');
+    if (a.kind === 'attack' && a.targets > 1) a.onceDice = '1d8'; // 灼热射线这类：只加到一次伤害骰上
+    else a.damage = addToDamage(a.damage || '', '1d8');
     a.firearmAdded = true;
 }
 
@@ -975,9 +981,12 @@ function fortifiedCover(att, tgt) {
 var SAVE_CN = { str: '力量', dex: '敏捷', con: '体质', int: '智力', wis: '感知', cha: '魅力', strdex: '力量或敏捷（取高）' };
 function saveModeRowHtml(it) {
     if (!canEdit(it) || !isCreatureToken(it)) return '';
-    return '<div class="prop-row"><label>豁免</label><label title="勾上：需要豁免时由服务器自动掷并结算。不勾：需要豁免时提示你自己掷，掷完后伤害和状态照样自动结算">' +
-        '<input type="checkbox" data-autosave="' + escapeHtml(it.id) + '"' + (it.manualSave ? '' : ' checked') + '> 自动掷豁免</label>' +
-        (it.manualSave ? '<span class="tt-hint">需要豁免时会提示你自己掷</span>' : '') + '</div>';
+    var hints = [it.manualSave ? '需要豁免时会提示你自己掷' : '', it.manualInit ? '开战时不替你掷先攻，会提示你自己掷' : ''].filter(Boolean);
+    return '<div class="prop-row"><label>自动掷</label><label title="勾上：需要豁免时由服务器自动掷并结算。不勾：需要豁免时提示你自己掷，掷完后伤害和状态照样自动结算">' +
+        '<input type="checkbox" data-autosave="' + escapeHtml(it.id) + '"' + (it.manualSave ? '' : ' checked') + '> 豁免</label>' +
+        '<label title="勾上：GM 点「准备」/「伏击」开战、或战斗中放下棋子时，自动替你掷先攻。不勾：不自动掷，提示你自己点 🎲 掷（可选普通 / 优势 / 劣势）">' +
+        '<input type="checkbox" data-autoinit="' + escapeHtml(it.id) + '"' + (it.manualInit ? '' : ' checked') + '> 先攻</label>' +
+        (hints.length ? '<span class="tt-hint">' + hints.join('；') + '</span>' : '') + '</div>';
 }
 function saveBonusOf(tok, ab) {
     var sh = tok && tok.sheet && sheets[tok.sheet];
@@ -1055,6 +1064,12 @@ function classHeadHtml(sh, edit) {
 
 function initClassFeats() {
     $('selPanel').addEventListener('change', function(e) { // 属性面板「自动掷豁免」
+        var iid = e.target.dataset && e.target.dataset.autoinit; // 「自动掷先攻」
+        if (iid && scene.items[iid]) {
+            patchItems([{ id: iid, manualInit: e.target.checked ? null : true }]);
+            notice(e.target.checked ? '已改为自动掷先攻' : '已改为自己掷先攻：开战时会提示你，在「⚔ 战斗」页点 🎲 掷（可选普通 / 优势 / 劣势）');
+            return;
+        }
         var id = e.target.dataset && e.target.dataset.autosave;
         if (!id || !scene.items[id]) return;
         patchItems([{ id: id, manualSave: e.target.checked ? null : true }]);

@@ -3631,7 +3631,7 @@
    "section": "core",
    "path": "topics/玩家手册2024/法术详述/3环.htm",
    "alsoIn": [],
-   "summary": "半径60尺柱形内的生物进行敏捷豁免，失败受3d10闪电伤害，成功减半；需专注",
+   "summary": "120尺内召出半径60尺的雷云；每次在云下选一点落雷，该点5尺内的生物进行敏捷豁免，失败受3d10闪电伤害，成功减半；之后每回合可用魔法动作再落一次雷；需专注",
    "uncertain": [],
    "level": 3,
    "school": "咒法",
@@ -3673,8 +3673,8 @@
    "healAddsMod": false,
    "tempHp": null,
    "area": {
-    "shape": "cylinder",
-    "size": 60,
+    "shape": "sphere",
+    "size": 5,
     "height": null,
     "width": null,
     "origin": "point"

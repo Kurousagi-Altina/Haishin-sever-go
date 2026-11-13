@@ -26,6 +26,17 @@ function cnInt(s) { return /^\d+$/.test(s) ? parseInt(s, 10) : (CN_NUM[s] || 0);
 function ftToPx(ft) { return ft / num(scene.props.gridScale, 5) * gridSize(); }
 
 // ===== 从文字识别行动 =====
+// 持续区域在什么时候对里面的生物生效：在其中开始回合（月华之光、灵体卫士旧版）/ 结束回合（2024 灵体卫士）
+function zoneWhenOf(t) {
+    t = String(t || '');
+    var w = '';
+    if (/(?:在|于)(?:其中|该区域内?|区域内|范围内|光环内|其内)?\s*开始(?:其|它的|他的|该生物的)?回合|(?:进入|或)[^。；;]{0,6}回合开始|回合开始时(?:位于|处于|仍在|身处)/.test(t)) w += 's';
+    if (/(?:在|于)(?:其中|该区域内?|区域内|范围内|光环内|其内)\s*结束(?:其|它的|他的|该生物的)?回合|结束(?:其|它的)?回合时(?:位于|处于|仍在|身处)/.test(t)) w += 'e';
+    return w;
+}
+
+// 范围法术只影响敌人：「光环内敌人」「敌对生物」「指定任意生物不受影响」
+var ENEMIES_ONLY = /(?:光环|范围|区域|散发)内(?:的)?敌人|(?:每个|所有)敌对生物|指定任意(?:数量|数目)?(?:的)?生物(?:不受|免受)/;
 function parseActionText(name, text, meta) {
     var t = String(meta || '') + '\n' + String(text || '');
     var a = { name: name || '行动', range: 0, area: { shape: '', size: 0, width: 5, self: false }, targets: 1 };
@@ -82,6 +93,8 @@ function parseActionText(name, text, meta) {
     areaCand(/(\d+)\s*尺\s*(?:长)?(?:[，,、]?\s*(\d+)\s*尺\s*宽)?\s*的?\s*(?:直线|线状|线形)/, function(mm) { return { shape: 'line', size: +mm[1], width: +(mm[2] || 5), self: true }; });
     // 「20尺立方」「20尺见方」「20尺方格区域」「20尺方状区域」
     areaCand(/(\d+)\s*尺\s*的?\s*(?:立方|见方|方格|方形|方状|方块|正方)/, function(mm) { return { shape: 'cube', size: +mm[1], width: 5, self: selfNow }; });
+    // 2024 怪物卡的光环写法：「15尺内魔蝠可见的生物」「其10尺内的每个生物」（豁免类才算；「60尺内一名生物」是射程不是范围）
+    if (a.save && !/攻击检定/.test(t)) areaCand(/(?:^|[^触射距])(\d+)\s*尺(?:范围)?内(?![^。，,；;]{0,12}?(?:一名|一个|一只|一位))[^。，,；;]{0,12}?(?:生物|敌人|目标)/, function(mm) { return { shape: 'circle', size: +mm[1], width: 5, self: true }; });
     if (areaCands.length) a.area = areaCands.sort(function(x, y) { return x.i - y.i; })[0].area;
     // 墙：「长至多50尺、高15尺、厚1尺」「可塑造为任意形状 / 连续路径」「直径至多20尺的环形墙」「十块10尺×10尺的嵌板」
     if (/墙|屏障|护壁/.test(t)) {
@@ -119,7 +132,18 @@ function parseActionText(name, text, meta) {
             });
         });
     }
+    // 状态持续时间：「直到/持续至 X 的下个回合结束 / 开始」（X 是施放者 → 跟着施放者的回合走；X 是目标 → 1 轮）、「1 分钟」「N 轮」
+    if (a.status) {
+        var du = t.match(/(?:直到|直至|持续(?:到|至)|至)\s*([^，。；;\n的]{0,8})的\s*下(?:一|个)?(?:个)?回合(结束|开始)/);
+        if (du) {
+            if (/目标|该生物|被命中|受术者|其$/.test(du[1]) && !/魔|龙|你/.test(du[1])) { if (du[2] === '结束') a.rounds = 1; }
+            else a.until = du[2] === '结束' ? 'srcEnd' : 'srcStart';
+        } else if ((m = t.match(/(\d+|一|十)\s*分钟/)) && !/小时/.test(m[0])) a.rounds = (cnInt(m[1]) || +m[1] || 1) * 10;
+        else if ((m = t.match(/(?:持续|为期)\s*(\d+)\s*轮/))) a.rounds = +m[1];
+    }
     a.conc = /专注/.test(String(meta || '')) || /持续时间[：:]\s*专注/.test(t);
+    a.enemiesOnly = ENEMIES_ONLY.test(t); // 灵体卫士这类：范围只影响敌人
+    a.zoneWhen = zoneWhenOf(t);
     // 「一名生物一回合只能受到一次」「每回合仅需进行一次该豁免」：同一个生物每回合只结算一次（持续区域用）
     a.oncePerTurn = /(?:一|每)(?:个)?回合(?:中|内)?(?:只|仅)[^。；;\n，,]{0,16}?一次/.test(t);
     // 类型
@@ -508,6 +532,8 @@ function spellActionFromRule(r, sh, sp) {
     }
     var du = r.duration || {};
     a.conc = !!du.concentration;
+    a.enemiesOnly = ENEMIES_ONLY.test(String(r.summary || '') + ' ' + String(sp && sp.text || ''));
+    a.zoneWhen = zoneWhenOf(String(r.summary || '') + ' ' + String(sp && sp.text || ''));
     var ct = r.castingTime || {};
     a.cost = ct.unit === 'bonus' ? 'b' : ct.unit === 'reaction' ? 'r' : 'a';
     a.school = r.school || '';
@@ -599,9 +625,11 @@ function openActionDialog(a, caster, sh) {
     f('acStatus').innerHTML = '<option value="">（无）</option>' + STATUS_DEFS.map(function(d) { return '<option value="' + d.id + '">' + d.icon + ' ' + d.name + '</option>'; }).join('');
     f('acStatus').value = a.status || '';
     f('acRounds').value = a.rounds || '';
+    f('acUntil').value = a.until || '';
     f('acConc').checked = !!a.conc;
     f('acMastery').value = normMastery(a.mastery);
     f('acCost').value = a.cost || 'a';
+    setTimeout(econWarnSync, 0); // 本回合动作 / 附赠 / 反应 / 法术位已用：提醒
     f('acRepeat').checked = !!a.repeatSave;
     f('acDot').value = a.dot || '';
     f('acHidden').checked = $('diceHidden').checked;
@@ -630,13 +658,16 @@ function readActionDialog() {
     a.save = v('acSave');
     a.dc = parseInt(v('acDC'), 10) || 0;
     a.half = $('acHalf').checked;
+    if (a.meleeOnly == null) a.meleeOnly = a.reach > 0 && !(a.range > 0) && !(a.rangeLong > 0); // 第一次读：原本是近战
     a.range = parseFloat(v('acRange')) || 0;
     a.rangeLong = parseFloat(v('acLong')) || 0;
+    if (a.meleeOnly && !a.rangeLong) { if (a.range) a.reach = a.range; a.range = 0; }
     var oldArea = a.area || {};
     a.area = { shape: v('acShape'), size: parseFloat(v('acSize')) || 0, width: parseFloat(v('acWidth')) || oldArea.width || 5, self: $('acSelf').checked, ringSize: oldArea.ringSize };
     a.targets = Math.max(1, parseInt(v('acTargets'), 10) || 1);
     a.status = v('acStatus');
     a.rounds = parseInt(v('acRounds'), 10) || 0;
+    a.until = v('acUntil');
     a.conc = $('acConc').checked;
     a.hidden = $('acHidden').checked;
     a.mastery = a.kind === 'attack' ? v('acMastery') : '';
@@ -796,6 +827,11 @@ function tokenInShape(t, sh) {
 function actionCandidates() {
     return sortedItems().filter(function(t) { return t.kind === 'token' && isCreatureToken(t) && (!t.hidden || me.gm) && visibleToMe(t); });
 }
+// 点选目标：同一位置叠着尸体和活着的生物时，优先活着的
+function actionHitAt(w) {
+    var list = sortedItems().reverse().filter(function(t) { return t.kind === 'token' && hitItem(t, w) && seeable(t) && isCreatureToken(t) && visibleToMe(t); });
+    return list.filter(function(t) { return !isDeadToken(t); })[0] || list[0] || null;
+}
 
 function inActionRange(t) {
     var m = actionMode, a = m.act;
@@ -810,14 +846,15 @@ function recomputeAreaTargets() {
     if (!sh) return;
     actionCandidates().forEach(function(t) {
         if (m.act.area.self && m.caster && t.id === m.caster.id) return; // 从自身展开的范围默认不含自己
+        if (isDeadToken(t)) return; // 尸体不算
+        if (m.act.enemiesOnly && m.caster && !hostileTo(m.caster, t)) return; // 灵体卫士这类：只影响敌人
         if (tokenInShape(t, sh)) m.targets[t.id] = true;
     });
 }
 
 function actionPointerDown(w, e) {
     var m = actionMode, a = m.act;
-    var hit = hitTest(w, ['token']);
-    if (hit && (!isCreatureToken(hit) || !visibleToMe(hit))) hit = null;
+    var hit = actionHitAt(w);
     if (isPathShape(a.area)) {
         if (m.locked && hit) { // 已放好：点生物切换是否包含
             if (m.targets[hit.id]) delete m.targets[hit.id]; else m.targets[hit.id] = true;
@@ -1086,6 +1123,7 @@ function confirmActionTargeting() {
         if (!m.caster || t.id === m.caster.id || m.zoneId) return o;
         var ci = coverInfo(m.caster, t);
         if (!hintOn('autoCover')) ci = { level: 0, dist: ci.dist }; // 自动掩护关掉了
+        if (a.oa) ci = { level: 0, dist: Math.min(ci.dist, a.reach || 5) }; // 借机攻击发生在它离开触及之前：按离开前算（不看走到哪儿了）
         if (a.kind === 'attack') {
             if (ci.level < 0) return null; // 完全掩护：无法被直接攻击
             var fx = featAttackAdjust(a, m.caster, t, ci.dist), fn = []; // 神射手 / 强弩专家 / 擒抱者（tabletop-fight.js）
@@ -1112,12 +1150,17 @@ function confirmActionTargeting() {
         return o;
     }).filter(Boolean);
     if (ids.length && !targets.length) { notice('目标都处于完全掩护，无法攻击', true); return; }
+    if (targets.length < ids.length) { // 有的目标处于完全掩护：跳过，并说一声
+        var kept = {}; targets.forEach(function(o) { kept[o.id] = 1; });
+        var skipMsg = '「' + ids.filter(function(id) { return !kept[id]; }).map(function(id) { return scene.items[id].label || '未命名'; }).join('」「') + '」处于完全掩护，这次跳过';
+        setTimeout(function() { notice(skipMsg, true, 5000); }, 2600); // 等动作经济的提示显示完
+    }
     var def = a.status && STATUS_BY_ID[a.status];
     var body = { op: 'action', hidden: !!a.hidden, act: {
         name: a.name, kind: a.kind, attack: a.attack || '', damage: a.damage || '', damageType: a.dtype || '',
         save: a.kind === 'save' ? a.save || '' : '', dc: a.kind === 'save' ? a.dc || 0 : 0, half: !!a.half,
         caster: m.caster && canEdit(m.caster) ? m.caster.id : '', concentration: !!a.conc, targets: targets, spell: !!a.isSpell,
-        magic: !!(a.magic || a.isSpell), school: a.school || '', parts: a.parts || [], mastery: a.kind === 'attack' ? a.mastery || '' : '', slotLevel: a.useSlot && a.slotLevel > 0 ? a.slotLevel : 0, melee: melee,
+        magic: !!(a.magic || a.isSpell), school: a.school || '', parts: a.parts || [], mastery: a.kind === 'attack' ? a.mastery || '' : '', slotLevel: a.useSlot && a.slotLevel > 0 ? a.slotLevel : 0, melee: melee, onceDice: a.onceDice || '',
         status: def ? statusWithTurnEffects({ id: def.id, name: def.name, color: def.color, icon: def.icon, rounds: a.rounds || 0 }, a) : null
     } };
     if (isPathShape(a.area) && !m.locked && m.pts && m.pts.length > 1) finishPathShape();
@@ -1128,7 +1171,7 @@ function confirmActionTargeting() {
     var caster = m.caster;
     cancelActionTargeting();
     op(body);
-    if (!m.zoneId) econAfterAction(a, caster); // 动作经济：记上这次的消耗
+    if (!m.zoneId) { econAfterAction(a, caster); rechargeAfterAction(a, caster); } // 动作经济：记上这次的消耗；充能能力扣掉充能
     masteryAfterAttack(a, caster, targets.map(function(o) { return o.id; })); // 用掉「侵扰」「削弱」
 }
 
@@ -1147,7 +1190,7 @@ function endOldConcZones(casterId) {
 function zoneAct(a) {
     return { name: a.name, kind: a.kind, attack: a.attack || '', damage: a.damage || '', dtype: a.dtype || '', save: a.save || '', dc: a.dc || 0,
         half: !!a.half, status: a.status || '', rounds: a.rounds || 0, oncePerTurn: !!a.oncePerTurn, isSpell: !!a.isSpell,
-        magic: !!a.magic, school: a.school || '', parts: a.parts || [] };
+        magic: !!a.magic, school: a.school || '', parts: a.parts || [], enemiesOnly: !!a.enemiesOnly, zoneWhen: a.zoneWhen || '' };
 }
 
 // ===== 区域结算记录 =====
@@ -1218,6 +1261,37 @@ function zoneRetrigger(z, moved) {
     selectOnly([]);
     renderActionBar();
     requestRender();
+}
+
+function zoneResolveOn(z, tokId) {
+    var t = scene.items[tokId];
+    if (!z || !z.zone || !z.zone.act || !t) return;
+    zoneRetrigger(z);
+    if (!actionMode) return;
+    actionMode.targets = {};
+    if (tokenInShape(t, zoneShapeOf(z))) actionMode.targets[t.id] = true;
+    else notice('「' + (t.label || '') + '」已经不在「' + (z.label || '区域') + '」里了', true);
+    renderActionBar();
+    requestRender();
+}
+
+// 换回合：刚结束回合 / 刚开始回合的生物在持续区域里 → 给控制区域的一端（GM 或施放者的玩家）一个结算按钮
+var zonePrompts = [];
+function zoneTurnPrompts(prevId, curId) {
+    zonePrompts = [];
+    sortedItems().forEach(function(z) {
+        var w = z.zone && z.zone.act && z.zone.act.zoneWhen;
+        if (!w || !canEdit(z) || !(me.gm || z.owner === me.name)) return;
+        var shp = zoneShapeOf(z), once = zoneOnce(z), done = zoneHitsNow(z);
+        [[prevId, 'e', '结束了回合'], [curId, 's', '开始回合']].forEach(function(p) {
+            var t = p[0] && scene.items[p[0]];
+            if (!t || w.indexOf(p[1]) < 0 || !isCreatureToken(t) || isDeadToken(t) || !tokenInShape(t, shp)) return;
+            if (z.zone.act.enemiesOnly && z.zone.caster && scene.items[z.zone.caster] && !hostileTo(scene.items[z.zone.caster], t)) return;
+            if (once && done[t.id]) return;
+            zonePrompts.push({ z: z.id, t: t.id, text: (z.label || '区域') + '：' + (t.label || '') + ' 在区域内' + p[2] });
+        });
+    });
+    if (zonePrompts.length) notice('⚡ ' + zonePrompts.map(function(p) { return p.text; }).join('；') + '（先攻条下方点按钮结算）', false, 7000);
 }
 
 // 施放者不再专注 → 移除它的区域（由 GM 或区域的主人那一端执行；新建的区域先等几秒，等服务器加上专注）

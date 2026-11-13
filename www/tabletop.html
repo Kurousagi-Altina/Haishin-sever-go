@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css?v=2026111323">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026111334">
 </head>
 <body class="tt-body">
 
@@ -174,7 +174,6 @@
                         <label title="越大越平直、段数越少">精简 <input type="range" id="awSimp" min="1" max="10" step="1"> <b id="awSimpV"></b></label>
                         <button class="tt-btn small" id="awUndoSeed" data-awfor="floor" title="撤销上一个地板点">撤点</button>
                         <button class="tt-btn small primary" id="awGo">生成墙体</button>
-                        <button class="tt-btn small" id="awClear" title="清空预览（Esc）">清空</button>
                         <span class="tt-hint" id="awInfo"></span>
                     </div>
                     <div class="aw-panel" id="doorGapPanel" style="display:none;">
@@ -482,7 +481,7 @@
                     <span class="chip" data-dq="-5">-5</span><span class="chip" data-dq="-1">-1</span><span class="chip" data-dq="+1">+1</span><span class="chip" data-dq="+5">+5</span><span class="chip" data-dq="1d4">+1d4</span><span class="chip" data-dq="1d6">+1d6</span><span class="chip" data-dq="1d8">+1d8</span><span class="chip" data-dq="1d10">+1d10</span><span class="chip" data-dq="1d20">+1d20</span><span class="chip" data-dq="clear">清空</span>
                 </span></div>
             <div class="rd-row" id="acSlotRow"><span class="rd-key">环阶</span><select class="tt-select" id="acSlot" style="width:140px;flex:none;"></select>
-                <label><input type="checkbox" id="acUseSlot"> 消耗法术位</label> <span class="tt-hint" id="acUpHint"></span></div>
+                <label><input type="checkbox" id="acUseSlot" onchange="econWarnSync()"> 消耗法术位</label> <span class="tt-hint" id="acUpHint"></span></div>
             <div class="tt-hint" id="acScaleNote"></div>
             <div class="rd-row" id="acSaveRow"><span class="rd-key">豁免</span>
                 <select class="tt-select" id="acSave"><option value="str">力量</option><option value="dex">敏捷</option><option value="con">体质</option><option value="int">智力</option><option value="wis">感知</option><option value="cha">魅力</option><option value="strdex">力量或敏捷（目标取高）</option></select>
@@ -498,11 +497,13 @@
             <div class="rd-row" id="acZoneRow"><span class="rd-key"></span><label title="持续性的范围法术（如月华之光、灵体卫士）：结算后在地图上保留区域，可移动、可再次对区域内结算，专注结束自动移除"><input type="checkbox" id="acZone"> 在地图上保留区域（持续效果）</label>
                 <label title="如月华之光、灵体卫士：同一个生物每回合只受一次影响；之后再对区域结算时会自动排除本回合已结算过的生物"><input type="checkbox" id="acOnce"> 每个生物每回合限一次</label></div>
             <div class="rd-row"><span class="rd-key">附加状态</span><select class="tt-select" id="acStatus"></select>
-                <input class="tt-input narrow" id="acRounds" type="number" min="0" placeholder="轮数"></div>
+                <input class="tt-input narrow" id="acRounds" type="number" min="0" placeholder="轮数">
+                <select class="tt-select" id="acUntil" style="width:auto;flex:none;" title="状态什么时候结束：按轮数（在目标自己的回合结束时倒数），或跟着施放者的回合走"><option value="">按轮数</option><option value="srcEnd">到施放者下回合结束</option><option value="srcStart">到施放者下回合开始</option></select></div>
             <div class="rd-row"><span class="rd-key"></span><label title="附加的状态在目标每个回合结束时重复豁免，成功则结束（如定身术）"><input type="checkbox" id="acRepeat"> 回合结束重复豁免</label>
                 <input class="tt-input" id="acDot" placeholder="回合开始伤害，如 1d4 火焰" title="附加的状态在目标每个回合开始时造成的伤害" style="width:150px;flex:none;"></div>
-            <div class="rd-row"><span class="rd-key">消耗</span><select class="tt-select" id="acCost" style="width:110px;flex:none;" title="战斗中结算后给施放者勾上（只是提示）">
-                <option value="a">动作</option><option value="b">附赠动作</option><option value="r">反应</option><option value="n">不消耗</option></select></div>
+            <div class="rd-row"><span class="rd-key">消耗</span><select class="tt-select" id="acCost" onchange="econWarnSync()" style="width:110px;flex:none;" title="战斗中结算后给施放者勾上（只是提示）">
+                <option value="a">动作</option><option value="b">附赠动作</option><option value="r">反应</option><option value="n">不消耗</option></select>
+                <span class="tt-hint" id="acEconWarn" style="display:none;color:#ffb74d;"></span></div>
             <div class="rd-row"><span class="rd-key"></span><label><input type="checkbox" id="acConc"> 施放者进入专注</label>
                 <label title="魔法武器 / 法术 / 魔法效应：无视「非魔法攻击」的抗性，并触发魔法抗性（法术总是魔法）"><input type="checkbox" id="acMagic"> 魔法</label>
                 <label title="只有你和 GM 能看到结果"><input type="checkbox" id="acHidden"> 暗骰</label></div>
@@ -562,17 +563,17 @@
     </div>
 
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js?v=2026111323"></script>
-    <script src="js/tabletop-combat.js?v=2026111323"></script>
-    <script src="js/tabletop-status.js?v=2026111323"></script>
-    <script src="js/tabletop-action.js?v=2026111323"></script>
-    <script src="js/tabletop-extra.js?v=2026111323"></script>
-    <script src="js/tabletop-autowall.js?v=2026111323"></script>
-    <script src="js/tabletop-prep.js?v=2026111323"></script>
-    <script src="js/tabletop-dm.js?v=2026111323"></script>
-    <script src="js/tabletop-fight.js?v=2026111323"></script>
-    <script src="js/tabletop-summon.js?v=2026111323"></script>
-    <script src="js/tabletop-class.js?v=2026111323"></script>
-    <script src="js/tabletop.js?v=2026111323"></script>
+    <script src="js/tabletop-sheets.js?v=2026111334"></script>
+    <script src="js/tabletop-combat.js?v=2026111334"></script>
+    <script src="js/tabletop-status.js?v=2026111334"></script>
+    <script src="js/tabletop-action.js?v=2026111334"></script>
+    <script src="js/tabletop-extra.js?v=2026111334"></script>
+    <script src="js/tabletop-autowall.js?v=2026111334"></script>
+    <script src="js/tabletop-prep.js?v=2026111334"></script>
+    <script src="js/tabletop-dm.js?v=2026111334"></script>
+    <script src="js/tabletop-fight.js?v=2026111334"></script>
+    <script src="js/tabletop-summon.js?v=2026111334"></script>
+    <script src="js/tabletop-class.js?v=2026111334"></script>
+    <script src="js/tabletop.js?v=2026111334"></script>
 </body>
 </html>

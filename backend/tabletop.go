@@ -496,7 +496,7 @@ func (room *TTRoom) sceneView(sc *TTScene, gm bool, name string) map[string]inte
 			continue
 		}
 		if !gm {
-			it = ttPlayerItem(it, ttHPStep(sc.Props))
+			it = ttPlayerItem(it, ttHPStep(sc.Props), room.partyToken(it))
 		}
 		items = append(items, it)
 	}
@@ -679,7 +679,7 @@ func (room *TTRoom) broadcastItems(items []map[string]interface{}) {
 				}
 			}
 			if len(visible) > 0 {
-				msgs = append(msgs, ttMsg(map[string]interface{}{"type": "items", "items": ttPlayerItems(visible, hpStep)}))
+				msgs = append(msgs, ttMsg(map[string]interface{}{"type": "items", "items": room.ttPlayerItems(visible, hpStep)}))
 			}
 			if len(hiddenIDs) > 0 {
 				msgs = append(msgs, ttMsg(map[string]interface{}{"type": "del", "ids": hiddenIDs}))

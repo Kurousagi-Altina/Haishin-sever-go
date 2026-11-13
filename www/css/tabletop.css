@@ -340,7 +340,8 @@ details.feature summary { cursor: pointer; font-size: 13px; }
 .init-row .init-info { flex: 1; min-width: 0; cursor: pointer; }
 .init-row .init-info:hover .name { text-decoration: underline; }
 .init-row .name { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.init-row .sub { display: flex; align-items: center; gap: 6px; font-size: 11px; margin-top: 2px; }
+.init-row .sub { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; font-size: 11px; margin-top: 2px; }
+.init-row .sub .tt-hint { white-space: nowrap; }
 .hp-mini { display: inline-block; width: 46px; height: 5px; border-radius: 3px; background: rgba(0,0,0,0.6); overflow: hidden; }
 .hp-mini i { display: block; height: 100%; }
 .ac-mini { color: #b0bec5; }
@@ -417,6 +418,9 @@ details.feature summary { cursor: pointer; font-size: 13px; }
 .init-chip i { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; font-style: normal;
     font-size: 11px; color: #fff; background: #607d8b; }
 .init-chip b { color: #ffd54f; }
+.init-chip .ib { font-size: 10px; color: #9aa0a6; white-space: nowrap; } /* 先攻：骰值 + 加值 */
+.init-row .init-rollm { display: inline-flex; gap: 3px; } /* 自己掷先攻：普通 / 优势 / 劣势 */
+.init-row .init-rollm .tt-btn { padding: 0 6px; font-size: 11px; }
 .init-chip.active { border-color: #ffd54f; background: #3d3520; }
 .init-chip.mine .nm { color: #90caf9; }
 .init-chip.hid { opacity: 0.55; border-style: dashed; }

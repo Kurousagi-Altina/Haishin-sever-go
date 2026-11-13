@@ -44,6 +44,7 @@ type TTActionReq struct {
 	Mastery       string                 `json:"mastery"`   // weapon mastery (2024): 侵扰 / 削弱 / 失衡 / 推离 / 擦掠 / 横扫 / 缓速 / 迅击
 	SlotLevel     int                    `json:"slotLevel"` // spell slot spent on it (法术反制 gives it back)
 	Melee         bool                   `json:"melee"`     // a melee attack (防御式决斗, 顺势斩)
+	OnceDice      string                 `json:"onceDice"`  // 多目标攻击只加一次的骰子（奥法火器 +1d8）：加在第一个命中的目标上
 	Targets       []TTActionTarget       `json:"targets"`
 	Ref           string                 `json:"-"` // server only: log ref of the resulting entry (手动豁免结算)
 }
@@ -389,6 +390,12 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 			res.CasterID = a.Caster
 		}
 	}
+	if a.OnceDice != "" {
+		if _, err := RollTabletopDice(a.OnceDice); err != nil || len(a.OnceDice) > 20 {
+			a.OnceDice = ""
+		}
+	}
+	onceUsed := false
 	if a.Kind == "attack" && a.Damage != "" { // a crit doubles the dice: make sure that still rolls
 		if _, err := RollTabletopDice(ttDoubleDice(a.Damage)); err != nil {
 			return http.StatusBadRequest, err.Error()
@@ -450,6 +457,17 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 				status["rounds"] = r
 			}
 			ttCopyStatusExtras(status, a.Status)
+			// 「直到施放者的下一回合结束 / 开始」：记下施放者和施加时的回合（战斗中才有意义）
+			if ex, ok := a.Status["exp"].(map[string]interface{}); ok && a.Caster != "" {
+				if c, _ := sc.Props["combat"].(map[string]interface{}); c != nil {
+					when := "end"
+					if ex["when"] == "start" {
+						when = "start"
+					}
+					status["exp"] = map[string]interface{}{"id": a.Caster, "when": when, "k": ttCombatTurnKey(c)}
+					delete(status, "rounds")
+				}
+			}
 		}
 	}
 
@@ -553,6 +571,10 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 			crit = h.Hit == "crit"
 			if landed && a.Damage != "" {
 				expr := a.Damage
+				if a.OnceDice != "" && !onceUsed {
+					expr += "+" + a.OnceDice
+					onceUsed = true
+				}
 				if h.Hit == "crit" {
 					expr = ttDoubleDice(expr)
 				}

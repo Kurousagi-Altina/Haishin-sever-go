@@ -15,6 +15,7 @@ import (
 //   init       initiative count (presence = the token is in the initiative tracker)
 //   initMod    initiative bonus used when rolling (falls back to the linked sheet's "init")
 //   initRolled true once rolled this combat
+//   initD20 / initB  the kept d20 and the bonus of the last server roll (init = initD20 + initB)
 //   initTie    stable random tiebreaker in [0,1) (Owlbear initiative-tracker compatible)
 //   ac         armour class — hidden from players on GM-controlled tokens
 // Scene prop "combat": {"round": n, "turn": tokenId} while a combat is running.
@@ -65,7 +66,7 @@ func ttHiddenFrom(it map[string]interface{}, name string) bool {
 	return owner == "" || owner != name
 }
 
-var ttInitKeys = map[string]bool{"init": true, "initMod": true, "initRolled": true, "initTie": true, "initHidden": true}
+var ttInitKeys = map[string]bool{"init": true, "initMod": true, "initRolled": true, "initTie": true, "initHidden": true, "initD20": true, "initB": true}
 
 // ttHPStep: how coarse players see the HP of GM-controlled tokens, in percent
 // (scene prop hpStep; default 25 = the bar moves in quarters, 0 = exact numbers).
@@ -80,7 +81,8 @@ func ttHPStep(props map[string]interface{}) float64 {
 // control, nor the initiative of tokens hidden from the initiative bar, and see the HP
 // of GM-controlled tokens only as a percentage rounded up to hpStep (exact HP stays
 // server-side unless the boss bar is set to public numbers).
-func ttPlayerItem(it map[string]interface{}, hpStep float64) map[string]interface{} {
+// party: 关联玩家角色卡（或主控是玩家角色的随从）的棋子——队友的血量 / AC 玩家都能看到，即使暂时由 GM 代管
+func ttPlayerItem(it map[string]interface{}, hpStep float64, party bool) map[string]interface{} {
 	// secret doors: a closed one looks like a plain wall, an opened one like an open (locked) door
 	if it["kind"] == "wall" && it["wtype"] == "secret" {
 		cp := make(map[string]interface{}, len(it))
@@ -97,14 +99,15 @@ func ttPlayerItem(it map[string]interface{}, hpStep float64) map[string]interfac
 	}
 	owner, _ := it["owner"].(string)
 	_, hasAC := it["ac"]
-	stripAC := hasAC && owner == ""
+	gmOnly := owner == "" && !party
+	stripAC := hasAC && gmOnly
 	stripInit := ttInitHidden(it)
 	max, hasMax := ttNum(it["hpMax"])
-	coarseHP := hasMax && max > 0 && owner == "" && hpStep > 0 && !ttBool(it["bossExact"])
+	coarseHP := hasMax && max > 0 && gmOnly && hpStep > 0 && !ttBool(it["bossExact"])
 	// earlier forms (transform stack) and raw Owlbear metadata carry exact HP / AC
 	_, hasForms := it["forms"]
 	_, hasObr := it["obr"]
-	stripExtra := owner == "" && it["kind"] == "token" && (hasForms || hasObr)
+	stripExtra := gmOnly && it["kind"] == "token" && (hasForms || hasObr)
 	_, hasEnc := it["enc"] // 遭遇编组名（GM 备团用）
 	stripEnc := hasEnc && owner == ""
 	if !stripAC && !stripInit && !coarseHP && !stripExtra && !stripEnc {
@@ -135,10 +138,10 @@ func ttPlayerItem(it map[string]interface{}, hpStep float64) map[string]interfac
 	return cp
 }
 
-func ttPlayerItems(items []map[string]interface{}, hpStep float64) []map[string]interface{} {
+func (room *TTRoom) ttPlayerItems(items []map[string]interface{}, hpStep float64) []map[string]interface{} {
 	out := make([]map[string]interface{}, len(items))
 	for i, it := range items {
-		out[i] = ttPlayerItem(it, hpStep)
+		out[i] = ttPlayerItem(it, hpStep, room.partyToken(it))
 	}
 	return out
 }
@@ -176,9 +179,18 @@ func (room *TTRoom) broadcastProps(sc *TTScene) {
 
 // ttInitKey / ttSortsAfter: initiative order (init desc, bonus desc, tiebreak desc, id asc),
 // remembered in the combat state so "next" still works after the acting token leaves.
+// ttTieBonus: 先攻同值时比加值——棋子上填的加值，否则用掷先攻时记下的加值（角色卡的先攻）
+func ttTieBonus(it map[string]interface{}) float64 {
+	if m, ok := ttNum(it["initMod"]); ok {
+		return m
+	}
+	m, _ := ttNum(it["initB"])
+	return m
+}
+
 func ttInitKey(it map[string]interface{}) []interface{} {
 	a, _ := ttNum(it["init"])
-	m, _ := ttNum(it["initMod"])
+	m := ttTieBonus(it)
 	t, _ := ttNum(it["initTie"])
 	return []interface{}{a, m, t, it["id"]}
 }
@@ -229,8 +241,7 @@ func (sc *TTScene) initOrder() []map[string]interface{} {
 		if a != b {
 			return a > b
 		}
-		ma, _ := ttNum(list[i]["initMod"])
-		mb, _ := ttNum(list[j]["initMod"])
+		ma, mb := ttTieBonus(list[i]), ttTieBonus(list[j])
 		if ma != mb {
 			return ma > mb
 		}
@@ -292,6 +303,8 @@ func (room *TTRoom) applyInit(u ttUser, gm bool, req *ttOpRequest) (int, string)
 		}
 		it["init"] = float64(res.Total)
 		it["initRolled"] = true
+		it["initD20"] = float64(res.Total - bonus) // 显示成「骰值 + 加值」
+		it["initB"] = float64(bonus)
 		if _, ok := ttNum(it["initTie"]); !ok {
 			it["initTie"] = ttRandomFloat()
 		}
@@ -772,6 +785,25 @@ func (room *TTRoom) companionsOf(sc *TTScene, it map[string]interface{}) []map[s
 		out = append(out, o)
 	}
 	return out
+}
+
+// partyToken: 队伍一方的棋子（关联玩家角色卡，或主控是玩家角色卡的随从）
+func (room *TTRoom) partyToken(it map[string]interface{}) bool {
+	sh := room.tokenSheet(it)
+	if sh == nil {
+		return false
+	}
+	if sh["kind"] == "pc" {
+		return true
+	}
+	if sh["kind"] == "summon" {
+		if mid, _ := sh["master"].(string); mid != "" {
+			if m := room.Sheets[mid]; m != nil && m["kind"] == "pc" {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (room *TTRoom) isPC(it map[string]interface{}) bool {

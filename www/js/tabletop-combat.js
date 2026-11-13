@@ -448,10 +448,11 @@ function rangeVerdict(rng, dist) {
 }
 
 // 远程攻击时 5 尺内有敌对生物（GM 控制、未隐藏）：劣势
+// 2024：5 尺内有看得见你、没失能的敌人 → 远程攻击劣势（怪物被玩家贴身也一样）
 function hostileAdjacent(att) {
-    if (!att.owner) return false;
     return sortedItems().some(function(t) {
-        return t.kind === 'token' && !t.owner && !t.hidden && t.id !== att.id && isCreature(t) && visibleToMe(t) && creatureDist(att, t) <= 5;
+        return t.kind === 'token' && !t.hidden && t.id !== att.id && isCreature(t) && visibleToMe(t) && hostileTo(att, t) && !isDeadToken(t) &&
+            !['incapacitated', 'paralyzed', 'stunned', 'unconscious', 'petrified'].some(function(id) { return hasStatus(t, id); }) && creatureDist(att, t) <= 5;
     });
 }
 
@@ -541,9 +542,11 @@ function gmPref(key, def) {
 }
 function setGmPref(key, on) { try { localStorage.setItem(key, on ? '1' : '0'); } catch (e) { /* 无痕模式等 */ } }
 
+// 先攻同值时比加值：棋子上填的加值，否则用掷先攻时记下的加值（和服务器 ttTieBonus 一致）
+function tieBonus(t) { return t.initMod != null && t.initMod !== '' ? num(t.initMod, 0) : num(t.initB, 0); }
 function initOrder() {
     return sortedItems().filter(inInit).sort(function(a, b) {
-        return num(b.init, 0) - num(a.init, 0) || num(b.initMod, 0) - num(a.initMod, 0) ||
+        return num(b.init, 0) - num(a.init, 0) || tieBonus(b) - tieBonus(a) ||
             num(b.initTie, 0) - num(a.initTie, 0) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
     });
 }
@@ -552,6 +555,28 @@ function initBonus(it) {
     if (it.initMod != null && it.initMod !== '') return num(it.initMod, 0);
     var sh = it.sheet && sheets[it.sheet];
     return sh ? num(String(sh.init || '0').replace('+', ''), 0) : 0;
+}
+
+// 服务器掷的先攻：骰值（initD20）+ 加值（initB）；手动改过先攻值（对不上）就只显示总数
+function initBreak(it) {
+    if (!it || !it.initRolled || it.initD20 == null || it.initB == null) return null;
+    var d = num(it.initD20, NaN), b = num(it.initB, NaN);
+    return isFinite(d) && isFinite(b) && d + b === num(it.init, NaN) ? { d: d, b: b } : null;
+}
+function initText(it) {
+    var k = initBreak(it);
+    return k ? '🎲' + k.d + ' ' + (signed(k.b) || '+0') + ' = ' + num(it.init, 0) : '';
+}
+
+// 「自动掷先攻」没勾（manualInit）的单位：群体自动掷时跳过（玩家自己点「掷先攻」掷自己的除外）
+function autoInitOK(t) { return !t.manualInit || (!me.gm && t.owner === me.name); }
+function initPending(t) { return !t.initRolled && !num(t.init, 0); } // 还没有先攻值
+// 提示自己控制的、要自己掷先攻的角色
+function promptManualInit() {
+    var mine = initOrder().filter(function(t) { return t.manualInit && !t.initRolled && t.owner && t.owner === me.name; });
+    if (!mine.length) return;
+    notice('🎲 该掷先攻了：' + mine.map(function(t) { return (t.label || '未命名') + '（加值 ' + (signed(initBonus(t)) || '+0') + '）'; }).join('、') +
+        '。在「⚔ 战斗」页点 🎲 掷先攻（可选普通 / 优势 / 劣势）', false, 12000);
 }
 
 function joinInit(ids) {
@@ -616,6 +641,11 @@ function combatAction(action) {
         return;
     }
     if (action === 'end' && !confirm('结束战斗？先攻列表会保留，下次开战需要重新掷先攻。')) return;
+    if (action === 'start') {
+        var pend = initOrder().filter(initPending);
+        if (pend.length && !confirm('还有 ' + pend.length + ' 个单位没掷先攻：' + pend.map(function(t) { return t.label || '未命名'; }).slice(0, 8).join('、') +
+            (pend.length > 8 ? '…' : '') + '\n它们按先攻 0 排在最后。仍要开始战斗？')) return;
+    }
     op({ op: 'combat', action: action });
 }
 
@@ -657,27 +687,32 @@ function renderCombat() {
                 '<button class="tt-btn small danger" data-cact="ambush"' + (order.length ? '' : ' disabled') + ' title="突袭开战：全员显示「伏击」">伏击</button>' +
                 '<button class="tt-btn small primary" data-cact="start"' + (order.length ? '' : ' disabled') + '>开始战斗</button>' : '') + '</div>';
     }
-    var unrolled = order.filter(function(t) { return !t.initRolled && canEdit(t); });
+    var unrolled = order.filter(function(t) { return !t.initRolled && canEdit(t) && autoInitOK(t); });
+    var waitInit = order.filter(function(t) { return !t.initRolled && t.manualInit && !(!me.gm && t.owner === me.name); });
     h += '<div class="lobby-row" style="gap:6px;">' +
         '<button class="tt-btn small" data-cact="join" title="把地图上选中的棋子加入先攻">加入选中棋子</button>' +
         '<button class="tt-btn small" data-cact="custom" title="手动填写一个攻击 / 法术 / 治疗，在地图上选目标并自动结算">⚡ 自定义行动</button>' +
         (unrolled.length ? '<button class="tt-btn small" data-cact="rollall" title="为' + (me.gm ? '还没掷先攻的' : '你的') + '棋子掷先攻（使用骰子栏的优势 / 劣势）">掷先攻（' + unrolled.length + '）</button>' : '') +
         '</div>';
+    if (waitInit.length) h += '<div class="tt-hint">⏳ 等待自己掷先攻：' + waitInit.map(function(t) { return escapeHtml(t.label || '未命名'); }).join('、') + '</div>';
     if (!order.length) {
         h += '<div class="tt-hint">还没有棋子加入先攻。在地图上选中棋子后点「加入选中棋子」，或在棋子属性面板里加入。</div>';
     }
     h += '<div class="init-list">' + order.map(function(it) {
         var edit = canEdit(it), active = it.id === cur;
         return '<div class="init-row' + (active ? ' active' : '') + (it.owner === me.name ? ' mine' : '') + (it.hidden ? ' hidden-tok' : '') + '" data-id="' + escapeHtml(it.id) + '">' +
-            (edit ? '<input class="tt-input init-val" type="number" data-init="' + escapeHtml(it.id) + '" value="' + num(it.init, 0) + '" title="先攻值">' :
+            (edit ? '<input class="tt-input init-val" type="number" data-init="' + escapeHtml(it.id) + '" value="' + num(it.init, 0) + '" title="先攻值' + (initBreak(it) ? '：' + initText(it) : '') + '">' :
                 '<span class="init-val">' + num(it.init, 0) + '</span>') +
             '<div class="init-info" data-focus="' + escapeHtml(it.id) + '" title="定位到棋子"><div class="name">' + (active ? '▶ ' : '') + escapeHtml(it.label || '未命名') +
             (it.hidden ? ' <span class="tt-hint">隐藏</span>' : initHiddenFor(it) ? ' <span class="tt-hint" title="玩家的先攻条里看不到它">先攻隐藏</span>' : '') +
-            (!it.initRolled ? ' <span class="tt-hint">未掷</span>' : '') +
+            (!it.initRolled ? ' <span class="tt-hint">' + (it.manualInit ? '自己掷' : '未掷') + '</span>' : '') +
             statusList(it).map(function(s) { return ' <span title="' + escapeHtml(statusLabel(s)) + '">' + escapeHtml(statusIcon(s)) + '</span>'; }).join('') + '</div>' +
             '<div class="sub">' + hpMini(it) + (it.ac != null && it.ac !== '' ? '<span class="ac-mini" title="护甲等级">🛡' + escapeHtml(String(it.ac)) + '</span>' : '') +
-            '<span class="tt-hint">先攻 ' + (signed(initBonus(it)) || '+0') + '</span></div></div>' +
-            (edit ? '<button class="tt-btn small" data-cact="roll" data-id="' + escapeHtml(it.id) + '" title="掷先攻 d20' + (signed(initBonus(it)) || '') + '">🎲</button>' +
+            '<span class="tt-hint">' + (initBreak(it) ? '先攻 ' + initText(it) : '先攻加值 ' + (signed(initBonus(it)) || '+0')) + '</span>' +
+            (edit && it.manualInit && !it.initRolled ? '<span class="init-rollm">' + [['normal', '🎲 普通'], ['adv', '优势'], ['dis', '劣势']].map(function(m) { // 自己掷先攻：选普通 / 优势 / 劣势
+                return '<button class="tt-btn small" data-cact="roll" data-mode="' + m[0] + '" data-id="' + escapeHtml(it.id) + '" title="由服务器掷先攻 d20' + (signed(initBonus(it)) || '') + (m[0] === 'normal' ? '' : '（' + m[1] + '）') + '">' + m[1] + '</button>';
+            }).join('') + '</span>' : '') + '</div></div>' +
+            (edit ? (it.manualInit && !it.initRolled ? '' : '<button class="tt-btn small" data-cact="roll" data-id="' + escapeHtml(it.id) + '" title="掷先攻 d20' + (signed(initBonus(it)) || '') + '">🎲</button>') +
                 '<button class="tt-btn small" data-cact="leave" data-id="' + escapeHtml(it.id) + '" title="移出先攻">✕</button>' : '') +
             (me.gm ? '<span class="init-move"><button class="tt-btn small" data-cact="up" data-id="' + escapeHtml(it.id) + '" title="在先攻顺序中上移">▲</button>' +
                 '<button class="tt-btn small" data-cact="down" data-id="' + escapeHtml(it.id) + '" title="在先攻顺序中下移">▼</button></span>' +
@@ -703,7 +738,7 @@ function onCombatPaneClick(e) {
     case 'ambush': startCombatWith('ambush'); break;
     case 'join': joinInit(selectedIds()); break;
     case 'custom': openActionDialog(null, attackerToken(), null); break;
-    case 'roll': rollInit([b.dataset.id], e.shiftKey ? 'adv' : ''); break;
+    case 'roll': rollInit([b.dataset.id], b.dataset.mode || (e.shiftKey ? 'adv' : '')); break;
     case 'leave': leaveInit(b.dataset.id); break;
     case 'up': case 'down': moveInit(b.dataset.id, b.dataset.cact === 'up' ? -1 : 1); break;
     case 'setturn': op({ op: 'combat', action: 'set', ids: [b.dataset.id] }); break;
@@ -718,7 +753,7 @@ function onCombatPaneClick(e) {
         renderCombatHud();
         break;
     case 'rollall':
-        rollInit(initOrder().filter(function(t) { return !t.initRolled && canEdit(t); }).map(function(t) { return t.id; }));
+        rollInit(initOrder().filter(function(t) { return !t.initRolled && canEdit(t) && autoInitOK(t); }).map(function(t) { return t.id; }));
         break;
     }
 }
@@ -751,16 +786,17 @@ function renderCombatHud() {
             var down = (t.hpMax > 0 && num(t.hp, t.hpMax) <= 0) || hasStatus(t, 'dead');
             var cls = 'init-chip' + (c && t.id === c.turn ? ' active' : '') + (t.owner && t.owner === me.name ? ' mine' : '') +
                 (t.hidden || initHiddenFor(t) ? ' hid' : '') + (down ? ' down' : '');
-            var tip = escapeHtml((t.label || '未命名') + ' · 先攻 ' + num(t.init, 0) + (t.hidden ? ' · 地图上隐藏' : initHiddenFor(t) ? ' · 玩家看不到' : ''));
+            var tip = escapeHtml((t.label || '未命名') + ' · 先攻 ' + (initText(t) || num(t.init, 0)) + (t.hidden ? ' · 地图上隐藏' : initHiddenFor(t) ? ' · 玩家看不到' : ''));
             var col = escapeHtml(t.color || (t.owner ? '#1e88e5' : '#c62828'));
+            var kb = initBreak(t), ib = kb ? '<span class="ib">' + kb.d + (signed(kb.b) || '+0') + '</span>' : ''; // 骰值 + 加值
             if (portrait) { // 带立绘：棋子图片 + 先攻值 + 名字
                 return '<span class="' + cls + ' pt" data-focus="' + escapeHtml(t.id) + '" title="' + tip + '"><span class="pt-img" style="border-color:' + col + '">' +
                     (t.asset ? '<img src="' + escapeHtml(assetURL(t.asset)) + '" alt="" draggable="false">' : '<i style="background:' + col + '">' + escapeHtml((t.label || '?').slice(0, 1)) + '</i>') +
-                    '<b>' + num(t.init, 0) + '</b>' + (t.hidden || initHiddenFor(t) ? '<em>🙈</em>' : '') + '</span><span class="nm">' + escapeHtml(chipName(t.label)) + '</span></span>';
+                    '<b>' + num(t.init, 0) + '</b>' + (t.hidden || initHiddenFor(t) ? '<em>🙈</em>' : '') + '</span><span class="nm">' + escapeHtml(chipName(t.label)) + '</span>' + ib + '</span>';
             }
             return '<span class="' + cls + '" data-focus="' + escapeHtml(t.id) + '" title="' + tip + '">' +
                 '<i style="background:' + escapeHtml(t.color || (t.owner ? '#1e88e5' : '#c62828')) + '">' + escapeHtml((t.label || '?').slice(0, 1)) + '</i>' +
-                '<span class="nm">' + escapeHtml(chipName(t.label)) + '</span><b>' + num(t.init, 0) + '</b>' +
+                '<span class="nm">' + escapeHtml(chipName(t.label)) + '</span><b>' + num(t.init, 0) + '</b>' + ib +
                 (t.hidden || initHiddenFor(t) ? '🙈' : '') + '</span>';
         };
         // 跟随主控的随从挂在主控后面（在主控的回合行动）
@@ -772,7 +808,7 @@ function renderCombatHud() {
             '<span class="init-chips">' + chips + '</span>' +
             (curShown && cur && isCreatureToken(cur) ? '<span class="hud-move" title="本回合已移动 / 速度">🏃 ' + fmtDist(movedThisTurn(cur)) + (tokenSpeed(cur) ? ' / ' + tokenSpeed(cur) : '') + '</span>' : '') +
             (curShown ? econHudHtml(cur) : '') +
-            (curShown && cur.owner === me.name && isPC(cur) && cur.hpMax > 0 && num(cur.hp, cur.hpMax) <= 0 && !hasStatus(cur, 'dead') && !hasStatus(cur, 'stable') ?
+            (curShown && (me.gm || cur.owner === me.name) && isPC(cur) && cur.hpMax > 0 && num(cur.hp, cur.hpMax) <= 0 && !hasStatus(cur, 'dead') && !hasStatus(cur, 'stable') ?
                 '<button class="tt-btn small" data-cact="death" title="0 生命值：掷死亡豁免">💀 死亡豁免</button>' : '') +
             (c && (me.gm || (mine && curShown)) ? '<button class="tt-btn small primary" data-cact="next" title="快捷键 N">' + (me.gm ? '下一位' : '结束回合') + '</button>' : '') +
             (c ? '<i class="hud-follow' + (gmPref('ttFollowTurn', true) ? ' on' : '') + '" data-cact="follow" title="镜头跟随当前行动者（点击开关）">🎥</i>' : '') +
@@ -785,6 +821,10 @@ function renderCombatHud() {
             (ci ? ' · ' + escapeHtml(fmtDist(ci.dist)) + ' · ' + escapeHtml(coverText(ci.level).replace(/（.*）/, '')) : '') +
             ' <i data-cact="untarget" title="取消目标">✕</i></div>');
     }
+    var zp = zonePrompts.filter(function(p) { var z = scene.items[p.z]; return z && scene.items[p.t]; });
+    if (zp.length) parts.push('<div class="hud-line">' + zp.map(function(p, i) {
+        return '<button class="tt-btn small primary" data-zp="' + i + '" title="' + escapeHtml(p.text) + '：打开这个区域对它的结算">⚡ ' + escapeHtml(p.text) + '</button>';
+    }).join(' ') + ' <i data-zp="x" title="忽略">✕</i></div>');
     hud.innerHTML = parts.join('');
     var wasHidden = hud.style.display === 'none';
     hud.style.display = parts.length ? '' : 'none';
@@ -805,6 +845,14 @@ function onCombatHudDblClick(e) {
 }
 
 function onCombatHudClick(e) {
+    var zb = e.target.closest('[data-zp]');
+    if (zb) {
+        var zp = zonePrompts.filter(function(p) { return scene.items[p.z] && scene.items[p.t]; }), pi = zb.dataset.zp;
+        if (pi === 'x') zonePrompts = [];
+        else if (zp[+pi]) { zoneResolveOn(scene.items[zp[+pi].z], zp[+pi].t); zonePrompts = zonePrompts.filter(function(p) { return p !== zp[+pi]; }); }
+        renderCombatHud();
+        return;
+    }
     var ec = e.target.closest('[data-econ]');
     if (ec) { toggleEcon(ec.dataset.econ); return; } // 动作经济（tabletop-fight.js）
     var f = e.target.closest('[data-focus]');
@@ -821,6 +869,7 @@ function onCombatChanged() {
     var c = combatState(), turn = c ? c.turn + '#' + c.round : '';
     if (turn !== lastTurn) {
         var cur = c && scene.items[c.turn];
+        if (lastTurn !== null && c) zoneTurnPrompts(String(lastTurn).split('#')[0], c.turn); else zonePrompts = [];
         if (lastTurn !== null && c) {
             if (cur && cur.owner === me.name) notice('⚔ 轮到你了：' + (cur.label || ''), false, 4000);
             else {
@@ -937,7 +986,10 @@ function combatPanelHtml(it, row) {
     if (inInit(it)) {
         h += row('先攻', '<input class="tt-input narrow" data-prop="init" type="number" value="' + num(it.init, 0) + '">' +
             '<span class="tt-hint">加值</span><input class="tt-input narrow" data-prop="initMod" type="number" value="' + (it.initMod != null ? it.initMod : '') + '" placeholder="' + initBonus(it) + '">' +
-            '<button class="tt-btn small" data-act="initroll" title="掷先攻">🎲</button><button class="tt-btn small" data-act="initleave" title="移出先攻">✕</button>');
+            '<button class="tt-btn small" data-act="initroll" title="掷先攻">🎲</button>' +
+            (it.manualInit && !it.initRolled ? '<button class="tt-btn small" data-act="initroll" data-mode="adv" title="以优势掷先攻">优势</button><button class="tt-btn small" data-act="initroll" data-mode="dis" title="以劣势掷先攻">劣势</button>' : '') +
+            '<button class="tt-btn small" data-act="initleave" title="移出先攻">✕</button>' +
+            (initBreak(it) ? '<span class="tt-hint">' + escapeHtml(initText(it)) + '</span>' : ''));
         if (me.gm) h += row('', '<label title="玩家的先攻条和战斗栏里看不到这个单位（地图上仍可见）"><input type="checkbox" data-prop="initHidden"' + (it.initHidden ? ' checked' : '') + '> 在玩家的先攻条中隐藏</label>');
     } else {
         h += row('先攻', '<button class="tt-btn small" data-act="initjoin">加入先攻</button>' +
@@ -967,6 +1019,8 @@ function onCombatPanelClick(b, it) {
         if (!r) return true;
         r.cur = Math.max(0, Math.min(num(r.max, 0) || Infinity, num(r.cur, 0) + parseInt(b.dataset.delta, 10)));
         patchItems([{ id: it.id, res: res }]);
+        var sl = /^(\d)环法术位$/.exec(r.name || ''), ssh = sl && it.sheet && sheets[it.sheet], so = ssh && slotOf(ssh, +sl[1]);
+        if (so && so.cur !== r.cur) changeSlot(ssh, so.idx, r.cur - so.cur); // 棋子上改法术位 → 角色卡同步
         return true;
     }
     if (b.dataset.resdel != null) {
@@ -988,7 +1042,7 @@ function onCombatPanelClick(b, it) {
         return true;
     case 'initjoin': joinInit([it.id]); return true;
     case 'initleave': leaveInit(it.id); return true;
-    case 'initroll': rollInit([it.id]); return true;
+    case 'initroll': rollInit([it.id], b.dataset.mode || ''); return true;
     case 'target': setTarget(it.id); return true;
     }
     return false;

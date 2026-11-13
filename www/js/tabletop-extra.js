@@ -233,8 +233,16 @@ function startCombatWith(kind) {
     showBanner(text, kind === 'ambush' ? '#ef5350' : '#ffd54f');
     sendFx({ t: 'banner', text: text, color: kind === 'ambush' ? '#ef5350' : '#ffd54f' });
     if (kind === 'ambush') op({ op: 'chat', text: '⚠ 伏击！被突袭的生物以劣势进行先攻检定（2024 规则）' });
-    var unrolled = initOrder().filter(function(t) { return !t.initRolled && canEdit(t); }).map(function(t) { return t.id; });
+    var order = initOrder();
+    var unrolled = order.filter(function(t) { return !t.initRolled && canEdit(t) && autoInitOK(t); }).map(function(t) { return t.id; });
+    var waiting = order.filter(function(t) { return !t.initRolled && t.manualInit; }); // 设为自己掷先攻的：不替他们掷
     if (unrolled.length) rollInit(unrolled);
+    if (waiting.length) {
+        sendFx({ t: 'initask' }); // 让这些角色的玩家弹提示
+        notice('⏳ 等待 ' + waiting.map(function(t) { return t.label || '未命名'; }).join('、') + ' 自己掷先攻；都掷完后点「开始战斗」', false, 10000);
+        renderCombat();
+        return;
+    }
     setTimeout(function() { op({ op: 'combat', action: 'start' }); }, unrolled.length ? 700 : 0);
 }
 
