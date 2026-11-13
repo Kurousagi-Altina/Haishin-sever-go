@@ -263,7 +263,7 @@ function sheetHtml(sh, preview) {
             (tok ? '<span class="tt-hint">正在查看棋子「' + escapeHtml(tok.label || '') + '」</span>' : '') + '</div>';
     }
 
-    if (!preview) h += summonHeadHtml(sh, edit);
+    if (!preview) h += summonHeadHtml(sh, edit) + classHeadHtml(sh, edit);
     if (!preview && edit && sheetView.edit && isSummonSheet(sh)) h += summonEditHtml(sh);
 
     if (sh.kind === 'item') {

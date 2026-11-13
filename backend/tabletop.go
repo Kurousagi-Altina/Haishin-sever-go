@@ -904,11 +904,14 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		}
 
 	case "action.react": // 拨挡攻击 / 直觉闪避 / 盾牌术 after being hit (tabletop_traits.go)
-		rid := "" // 拦截：用反应的是目标旁边的另一个棋子
+		rid, xid := "", "" // 拦截 / 符文之盾 / 云雾符文：用反应的是另一个棋子；云雾符文的新目标在 ids[1]
 		if len(req.IDs) > 0 {
 			rid = req.IDs[0]
 		}
-		if st, msg := room.reactAction(u, gm, req.Text, req.Target, req.Mode, rid); st != 0 {
+		if len(req.IDs) > 1 {
+			xid = req.IDs[1]
+		}
+		if st, msg := room.reactAction(u, gm, req.Text, req.Target, req.Mode, rid, xid); st != 0 {
 			return st, msg
 		}
 

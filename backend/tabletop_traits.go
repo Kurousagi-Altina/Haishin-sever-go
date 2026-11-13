@@ -353,6 +353,13 @@ func (room *TTRoom) traitsOf(it map[string]interface{}) *ttTraits {
 			t.condImmune["charmed"], t.condImmune["frightened"] = "无我狂暴", "无我狂暴"
 		}
 	}
+	if conds["giantmight"] { // 符文骑士·巨人之力：力量豁免优势
+		t.saveAdv = append(t.saveAdv, ttSaveAdv{ab: "str", src: "巨人之力"})
+	}
+	if conds["frostrune"] { // 符文骑士·寒霜符文：力量 / 体质豁免 +2
+		t.addSaveBonus("str", 2, "寒霜符文")
+		t.addSaveBonus("con", 2, "寒霜符文")
+	}
 	for _, st := range ttStatusMaps(it) { // 状态带的临时抗性（吸收元素等）
 		if list, ok := st["resist"].([]interface{}); ok {
 			name, _ := st["name"].(string)
@@ -595,14 +602,14 @@ func (room *TTRoom) reduceHit(it map[string]interface{}, logID string, taken, le
 	return "", true
 }
 
-func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactorID string) (int, string) {
+func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactorID, extraID string) (int, string) {
 	var e *TTLogEntry
 	for i := range room.Log {
 		if room.Log[i].ID == logID {
 			e = &room.Log[i]
 		}
 	}
-	if e == nil || e.Act == nil || (e.Act.Kind != "attack" && !((mode == "legendary" || mode == "interpose") && e.Act.Kind == "save") && mode != "absorb") {
+	if e == nil || e.Act == nil || (e.Act.Kind != "attack" && !((mode == "legendary" || mode == "interpose" || mode == "indomitable") && e.Act.Kind == "save") && mode != "absorb") {
 		return http.StatusBadRequest, "找不到这次结算（太久远的记录不能再反应）"
 	}
 	var h *TTActionHit
@@ -615,8 +622,15 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactor
 		return http.StatusBadRequest, "这次攻击没有打到这个棋子"
 	}
 	ref := logID + ":" + tokenID
-	if mode == "intercept" { // 拦截是别人的反应，和目标自己的反应互不影响
+	switch mode { // 别人的反应 / 不是反应的特性，和目标自己的反应互不影响
+	case "intercept":
 		ref += ":ic"
+	case "runeshield":
+		ref += ":rs"
+	case "cloud":
+		ref += ":cr"
+	case "indomitable":
+		ref += ":ind"
 	}
 	for _, x := range room.Log {
 		if x.Ref == ref {
@@ -628,17 +642,17 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactor
 	if it == nil {
 		return http.StatusBadRequest, "目标不在当前场景"
 	}
-	rx := it // the token spending its reaction (拦截: an ally next to the target)
-	if mode == "intercept" {
+	rx := it // the token spending its reaction (拦截 / 符文之盾 / 云雾符文: another token)
+	if mode == "intercept" || mode == "runeshield" || mode == "cloud" {
 		rx = sc.Items[reactorID]
-		if rx == nil || rx["kind"] != "token" || reactorID == tokenID {
-			return http.StatusBadRequest, "找不到拦截的棋子"
+		if rx == nil || rx["kind"] != "token" || (reactorID == tokenID && mode != "cloud") {
+			return http.StatusBadRequest, "找不到用反应的棋子"
 		}
 	}
 	if owner, _ := rx["owner"].(string); !gm && (owner == "" || owner != u.name) {
 		return http.StatusForbidden, "只能替自己的棋子使用反应"
 	}
-	if mode != "legendary" && mode != "absorb" && mode != "interpose" && h.Hit != "hit" && h.Hit != "crit" {
+	if mode != "legendary" && mode != "absorb" && mode != "interpose" && mode != "indomitable" && h.Hit != "hit" && h.Hit != "crit" {
 		return http.StatusBadRequest, "这次攻击没有命中"
 	}
 	sh := room.tokenSheet(it)
@@ -649,6 +663,7 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactor
 	var roll *TTDiceResult
 	name, note, back, after, removeStatus := "", "", 0, 0, false
 	absorbType := ""
+	var redirect map[string]interface{} // 云雾符文：改成的新目标
 	switch mode {
 	case "deflect":
 		if !ttSheetHas(sh, "拨挡攻击", "拨挡飞弹", "拨挡", "deflectattacks", "deflectmissiles") {
@@ -789,6 +804,91 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactor
 		absorbType = best
 		name = "吸收元素"
 		note = best + "伤害减半：" + strconv.Itoa(amt) + " → " + strconv.Itoa(amt/2) + "，直到下回合开始对" + best + "有抗性"
+	case "indomitable": // 战士·不屈（9 级）：豁免失败时重掷，加战士等级，必须用新结果（不是反应）
+		if h.Saved != "no" {
+			return http.StatusBadRequest, "只有豁免失败时才能用不屈"
+		}
+		flv := ttClassLevel(sh, "战士")
+		if flv < 9 {
+			return http.StatusBadRequest, "需要 9 级战士的「不屈」"
+		}
+		ab := e.Act.Save
+		if ab == "strdex" {
+			ab = "str"
+			if room.saveBonus(it, "dex") > room.saveBonus(it, "str") {
+				ab = "dex"
+			}
+		}
+		r, notes, err := room.rollTokenSave(it, ab, nil, nil)
+		if err != nil {
+			return http.StatusBadRequest, err.Error()
+		}
+		if r == nil {
+			return http.StatusBadRequest, "这次豁免是自动失败（麻痹 / 震慑等），重掷也没用"
+		}
+		roll = r
+		total := r.Total + flv
+		name = "不屈"
+		note = "重掷豁免 " + strconv.Itoa(r.Total) + " + 战士等级 " + strconv.Itoa(flv) + " = " + strconv.Itoa(total)
+		if len(notes) > 0 {
+			note += "（" + strings.Join(notes, "；") + "）"
+		}
+		if total < e.Act.DC {
+			note += "，仍低于 DC " + strconv.Itoa(e.Act.DC) + "：还是失败"
+		} else {
+			left := 0
+			if e.Act.Half {
+				left = taken / 2
+			}
+			back, after = taken-left, left
+			removeStatus = h.Status != ""
+			note += "，达到 DC " + strconv.Itoa(e.Act.DC) + "：豁免成功"
+			if taken > 0 {
+				note += "，伤害 " + strconv.Itoa(taken) + " → " + strconv.Itoa(left)
+			}
+		}
+	case "runeshield": // 符文骑士·符文之盾（7 级）：60 尺内另一个生物被命中时，用反应让攻击者重掷 d20
+		if !ttSheetHas(room.tokenSheet(rx), "符文之盾", "runicshield") && ttClassLevel(room.tokenSheet(rx), "战士") < 7 {
+			return http.StatusBadRequest, "角色卡上没有「符文之盾」"
+		}
+		if h.Attack == nil {
+			return http.StatusBadRequest, "这次攻击没有命中骰"
+		}
+		ac, ok := ttNum(it["ac"])
+		if !ok || ac <= 0 {
+			return http.StatusBadRequest, "棋子没有 AC"
+		}
+		if ttStatusIDs(it)["hasted"] {
+			ac += 2
+		}
+		ac += float64(room.traitsOf(it).ac)
+		r, err := RollTabletopDice("1d20")
+		if err != nil {
+			return http.StatusBadRequest, err.Error()
+		}
+		roll = r
+		bonus := h.Attack.Total - ttNaturalD20(h.Attack)
+		nt := r.Total + bonus
+		name = "符文之盾"
+		if r.Total == 20 || (r.Total != 1 && float64(nt) >= ac+float64(h.Cover)) {
+			note = ttItemLabel(rx) + " 的符文之盾：攻击者重掷 d20 = " + strconv.Itoa(r.Total) + "，攻击 " + strconv.Itoa(nt) + "：仍然命中"
+		} else {
+			back, after = taken, 0
+			removeStatus = h.Status != ""
+			note = ttItemLabel(rx) + " 的符文之盾：攻击者重掷 d20 = " + strconv.Itoa(r.Total) + "，攻击 " + strconv.Itoa(nt) + "：改为未命中"
+		}
+	case "cloud": // 符文骑士·云雾符文：你或 30 尺内的生物被命中时，把这次攻击改给 30 尺内另一个生物（同一个命中值）
+		if !ttSheetHas(room.tokenSheet(rx), "云之符文", "云雾符文", "cloudrune") {
+			return http.StatusBadRequest, "角色卡上没有「云雾符文」"
+		}
+		redirect = sc.Items[extraID]
+		if redirect == nil || redirect["kind"] != "token" || extraID == tokenID || extraID == e.Act.CasterID {
+			return http.StatusBadRequest, "新目标无效（不能是原目标或攻击者）"
+		}
+		back, after = taken, 0
+		removeStatus = h.Status != ""
+		name = "云雾符文"
+		note = ttItemLabel(rx) + " 的云雾符文：这次攻击改为指向 " + ttItemLabel(redirect)
 	case "legendary": // 传奇抗性：豁免失败改为成功
 		if h.Saved != "no" {
 			return http.StatusBadRequest, "只有豁免失败时才能用传奇抗性"
@@ -817,14 +917,14 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactor
 	default:
 		return http.StatusBadRequest, "未知的反应"
 	}
-	if mode != "legendary" && room.setting("hintEcon", true) { // 记下反应已用（自己回合开始时恢复）
+	if mode != "legendary" && mode != "indomitable" && room.setting("hintEcon", true) { // 记下反应已用（自己回合开始时恢复）
 		econ, _ := rx["econ"].(map[string]interface{})
 		if econ == nil {
 			econ = map[string]interface{}{}
 		}
 		econ["r"] = true
 		rx["econ"] = econ
-		if mode == "intercept" {
+		if rx["id"] != it["id"] {
 			room.broadcastItems([]map[string]interface{}{rx})
 		}
 	}
@@ -883,7 +983,68 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactor
 		Targets: []*TTActionHit{{ID: tokenID, Name: h.Name, Amount: back, Note: note}}}
 	room.addLog(ne)
 	room.rememberUndo(ne.ID, []ttUndoRec{snap})
+	if redirect != nil { // 云雾符文：同一个命中值对新目标判定，命中则重新掷伤害
+		room.cloudRedirect(u, e, h, redirect)
+	}
 	return 0, ""
+}
+
+// cloudRedirect: 云雾符文把攻击改给新目标——同一个命中值对比新目标的 AC，命中则按原伤害骰重新掷（重击时骰子已翻倍）。
+func (room *TTRoom) cloudRedirect(u ttUser, e *TTLogEntry, h *TTActionHit, nt map[string]interface{}) {
+	id, _ := nt["id"].(string)
+	label := ttItemLabel(nt)
+	sys := func(text string) {
+		ne := newLogEntry("sys", u.name)
+		ne.Text = text
+		ne.Hidden = e.Hidden
+		room.addLog(ne)
+	}
+	if h.Attack == nil || h.Damage == nil || h.Damage.Expr == "" {
+		sys("云雾符文：攻击改给 " + label + "，这次攻击没有可以重掷的伤害，请手动结算")
+		return
+	}
+	ac, ok := ttNum(nt["ac"])
+	if !ok || ac <= 0 {
+		sys("云雾符文：攻击改给 " + label + "（命中值 " + strconv.Itoa(h.Attack.Total) + "），新目标没有 AC，请手动判定")
+		return
+	}
+	if ttStatusIDs(nt)["hasted"] {
+		ac += 2
+	}
+	ac += float64(room.traitsOf(nt).ac)
+	nat := ttNaturalD20(h.Attack)
+	if nat != 20 && float64(h.Attack.Total) < ac {
+		sys("云雾符文：攻击改给 " + label + "，命中值 " + strconv.Itoa(h.Attack.Total) + " 未命中")
+		return
+	}
+	req := &ttOpRequest{Op: "action", Hidden: e.Hidden, Act: &TTActionReq{Name: e.Act.Name + "（云雾符文转移）", Kind: "auto", Damage: h.Damage.Expr,
+		DamageType: e.Act.DamageType, Caster: e.Act.CasterID, Magic: e.Act.Magic, Targets: []TTActionTarget{{ID: id}}}}
+	if st, msg := room.applyAction(u, true, req); st != 0 {
+		sys("云雾符文：攻击改给 " + label + " 时出错：" + msg)
+	}
+}
+
+// ttClassLevel: the level in one class from the sheet's class text (「战士 5」「战士 3 / 游荡者 2」), else the total level
+// when the class is named without a number, else 0.
+func ttClassLevel(sh map[string]interface{}, cn string) int {
+	if sh == nil {
+		return 0
+	}
+	class, _ := sh["class"].(string)
+	sub, _ := sh["subclass"].(string)
+	s := class + " " + sub
+	if m := regexp.MustCompile(regexp.QuoteMeta(cn) + `\s*(\d+)`).FindStringSubmatch(s); m != nil {
+		n, _ := strconv.Atoi(m[1])
+		return n
+	}
+	if strings.Contains(s, cn) {
+		lv, _ := ttNum(sh["level"])
+		if lv < 1 {
+			lv = 1
+		}
+		return int(lv)
+	}
+	return 0
 }
 
 // ttSheetProf: the sheet's proficiency bonus (written on the sheet, else from level / CR).
