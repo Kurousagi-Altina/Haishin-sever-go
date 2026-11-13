@@ -38,6 +38,7 @@ function guessCost(a, text) {
 
 // 行动结算后：给施放者记上消耗；一回合只能用法术位施放一个法术（2024）
 function econAfterAction(a, caster) {
+    caster = econOwner(caster); // 先攻外的随从记在主控身上
     if (!hintOn('hintEcon') || !caster || !canEdit(caster) || !combatState() || !inInit(caster)) return;
     var cost = a.cost || 'a';
     var e = JSON.parse(JSON.stringify(caster.econ || {}));
@@ -397,6 +398,7 @@ function sheetAbilityMod(sh, key) {
 function sheetProf(sh) {
     var p = parseInt(String(sh && sh.prof || '').replace('+', ''), 10);
     if (p > 0) return p;
+    if (masterSheet(sh)) return sheetProf(masterSheet(sh)); // 随从用主控的熟练加值
     var cr = String(sh && sh.cr || '').replace(/\s/g, ''), c = cr.indexOf('/') > 0 ? 0 : parseInt(cr, 10) || 0;
     if (sh && sh.kind !== 'pc' && cr) return c >= 29 ? 9 : c >= 25 ? 8 : c >= 21 ? 7 : c >= 17 ? 6 : c >= 13 ? 5 : c >= 9 ? 4 : c >= 5 ? 3 : 2;
     var lv = parseInt(sh && sh.level, 10) || 1;

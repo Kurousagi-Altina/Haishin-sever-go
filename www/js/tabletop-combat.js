@@ -252,7 +252,8 @@ function movedThisTurn(it) { var k = turnKey(); return k && it.movedKey === k ? 
 // 移动后要一起写进棋子的「本回合已移动」（只在它自己的回合，且自己能改这个棋子时）
 function movedPatch(it, ft) {
     var c = combatState();
-    if (!c || c.turn !== it.id || !canEdit(it) || !(ft > 0)) return null;
+    // 跟随主控的随从：在主控的回合里移动也计入（tabletop-summon.js）
+    if (!c || (c.turn !== it.id && !summonActsNow(it)) || !canEdit(it) || !(ft > 0)) return null;
     return { moved: Math.round((movedThisTurn(it) + ft) * 2) / 2, movedKey: turnKey() };
 }
 
@@ -744,7 +745,7 @@ function renderCombatHud() {
         var cur = c && scene.items[c.turn], curShown = cur && idx >= 0;
         var mine = cur && canEdit(cur);
         var portrait = initViewPortrait();
-        var chips = list.map(function(t) {
+        var initChipHtml = function(t) {
             var down = (t.hpMax > 0 && num(t.hp, t.hpMax) <= 0) || hasStatus(t, 'dead');
             var cls = 'init-chip' + (c && t.id === c.turn ? ' active' : '') + (t.owner && t.owner === me.name ? ' mine' : '') +
                 (t.hidden || initHiddenFor(t) ? ' hid' : '') + (down ? ' down' : '');
@@ -759,7 +760,9 @@ function renderCombatHud() {
                 '<i style="background:' + escapeHtml(t.color || (t.owner ? '#1e88e5' : '#c62828')) + '">' + escapeHtml((t.label || '?').slice(0, 1)) + '</i>' +
                 '<span class="nm">' + escapeHtml(chipName(t.label)) + '</span><b>' + num(t.init, 0) + '</b>' +
                 (t.hidden || initHiddenFor(t) ? '🙈' : '') + '</span>';
-        }).join('');
+        };
+        // 跟随主控的随从挂在主控后面（在主控的回合行动）
+        var chips = list.map(function(t) { return initChipHtml(t) + companionChipsHtml(t, portrait, !!(c && t.id === c.turn)); }).join('');
         // 每一行包在 .hud-line 里：外层容器不接收鼠标（不挡地图），行本身可点击
         parts.push('<div class="hud-line init-strip' + (portrait ? ' portrait' : '') + '"><span class="hud-grip" data-drag title="拖动移动先攻条（双击恢复默认位置）">⠿</span>' +
             '<span class="hud-round">' + (c ? '⚔ 第 ' + num(c.round, 1) + ' 轮' : '先攻') + '</span>' +

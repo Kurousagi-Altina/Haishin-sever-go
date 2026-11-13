@@ -612,3 +612,9 @@ details.feature summary { cursor: pointer; font-size: 13px; }
 .status-chip .st-x + .st-x { margin-left: 0; }
 
 #acDiceRow .quick-chips { flex: 1; min-width: 0; }
+/* 跟随主控的随从：挂在主控后面的小头像 */
+.init-chip.comp { border-style: dotted; opacity: 0.9; padding-right: 6px; }
+.init-chip.comp .ci { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; }
+.init-chip.comp.pt { width: 44px; justify-content: flex-end; }
+.init-chip.comp.pt .pt-img { width: 32px; height: 32px; }
+.init-chip.comp.pt .nm { max-width: 40px; }
