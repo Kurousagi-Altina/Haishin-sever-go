@@ -379,7 +379,7 @@ function consumeSlot(a, sheetId) {
     var sh = sheetId && sheets[sheetId];
     if (!a.useSlot || !(a.slotLevel > 0) || !sh || !canEditSheet(sh)) return;
     var s = slotOf(sh, a.slotLevel);
-    if (s && s.cur > 0) { changeSlot(sh, s.idx, -1); notice('已消耗 1 个 ' + a.slotLevel + ' 环法术位（剩 ' + (s.cur - 1) + '）'); }
+    if (s && s.cur > 0) { changeSlot(sh, s.idx, -1); notice('已消耗 1 个 ' + a.slotLevel + ' 环法术位（剩 ' + (s.cur - 1) + '）'); cxAfterSlot(a, sh); }
     else notice('没有剩余的 ' + a.slotLevel + ' 环法术位（仍然施放了，可在角色卡上调整）', true);
 }
 
@@ -610,6 +610,8 @@ function openActionDialog(a, caster, sh) {
     classDialogSync(a, caster, sh); // 狂暴伤害（tabletop-fight.js）
     applyActPreset(); // 反应法术 / 附赠攻击：施放者 / 预选目标 / 消耗
     featDialogSync(act.a, act.caster, sh); // 巨武器大师（附赠攻击不算攻击动作，默认不勾）
+    cxDialogSync(act.a, act.caster, sh); // 元素同调触及 / 真力注拳（tabletop-class.js）
+    if (casterDialogSync(act.a, act.caster, sh)) $('acFeatRow').style.display = ''; // 强力施法 / 奥法火器
     $('actDialog').style.display = 'flex';
 }
 
@@ -640,6 +642,7 @@ function readActionDialog() {
     a.mastery = a.kind === 'attack' ? v('acMastery') : '';
     classDialogApply(a); // 勾了狂暴伤害：伤害加上
     featDialogApply(a);  // 勾了巨武器大师：伤害加熟练加值
+    casterDialogApply(a); // 勾了奥法火器：伤害 +1d8
     a.cost = v('acCost') || 'a';
     a.repeatSave = $('acRepeat').checked;
     a.dot = v('acDot');
@@ -1086,6 +1089,8 @@ function confirmActionTargeting() {
             if (ci.level < 0) return null; // 完全掩护：无法被直接攻击
             var fx = featAttackAdjust(a, m.caster, t, ci.dist), fn = []; // 神射手 / 强弩专家 / 擒抱者（tabletop-fight.js）
             o.cover = ci.level > 0 ? ci.level : 0;
+            var fcv = fortifiedCover(m.caster, t); // 要塞阵地（tabletop-class.js）
+            if (fcv && o.cover < 2) { o.cover = 2; fn.push(fcv); }
             if (o.cover && fx.noCover) { o.cover = 0; fn.push(fx.noCover + '：无视掩护'); }
             var sm = statusAttackMods(m.caster, t, ci.dist), adv = sm.adv.length > 0, dis = sm.dis.length > 0;
             if (fx.adv) { adv = true; fn.push(fx.adv); }

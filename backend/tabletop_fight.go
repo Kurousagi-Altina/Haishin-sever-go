@@ -282,6 +282,20 @@ func (room *TTRoom) turnEnd(sc *TTScene, it map[string]interface{}, order []map[
 			ttRemoveStatus(it, "disengaged")
 			room.broadcastItems([]map[string]interface{}{it})
 		}
+		if ttClassLevel(room.tokenSheet(it), "武僧") >= 10 { // 武僧·返本还元：回合结束时可以移除魅惑、恐慌或中毒之一
+			var cs []string
+			conds := ttStatusIDs(it)
+			for _, c := range [][2]string{{"charmed", "魅惑"}, {"frightened", "恐慌"}, {"poisoned", "中毒"}} {
+				if conds[c[0]] {
+					cs = append(cs, c[1])
+				}
+			}
+			if len(cs) == 1 {
+				room.hint(it, label+" 回合结束：返本还元，可以移除「"+cs[0]+"」", "selfrest:"+id)
+			} else if len(cs) > 1 {
+				room.hint(it, label+" 回合结束：返本还元，可以移除「"+strings.Join(cs, "」「")+"」中的一个", "selfrest:"+id)
+			}
+		}
 		ended := false
 		for _, st := range ttStatusMaps(it) { // 「直到本回合结束」的状态（哨兵的阻拦等）
 			if st["until"] == "end" {
@@ -467,6 +481,16 @@ func (room *TTRoom) applyFight(u ttUser, gm bool, req *ttOpRequest) (int, string
 		if err != nil {
 			return http.StatusBadRequest, err.Error()
 		}
+		if r != nil && req.Mode == "conc" { // 星辰结社·巨龙座：维持专注的豁免，d20 掷出 9 或更低视为 10
+			for _, st := range ttStatusMaps(it) {
+				if st["id"] == "starry" && st["form"] == "dragon" {
+					if nat := ttNaturalD20(r); nat > 0 && nat < 10 {
+						r.Total += 10 - nat
+						notes = append(notes, "巨龙座：d20 "+strconv.Itoa(nat)+" 视为 10")
+					}
+				}
+			}
+		}
 		ok := r != nil && r.Total >= dc
 		e := newLogEntry("roll", u.name)
 		if req.Mode == "conc" && ttIDRe.MatchString(req.Text) {
@@ -501,6 +525,30 @@ func (room *TTRoom) applyFight(u ttUser, gm bool, req *ttOpRequest) (int, string
 			res += "，「" + statusName + "」继续"
 		}
 		e.Text = strings.TrimSpace(res + " " + strings.Join(notes, " "))
+		room.addLog(e)
+
+	case "fight.portent": // 预言师·预兆：长休后掷两枚（14 级三枚）d20 记在棋子上，之后可以替换 d20 检定
+		if !mine {
+			return http.StatusForbidden, "只能替自己的棋子掷预兆"
+		}
+		n := 2
+		if ttClassLevel(room.tokenSheet(it), "法师") >= 14 {
+			n = 3
+		}
+		var vals []interface{}
+		var txt []string
+		for i := 0; i < n; i++ {
+			r, err := RollTabletopDice("1d20")
+			if err != nil {
+				return http.StatusBadRequest, err.Error()
+			}
+			vals = append(vals, float64(r.Total))
+			txt = append(txt, strconv.Itoa(r.Total))
+		}
+		it["portent"] = vals
+		room.broadcastItems([]map[string]interface{}{it})
+		e := newLogEntry("sys", u.name)
+		e.Text = "🔮 " + label + " 的预兆：" + strings.Join(txt, "、") + "（每回合可以用一个替换你或看得见的生物的 d20 检定）"
 		room.addLog(e)
 
 	case "fight.dot":

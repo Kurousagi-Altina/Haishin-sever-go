@@ -75,23 +75,27 @@ type TTActionHit struct {
 }
 
 type TTActionResult struct {
-	Name       string         `json:"name"`
-	Caster     string         `json:"caster,omitempty"` // the acting token's name (when players may see it)
-	Kind       string         `json:"kind"`
-	Roll       *TTDiceResult  `json:"roll,omitempty"` // shared damage / healing roll (save, auto, heal, temp)
-	DamageType string         `json:"damageType,omitempty"`
-	Save       string         `json:"save,omitempty"`
-	DC         int            `json:"dc,omitempty"`
-	Parts      []TTPartRoll   `json:"parts,omitempty"` // shared rolls of the extra damage components
-	Magic      bool           `json:"magic,omitempty"`
-	Half       bool           `json:"half,omitempty"`      // save for half damage (Legendary Resistance re-resolves with it)
-	Mastery    string         `json:"mastery,omitempty"`   // weapon mastery of the attack (the client offers its follow-up)
-	CasterID   string         `json:"casterId,omitempty"`  // acting token id (push direction, Vex)
-	Spell      bool           `json:"spell,omitempty"`     // a spell (法术反制 can answer it)
-	SlotLevel  int            `json:"slotLevel,omitempty"` // slot level spent on the spell
-	Melee      bool           `json:"melee,omitempty"`     // a melee attack
-	Targets    []*TTActionHit `json:"targets"`
-	Note       string         `json:"note,omitempty"`
+	Name       string        `json:"name"`
+	Caster     string        `json:"caster,omitempty"` // the acting token's name (when players may see it)
+	Kind       string        `json:"kind"`
+	Roll       *TTDiceResult `json:"roll,omitempty"` // shared damage / healing roll (save, auto, heal, temp)
+	DamageType string        `json:"damageType,omitempty"`
+	Save       string        `json:"save,omitempty"`
+	DC         int           `json:"dc,omitempty"`
+	Parts      []TTPartRoll  `json:"parts,omitempty"` // shared rolls of the extra damage components
+	Magic      bool          `json:"magic,omitempty"`
+	Half       bool          `json:"half,omitempty"`      // save for half damage (Legendary Resistance re-resolves with it)
+	Mastery    string        `json:"mastery,omitempty"`   // weapon mastery of the attack (the client offers its follow-up)
+	CasterID   string        `json:"casterId,omitempty"`  // acting token id (push direction, Vex)
+	Spell      bool          `json:"spell,omitempty"`     // a spell (法术反制 can answer it)
+	SlotLevel  int           `json:"slotLevel,omitempty"` // slot level spent on the spell
+	Melee      bool          `json:"melee,omitempty"`     // a melee attack
+	// the attack / save's damage dice, extra parts and condition (导引打击 / 预兆 re-apply a miss or a failed save)
+	DmgExpr   string                 `json:"dmgExpr,omitempty"`
+	DmgParts  []TTDamagePart         `json:"dmgParts,omitempty"`
+	StatusDef map[string]interface{} `json:"statusDef,omitempty"`
+	Targets   []*TTActionHit         `json:"targets"`
+	Note      string                 `json:"note,omitempty"`
 }
 
 var (
@@ -361,6 +365,9 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 		Mastery: ttCleanName(a.Mastery, 8, ""), Spell: a.Spell, Melee: a.Kind == "attack" && a.Melee}
 	if a.Spell && a.SlotLevel >= 1 && a.SlotLevel <= 9 {
 		res.SlotLevel = a.SlotLevel
+	}
+	if a.Kind == "attack" || a.Kind == "save" {
+		res.DmgExpr, res.DmgParts, res.StatusDef = a.Damage, a.Parts, a.Status
 	}
 	if _, ok := ttAbilityCN[a.Save]; a.Kind == "save" && !ok && a.Save != "strdex" { // strdex：力量或敏捷，目标选高的（擒抱 / 推撞）
 		return http.StatusBadRequest, "请选择豁免属性"
