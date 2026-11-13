@@ -7,7 +7,8 @@
 //   地板模式：先拖框，再点地板（可点多个房间）→ 按颜色相近程度泛洪填充 → 填掉小洞（家具） → marching squares 取边界 → 精简
 // 结果先画成青色虚线预览，滑块实时重算，满意了点「生成墙体」才真正创建（一次撤销可撤回）。
 
-var autoWall = { mode: 'band', box: null, work: null, fill: null, seeds: [], lines: [], thr: -1, thick: 1, simp: 3, tol: 30, sens: 17, timer: 0 };
+var autoWall = { mode: 'band', box: null, work: null, fill: null, seeds: [], lines: [], thr: -1, thick: 1, simp: 3, tol: 30, sens: 17, trTol: 5, trBranch: true, tseeds: [], timer: 0 };
+var AW_TRACE_MAX = 2048; // 沿墙延伸：整张地图缩到这么大来追（墙要看得清）
 var AW_MAX = 1024; // 处理用的最大边长（像素），太大的框会先缩小
 
 function autoWallActive() { return tool === 'wall' && wallOpts.mode === 'auto'; }
@@ -24,10 +25,14 @@ function autoWallSync() {
     $('awSimp').value = autoWall.simp; $('awSimpV').textContent = autoWall.simp;
     $('awTol').value = autoWall.tol; $('awTolV').textContent = autoWall.tol;
     if ($('awSens')) { $('awSens').value = autoWall.sens; $('awSensV').textContent = autoWall.sens; }
+    if ($('awTrTol')) { $('awTrTol').value = autoWall.trTol; $('awTrTolV').textContent = autoWall.trTol; }
+    if ($('awTrBranch')) $('awTrBranch').checked = autoWall.trBranch;
     var n = autoWall.lines.length;
     $('awGo').disabled = !n;
     $('awGo').textContent = n ? '生成墙体（' + n + ' 段）' : '生成墙体';
-    $('awInfo').textContent = !autoWall.box ? (autoWall.mode === 'band' ? '在地图上拖一个框，自动找出框里的墙，沿墙中间画线（右键取消）'
+    $('awInfo').textContent = autoWall.mode === 'trace' ? (n ? '青色虚线是预览：再描别的墙；追断了就在断头外面的墙上单击，沿墙接过去；右键撤销上一步，满意了点「生成墙体」' + (autoWall.skipped ? '（已跳过和现有墙重合的部分）' : '')
+            : '沿着墙中间描一小段（半格到一两格），松手后自动顺着这面墙往两头延伸，拐角会跟着拐，岔路口会分叉；可以描多段')
+        : !autoWall.box ? (autoWall.mode === 'band' ? '在地图上拖一个框，自动找出框里的墙，沿墙中间画线（右键取消）'
         : autoWall.mode === 'line' ? '在地图上拖一个框，自动找出框里的墙线' : '先拖框圈住房间，再点框里的地板（可点多个房间）')
         : autoWall.mode === 'floor' && !autoWall.seeds.length ? '点一下框里的地面（洞穴、岩浆图也可以点墙外的虚空 / 岩浆）；右键撤销上一个点'
         : n ? '青色虚线是预览：调滑块，或重新拖框' + (autoWall.skipped ? '（已跳过和现有墙重合的部分）' : '')
@@ -36,7 +41,7 @@ function autoWallSync() {
 }
 
 function autoWallClear() {
-    autoWall.box = null; autoWall.work = null; autoWall.fill = null; autoWall.seeds = []; autoWall.lines = [];
+    autoWall.box = null; autoWall.work = null; autoWall.fill = null; autoWall.seeds = []; autoWall.lines = []; autoWall.tseeds = [];
     autoWallSync();
     requestRender();
 }
@@ -45,10 +50,11 @@ function autoWallClear() {
 function autoWallPointerDown(w, start) {
     var b = autoWall.box;
     var inBox = autoWall.mode === 'floor' && b && autoWall.work && w.x >= b.x0 && w.x <= b.x1 && w.y >= b.y0 && w.y <= b.y1;
-    gesture = { type: 'marquee', start: start, a: w, b: w, auto: true, click: inBox ? w : null };
+    gesture = { type: 'marquee', start: start, a: w, b: w, auto: true, click: inBox ? w : null, line: autoWall.mode === 'trace' };
 }
 
 function autoWallPointerUp(g) {
+    if (autoWall.mode === 'trace') { if (g.start.moved) autoWallTraceSeed(g.a, g.b); else autoWallTraceLink(g.b); return; }
     if (g.start.moved) autoWallBox(g.a, g.b);
     else if (g.click) autoWallSeed(g.click);
 }
@@ -84,6 +90,96 @@ function autoWallBox(a, b) {
     requestRender();
 }
 
+// ---------- 沿墙延伸：界面 ----------
+// 整张地图缩到 ≤ AW_TRACE_MAX 取一次像素（换地图 / 换尺寸才重取）
+function awTraceWork() {
+    var p = scene.props;
+    if (!p.mapAsset) { notice('当前场景没有地图图片', true); return null; }
+    var img = getImg(p.mapAsset);
+    if (!imgReady(img)) { notice('地图还没加载完，稍等再试', true); return null; }
+    var mw = p.mapW || img.naturalWidth, mh = p.mapH || img.naturalHeight, key = p.mapAsset + '|' + mw + '|' + mh;
+    if (autoWall.tw && autoWall.tw.key === key) return autoWall.tw;
+    var k = Math.min(1, AW_TRACE_MAX / Math.max(img.naturalWidth, img.naturalHeight));
+    var W = Math.max(8, Math.round(img.naturalWidth * k)), H = Math.max(8, Math.round(img.naturalHeight * k));
+    var c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    var cx = c.getContext('2d', { willReadFrequently: true });
+    cx.drawImage(img, 0, 0, W, H);
+    var data;
+    try { data = cx.getImageData(0, 0, W, H).data; } catch (e) { notice('无法读取地图像素', true); return null; }
+    autoWall.tw = { key: key, W: W, H: H, sc: W / mw, rgb: data };
+    return autoWall.tw;
+}
+
+function autoWallTraceSeed(a, b) {
+    if (Math.hypot(b.x - a.x, b.y - a.y) < gridSize() * 0.3) { notice('描得太短了：沿墙拖半格以上', true); return; }
+    autoWall.tseeds.push({ a: { x: a.x, y: a.y }, b: { x: b.x, y: b.y } });
+    awRun();
+    autoWallSync();
+    requestRender();
+}
+
+// 单击：从最近的预览线端点沿墙接到点的位置（用最近一段描的墙当模板）
+function autoWallTraceLink(w) {
+    var wk = awTraceWork();
+    if (!wk) return;
+    var src = null;
+    for (var k = autoWall.tseeds.length - 1; k >= 0 && !src; k--) if (autoWall.tseeds[k].res && autoWall.tseeds[k].res.md) src = autoWall.tseeds[k];
+    if (!src) { notice('先沿墙中间描一小段；之后单击可以把预览线沿墙接到点的位置', true); return; }
+    var g = gridSize(), best = null;
+    autoWall.lines.forEach(function(l) {
+        [l[0], l[l.length - 1]].forEach(function(p) { var d = Math.hypot(p[0] - w.x, p[1] - w.y); if (!best || d < best.d) best = { p: p, d: d }; });
+    });
+    if (!best || best.d > g * 12) { notice('离预览线的端点太远了（12 格以内）：在端点附近的墙上点', true); return; }
+    if (best.d < g * 0.3) return;
+    var path = awTraceLink(wk, src.res.md, { x: best.p[0] * wk.sc, y: best.p[1] * wk.sc }, { x: w.x * wk.sc, y: w.y * wk.sc });
+    if (!path) return;
+    autoWall.tseeds.push({ link: true, a: { x: best.p[0], y: best.p[1] }, b: { x: w.x, y: w.y }, path: path.map(function(p) { return [p[0] / wk.sc, p[1] / wk.sc]; }) });
+    awRun();
+    autoWallSync();
+    requestRender();
+}
+
+function awRunTrace() {
+    var wk = awTraceWork();
+    if (!wk) return;
+    var g = gridSize(), tau = 0.05 + autoWall.trTol * 0.03, key = tau + '|' + autoWall.trBranch, out = [], bad = 0, kept = 0;
+    for (var k = autoWall.tseeds.length - 1; k >= 0; k--) { // 只给最近 3 段留着模板（单击接线用；占内存）
+        var sd = autoWall.tseeds[k];
+        if (sd.link) continue;
+        if (!sd.res || sd.key !== key) {
+            sd.key = key;
+            sd.res = awTraceWall(wk, { x: sd.a.x * wk.sc, y: sd.a.y * wk.sc }, { x: sd.b.x * wk.sc, y: sd.b.y * wk.sc }, tau, autoWall.trBranch);
+        }
+        if (sd.res && sd.res.md && ++kept > 3) sd.res.md = null;
+    }
+    autoWall.tseeds = autoWall.tseeds.filter(function(sd) {
+        if (sd.link || (sd.res && !sd.res.bad)) return true;
+        bad++;
+        return false;
+    });
+    if (bad) notice('这一段描得不像一面规整的墙（跨过了壁炉、门、拐角，或者是洞穴岩壁这种不规则的边）——换一段描；洞穴用「点地板」', true, 6000);
+    var eps = Math.max(1, g * autoWall.simp / 20);
+    autoWall.tseeds.forEach(function(sd) {
+        var ls = sd.link ? [sd.path] : sd.res.map(function(l) { return l.map(function(p) { return [p[0] / wk.sc, p[1] / wk.sc]; }); });
+        // 后描的段不重复画先描出来的墙
+        var mine = awDropExisting(ls.map(function(l) { return awAxisSnap(awSimplify(l, eps)); }).filter(function(l) { return l.length > 1; }), g * 0.25, g * 0.3, out);
+        out = out.concat(mine);
+    });
+    autoWall.lines = awDropExisting(out, g * 0.25, g * 0.3).slice(0, 400);
+}
+
+// 偏离水平 / 竖直不到 4° 的段拉正（建筑墙大多横平竖直）
+function awAxisSnap(pts) {
+    var out = pts.map(function(p) { return [p[0], p[1]]; }), tan4 = Math.tan(4 * Math.PI / 180);
+    for (var i = 1; i < out.length; i++) {
+        var a = out[i - 1], b = out[i], dx = b[0] - a[0], dy = b[1] - a[1];
+        if (Math.abs(dy) <= Math.abs(dx) * tan4) { var my = (a[1] + b[1]) / 2; a[1] = my; b[1] = my; }
+        else if (Math.abs(dx) <= Math.abs(dy) * tan4) { var mx = (a[0] + b[0]) / 2; a[0] = mx; b[0] = mx; }
+    }
+    return out;
+}
+
 function autoWallSeed(w) {
     var wk = autoWall.work, b = autoWall.box;
     if (!wk) return;
@@ -101,6 +197,7 @@ function awSchedule() {
 }
 
 function awRun() {
+    if (autoWall.mode === 'trace') { awRunTrace(); return; }
     var wk = autoWall.work;
     if (!wk) return;
     var paths = autoWall.mode === 'band' ? awBand(wk) : autoWall.mode === 'line' ? awLines(wk) : awFloor(wk);
@@ -119,14 +216,15 @@ function awRun() {
 }
 
 // 去掉和现有墙重合的部分（反复框同一块地方不会画出重复的墙）：沿线每隔一小段取样，离现有墙 tol 以内的算已经画过
-function awDropExisting(lines, tol, minLen) {
+function awDropExisting(lines, tol, minLen, extra) {
     var segs = [];
+    (extra || []).forEach(function(l) { for (var i = 1; i < l.length; i++) segs.push([l[i - 1][0], l[i - 1][1], l[i][0], l[i][1]]); });
     Object.keys(scene.items).forEach(function(id) {
         var it = scene.items[id];
         if (it.kind !== 'wall' || !it.points) return;
         for (var i = 1; i < it.points.length; i++) segs.push([it.x + it.points[i - 1][0], it.y + it.points[i - 1][1], it.x + it.points[i][0], it.y + it.points[i][1]]);
     });
-    autoWall.skipped = false;
+    if (!extra) autoWall.skipped = false;
     if (!segs.length) return lines;
     var near = function(x, y, ux, uy) { // (ux, uy)：新线这一段的单位方向；只有方向基本平行的现有墙才算重合（垂直接上的不算）
         return segs.some(function(s) {
@@ -148,7 +246,7 @@ function awDropExisting(lines, tol, minLen) {
             var ux = (b[0] - a[0]) / L, uy = (b[1] - a[1]) / L;
             for (var j = i === 1 ? 0 : 1; j <= k; j++) {
                 var q = [a[0] + (b[0] - a[0]) * j / k, a[1] + (b[1] - a[1]) * j / k];
-                if (near(q[0], q[1], ux, uy)) { autoWall.skipped = true; close(); continue; }
+                if (near(q[0], q[1], ux, uy)) { if (!extra) autoWall.skipped = true; close(); continue; }
                 if (!cur) { cur = [q]; tail = null; } else if (j === k) { cur.push(q); tail = null; } else tail = q;
             }
         }
@@ -173,6 +271,339 @@ function autoWallCommit() {
     createItems(items);
     notice('已生成 ' + items.length + ' 段墙体（Ctrl+Z 可撤销）；门洞可以用「🚪 找门洞」一键补门，多余的墙在「选择」里框选删除', false, 6000);
     autoWallClear();
+}
+
+// ---------- 沿墙延伸 ----------
+// 思路（遥感里的半自动道路追踪 + 医学图像的「从一个点生长最短路」）：
+// 1. 学：用户描的那段 → 墙横截面模板（中间权重高、两侧地面低）；同一段自己的差异 = base，往两侧平移到地面的差异 = bg。
+//    地图上任一点、任一方向的「不像墙程度」u = (差异 - base) / (bg - base)：墙上 ≈ 0，地面 ≈ 1（按需计算并缓存）。
+// 2. 长：从描的两头出发，每次在附近跑一次 Dijkstra（每步代价 = 步长 × (0.1 + u)），第一个沿路径走出 λ（1.5 格）的点
+//    就是下一个关键点（Benmansour & Cohen 2009）——一次看 1.5 格而不是一步一步贪心，柱子、灯、窗框这种短遮挡会被绕 / 跨过去，
+//    拐角自然拐过去；这 1.5 格的平均代价超过门槛（宽松度）= 墙走到头 / 门洞，就停。
+// 3. 分叉：同一次搜索里还有别的方向也够便宜（和主路分开 ≥ 40°、不贴着主路）= 岔路口，记下来稍后接着长。
+// 4. 碰到已经描出来的墙（不是自己刚走过的那一段）就接上并停 —— 房间绕一圈会闭合，T 字口会接好。
+// 坐标：外面用工作图像素；里面在「粗图」上算（每格约 12 像素，压掉纹理也快）。
+var AW_DX = [1, 1, 0, -1, -1, -1, 0, 1], AW_DY = [0, 1, 1, 1, 0, -1, -1, -1];
+
+function awTraceCoarse(wk, cell) {
+    var ds = Math.max(1, Math.round(cell / 12));
+    if (wk.co && wk.co.ds === ds) return wk.co;
+    var W = wk.W, CW = Math.floor(W / ds), CH = Math.floor(wk.H / ds), a = new Float32Array(CW * CH * 3), src = wk.rgb, n = ds * ds;
+    for (var y = 0; y < CH; y++) for (var x = 0; x < CW; x++) {
+        var r = 0, g = 0, b = 0;
+        for (var yy = y * ds; yy < y * ds + ds; yy++) for (var xx = x * ds, i = (yy * W + xx) * 4; xx < x * ds + ds; xx++, i += 4) { r += src[i]; g += src[i + 1]; b += src[i + 2]; }
+        var o = (y * CW + x) * 3;
+        a[o] = r / n; a[o + 1] = g / n; a[o + 2] = b / n;
+    }
+    wk.co = { ds: ds, W: CW, H: CH, c: a };
+    return wk.co;
+}
+
+// 从描的那段（粗图坐标 a → b）学模板；返回 u(像素, 方向 0..7)，或 { bad } / null
+function awTraceModel(co, a, b, cc) {
+    var W = co.W, H = co.H, img = co.c;
+    var P = Math.max(3, Math.round(cc * 0.45)), NO = 2 * P + 1, wts = [], wsum = 0;
+    for (var o = -P; o <= P; o++) { var wt = Math.abs(o) <= P / 2 ? 1 : 0.15; wts.push(wt); wsum += wt; }
+    var smp = function(x, y, out, k) {
+        if (x < 0 || y < 0 || x > W - 1.001 || y > H - 1.001) return false;
+        var x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0, i = (y0 * W + x0) * 3, j = i + W * 3;
+        for (var c = 0; c < 3; c++) out[k + c] += (img[i + c] * (1 - fx) + img[i + 3 + c] * fx) * (1 - fy) + (img[j + c] * (1 - fx) + img[j + 3 + c] * fx) * fy;
+        return true;
+    };
+    // (x, y) 处、沿 (mx, my) 走的横截面：沿方向前后各取一点平均（压纹理）
+    var prof = function(x, y, mx, my, out) {
+        out.fill(0);
+        var nx = -my, ny = mx;
+        for (var t = -1; t <= 1; t++) for (var q = -P; q <= P; q++)
+            if (!smp(x + mx * t + nx * q, y + my * t + ny * q, out, (q + P) * 3)) return false;
+        for (q = 0; q < NO * 3; q++) out[q] /= 3;
+        return true;
+    };
+    var L0 = Math.hypot(b.x - a.x, b.y - a.y);
+    if (L0 < 2) return null;
+    var m0x = (b.x - a.x) / L0, m0y = (b.y - a.y) / L0;
+    var T = new Float32Array(NO * 3), pr = new Float32Array(NO * 3), cnt = 0;
+    for (var t = 0; t <= L0; t += 0.5) {
+        if (!prof(a.x + m0x * t, a.y + m0y * t, m0x, m0y, pr)) continue;
+        for (var q = 0; q < NO * 3; q++) T[q] += pr[q];
+        cnt++;
+    }
+    if (!cnt) return null;
+    for (q = 0; q < NO * 3; q++) T[q] /= cnt;
+    var Tm = [0, 0, 0];
+    for (q = 0; q < NO; q++) for (var c = 0; c < 3; c++) Tm[c] += wts[q] * T[q * 3 + c] / wsum;
+    // 差异：扣掉各自平均色（明暗只算 1/4），正反两个朝向取小的，丢掉最不像的 25% 位置（窗框、挂件、挡住的木桶）
+    var dq = new Float32Array(NO), dr = new Float32Array(NO), am = [0, 0, 0];
+    // 中间（墙本身）丢掉最不像的 25%（窗框、挂件）；两侧只要有一侧对得上（外墙一侧是虚空、内墙两侧都是地板，都算同一种墙）
+    var Pc = Math.floor(P / 2), cs = new Float32Array(2 * Pc + 1);
+    var trim = function(d) {
+        var n = 0, k, j;
+        for (k = P - Pc; k <= P + Pc; k++) {
+            var v = d[k];
+            for (j = n++; j > 0 && cs[j - 1] > v; j--) cs[j] = cs[j - 1];
+            cs[j] = v;
+        }
+        var keep = Math.ceil(n * 0.75), c = 0;
+        for (k = 0; k < keep; k++) c += cs[k];
+        var sl = 0, sr = 0;
+        for (k = 0; k < P - Pc; k++) { sl += d[k]; sr += d[NO - 1 - k]; }
+        return 0.7 * c / keep + 0.3 * Math.min(sl, sr) / (P - Pc);
+    };
+    var cost = function(p) {
+        am[0] = am[1] = am[2] = 0;
+        for (var q = 0; q < NO; q++) for (var c = 0; c < 3; c++) am[c] += wts[q] * p[q * 3 + c] / wsum;
+        var shift = 0;
+        for (c = 0; c < 3; c++) shift += (am[c] - Tm[c]) * (am[c] - Tm[c]);
+        for (q = 0; q < NO; q++) {
+            var s1 = 0, s2 = 0, r = NO - 1 - q;
+            for (c = 0; c < 3; c++) {
+                var pv = p[q * 3 + c] - am[c], d1 = pv - (T[q * 3 + c] - Tm[c]), d2 = pv - (T[r * 3 + c] - Tm[c]);
+                s1 += d1 * d1; s2 += d2 * d2;
+            }
+            dq[q] = s1 / 3; dr[q] = s2 / 3;
+        }
+        return Math.min(trim(dq), trim(dr)) + shift / 3 * 0.25;
+    };
+    var lineCost = function(off) {
+        var s = 0, n = 0, nx = -m0y, ny = m0x;
+        for (var t = 0; t <= L0; t += 1) { if (prof(a.x + m0x * t + nx * off, a.y + m0y * t + ny * off, m0x, m0y, pr)) { s += cost(pr); n++; } }
+        return n ? s / n : null;
+    };
+    var base = lineCost(0) || 0, bg = Infinity;
+    [0.75, -0.75, 1.5, -1.5].forEach(function(k) { var v = lineCost(P * k); if (v !== null && v < bg) bg = v; });
+    if (!isFinite(bg)) bg = base * 4 + 50;
+    if (base > bg * 0.3) return { bad: true }; // 描的这段自己都不像同一面墙（跨过了壁炉、门、拐角）
+    var den = bg - base, memo = new Float32Array(W * H * 4).fill(-1), s2 = Math.SQRT1_2;
+    var MX = [1, s2, 0, -s2], MY = [0, s2, 1, s2];
+    var u = function(i, k) {
+        k &= 3;
+        var v = memo[i * 4 + k];
+        if (v >= 0) return v;
+        var x = i % W, y = (i - x) / W;
+        v = prof(x, y, MX[k], MY[k], pr) ? Math.max(0, Math.min(3, (cost(pr) - base) / den)) : 3;
+        memo[i * 4 + k] = v;
+        return v;
+    };
+    return { u: u, base: base, bg: bg };
+}
+
+// 返回若干条折线（工作图像素）：[主线（两头延伸 + 描的那段）, 岔路...]；或 { bad } / null
+function awTraceWall(wk, A, B, tau, branch) {
+    var cell = gridSize() * wk.sc, co = awTraceCoarse(wk, cell), ds = co.ds, W = co.W, H = co.H, N = W * H, cc = cell / ds;
+    var a = { x: A.x / ds - 0.5, y: A.y / ds - 0.5 }, b = { x: B.x / ds - 0.5, y: B.y / ds - 0.5 };
+    var md = awTraceModel(co, a, b, cc);
+    if (!md || md.bad) return md;
+    var u = md.u, EPS = 0.1, lim = EPS + tau, lam = Math.max(4, cc * 1.5), cap = lim * lam + cc * 0.5 * (EPS + 1.5); // 允许中途跨过半格左右的遮挡（壁灯、柱子）
+    var sr = Math.max(1, Math.round(cc * 0.4)), nearK = cc * 0.6, maxPts = Math.round(cc * 600);
+    // 已描出来的点：pts[id] = 像素；stamp[像素] = 附近最近盖上去的点 id（半径 0.4 格）
+    var pts = [0], stamp = new Int32Array(N);
+    var addPt = function(i) {
+        var id = pts.length;
+        pts.push(i);
+        var x = i % W, y = (i - x) / W;
+        for (var yy = Math.max(0, y - sr); yy <= Math.min(H - 1, y + sr); yy++)
+            for (var xx = Math.max(0, x - sr); xx <= Math.min(W - 1, x + sr); xx++)
+                if ((xx - x) * (xx - x) + (yy - y) * (yy - y) <= sr * sr) stamp[yy * W + xx] = id;
+        return id;
+    };
+    var pix = function(p) { return Math.max(0, Math.min(H - 1, Math.round(p.y))) * W + Math.max(0, Math.min(W - 1, Math.round(p.x))); };
+    // Dijkstra 用的数组（每次只重置碰过的）
+    var dist = new Float32Array(N).fill(Infinity), elen = new Float32Array(N), prev = new Int32Array(N), seen = [];
+    var hq = awHeap();
+    var xy = function(i) { var x = i % W; return { x: x, y: (i - x) / W }; };
+    var backtrack = function(i, stopAt) { var out = []; while (i !== stopAt && i >= 0) { out.push(i); i = prev[i]; } return out.reverse(); };
+    // 路径上每步的 u，丢掉最差的 20%（壁灯、柱子、挡住的木桶）再平均
+    var pathTrim = function(path) {
+        var v = [];
+        for (var k = 1; k < path.length; k++) { var p = xy(path[k - 1]), q = xy(path[k]); v.push(u(path[k], dirOf(q.x - p.x, q.y - p.y))); }
+        return trimMean(v);
+    };
+    var trimMean = function(v) {
+        if (!v.length) return 0;
+        v.sort(function(x, y) { return x - y; });
+        var k;
+        var keep = Math.max(1, Math.ceil(v.length * 0.8)), s = 0;
+        for (k = 0; k < keep; k++) s += v[k];
+        return s / keep;
+    };
+    var dirOf = function(dx, dy) { for (var k = 0; k < 8; k++) if (AW_DX[k] === dx && AW_DY[k] === dy) return k; return 0; };
+    // 一根枝：路径（像素数组）、最近走过的点 id（不算「碰到别的墙」，也不许往回走）
+    var branches = [], queue = [];
+    var mkRecent = function(ids) { var r = { q: ids.slice(-Math.ceil(lam * 2.5)), s: null }; r.s = new Set(r.q); return r; };
+    var pushRecent = function(r, id) { r.q.push(id); r.s.add(id); if (r.q.length > lam * 2.5) r.s.delete(r.q.shift()); };
+    var total = 0;
+    var walk = function(br) {
+        for (var guard = 0; guard < 2000 && total < maxPts; guard++) {
+            var K = br.path[br.path.length - 1], kp = xy(K), dir = br.dir;
+            seen.forEach(function(i) { dist[i] = Infinity; });
+            seen = [K]; hq.clear();
+            dist[K] = 0; elen[K] = 0; prev[K] = -1; hq.push(K, 0);
+            var done = new Set(), main = null, tailBest = null, tries = 0;
+            while (hq.d.length) {
+                var d0 = hq.d[0], i = hq.pop();
+                if (done.has(i)) continue;
+                done.add(i);
+                if (d0 > cap) break;
+                var E = elen[i], mean = E > 0 ? d0 / E : 0, id = stamp[i];
+                var goal = i !== K && id && !br.rec.s.has(id) && E >= cc * 0.3;
+                if (E >= cc * 0.3 && mean <= lim && (!tailBest || E > elen[tailBest])) tailBest = i;
+                if ((goal || E >= lam) && mean <= lim * 1.8 && tries++ < 40) {
+                    var cp = backtrack(i, -1);
+                    if (pathTrim(cp) <= tau) { main = { i: i, join: goal ? id : 0, path: cp }; break; }
+                }
+                if (goal || E > lam + cc) continue; // 碰到别的墙 / 走够远了：不再往外长
+                var p = xy(i);
+                for (var k = 0; k < 8; k++) {
+                    var x = p.x + AW_DX[k], y = p.y + AW_DY[k];
+                    if (x < 0 || y < 0 || x >= W || y >= H) continue;
+                    var j = y * W + x;
+                    if (done.has(j)) continue;
+                    // 不许往回走：K 后面的半平面；自己刚走过的那条（K 附近除外）
+                    var rx = x - kp.x, ry = y - kp.y;
+                    if (rx * dir.x + ry * dir.y < -cc * 0.3) continue;
+                    var sj = stamp[j];
+                    if (sj && br.rec.s.has(sj) && rx * rx + ry * ry > nearK * nearK) continue;
+                    var len = k & 1 ? Math.SQRT2 : 1, nd = d0 + len * (EPS + Math.min(1.5, u(j, k)));
+                    if (nd < dist[j]) {
+                        if (dist[j] === Infinity) seen.push(j);
+                        dist[j] = nd; elen[j] = E + len; prev[j] = i; hq.push(j, nd);
+                    }
+                }
+            }
+            if (!main) { // 墙到头了：把还像墙的那一小截接上，再把末尾不像墙的剪掉
+                if (tailBest) {
+                    var tp = backtrack(tailBest, -1).slice(1);
+                    while (tp.length) {
+                        var lp = xy(tp[tp.length - 1]), pp = xy(tp.length > 1 ? tp[tp.length - 2] : K);
+                        if (u(tp[tp.length - 1], dirOf(lp.x - pp.x, lp.y - pp.y)) <= Math.max(0.3, tau * 2)) break;
+                        tp.pop();
+                    }
+                    tp.forEach(function(q) { br.path.push(q); pushRecent(br.rec, addPt(q)); total++; });
+                }
+                return;
+            }
+            main.path.slice(1).forEach(function(q) { br.path.push(q); pushRecent(br.rec, addPt(q)); total++; });
+            if (main.join) { br.join = main.join; return; }
+            br.dir = tailDir(br.path);
+        }
+    };
+    // 找岔路：沿走出来的线每隔半格往 8 个方向探 1.3 格（跳过沿线方向），探到的那条射线像墙（墙朝射线方向）、
+    // 而且是没描过的地方 → T 字口 / 十字口 / 拐角外侧还在延伸，从那里再长一根枝
+    var R0 = cc * 0.5, R1 = cc * 1.4; // 起点附近是被探的那面墙自己 / 交叉口，不算
+    var probe = function(path, from) {
+        for (var n = Math.max(0, from); n < path.length; n++) {
+            var c = xy(path[n]), a0 = xy(path[Math.max(0, n - Math.round(cc * 0.3))]), a1 = xy(path[Math.min(path.length - 1, n + Math.round(cc * 0.3))]);
+            var tx = a1.x - a0.x, ty = a1.y - a0.y, tl = Math.hypot(tx, ty) || 1;
+            for (var k = 0; k < 8; k++) {
+                var mx = AW_DX[k], my = AW_DY[k], ml = Math.hypot(mx, my);
+                if (Math.abs((mx * tx + my * ty) / (ml * tl)) > Math.cos(35 * Math.PI / 180)) continue;
+                var r0 = Math.round(cc * 0.8 / ml), fx = c.x + mx * r0, fy = c.y + my * r0; // 先看射线开头一点像不像墙，不像就不用整条算
+                if (fx < 0 || fy < 0 || fx >= W || fy >= H || u(fy * W + fx, k) > tau * 2) continue;
+                var ray = [], vals = [], ok = true;
+                for (var r = 1; r <= R1 / ml; r++) {
+                    var x = c.x + mx * r, y = c.y + my * r;
+                    if (x < 0 || y < 0 || x >= W || y >= H) { ok = false; break; }
+                    var j = y * W + x;
+                    ray.push(j);
+                    if (r * ml < R0) continue;
+                    if (stamp[j]) { ok = false; break; }
+                    vals.push(u(j, k));
+                }
+                if (!ok || vals.length < 3 || trimMean(vals) > tau) continue;
+                var nb = { path: [path[n]].concat(ray), rec: null, join: 0, dir: { x: mx / ml, y: my / ml } };
+                nb.rec = mkRecent(nb.path.slice(1).map(function(q) { total++; return addPt(q); }));
+                branches.push(nb);
+                queue.push(nb);
+            }
+        }
+    };
+    var tailDir = function(path) {
+        var e = xy(path[path.length - 1]), s = xy(path[Math.max(0, path.length - 1 - Math.round(cc * 0.6))]);
+        var dx = e.x - s.x, dy = e.y - s.y, L = Math.hypot(dx, dy) || 1;
+        return { x: dx / L, y: dy / L };
+    };
+    // 描的那段本身
+    var L0 = Math.hypot(b.x - a.x, b.y - a.y), seed = [], seedIds = [];
+    for (var t = 0; t <= L0; t += 1) {
+        var i = pix({ x: a.x + (b.x - a.x) * t / L0, y: a.y + (b.y - a.y) * t / L0 });
+        if (seed[seed.length - 1] !== i) seed.push(i);
+    }
+    if (seed[seed.length - 1] !== pix(b)) seed.push(pix(b));
+    seed.forEach(function(q) { seedIds.push(addPt(q)); });
+    var m0 = { x: (b.x - a.x) / L0, y: (b.y - a.y) / L0 };
+    var fwd = { path: [seed[seed.length - 1]], rec: mkRecent(seedIds), dir: m0 };
+    walk(fwd);
+    var bwd = { path: [seed[0]], rec: mkRecent(seedIds.slice().reverse()), dir: { x: -m0.x, y: -m0.y } };
+    walk(bwd);
+    if (branch) {
+        probe(bwd.path.slice().reverse().concat(seed.slice(1, -1)).concat(fwd.path), 0);
+        while (queue.length && total < maxPts) { var nb = queue.shift(), n0 = nb.path.length - 1; walk(nb); probe(nb.path, n0); }
+    }
+    // 主线 = 反向（倒过来）+ 描的段 + 正向
+    var toW = function(i) { var p = xy(i); return [(p.x + 0.5) * ds, (p.y + 0.5) * ds]; };
+    var withJoin = function(br) { var l = br.path.map(toW); if (br.join) l.push(toW(pts[br.join])); return l; };
+    var mainLine = withJoin(bwd).reverse().concat(seed.slice(1, -1).map(toW)).concat(withJoin(fwd));
+    var out = [mainLine];
+    branches.forEach(function(br) { var l = withJoin(br); if (l.length >= 2) out.push(l); });
+    out.md = md;
+    return out;
+}
+
+// 二叉堆（Dijkstra 用）：i = 像素，d = 距离
+function awHeap() {
+    var h = { i: [], d: [] };
+    h.clear = function() { h.i.length = 0; h.d.length = 0; };
+    h.push = function(v, dv) {
+        var I = h.i, D = h.d, n = I.length;
+        I.push(v); D.push(dv);
+        while (n) { var p = (n - 1) >> 1; if (D[p] <= dv) break; I[n] = I[p]; D[n] = D[p]; n = p; }
+        I[n] = v; D[n] = dv;
+    };
+    h.pop = function() {
+        var I = h.i, D = h.d, top = I[0], li = I.pop(), ld = D.pop(), n = I.length;
+        if (n) {
+            var k = 0;
+            for (;;) {
+                var l = 2 * k + 1; if (l >= n) break;
+                if (l + 1 < n && D[l + 1] < D[l]) l++;
+                if (D[l] >= ld) break;
+                I[k] = I[l]; D[k] = D[l]; k = l;
+            }
+            I[k] = li; D[k] = ld;
+        }
+        return top;
+    };
+    return h;
+}
+
+// 点一下接过去（live-wire / 智能剪刀，Mortensen & Barrett 1995）：从 P 到 Q（工作图像素）沿「最像这种墙」的路走，不设门槛
+function awTraceLink(wk, md, P, Q) {
+    var co = wk.co, ds = co.ds, W = co.W, H = co.H, cc = gridSize() * wk.sc / ds, u = md.u, EPS = 0.1;
+    var px = function(p) { return { x: Math.max(0, Math.min(W - 1, Math.round(p.x / ds - 0.5))), y: Math.max(0, Math.min(H - 1, Math.round(p.y / ds - 0.5))) }; };
+    var a = px(P), b = px(Q), m = Math.round(cc * 2);
+    var x0 = Math.max(0, Math.min(a.x, b.x) - m), x1 = Math.min(W - 1, Math.max(a.x, b.x) + m);
+    var y0 = Math.max(0, Math.min(a.y, b.y) - m), y1 = Math.min(H - 1, Math.max(a.y, b.y) + m);
+    var BW = x1 - x0 + 1, BH = y1 - y0 + 1, dist = new Float32Array(BW * BH).fill(Infinity), prev = new Int32Array(BW * BH).fill(-1), hq = awHeap();
+    var s = (a.y - y0) * BW + a.x - x0, t = (b.y - y0) * BW + b.x - x0;
+    dist[s] = 0; hq.push(s, 0);
+    while (hq.d.length) {
+        var d0 = hq.d[0], i = hq.pop();
+        if (d0 > dist[i]) continue;
+        if (i === t) break;
+        var x = i % BW, y = (i - x) / BW;
+        for (var k = 0; k < 8; k++) {
+            var nx = x + AW_DX[k], ny = y + AW_DY[k];
+            if (nx < 0 || ny < 0 || nx >= BW || ny >= BH) continue;
+            var j = ny * BW + nx, nd = d0 + (k & 1 ? Math.SQRT2 : 1) * (EPS + Math.min(1.5, u((ny + y0) * W + nx + x0, k)));
+            if (nd < dist[j]) { dist[j] = nd; prev[j] = i; hq.push(j, nd); }
+        }
+    }
+    if (!isFinite(dist[t])) return null;
+    var out = [];
+    for (i = t; i >= 0; i = prev[i]) { var xx = i % BW; out.push([(xx + x0 + 0.5) * ds, ((i - xx) / BW + y0 + 0.5) * ds]); }
+    out.reverse();
+    out[0] = [P.x, P.y];
+    return out;
 }
 
 // ---------- 墙体模式 ----------
@@ -732,7 +1163,20 @@ function awRDP(pts, eps) {
 
 // ---------- 绘制预览 ----------
 function drawAutoWall() {
-    if (!me.gm || (!autoWall.box && !autoWall.lines.length)) return;
+    if (!me.gm) return;
+    if (autoWall.mode === 'trace' && autoWallActive()) { // 描过的段（红色）+ 正在描的那一段
+        ctx.save();
+        ctx.strokeStyle = '#ff5252';
+        ctx.lineWidth = 4 / view.s;
+        ctx.lineCap = 'round';
+        var segs = autoWall.tseeds.filter(function(sd) { return !sd.link; }).map(function(sd) { return [sd.a, sd.b]; });
+        if (gesture && gesture.auto && gesture.line) segs.push([gesture.a, gesture.b]);
+        segs.forEach(function(sg) { ctx.beginPath(); ctx.moveTo(sg[0].x, sg[0].y); ctx.lineTo(sg[1].x, sg[1].y); ctx.stroke(); });
+        ctx.fillStyle = '#ff5252';
+        autoWall.tseeds.forEach(function(sd) { if (sd.link) { ctx.beginPath(); ctx.arc(sd.b.x, sd.b.y, 6 / view.s, 0, Math.PI * 2); ctx.fill(); } }); // 单击接线的点
+        ctx.restore();
+    }
+    if (!autoWall.box && !autoWall.lines.length) return;
     var b = autoWall.box;
     ctx.save();
     if (b) {
@@ -779,10 +1223,10 @@ function initAutoWall() {
             if (autoWall.mode !== b.dataset.aw) {
                 autoWall.mode = b.dataset.aw;
                 autoWall.seeds = []; autoWall.fill = null; autoWall.lines = [];
-                if (autoWall.mode !== 'floor' && autoWall.work) awRun();
+                if (autoWall.mode === 'trace') autoWall.box = null;
+                if (autoWall.mode !== 'floor' && (autoWall.work || autoWall.mode === 'trace')) awRun();
             }
         } else if (b.id === 'awGo') autoWallCommit();
-        else if (b.id === 'awClear') autoWallClear();
         else if (b.id === 'awUndoSeed') { autoWall.seeds.pop(); awRun(); }
         else if (b.id === 'awAuto') { autoWall.thr = -1; awRun(); }
         autoWallSync();
@@ -795,6 +1239,8 @@ function initAutoWall() {
         else if (t.id === 'awSimp') autoWall.simp = parseInt(t.value, 10);
         else if (t.id === 'awTol') autoWall.tol = parseInt(t.value, 10);
         else if (t.id === 'awSens') autoWall.sens = parseInt(t.value, 10);
+        else if (t.id === 'awTrTol') autoWall.trTol = parseInt(t.value, 10);
+        else if (t.id === 'awTrBranch') autoWall.trBranch = t.checked;
         else return;
         autoWallSync();
         awSchedule();
@@ -810,7 +1256,8 @@ function initAutoWall() {
             rdown = null;
             if (!d || e.button !== 2 || !autoWallActive() || Math.hypot(e.clientX - d.x, e.clientY - d.y) > 5) return;
             if (gesture && gesture.auto) gesture = null;
-            if (autoWall.mode === 'floor' && autoWall.seeds.length) { autoWall.seeds.pop(); awRun(); autoWallSync(); requestRender(); notice('已撤销上一个地面点（没有点了再右键 = 取消）'); }
+            if (autoWall.mode === 'trace' && autoWall.tseeds.length) { autoWall.tseeds.pop(); awRun(); autoWallSync(); requestRender(); notice('已撤销上一步'); }
+            else if (autoWall.mode === 'floor' && autoWall.seeds.length) { autoWall.seeds.pop(); awRun(); autoWallSync(); requestRender(); notice('已撤销上一个地面点（没有点了再右键 = 取消）'); }
             else if (autoWall.box || autoWall.lines.length) { autoWallClear(); notice('已取消自动识别'); }
         }, true);
     }

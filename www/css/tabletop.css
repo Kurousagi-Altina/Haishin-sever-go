@@ -14,6 +14,8 @@ body.tt-body { display: block; overflow: hidden; }
 .tt-btn.danger:hover { background: #b71c1c; }
 .tt-btn.active { background: #1976D2; border-color: #42a5f5; }
 .tt-btn.small { padding: 2px 8px; font-size: 12px; }
+select.tt-btn { color-scheme: dark; } /* 下拉按钮：弹出的选项也用深色，不然白底白字看不见 */
+select.tt-btn option { background: #23262d; color: #fff; }
 
 .tt-input, .tt-select {
     padding: 6px 10px; font-size: 13px; border-radius: 6px;

@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css?v=2026111334">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026111339">
 </head>
 <body class="tt-body">
 
@@ -150,8 +150,9 @@
                 <div class="tool-opts" id="optsWall">
                     <button class="tt-btn small" data-walltype="wall" title="挡视线、挡移动">墙</button>
                     <button class="tt-btn small" data-walltype="window" title="不挡视线、挡移动">窗</button>
-                    <button class="tt-btn small" data-walltype="door" title="两次点击画一扇门；玩家可点击开关">门</button>
-                    <button class="tt-btn small" data-walltype="secret" title="暗门：玩家看不到也打不开，GM 点击打开后才通行">暗门</button>
+                    <button class="tt-btn small" data-walltype="door" title="明门：玩家看得见。没上锁时玩家可以点击开关；上锁后只有 GM 能开（GM 在选择工具下 Alt+点击门 = 上锁 / 解锁）。两次点击画一扇">门</button>
+                    <button class="tt-btn small" data-walltype="secret" title="暗门：只有 GM 看得见。玩家那边显示成普通的墙，也打不开；GM 点击打开后玩家才看到一扇（锁着的）门并能通过">暗门</button>
+                    <label class="tt-hint" id="wallDoorLockL" title="勾上后新画的门是锁着的：玩家看得见但打不开，GM 才能开"><input type="checkbox" id="wallDoorLock" onchange="wallOpts.lockDoor = this.checked"> 🔒 上锁</label>
                     <span class="sep"></span>
                     <button class="tt-btn small" data-wallshape="line" title="单击逐点画折线">折线</button>
                     <button class="tt-btn small" data-wallshape="rect" title="拖一下画出矩形墙（按住 Shift = 正方形，Alt = 吸附半格），适合围石头、柱子、箱子">▭ 矩形</button>
@@ -161,12 +162,18 @@
                     <button class="tt-btn small" data-wallmode="auto" title="根据地图图片自动识别墙：拖框识别墙线，或拖框后点地板围出房间">🪄 自动</button>
                     <button class="tt-btn small" data-wallmode="doors" title="找出墙线之间一格左右的缺口，点一下补成门">🚪 找门洞</button>
                     <span class="sep"></span>
+                    <button class="tt-btn small" onclick="clearWallPlan()" title="清空还没生成的东西：自动识别的青色虚线预览、描过的红线、没画完的折线（Esc）">✖ 清空规划</button>
+                    <select class="tt-btn small" id="wallClearSel" title="一键删除本场景的某一类墙体（选完再点一次确认，Ctrl+Z 可撤销）" onmousedown="wallClearCounts()" onfocus="wallClearCounts()" onchange="wallClearPick(this.value)"><option value="">🗑 清除…</option><option value="wall">全部墙</option><option value="window">全部窗</option><option value="door">全部门</option><option value="secret">全部暗门</option><option value="all">全部（墙 + 门窗）</option></select>
+                    <button class="tt-btn small danger" id="wallClearGo" style="display:none;" onclick="wallClearGo()"></button>
+                    <span class="sep"></span>
                     <span class="tt-hint">矩形 / 圆形：在地图上拖一下（Shift 正方形 / 正圆）；折线：单击逐点画墙（不吸附网格，靠近已有拐点会接上；按住 Alt 吸附半格，按住 Shift 锁定水平 / 竖直 / 45°），光标处的圆点 = 下一个点落在哪，双击 / Enter 结束，右键或 Backspace 回退上一个点（只剩起点时取消）</span>
-                    <button class="tt-btn small danger" onclick="clearWalls()">清除墙体</button>
                     <div class="aw-panel" id="autoWallPanel" style="display:none;">
                         <button class="tt-btn small" data-aw="band" title="适合写实 / 彩色地图：直接找出墙本身（两侧有清楚边缘的带子），沿墙中间画一条横平竖直的线">识别墙体</button>
+                        <button class="tt-btn small" data-aw="trace" title="沿着墙中间描一小段，自动顺着同一种墙往两头延伸（拐角会跟着拐，岔路口会分叉），适合建筑类地图；追断了在断头外的墙上单击可以沿墙接过去；右键撤销上一步">🧵 沿墙延伸</button>
                         <button class="tt-btn small" data-aw="line" title="适合墙是深色线条的地图（线稿、地下城生成器）">识别线条</button>
                         <button class="tt-btn small" data-aw="floor" title="适合洞穴、岩浆等不规则的地图：点一块地面，沿它和周围的分界（岩石边、墙的轮廓）围墙；也可以点墙外的虚空 / 岩浆。可连点多处，右键撤销上一个点">点地板</button>
+                        <label data-awfor="trace" title="越大越能跨过墙上的装饰、明暗变化继续往前追（也更容易追出墙外）">宽松度 <input type="range" id="awTrTol" min="1" max="10" step="1"> <b id="awTrTolV"></b></label>
+                        <label data-awfor="trace" title="碰到 T 字口、十字口时，把同一种墙的岔路也一起追出来"><input type="checkbox" id="awTrBranch"> 跟随岔路</label>
                         <label data-awfor="band" title="越高找到的墙越多（也更容易把家具、地板缝当成墙）">灵敏度 <input type="range" id="awSens" min="2" max="20" step="1"> <b id="awSensV"></b></label>
                         <label data-awfor="line" title="比这个亮度暗的像素算墙线；按「自动」恢复自动阈值">深浅 <input type="range" id="awThr" min="10" max="245" step="1"> <b id="awThrV"></b> <button class="tt-btn small" id="awAuto">自动</button></label>
                         <label data-awfor="line" title="比这个更细的线忽略（网格线、纹理）">忽略细线 <input type="range" id="awThick" min="0" max="6" step="1"> <b id="awThickV"></b></label>
@@ -563,17 +570,17 @@
     </div>
 
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js?v=2026111334"></script>
-    <script src="js/tabletop-combat.js?v=2026111334"></script>
-    <script src="js/tabletop-status.js?v=2026111334"></script>
-    <script src="js/tabletop-action.js?v=2026111334"></script>
-    <script src="js/tabletop-extra.js?v=2026111334"></script>
-    <script src="js/tabletop-autowall.js?v=2026111334"></script>
-    <script src="js/tabletop-prep.js?v=2026111334"></script>
-    <script src="js/tabletop-dm.js?v=2026111334"></script>
-    <script src="js/tabletop-fight.js?v=2026111334"></script>
-    <script src="js/tabletop-summon.js?v=2026111334"></script>
-    <script src="js/tabletop-class.js?v=2026111334"></script>
-    <script src="js/tabletop.js?v=2026111334"></script>
+    <script src="js/tabletop-sheets.js?v=2026111339"></script>
+    <script src="js/tabletop-combat.js?v=2026111339"></script>
+    <script src="js/tabletop-status.js?v=2026111339"></script>
+    <script src="js/tabletop-action.js?v=2026111339"></script>
+    <script src="js/tabletop-extra.js?v=2026111339"></script>
+    <script src="js/tabletop-autowall.js?v=2026111339"></script>
+    <script src="js/tabletop-prep.js?v=2026111339"></script>
+    <script src="js/tabletop-dm.js?v=2026111339"></script>
+    <script src="js/tabletop-fight.js?v=2026111339"></script>
+    <script src="js/tabletop-summon.js?v=2026111339"></script>
+    <script src="js/tabletop-class.js?v=2026111339"></script>
+    <script src="js/tabletop.js?v=2026111339"></script>
 </body>
 </html>
