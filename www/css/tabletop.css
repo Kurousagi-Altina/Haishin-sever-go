@@ -108,7 +108,7 @@ input[type="color"].tt-input { padding: 0 2px; width: 36px; height: 28px; }
 .prop-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 
 .zoom-ctrl {
-    position: absolute; right: 10px; bottom: 10px; display: flex; gap: 4px; align-items: center; z-index: 5;
+    position: absolute; right: 10px; bottom: 10px; display: flex; gap: 4px; align-items: center; z-index: 8;
     background: rgba(28,30,36,0.9); border: 1px solid #333; border-radius: 8px; padding: 4px;
 }
 .zoom-ctrl span { font-size: 12px; color: #aaa; min-width: 44px; text-align: center; }
