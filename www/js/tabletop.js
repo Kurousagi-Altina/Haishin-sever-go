@@ -1965,7 +1965,7 @@ function clearWalls() {
 
 // ===== 工具 =====
 function setTool(t) {
-    if (t === 'pan' || t === 'pointer') t = 'select'; // 平移、指示已合并进「手」工具
+    if (t === 'pointer') t = 'select'; // 指示已合并进选择工具（右键拖动）
     if ((t === 'fog' || t === 'wall' || t === 'note') && !me.gm) return;
     if (t !== 'ruler') endRulerPath();
     if (tool === 'wall' && t !== 'wall') finishWall();
@@ -1985,7 +1985,7 @@ function setTool(t) {
 function updateCursor() {
     var c = 'default';
     if (gesture && gesture.type === 'pan') c = 'grabbing';
-    else if (spaceDown) c = 'grab';
+    else if (spaceDown || tool === 'pan') c = 'grab';
     else if (tool === 'draw' || tool === 'ruler' || tool === 'note' || (tool === 'fog' && fogOpts.shape !== 'select') || (tool === 'wall' && (wallOpts.mode === 'draw' || wallOpts.mode === 'auto'))) c = 'crosshair';
     canvas.style.cursor = c;
 }
@@ -2019,9 +2019,9 @@ function onPointerDown(e) {
     if (tool === 'wall' && wallDraft && e.button === 2) { finishWall(); return; } // 右键结束墙体
     if (rulerPath && e.button === 2) { endRulerPath(); return; } // 右键结束尺子
     // 时间停止：玩家只能平移 / 缩放
-    if (timeStopped() && !me.gm && tool !== 'select' && !(e.button === 1 || e.button === 2 || spaceDown)) { notice('⏸ 时间停止中', true); return; }
+    if (timeStopped() && !me.gm && tool !== 'select' && tool !== 'pan' && !(e.button === 1 || e.button === 2 || spaceDown)) { notice('⏸ 时间停止中', true); return; }
     closeTokenMenu();
-    if (e.pointerType === 'touch' && tool === 'select' && !actionMode) { // 触屏长按棋子 = 右键菜单
+    if (e.pointerType === 'touch' && (tool === 'select' || tool === 'pan') && !actionMode) { // 触屏长按棋子 = 右键菜单
         var lpHit = hitTest(w, ['token']), lpId = e.pointerId;
         clearTimeout(longPressTimer);
         longPressTimer = setTimeout(function() {
@@ -2034,7 +2034,7 @@ function onPointerDown(e) {
         }, 550);
     }
     if (e.button === 2 && tool === 'wall' && wallOpts.mode === 'select' && !spaceDown && wallSplitAt(w)) { requestRender(); return; } // 右键拐点：断开
-    if (e.button === 2 && tool === 'select' && !spaceDown && !actionMode) {
+    if (e.button === 2 && (tool === 'select' || tool === 'pan') && !spaceDown && !actionMode) {
         gesture = { type: 'rpointer', start: start };
         return;
     }
@@ -2050,6 +2050,11 @@ function onPointerDown(e) {
     }
     if (e.button !== 0) return;
     if (actionMode) { actionPointerDown(w, e); return; } // 行动选目标
+    if (tool === 'pan') { // ✋ 拖图工具：左键拖哪里都是平移地图
+        gesture = { type: 'pan', start: start, view: { x: view.x, y: view.y } };
+        updateCursor();
+        return;
+    }
 
     if (tool === 'wall' && wallOpts.mode === 'auto') { autoWallPointerDown(w, start); return; } // 自动画墙：拖框 / 点地板
     if (tool === 'wall' && wallOpts.mode === 'doors') { doorGapPointerDown(w, e); requestRender(); return; } // 找门洞：点缺口补门
@@ -2098,8 +2103,8 @@ function onPointerDown(e) {
             }
         } else if (tool === 'note' && !e.shiftKey) {
             if (dmNoteMode === 'trigger') trigDown(w, start); else createNoteAt(w); // 📌：单击放笔记 / 拖出触发区域
-        } else if (tool === 'select' && !e.shiftKey) {
-            // 手：拖空白处 = 平移地图（Shift + 拖动 = 框选）
+        } else if (tool === 'select' && !e.shiftKey && e.pointerType === 'touch') {
+            // 触屏没有中键：单指拖空白处仍是平移地图（鼠标左键拖空白处 = 框选）
             gesture = { type: 'pan', start: start, view: { x: view.x, y: view.y }, clearSel: true };
             updateCursor();
         } else {
@@ -2500,7 +2505,7 @@ function onKeyDown(e) {
         else if (ck === 'v' && clipItems.length) { e.preventDefault(); pasteItems(); }
         return;
     }
-    var keyTools = { v: 'select', h: 'select', d: 'draw', m: 'ruler', l: 'select', f: 'fog', w: 'wall', b: 'note' };
+    var keyTools = { v: 'select', h: 'pan', d: 'draw', m: 'ruler', l: 'select', f: 'fog', w: 'wall', b: 'note' };
     var k = e.key.toLowerCase();
     if (k === 't') {
         var hov = hitTest(cursorWorld, ['token']);
