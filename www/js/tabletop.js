@@ -26,6 +26,7 @@ var selected = {};
 var gesture = null;
 var polyDraft = null;
 var cursorWorld = { x: 0, y: 0 };
+var cursorAlt = false; // 最近一次指针移动时是否按着 Alt（画墙预览用）
 var spaceDown = false;
 var assetFilter = 'all';
 var remote = { pointers: {}, rulers: {}, pings: [] };
@@ -1903,7 +1904,7 @@ function drawWalls(items, gmView) {
 
     if (wallDraft && gmView) {
         var st2 = WALL_STYLE[wallDraft.type];
-        var cur = wallSnap(cursorWorld, false);
+        var cur = wallSnap(cursorWorld, cursorAlt);
         ctx.save();
         ctx.strokeStyle = st2.color;
         ctx.lineWidth = 3 / view.s;
@@ -1918,8 +1919,11 @@ function drawWalls(items, gmView) {
     }
 }
 
-function wallSnap(w, free) {
-    return free ? { x: w.x, y: w.y } : snapToGrid(w.x, w.y, gridSize() / 2);
+// 画墙落点：默认不吸附网格（贴着地图上的墙画），靠近已有墙的拐点时吸上去方便接上；按住 Alt = 吸附半格
+function wallSnap(w, grid, skip) {
+    if (grid) return snapToGrid(w.x, w.y, gridSize() / 2);
+    var near = typeof wallVertexAt === 'function' ? wallVertexAt(w, skip) : null;
+    return near ? { x: near.x, y: near.y } : { x: w.x, y: w.y };
 }
 
 function finishWall() {
@@ -2016,7 +2020,7 @@ function onPointerDown(e) {
     var w = toWorld(s.x, s.y);
     var start = { s: s, w: w, moved: false };
 
-    if (tool === 'wall' && wallDraft && e.button === 2) { finishWall(); return; } // 右键结束墙体
+    if (tool === 'wall' && wallDraft && e.button === 2) { wallDraft = null; requestRender(); notice('已取消这段墙（双击 / Enter 才是结束并生成）'); return; } // 右键取消正在画的墙
     if (rulerPath && e.button === 2) { endRulerPath(); return; } // 右键结束尺子
     // 时间停止：玩家只能平移 / 缩放
     if (timeStopped() && !me.gm && tool !== 'select' && tool !== 'pan' && !(e.button === 1 || e.button === 2 || spaceDown)) { notice('⏸ 时间停止中', true); return; }
@@ -2170,6 +2174,7 @@ function onPointerMove(e) {
     if (pointers[e.pointerId]) pointers[e.pointerId] = s;
     var w = toWorld(s.x, s.y);
     cursorWorld = w;
+    cursorAlt = !!e.altKey;
     if (polyDraft) requestRender();
     if (rulerPath && !gesture) {
         rulerPath.b = rulerPoint(w, e.altKey);

@@ -576,16 +576,27 @@ var SB_BUFFS = { blessed: 1, hasted: 1, dodging: 1, raging: 1, bardic: 1, guidan
 var sbCollapsed = false, sbBound = false;
 try { sbCollapsed = localStorage.getItem('ttStatusBar') === 'min'; } catch (e) { /* 无痕模式等 */ }
 
+// 已分配的角色（棋子或它的角色卡分配给了玩家）常驻显示：选目标、施法时清掉选择也不会消失
+function sbAssignedTo(t) {
+    var sh = t.sheet && sheets[t.sheet];
+    return t.owner || (sh && sh.kind === 'pc' && sh.owner) || '';
+}
+
 function statusBarTokens() {
     if (!scene || !scene.items) return [];
-    var list;
+    var toks = sortedItems().filter(function(t) { return t.kind === 'token'; }), list = [], seen = {};
+    var add = function(t) { if (t && t.kind === 'token' && !seen[t.id]) { seen[t.id] = 1; list.push(t); } };
     if (me.gm) {
-        list = selectedIds().map(function(id) { return scene.items[id]; }).filter(function(t) { return t && t.kind === 'token'; });
-        if (!list.length) { var c = combatState(), cur = c && scene.items[c.turn]; list = cur && cur.kind === 'token' ? [cur] : []; }
+        toks.forEach(function(t) { if (sbAssignedTo(t)) add(t); });
+        var cs = actionMode && actionMode.caster; // 正在施法 / 行动的角色（棋子对象）
+        if (cs) add(scene.items[typeof cs === 'string' ? cs : cs.id]);
+        selectedIds().forEach(function(id) { add(scene.items[id]); });
+        var c = combatState();
+        if (c) add(scene.items[c.turn]);
     } else {
-        list = sortedItems().filter(function(t) { return t.kind === 'token' && t.owner === me.name; });
+        toks.forEach(function(t) { if (sbAssignedTo(t) === me.name) add(t); });
     }
-    return list.slice(0, 6);
+    return list.slice(0, 10);
 }
 
 function sbStatusChip(s) {
