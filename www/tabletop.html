@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css?v=2026111343">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026111344">
 </head>
 <body class="tt-body">
 
@@ -112,11 +112,12 @@
                     <span id="swatches"></span>
                     <input type="color" class="tt-input" id="drawColor" value="#e53935" title="自定义颜色">
                     <select class="tt-select" id="drawWidth" title="线宽">
-                        <option value="2">细</option><option value="4" selected>中</option><option value="8">粗</option><option value="16">特粗</option>
+                        <option value="g0.1">0.1 格</option><option value="2">细</option><option value="4" selected>中</option><option value="8">粗</option><option value="16">特粗</option>
                     </select>
                     <label style="font-size:12px;"><input type="checkbox" id="drawFill"> 填充</label>
                     <span class="sep"></span>
-                    <button class="tt-btn small" onclick="clearDrawings()" title="删除你画的内容（GM 删除全部）">清除绘制</button>
+                    <button class="tt-btn small" onclick="clearDrawings()" title="删除你画的内容（GM 删除全部）；点两次确认">清除绘制</button>
+                    <span class="tt-hint">右键轻点 = 撤销上一笔，右键拖动 = 平移</span>
                 </div>
 
                 <!-- 迷雾选项 -->
@@ -130,12 +131,14 @@
                     <button class="tt-btn small" data-fogshape="room" title="点房间里任意一点：沿墙围出的整个房间一次揭开（或盖上）">🏠 房间</button>
                     <button class="tt-btn small" data-fogshape="select" title="选择、移动、删除迷雾块">选择</button>
                     <select class="tt-select" id="fogBrush" title="笔刷大小（格）">
-                        <option value="0.5">0.5 格</option><option value="1" selected>1 格</option><option value="2">2 格</option><option value="4">4 格</option>
+                        <option value="0.1">0.1 格</option><option value="0.25">0.25 格</option><option value="0.5">0.5 格</option><option value="1" selected>1 格</option><option value="2">2 格</option><option value="4">4 格</option>
                     </select>
                     <span class="sep"></span>
                     <button class="tt-btn small" onclick="fogCoverAll()">全图覆盖</button>
-                    <button class="tt-btn small danger" onclick="fogClearAll()">清除迷雾</button>
+                    <select class="tt-btn small" id="fogClearSel" title="一键删除本场景的揭示 / 遮盖（选完再点一次确认，Ctrl+Z 可撤销）；只删某一块：切到「选择」点中它按 Delete" onmousedown="fogClearCounts()" onfocus="fogClearCounts()" onchange="fogClearPick(this.value)"><option value="">🗑 清除…</option><option value="reveal">全部揭示</option><option value="cover">全部遮盖</option><option value="all">全部迷雾</option></select>
+                    <button class="tt-btn small danger" id="fogClearGo" style="display:none;" onclick="fogClearGo()"></button>
                     <label style="font-size:12px;"><input type="checkbox" id="fogPreview" onchange="requestRender()"> 玩家视角</label>
+                    <span class="tt-hint">右键轻点 = 撤销上一笔（画多边形时回退上一个点），右键拖动 = 平移</span>
                 </div>
 
                 <!-- 笔记选项 -->
@@ -571,17 +574,17 @@
     </div>
 
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js?v=2026111343"></script>
-    <script src="js/tabletop-combat.js?v=2026111343"></script>
-    <script src="js/tabletop-status.js?v=2026111343"></script>
-    <script src="js/tabletop-action.js?v=2026111343"></script>
-    <script src="js/tabletop-extra.js?v=2026111343"></script>
-    <script src="js/tabletop-autowall.js?v=2026111343"></script>
-    <script src="js/tabletop-prep.js?v=2026111343"></script>
-    <script src="js/tabletop-dm.js?v=2026111343"></script>
-    <script src="js/tabletop-fight.js?v=2026111343"></script>
-    <script src="js/tabletop-summon.js?v=2026111343"></script>
-    <script src="js/tabletop-class.js?v=2026111343"></script>
-    <script src="js/tabletop.js?v=2026111343"></script>
+    <script src="js/tabletop-sheets.js?v=2026111344"></script>
+    <script src="js/tabletop-combat.js?v=2026111344"></script>
+    <script src="js/tabletop-status.js?v=2026111344"></script>
+    <script src="js/tabletop-action.js?v=2026111344"></script>
+    <script src="js/tabletop-extra.js?v=2026111344"></script>
+    <script src="js/tabletop-autowall.js?v=2026111344"></script>
+    <script src="js/tabletop-prep.js?v=2026111344"></script>
+    <script src="js/tabletop-dm.js?v=2026111344"></script>
+    <script src="js/tabletop-fight.js?v=2026111344"></script>
+    <script src="js/tabletop-summon.js?v=2026111344"></script>
+    <script src="js/tabletop-class.js?v=2026111344"></script>
+    <script src="js/tabletop.js?v=2026111344"></script>
 </body>
 </html>

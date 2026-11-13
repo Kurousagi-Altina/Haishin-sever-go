@@ -17,6 +17,7 @@ var view = { x: 0, y: 0, s: 1 };
 var tool = 'select';
 var drawOpts = { shape: 'pen', color: '#e53935', width: 4, fill: false };
 var fogOpts = { mode: 'cover', shape: 'rect' };
+var recentMade = { fog: [], draw: [] }; // 自己刚画的迷雾 / 绘制（右键轻点逐笔撤销）
 var wallOpts = { type: 'wall', mode: 'draw', shape: 'line', lockDoor: false }; // shape：line 逐点折线 / rect 拖出矩形 / ellipse 拖出圆形
 var wallDraft = null;
 var delConfirm = null; // Delete 删很多个物件时的二次确认
@@ -1018,6 +1019,8 @@ function createItems(items) {
     items.forEach(function(it) {
         if (!me.gm) it.owner = me.name;
         scene.items[it.id] = it;
+        var rm = recentMade[it.kind];
+        if (rm) { rm.push(it.id); if (rm.length > 200) rm.shift(); }
     });
     queueItems(items);
     requestRender();
@@ -1079,11 +1082,32 @@ function addMarker() {
     selectOnly([it.id]);
 }
 
+var clearDrawAsk = 0;
 function clearDrawings() {
     var ids = sortedItems().filter(function(it) { return it.kind === 'draw' && canEdit(it); }).map(function(it) { return it.id; });
-    if (!ids.length) return;
-    if (!confirm(me.gm ? '删除本场景的全部绘制？' : '删除你画的全部内容？')) return;
+    if (!ids.length) { notice('没有可以清除的绘制'); return; }
+    if (performance.now() - clearDrawAsk > 4000) { // 点两次确认（内嵌浏览器会吞掉 confirm 弹窗）
+        clearDrawAsk = performance.now();
+        notice('再点一次「清除绘制」确认删除' + (me.gm ? '本场景的全部 ' : '你画的 ') + ids.length + ' 个绘制', true, 4000);
+        return;
+    }
+    clearDrawAsk = 0;
     deleteItems(ids);
+    notice('已删除 ' + ids.length + ' 个绘制（Ctrl+Z 撤销）');
+}
+
+// 右键轻点：撤销自己刚画的上一笔迷雾 / 绘制
+function toolRightUndo(kind) {
+    var r = recentMade[kind] || [];
+    while (r.length) {
+        var id = r.pop(), it = scene.items[id];
+        if (it && canEdit(it)) {
+            deleteItems([id]);
+            notice(kind === 'fog' ? '已撤销上一笔' + (it.cut ? '揭示' : '遮盖') + '（Ctrl+Z 恢复）' : '已撤销上一笔（Ctrl+Z 恢复）');
+            return;
+        }
+    }
+    notice('没有可以撤销的了', true);
 }
 
 function fogCoverAll() {
@@ -1093,12 +1117,40 @@ function fogCoverAll() {
     createItems([{ id: genId(), kind: 'fog', shape: 'rect', x: b.x, y: b.y, points: [[0, 0], [b.w, b.h]], z: nextZ() }]);
 }
 
-function fogClearAll() {
-    var ids = sortedItems().filter(function(it) { return it.kind === 'fog'; }).map(function(it) { return it.id; });
-    if (!ids.length) return;
-    if (!confirm('清除本场景的全部迷雾？')) return;
-    deleteItems(ids);
+// 一键清除迷雾：全部揭示 / 全部遮盖 / 全部（下拉选好再点红色按钮确认）
+var FOG_CLEAR_NAME = { reveal: '揭示', cover: '遮盖', all: '迷雾' }, fogClearPending = null;
+function fogClearIds(type) {
+    return sortedItems().filter(function(it) { return it.kind === 'fog' && (type === 'all' || (type === 'reveal') === !!it.cut); }).map(function(it) { return it.id; });
 }
+function fogClearCounts() {
+    var sel = $('fogClearSel');
+    if (sel) Array.prototype.forEach.call(sel.options, function(o) { if (o.value) o.textContent = '全部' + FOG_CLEAR_NAME[o.value] + '（' + fogClearIds(o.value).length + '）'; });
+}
+function fogClearReset() {
+    clearTimeout(fogClearPending && fogClearPending.timer);
+    fogClearPending = null;
+    if ($('fogClearSel')) $('fogClearSel').value = '';
+    if ($('fogClearGo')) $('fogClearGo').style.display = 'none';
+}
+function fogClearPick(type) {
+    fogClearReset();
+    if (!type) return;
+    var n = fogClearIds(type).length;
+    if (!n) { notice('本场景没有' + FOG_CLEAR_NAME[type]); return; }
+    $('fogClearSel').value = type;
+    $('fogClearGo').textContent = '确认删除 ' + n + ' 块' + FOG_CLEAR_NAME[type];
+    $('fogClearGo').style.display = '';
+    fogClearPending = { type: type, timer: setTimeout(fogClearReset, 8000) };
+}
+function fogClearGo() {
+    if (!fogClearPending) return;
+    var type = fogClearPending.type, ids = fogClearIds(type);
+    fogClearReset();
+    if (!ids.length) return;
+    deleteItems(ids);
+    notice('已删除 ' + ids.length + ' 块' + FOG_CLEAR_NAME[type] + '（Ctrl+Z 撤销）');
+}
+function fogClearAll() { fogClearPick('all'); }
 
 // ===== 渲染 =====
 function requestRender() {
@@ -2155,6 +2207,16 @@ function onPointerDown(e) {
         return;
     }
     if (rulerPath && e.button === 2) { endRulerPath(); return; } // 右键结束尺子
+    if (e.button === 2 && !spaceDown && !actionMode && (tool === 'fog' || tool === 'draw')) { // 右键：多边形回退一个点；轻点 = 撤销上一笔；拖动 = 平移
+        if (tool === 'fog' && polyDraft) {
+            if (polyDraft.points.length > 1) polyDraft.points.pop(); else { polyDraft = null; notice('已取消这个多边形'); }
+            requestRender();
+            return;
+        }
+        gesture = { type: 'pan', start: start, view: { x: view.x, y: view.y }, button: 2, toolUndo: tool };
+        updateCursor();
+        return;
+    }
     // 时间停止：玩家只能平移 / 缩放
     if (timeStopped() && !me.gm && tool !== 'select' && tool !== 'pan' && !(e.button === 1 || e.button === 2 || spaceDown)) { notice('⏸ 时间停止中', true); return; }
     closeTokenMenu();
@@ -2271,7 +2333,7 @@ function onPointerDown(e) {
     if (tool === 'draw' && drawOpts.shape === 'text') { createTextAt(w); return; }
     if (tool === 'draw') {
         var it = { id: genId(), kind: 'draw', shape: drawOpts.shape, x: w.x, y: w.y, points: [[0, 0]],
-            color: drawOpts.color, width: drawOpts.width };
+            color: drawOpts.color, width: drawOpts.widthCells ? Math.max(1, Math.round(drawOpts.widthCells * gridSize() * 10) / 10) : drawOpts.width };
         if (drawOpts.fill && (it.shape === 'rect' || it.shape === 'circle' || it.shape === 'cone')) it.fill = true;
         if (it.shape === 'circle') { it.r = 0; delete it.points; }
         if (it.shape === 'cone') it.points = [[0, 0]];
@@ -2471,6 +2533,7 @@ function onPointerUp(e) {
     case 'pan':
         updateCursor();
         if (g.actionUndo && !g.start.moved) actionRightClick(); // 选目标时右键轻点
+        if (g.toolUndo && !g.start.moved) toolRightUndo(g.toolUndo); // 迷雾 / 绘制：右键轻点撤销上一笔
         if (g.clearSel && !g.start.moved && !e.shiftKey) selectOnly([]); // 点空地：取消选择
         break;
     case 'move':
@@ -3848,7 +3911,11 @@ function init() {
         syncToolOpts();
     });
     $('drawColor').addEventListener('input', function() { drawOpts.color = this.value; syncToolOpts(); });
-    $('drawWidth').addEventListener('change', function() { drawOpts.width = parseFloat(this.value); });
+    $('drawWidth').addEventListener('change', function() { // 「0.1 格」= 按网格算（g0.1），其余是固定像素
+        var v = this.value;
+        drawOpts.widthCells = v.charAt(0) === 'g' ? parseFloat(v.slice(1)) : 0;
+        if (!drawOpts.widthCells) drawOpts.width = parseFloat(v);
+    });
     $('drawFill').addEventListener('change', function() { drawOpts.fill = this.checked; });
     $('optsFog').addEventListener('click', function(e) {
         if (e.target.dataset.fogmode) fogOpts.mode = e.target.dataset.fogmode;
