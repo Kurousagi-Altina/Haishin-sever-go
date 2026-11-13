@@ -83,13 +83,13 @@ function isShifter(sh) { return !!sh && (/化兽者|shifter/i.test(String(sh.rac
 
 // ===== 属性面板「职业」行：追加的按钮 =====
 function cxPanelBtns(it, sh) {
-    var b = [], f = clsLv(sh, '战士'), pb = sheetProf(sh);
-    if (f >= 2 && sheetHasEntry(sh, RE_WIND))
+    var b = [], f = clsLv(sh, '战士'), pb = sheetProf(sh), F = clsOn('hcFighter');
+    if (F && f >= 2 && sheetHasEntry(sh, RE_WIND))
         b.push(cxBtn('cx-tmind', '🧠 战术思维', '战术思维（战士 2 级）：属性检定失败时花一次回气，掷 1d10 加到检定结果上；加上后仍然失败就不消耗（把回气加回去）'));
-    if (f >= 9)
+    if (F && f >= 9)
         b.push(cxBtn('cx-indom', '不屈（' + cxLeft(it, RE_INDOM, '不屈', byLevel(FIGHTER.indomitable, f)) + '）',
             '不屈（战士 9 级）：豁免失败时重掷，加上战士等级 ' + f + '，必须用新结果。服务器掷的豁免请点记录里的「不屈」按钮；这里是给自己掷的豁免用的：掷 1d20 + ' + f + '，再加上该豁免的加值'));
-    if (isRuneKnight(sh)) {
+    if (F && isRuneKnight(sh)) {
         var gm = hasStatus(it, 'giantmight');
         b.push(gm ? cxBtn('cx-giantend', '结束巨人之力', '结束巨人之力，恢复原来的体型') :
             cxBtn('cx-giant', '🗿 巨人之力（' + cxLeft(it, RE_GIANT, '巨人之力', pb) + '）', '巨人之力（附赠动作，1 分钟）：体型变为大型，力量检定和力量豁免优势，每回合一次武器或徒手命中额外 ' + giantDie(sh) + '（命中后在记录里点按钮）'));
@@ -100,7 +100,7 @@ function cxPanelBtns(it, sh) {
         if (knownRune(sh, 'hill')) b.push(hasStatus(it, 'hillrune') ? '' : cxBtn('cx-rune-hill', '⛰ 山丘符文（' + cxLeft(it, runeRes(it, 'hill').re, '山丘符文', u) + '）', '山丘符文（附赠动作，1 分钟）：钝击、穿刺、挥砍伤害抗性'));
         if (knownRune(sh, 'storm')) b.push(hasStatus(it, 'stormrune') ? '' : cxBtn('cx-rune-storm', '🌩 风暴符文（' + cxLeft(it, runeRes(it, 'storm').re, '风暴符文', u) + '）', '风暴符文（附赠动作，1 分钟）：先知状态，60 尺内你看得见的生物做攻击、检定或豁免时，可以用反应让它具有优势或劣势（由 GM 结算）'));
     }
-    if (isShifter(sh) && !hasStatus(it, 'shifted'))
+    if (hintOn('hintRace') && isShifter(sh) && !hasStatus(it, 'shifted'))
         b.push(cxBtn('cx-shift', '🐾 化兽（' + cxLeft(it, RE_SHIFT, '化兽', pb) + '）', '化兽（附赠动作，1 分钟）：获得 ' + (2 * pb) + ' 点临时生命值（2 × 熟练加值）' + (sheetHasEntry(sh, RE_SWIFT) ? '；迅捷：速度 +10 尺，敌人在你 5 尺内结束回合时可以用反应移动至多 10 尺（不引发借机攻击）' : '')));
     b = b.concat(monkPanelBtns(it, sh), casterPanelBtns(it, sh));
     return b.filter(Boolean);
@@ -204,7 +204,7 @@ function cxTargetBtns(e, t, r) {
     var btn = function(kind, label, title, attrs) {
         return '<button class="tt-btn small react-btn" data-cx="' + kind + '" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) + '"' + (attrs || '') + ' title="' + escapeHtml(title) + '">' + label + '</button>';
     };
-    if (r.kind === 'attack' && c && csh && mine && !r.spell) {
+    if (clsOn('hcFighter') && r.kind === 'attack' && c && csh && mine && !r.spell) {
         var weapon = !/法术|戏法/.test(r.name || '');
         if (hit && weapon && hasStatus(c, 'giantmight') && !masteryDone[e.id + ':gm'] && !(c.econ && c.econ.gmKey && c.econ.gmKey === turnKey()))
             h += btn('giant', '巨人之力 +' + giantDie(csh), '巨人之力：每回合一次，武器或徒手命中时额外 ' + giantDie(csh) + ' 伤害（与武器同类型）');
@@ -213,7 +213,7 @@ function cxTargetBtns(e, t, r) {
         if (t.hit === 'miss' && clsLv(csh, '战士') >= 13 && !masteryDone[e.id + ':' + t.id + ':study'])
             h += btn('study', '究明攻击', '究明攻击（战士 13 级）：攻击失手后，直到你下个回合结束，你对这个生物的下一次攻击具有优势');
     }
-    if (tok && r.kind === 'save' && t.saved === 'no' && (me.gm || (tok.owner && tok.owner === me.name))) {
+    if (clsOn('hcFighter') && tok && r.kind === 'save' && t.saved === 'no' && (me.gm || (tok.owner && tok.owner === me.name))) {
         var tsh = tok.sheet && sheets[tok.sheet], fl = clsLv(tsh, '战士');
         if (fl >= 9 && !cxRefUsed(e.id + ':' + t.id + ':ind') && cxHas(tok, RE_INDOM, '不屈', byLevel(FIGHTER.indomitable, fl)))
             h += btn('indom', '不屈（重掷 +' + fl + '）', '不屈（战士 9 级）：由服务器重掷这次豁免并加战士等级 ' + fl + '，成功则重新结算伤害和状态（必须用新结果）', ' data-react-ref="' + escapeHtml(e.id + ':' + t.id + ':ind') + '"');
@@ -221,7 +221,7 @@ function cxTargetBtns(e, t, r) {
     if (tok && r.kind === 'attack' && hit) {
         sortedItems().forEach(function(o) {
             var osh = o.kind === 'token' && o.sheet && sheets[o.sheet];
-            if (!osh || !mineTok(o) || !isCreatureToken(o) || !canReact(o) || o.id === r.casterId || !isRuneKnight(osh)) return;
+            if (!clsOn('hcFighter') || !osh || !mineTok(o) || !isCreatureToken(o) || !canReact(o) || o.id === r.casterId || !isRuneKnight(osh)) return;
             var d = o.id === tok.id ? 0 : creatureDist(o, tok);
             if (o.id !== tok.id && clsLv(osh, '战士') >= 7 && d <= 60 && !cxRefUsed(e.id + ':' + t.id + ':rs') && cxHas(o, RE_RSHIELD, '符文之盾', sheetProf(osh)))
                 h += btn('rshield', '符文之盾（' + escapeHtml(chipName(o.label)) + '）', '符文之盾（反应）：让攻击者重掷 d20 并采用新结果；不再命中则这次伤害和状态作废', ' data-by="' + escapeHtml(o.id) + '" data-react-ref="' + escapeHtml(e.id + ':' + t.id + ':rs') + '"');
@@ -360,7 +360,7 @@ function monkUnarmed(it, sh, cost, note) {
 
 function monkPanelBtns(it, sh) {
     var lv = monkLv(sh), b = [];
-    if (!lv) return b;
+    if (!lv || !clsOn('hcMonk')) return b;
     var fm = focusMax(sh), fl = fm ? '（功力 ' + cxLeft(it, RE_FOCUS, '功力', fm) + '）' : '';
     b.push(cxBtn('cx-mk-ma', '👊 武艺', '武艺：执行攻击动作后，可以用附赠动作进行一次徒手打击（伤害用武艺骰 ' + maDie(sh) + '）'));
     if (lv >= 2) {
@@ -456,6 +456,7 @@ function monkSelAct(act0, it, sh) {
 
 // 记录按钮：震慑拳 / 元素同调推拉 / 四象神通（出手方）、圆融自在（被打方）、拨挡攻击反弹
 function monkTargetBtns(e, t, r) {
+    if (!clsOn('hcMonk')) return '';
     var h = '', tok = scene.items[t.id], c = r.casterId && scene.items[r.casterId], csh = c && c.sheet && sheets[c.sheet];
     var hit = t.hit === 'hit' || t.hit === 'crit', mine = me.gm || e.who === me.name;
     var btn = function(kind, label, title, attrs) {
@@ -545,7 +546,7 @@ function monkClick(el, d) {
 // 行动框：元素同调中的徒手打击触及 +10；真力注拳提示
 function cxDialogSync(a, caster, sh) {
     var s = sh || (caster && caster.sheet && sheets[caster.sheet]);
-    if (!caster || !s || a.kind !== 'attack' || !hintOn('hintClass') || !isUnarmedAct(a)) return;
+    if (!caster || !s || a.kind !== 'attack' || !clsOn('hcMonk') || !isUnarmedAct(a)) return;
     var lv = monkLv(s), notes = [];
     if (hasStatus(caster, 'attuned') && !a.attunedReach) {
         a.reach = Math.max(5, a.reach || 5) + 10;
@@ -613,27 +614,28 @@ function isArtillerist(sh) { return hasSub(sh, RE_ARTILLERIST); }
 
 function casterPanelBtns(it, sh) {
     var b = [], pb = sheetProf(sh), wis = abilMod(sh, 'wis');
+    var CL = clsOn('hcCleric'), DR = clsOn('hcDruid'), WZ = clsOn('hcWizard'), AR = clsOn('hcArtificer'), RACE = hintOn('hintRace');
     // 牧师
     var cl = clericLv(sh);
-    if (cl >= 2) {
+    if (CL && cl >= 2) {
         var cdl = '（引导 ' + cxLeft(it, RE_CD, '引导神力', cdMax(sh)) + '）', sd = byLevel(SPARK_DICE, cl);
         b.push(cxBtn('cx-cl-spark', '✨ 神圣火花' + cdl, '神圣火花（魔法动作，1 次引导神力）：30 尺内一个生物体质豁免（DC ' + spellDCOf(sh) + '），失败受到 ' + sd + signed(wis) + ' 光耀或黯蚀伤害，成功减半'));
         b.push(cxBtn('cx-cl-sparkheal', '神圣火花·治疗', '神圣火花（魔法动作，1 次引导神力）：30 尺内一个生物恢复 ' + sd + signed(wis) + ' 生命值'));
         b.push(cxBtn('cx-cl-turn', '☀ 驱散亡灵', '驱散亡灵（魔法动作，1 次引导神力）：30 尺内你选择的亡灵感知豁免，失败则恐慌并失能 1 分钟（受到伤害时结束）' + (cl >= 5 ? '；灼净亡灵：失败的亡灵还受到 ' + Math.max(1, wis) + 'd8 光耀伤害' : '')));
     }
-    if (cl >= 3 && isWarDomain(sh)) {
+    if (CL && cl >= 3 && isWarDomain(sh)) {
         b.push(cxBtn('cx-cl-priest', '⚔ 战争祭司（' + cxLeft(it, RE_WARPRIEST, '战争祭司', Math.max(1, wis)) + '）', '战争祭司（附赠动作）：进行一次武器攻击或徒手打击。点了打开角色卡，下一次攻击自动设为附赠动作'));
         if (cl >= 6) b.push(cxBtn('cx-cl-blessing', '战神祝福', '战神祝福（1 次引导神力）：免费施放虔诚护盾或灵体武器，不需要专注，持续 1 分钟。点了打开角色卡，下一次施法不扣法术位、不专注'));
     }
-    if (cl >= 10) b.push(cxBtn('cx-cl-interv', '神圣干预（' + cxLeft(it, RE_DIVINT, '神圣干预', 1) + '）', '神圣干预（魔法动作，每长休一次）：免费施放一道五环或以下、不是反应的牧师法术，不需要成分。点了打开角色卡，下一次施法不扣法术位'));
+    if (CL && cl >= 10) b.push(cxBtn('cx-cl-interv', '神圣干预（' + cxLeft(it, RE_DIVINT, '神圣干预', 1) + '）', '神圣干预（魔法动作，每长休一次）：免费施放一道五环或以下、不是反应的牧师法术，不需要成分。点了打开角色卡，下一次施法不扣法术位'));
     // 龙裔
-    if (isDragonborn(sh)) {
+    if (RACE && isDragonborn(sh)) {
         b.push(cxBtn('cx-db-breath', '🐉 吐息武器（' + cxLeft(it, RE_BREATH, '吐息武器', pb) + '）', '吐息武器（代替攻击动作中的一次攻击）：15 尺锥形或 30 尺长 5 尺宽的直线，敏捷豁免（DC ' + (8 + abilMod(sh, 'con') + pb) + '），失败受到 ' + breathDice(sh) + ' ' + breathType(sh) + '伤害，成功减半'));
         if ((parseInt(sh.level, 10) || 1) >= 5 && !hasStatus(it, 'dflight')) b.push(cxBtn('cx-db-flight', '龙族飞翼（' + cxLeft(it, RE_DFLIGHT, '龙族飞翼', 1) + '）', '龙族飞翼（附赠动作，10 分钟，每长休一次）：长出翅膀，获得等同步行速度的飞行速度'));
     }
     // 德鲁伊
     var dl = druidLv(sh);
-    if (dl >= 2) {
+    if (DR && dl >= 2) {
         var wsl = '（' + cxLeft(it, RE_WS, '荒野变形', wsMax(sh)) + '）', star = starryOf(it);
         if (hasStatus(it, 'wildshape')) b.push(cxBtn('cx-dr-wsend', '结束荒野变形', '结束荒野变形（临时生命值不会自动去掉）'));
         else if (!star) b.push(cxBtn('cx-dr-ws', '🐾 荒野变形' + wsl, '荒野变形（附赠动作，' + Math.max(1, Math.floor(dl / 2)) + ' 小时）：变成已知的野兽形态，获得 ' + dl + ' 点临时生命值。野兽的数值请用棋子的「变形」功能换上'));
@@ -665,8 +667,8 @@ function casterPanelBtns(it, sh) {
     }
     // 法师
     var wl = wizLv(sh);
-    if (wl >= 1 && sheetHasEntry(sh, RE_AREC)) b.push(cxBtn('cx-wz-recover', '📖 奥术回想（' + cxLeft(it, RE_AREC, '奥术回想', 1) + '）', '奥术回想（短休时，每长休一次）：恢复总环阶不超过 ' + Math.ceil(wl / 2) + ' 的法术位（不能恢复六环或更高）。点了按从高到低自动恢复，可以在角色卡上调整'));
-    if (wl >= 3 && isDiviner(sh)) {
+    if (WZ && wl >= 1 && sheetHasEntry(sh, RE_AREC)) b.push(cxBtn('cx-wz-recover', '📖 奥术回想（' + cxLeft(it, RE_AREC, '奥术回想', 1) + '）', '奥术回想（短休时，每长休一次）：恢复总环阶不超过 ' + Math.ceil(wl / 2) + ' 的法术位（不能恢复六环或更高）。点了按从高到低自动恢复，可以在角色卡上调整'));
+    if (WZ && wl >= 3 && isDiviner(sh)) {
         var pv = (it.portent || []).map(function(v) { return num(v, 0); });
         if (pv.length) {
             b.push('<span class="tt-hint" title="预兆：每回合可以用一个替换你或看得见的生物的 d20 检定（服务器掷的豁免 / 攻击在记录里点「预兆 N」）">🔮 预兆</span>');
@@ -675,11 +677,11 @@ function casterPanelBtns(it, sh) {
         b.push(cxBtn('cx-wz-portent', pv.length ? '重掷预兆' : '🔮 掷预兆', '预兆（长休后）：掷 ' + (wl >= 14 ? 3 : 2) + ' 枚 d20 记下来，由服务器掷'));
         if (wl >= 10 && !hasStatus(it, 'thirdeye')) b.push(cxBtn('cx-wz-eye', '天眼通（' + cxLeft(it, RE_EYE, '天眼通', 1) + '）', '天眼通（附赠动作，直到休息）：120 尺黑暗视觉 / 读懂任何语言 / 看见隐形，三选一'));
     }
-    if (wl >= 20) b.push(cxBtn('cx-wz-sig', '招牌法术（' + cxLeft(it, RE_SIG, '招牌法术', 2) + '）', '招牌法术：两道三环法术各可免费以三环施放一次（短休恢复）。点了打开角色卡，下一次施法不扣法术位'));
+    if (WZ && wl >= 20) b.push(cxBtn('cx-wz-sig', '招牌法术（' + cxLeft(it, RE_SIG, '招牌法术', 2) + '）', '招牌法术：两道三环法术各可免费以三环施放一次（短休恢复）。点了打开角色卡，下一次施法不扣法术位'));
     // 奇械师
     var al = artLv(sh);
-    if (al >= 3 && isArtillerist(sh)) b.push(cxBtn('cx-ar-cannon', '🔧 魔能炮台', '魔能炮台（魔法动作，每长休一次或花一个法术位）：打开「新建随从」，模板选好魔能炮台、主控是你'));
-    if (al >= 7) b.push(cxBtn('cx-ar-flash', '💡 灵光一闪（' + cxLeft(it, RE_FLASH, '灵光一闪', Math.max(1, abilMod(sh, 'int'))) + '）', '灵光一闪（反应）：你或 30 尺内看得见的生物属性检定或豁免失败时，加上你的智力调整值 ' + signed(Math.max(1, abilMod(sh, 'int'))) + '。服务器掷的豁免请点记录里的按钮；这里给自己掷的检定用'));
+    if (AR && al >= 3 && isArtillerist(sh)) b.push(cxBtn('cx-ar-cannon', '🔧 魔能炮台', '魔能炮台（魔法动作，每长休一次或花一个法术位）：打开「新建随从」，模板选好魔能炮台、主控是你'));
+    if (AR && al >= 7) b.push(cxBtn('cx-ar-flash', '💡 灵光一闪（' + cxLeft(it, RE_FLASH, '灵光一闪', Math.max(1, abilMod(sh, 'int'))) + '）', '灵光一闪（反应）：你或 30 尺内看得见的生物属性检定或豁免失败时，加上你的智力调整值 ' + signed(Math.max(1, abilMod(sh, 'int'))) + '。服务器掷的豁免请点记录里的按钮；这里给自己掷的检定用'));
     return b;
 }
 
@@ -839,14 +841,14 @@ function casterTargetBtns(e, t, r) {
         return '<button class="tt-btn small react-btn" data-cx="' + kind + '" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) + '"' + (attrs || '') + ' title="' + escapeHtml(title) + '">' + label + '</button>';
     };
     if (r.kind === 'attack' && hit && mine && c && csh && !r.spell) {
-        var ds = divineStrike(csh), ps = primalStrike(csh);
+        var ds = clsOn('hcCleric') ? divineStrike(csh) : '', ps = clsOn('hcDruid') ? primalStrike(csh) : '';
         if (ds && !masteryDone[e.id + ':ds'] && !onceBtnUsed(c, 'dsKey')) h += btn('ccds', '神圣打击 +' + ds, '受祝击·神圣打击（每回合一次）：武器命中额外 ' + ds + ' 光耀或黯蚀伤害');
         if (ps && !masteryDone[e.id + ':ps'] && !onceBtnUsed(c, 'psKey')) h += btn('ccps', '原力蛮击 +' + ps, '元素之怒·原力蛮击（每回合一次）：武器或野兽形态攻击命中额外 ' + ps + ' 寒冷 / 火焰 / 闪电 / 雷鸣伤害');
     }
-    if (r.kind === 'heal' && r.slotLevel > 0 && mine && c && csh && (starryOf(c) || {}).form === 'chalice' && !masteryDone[e.id + ':chalice'])
+    if (clsOn('hcDruid') && r.kind === 'heal' && r.slotLevel > 0 && mine && c && csh && (starryOf(c) || {}).form === 'chalice' && !masteryDone[e.id + ':chalice'])
         h += btn('ccchal', '圣杯：再治疗一人', '星耀·圣杯座：用法术位施放治疗法术后，你或 30 尺内另一个生物恢复 ' + starDie(csh) + ' + 感知调整值 生命值');
     // 导引打击：失手（不是天然 1），出手的是战争牧师自己或 30 尺内的生物
-    if (r.kind === 'attack' && t.hit === 'miss' && c) sortedItems().forEach(function(o) {
+    if (clsOn('hcCleric') && r.kind === 'attack' && t.hit === 'miss' && c) sortedItems().forEach(function(o) {
         var osh = o.kind === 'token' && o.sheet && sheets[o.sheet];
         if (!osh || !mineTok(o) || clericLv(osh) < 3 || !isWarDomain(osh) || !cdHas(o, osh) || cxRefUsed(e.id + ':' + t.id + ':gs')) return;
         var self = o.id === c.id;
@@ -855,7 +857,7 @@ function casterTargetBtns(e, t, r) {
     });
     // 预兆：服务器掷的豁免 / 攻击，预言师可以用一个预兆替换 d20（每回合一次）
     var roll = r.kind === 'save' ? t.save : r.kind === 'attack' ? t.attack : null;
-    if (roll && tok && !cxRefUsed(e.id + ':' + t.id + ':pt')) sortedItems().forEach(function(o) {
+    if (clsOn('hcWizard') && roll && tok && !cxRefUsed(e.id + ':' + t.id + ':pt')) sortedItems().forEach(function(o) {
         var osh = o.kind === 'token' && o.sheet && sheets[o.sheet];
         if (!osh || !mineTok(o) || !(o.portent || []).length || wizLv(osh) < 3 || !isDiviner(osh) || onceBtnUsed(o, 'ptKey')) return;
         (o.portent || []).forEach(function(v, i) {
@@ -863,7 +865,7 @@ function casterTargetBtns(e, t, r) {
         });
     });
     // 灵光一闪：豁免失败，奇械师自己或 30 尺内看得见的生物
-    if (r.kind === 'save' && t.saved === 'no' && tok && !cxRefUsed(e.id + ':' + t.id + ':fg')) sortedItems().forEach(function(o) {
+    if (clsOn('hcArtificer') && r.kind === 'save' && t.saved === 'no' && tok && !cxRefUsed(e.id + ':' + t.id + ':fg')) sortedItems().forEach(function(o) {
         var osh = o.kind === 'token' && o.sheet && sheets[o.sheet];
         if (!osh || !mineTok(o) || artLv(osh) < 7 || !canReact(o) || (o.id !== tok.id && creatureDist(o, tok) > 30)) return;
         if (!cxHas(o, RE_FLASH, '灵光一闪', Math.max(1, abilMod(osh, 'int')))) return;
@@ -929,13 +931,13 @@ function casterDialogSync(a, caster, sh) {
     var fw = $('acFirearmWrap');
     if (fw) { fw.style.display = 'none'; $('acFirearm').checked = false; }
     if (!caster || !s || !hintOn('hintClass') || !a.isSpell || !a.damage) return false;
-    if (a.spellLevel === 0 && !a.potentAdded && (clericLv(s) >= 7 || druidLv(s) >= 7) && sheetHasEntry(s, RE_POTENT)) {
+    if (a.spellLevel === 0 && !a.potentAdded && ((clsOn('hcCleric') && clericLv(s) >= 7) || (clsOn('hcDruid') && druidLv(s) >= 7)) && sheetHasEntry(s, RE_POTENT)) {
         a.damage = addToDamage(a.damage, signed(abilMod(s, 'wis')) || '+0');
         a.potentAdded = true;
         $('acDamage').value = a.damage;
         $('acScaleNote').textContent = [a.scaleNote || '', '强力施法：戏法伤害 + 感知调整值 ' + signed(abilMod(s, 'wis'))].filter(Boolean).join('；');
     }
-    if (fw && artLv(s) >= 5 && isArtillerist(s) && !a.firearmAdded && a.kind !== 'heal' && a.kind !== 'temp') {
+    if (fw && clsOn('hcArtificer') && artLv(s) >= 5 && isArtillerist(s) && !a.firearmAdded && a.kind !== 'heal' && a.kind !== 'temp') {
         fw.style.display = '';
         $('acFirearm').checked = true;
         return true;
@@ -950,7 +952,7 @@ function casterDialogApply(a) {
 
 // 专业预言（预言师 6 级）：用二环以上法术位施放预言法术后，恢复一个更低环（≤ 五环）的已用法术位
 function cxAfterSlot(a, sh) {
-    if (!sh || wizLv(sh) < 6 || !isDiviner(sh) || a.school !== '预言' || !(a.slotLevel >= 2) || !hintOn('hintClass')) return;
+    if (!sh || wizLv(sh) < 6 || !isDiviner(sh) || a.school !== '预言' || !(a.slotLevel >= 2) || !clsOn('hcWizard')) return;
     for (var lv = Math.min(5, a.slotLevel - 1); lv >= 1; lv--) {
         var s = slotOf(sh, lv);
         if (s && s.cur < s.max) { changeSlot(sh, s.idx, 1); notice('专业预言：恢复一个 ' + lv + ' 环法术位', false, 4000); return; }
@@ -959,13 +961,65 @@ function cxAfterSlot(a, sh) {
 
 // 要塞阵地（魔炮师 15 级）：魔能炮台 10 尺内的你和盟友享有半身掩护
 function fortifiedCover(att, tgt) {
-    if (!att || !tgt || !hintOn('hintClass')) return '';
+    if (!att || !tgt || !clsOn('hcArtificer')) return '';
     var found = sortedItems().some(function(o) {
         var sh = o.kind === 'token' && o.sheet && sheets[o.sheet], m = sh && sh.kind === 'summon' && masterSheet(sh);
         return !!m && /魔能炮台|eldritch\s*cannon/i.test(sh.name || '') && artLv(m) >= 15 && tokenSide(o) === tokenSide(tgt) && tokenSide(att) !== tokenSide(tgt) &&
             !hasStatus(o, 'dead') && creatureDist(o, tgt) <= 10;
     });
     return found ? '要塞阵地：魔能炮台 10 尺内，半身掩护' : '';
+}
+
+// ===== 手动豁免：属性面板「自动掷豁免」不勾时，服务器不替这个角色掷豁免 =====
+// 记录里提示要掷什么、成败各怎样；玩家点「掷豁免」由服务器当场掷，或用实体骰子掷完点「成功 / 失败」，之后伤害和状态照样自动结算
+var SAVE_CN = { str: '力量', dex: '敏捷', con: '体质', int: '智力', wis: '感知', cha: '魅力', strdex: '力量或敏捷（取高）' };
+function saveModeRowHtml(it) {
+    if (!canEdit(it) || !isCreatureToken(it)) return '';
+    return '<div class="prop-row"><label>豁免</label><label title="勾上：需要豁免时由服务器自动掷并结算。不勾：需要豁免时提示你自己掷，掷完后伤害和状态照样自动结算">' +
+        '<input type="checkbox" data-autosave="' + escapeHtml(it.id) + '"' + (it.manualSave ? '' : ' checked') + '> 自动掷豁免</label>' +
+        (it.manualSave ? '<span class="tt-hint">需要豁免时会提示你自己掷</span>' : '') + '</div>';
+}
+function saveBonusOf(tok, ab) {
+    var sh = tok && tok.sheet && sheets[tok.sheet];
+    var a = sh && (sh.abilities || []).filter(function(x) { return x.key === ab || x.name === ABILITY_NAMES[ab]; })[0];
+    return a ? normBonus(a.save || a.mod) || '+0' : '+0';
+}
+function saveOutcome(r) {
+    var dmg = r.roll ? num(r.roll.total, 0) : 0;
+    var parts = (r.parts || []).filter(function(p) { return p.roll; }).map(function(p) { return p.roll.total + ' ' + (p.type || ''); });
+    var full = (dmg ? dmg + ' ' + (r.damageType || '') : '') + (parts.length ? (dmg ? ' + ' : '') + parts.join(' + ') : '');
+    var st = r.statusDef && r.statusDef.name;
+    var fail = [full ? '受到 ' + full + ' 伤害' : '', st ? '陷入「' + st + '」' : ''].filter(Boolean).join('，') || '承受这次效果';
+    var ok = r.half && (dmg || parts.length) ? '只受一半伤害' + (dmg ? '（约 ' + Math.floor(dmg / 2) + '）' : '') : '不受影响';
+    return '需要' + (SAVE_CN[r.save] || '') + '豁免 DC ' + r.dc + '——成功：' + ok + '；失败：' + fail;
+}
+function pendingSaveHtml(e, t, r) {
+    if (r.kind !== 'save' || t.saved !== 'pending' || !t.id || !e.id) return '';
+    var tok = scene.items[t.id], ref = e.id + ':' + t.id + ':sv';
+    if (cxRefUsed(ref)) return '';
+    var txt = '<span class="tt-hint">🎲 ' + escapeHtml(saveOutcome(r)) + '</span>';
+    if (!tok || !(me.gm || (tok.owner && tok.owner === me.name))) return txt;
+    var ab = r.save === 'strdex' ? (parseInt(saveBonusOf(tok, 'dex'), 10) > parseInt(saveBonusOf(tok, 'str'), 10) ? 'dex' : 'str') : r.save;
+    var btn = function(mode, label, title) {
+        return '<button class="tt-btn small react-btn" data-psv="' + mode + '" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) + '" data-react-ref="' + escapeHtml(ref) + '" title="' + escapeHtml(title) + '">' + label + '</button>';
+    };
+    return txt + btn('roll', '🎲 掷' + (SAVE_CN[ab] || '') + '豁免 ' + saveBonusOf(tok, ab), '由服务器现在掷这次豁免（加值、优势、反射闪避等照常计算），然后自动结算伤害和状态') +
+        btn('yes', '成功', '用自己的骰子掷完：按成功结算（伤害和状态自动处理）') + btn('no', '失败', '用自己的骰子掷完：按失败结算（伤害和状态自动处理）');
+}
+function pendingSaveClick(el) {
+    var d = el.dataset;
+    el.parentNode && el.parentNode.querySelectorAll('[data-psv]').forEach(function(x) { x.disabled = true; });
+    op({ op: 'action.resolve', text: d.log, target: d.tok, mode: d.psv });
+    return true;
+}
+// 记录到达时：自己的角色有待掷的豁免就弹提示
+function pendingSaveNotice(entry) {
+    var r = entry && entry.act;
+    if (!r || r.kind !== 'save') return;
+    (r.targets || []).forEach(function(t) {
+        var tok = t.saved === 'pending' && scene.items[t.id];
+        if (tok && tok.owner && tok.owner === me.name) notice('🎲 ' + (tok.label || '') + '：' + saveOutcome(r) + '（在记录里掷）', false, 9000);
+    });
 }
 
 // ===== 行动框：巨武器战斗（双手近战武器，伤害骰掷出 1 或 2 按 3 算） =====
@@ -1000,6 +1054,12 @@ function classHeadHtml(sh, edit) {
 }
 
 function initClassFeats() {
+    $('selPanel').addEventListener('change', function(e) { // 属性面板「自动掷豁免」
+        var id = e.target.dataset && e.target.dataset.autosave;
+        if (!id || !scene.items[id]) return;
+        patchItems([{ id: id, manualSave: e.target.checked ? null : true }]);
+        notice(e.target.checked ? '已改为自动掷豁免' : '已改为自己掷豁免：需要豁免时记录里会提示，掷完后自动结算');
+    });
     $('sheetPane').addEventListener('change', function(e) {
         var id = e.target.dataset && e.target.dataset.sheetsub;
         if (!id || !sheets[id]) return;

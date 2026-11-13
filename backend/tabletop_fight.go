@@ -282,7 +282,7 @@ func (room *TTRoom) turnEnd(sc *TTScene, it map[string]interface{}, order []map[
 			ttRemoveStatus(it, "disengaged")
 			room.broadcastItems([]map[string]interface{}{it})
 		}
-		if ttClassLevel(room.tokenSheet(it), "武僧") >= 10 { // 武僧·返本还元：回合结束时可以移除魅惑、恐慌或中毒之一
+		if room.setting("hintClass", true) && room.setting("hcMonk", true) && ttClassLevel(room.tokenSheet(it), "武僧") >= 10 { // 武僧·返本还元：回合结束时可以移除魅惑、恐慌或中毒之一
 			var cs []string
 			conds := ttStatusIDs(it)
 			for _, c := range [][2]string{{"charmed", "魅惑"}, {"frightened", "恐慌"}, {"poisoned", "中毒"}} {
@@ -481,7 +481,7 @@ func (room *TTRoom) applyFight(u ttUser, gm bool, req *ttOpRequest) (int, string
 		if err != nil {
 			return http.StatusBadRequest, err.Error()
 		}
-		if r != nil && req.Mode == "conc" { // 星辰结社·巨龙座：维持专注的豁免，d20 掷出 9 或更低视为 10
+		if r != nil && req.Mode == "conc" && room.setting("hintClass", true) && room.setting("hcDruid", true) { // 星辰结社·巨龙座：维持专注的豁免，d20 掷出 9 或更低视为 10
 			for _, st := range ttStatusMaps(it) {
 				if st["id"] == "starry" && st["form"] == "dragon" {
 					if nat := ttNaturalD20(r); nat > 0 && nat < 10 {

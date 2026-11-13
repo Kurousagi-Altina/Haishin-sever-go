@@ -1085,6 +1085,7 @@ function confirmActionTargeting() {
         var t = scene.items[id], o = { id: id, cover: 0, mode: '', autoCrit: false };
         if (!m.caster || t.id === m.caster.id || m.zoneId) return o;
         var ci = coverInfo(m.caster, t);
+        if (!hintOn('autoCover')) ci = { level: 0, dist: ci.dist }; // 自动掩护关掉了
         if (a.kind === 'attack') {
             if (ci.level < 0) return null; // 完全掩护：无法被直接攻击
             var fx = featAttackAdjust(a, m.caster, t, ci.dist), fn = []; // 神射手 / 强弩专家 / 擒抱者（tabletop-fight.js）
@@ -1092,7 +1093,7 @@ function confirmActionTargeting() {
             var fcv = fortifiedCover(m.caster, t); // 要塞阵地（tabletop-class.js）
             if (fcv && o.cover < 2) { o.cover = 2; fn.push(fcv); }
             if (o.cover && fx.noCover) { o.cover = 0; fn.push(fx.noCover + '：无视掩护'); }
-            var sm = statusAttackMods(m.caster, t, ci.dist), adv = sm.adv.length > 0, dis = sm.dis.length > 0;
+            var sm = hintOn('autoCond') ? statusAttackMods(m.caster, t, ci.dist) : { adv: [], dis: [], autoCrit: false, adj: 0, extra: '' }, adv = sm.adv.length > 0, dis = sm.dis.length > 0;
             if (fx.adv) { adv = true; fn.push(fx.adv); }
             var v = rangeVerdict({ normal: a.range, long: a.rangeLong, reach: a.reach }, ci.dist);
             if (v && v.dis) { if (fx.noLong) fn.push(fx.noLong + '：远距离不劣势'); else dis = true; }
@@ -1268,7 +1269,8 @@ function actionLogHtml(e) {
             var HIT = { hit: ['命中', 'hit'], miss: ['未命中', 'miss'], crit: ['重击！', 'crit'], fumble: ['大失败', 'miss'] }[t.hit] || ['', ''];
             parts.push('<span class="tt-hint">' + escapeHtml(t.attack.expr) + '</span> <b>' + t.attack.total + '</b> <span class="hit-tag ' + HIT[1] + '">' + HIT[0] + '</span>');
         }
-        if (t.saved) parts.push(t.saved === 'auto' ? '<span class="hit-tag hit">豁免自动失败</span>' :
+        if (t.saved === 'pending') parts.push('<span class="hit-tag">待掷豁免</span>'); // 手动豁免：等玩家掷
+        else if (t.saved) parts.push(t.saved === 'auto' ? '<span class="hit-tag hit">豁免自动失败</span>' :
             '<span class="tt-hint">豁免</span> <b>' + (t.save ? t.save.total : '') + '</b> <span class="hit-tag ' + (t.saved === 'yes' ? 'miss">成功' : 'hit">失败') + '</span>');
         if (t.damage) parts.push('<span class="tt-hint">伤害 ' + escapeHtml(t.damage.expr) + '</span>');
         (t.parts || []).forEach(function(p) { parts.push('<span class="tt-hint">＋ ' + escapeHtml(p.expr) + '</span>'); });

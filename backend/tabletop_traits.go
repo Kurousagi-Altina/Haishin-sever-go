@@ -260,9 +260,10 @@ func (room *TTRoom) traitsOf(it map[string]interface{}) *ttTraits {
 				}
 			}
 		}
+		auto := room.setting("autoTraits", true) // 设置：按特性名自动识别判定修正
 		for _, e := range ttSheetEntries(sh) {
 			key := ttTraitKey(e[0])
-			if off[key] {
+			if off[key] || !auto {
 				continue
 			}
 			for _, r := range ttAutoTraits {
@@ -353,14 +354,15 @@ func (room *TTRoom) traitsOf(it map[string]interface{}) *ttTraits {
 			t.condImmune["charmed"], t.condImmune["frightened"] = "无我狂暴", "无我狂暴"
 		}
 	}
-	if ttSheetHas(sh, "战争化身", "avatarofbattle") { // 战争领域 17 级：钝击 / 穿刺 / 挥砍抗性
+	autoTr := room.setting("autoTraits", true)
+	if autoTr && ttSheetHas(sh, "战争化身", "avatarofbattle") { // 战争领域 17 级：钝击 / 穿刺 / 挥砍抗性
 		for _, d := range ttPhysical {
 			if _, ok := t.resist[d]; !ok {
 				t.resist[d] = "战争化身"
 			}
 		}
 	}
-	if race, _ := sh["race"].(string); sh != nil && (strings.Contains(race, "战俑") || strings.Contains(strings.ToLower(race), "warforged")) {
+	if race, _ := sh["race"].(string); autoTr && sh != nil && (strings.Contains(race, "战俑") || strings.Contains(strings.ToLower(race), "warforged")) {
 		if _, ok := t.resist["毒素"]; !ok { // 战俑·构装坚韧：毒素抗性，对抗中毒的豁免优势
 			t.resist["毒素"] = "构装坚韧"
 		}
@@ -1141,6 +1143,62 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactor
 		room.reapplyAction(u, e, tokenID, name+"：豁免改为失败", false, extra)
 	}
 	return 0, ""
+}
+
+// resolveManualSave settles a save that was left "pending" because the target rolls its own saves (token
+// manualSave): mode "roll" = the server rolls it now, "yes" / "no" = the player's physical roll. The original
+// shared damage roll is reused (flat), so the outcome is what it would have been; the new entry carries ref
+// <log>:<token>:sv so the buttons disappear.
+func (room *TTRoom) resolveManualSave(u ttUser, gm bool, logID, tokenID, mode string) (int, string) {
+	if mode != "roll" && mode != "yes" && mode != "no" {
+		return http.StatusBadRequest, "无效的结算方式"
+	}
+	var e *TTLogEntry
+	for i := range room.Log {
+		if room.Log[i].ID == logID {
+			e = &room.Log[i]
+		}
+	}
+	if e == nil || e.Act == nil || e.Act.Kind != "save" {
+		return http.StatusBadRequest, "找不到这次豁免（太久远的记录不能再结算）"
+	}
+	var h *TTActionHit
+	for _, x := range e.Act.Targets {
+		if x.ID == tokenID && x.Saved == "pending" {
+			h = x
+		}
+	}
+	if h == nil {
+		return http.StatusBadRequest, "这个目标没有待掷的豁免"
+	}
+	ref := logID + ":" + tokenID + ":sv"
+	for _, x := range room.Log {
+		if x.Ref == ref {
+			return http.StatusBadRequest, "这次豁免已经结算过了"
+		}
+	}
+	it := room.activeScene().Items[tokenID]
+	if it == nil {
+		return http.StatusBadRequest, "目标不在当前场景"
+	}
+	if owner, _ := it["owner"].(string); !gm && (owner == "" || owner != u.name) {
+		return http.StatusForbidden, "只能替自己的角色掷豁免"
+	}
+	dmg := ""
+	if e.Act.Roll != nil {
+		dmg = strconv.Itoa(e.Act.Roll.Total)
+	}
+	var parts []TTDamagePart
+	for _, p := range e.Act.Parts {
+		if p.Roll != nil {
+			parts = append(parts, TTDamagePart{Dice: strconv.Itoa(p.Roll.Total), Type: p.Type})
+		}
+	}
+	why := map[string]string{"roll": "补掷豁免", "yes": "自己掷：成功", "no": "自己掷：失败"}[mode]
+	req := &ttOpRequest{Op: "action", Hidden: e.Hidden, Act: &TTActionReq{Name: e.Act.Name + "（" + why + "）", Kind: "save", Damage: dmg, DamageType: e.Act.DamageType,
+		Save: e.Act.Save, DC: e.Act.DC, Half: e.Act.Half, Status: e.Act.StatusDef, Caster: e.Act.CasterID, Magic: e.Act.Magic, Spell: e.Act.Spell, Parts: parts,
+		Targets: []TTActionTarget{{ID: tokenID, Forced: mode}}, Ref: ref}}
+	return room.applyAction(u, true, req)
 }
 
 // reapplyAction re-resolves part of an action on one target: a miss that became a hit (flat < 0: roll the stored
