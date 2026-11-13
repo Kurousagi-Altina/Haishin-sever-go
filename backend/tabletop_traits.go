@@ -353,6 +353,19 @@ func (room *TTRoom) traitsOf(it map[string]interface{}) *ttTraits {
 			t.condImmune["charmed"], t.condImmune["frightened"] = "无我狂暴", "无我狂暴"
 		}
 	}
+	if ttSheetHas(sh, "战争化身", "avatarofbattle") { // 战争领域 17 级：钝击 / 穿刺 / 挥砍抗性
+		for _, d := range ttPhysical {
+			if _, ok := t.resist[d]; !ok {
+				t.resist[d] = "战争化身"
+			}
+		}
+	}
+	if race, _ := sh["race"].(string); sh != nil && (strings.Contains(race, "战俑") || strings.Contains(strings.ToLower(race), "warforged")) {
+		if _, ok := t.resist["毒素"]; !ok { // 战俑·构装坚韧：毒素抗性，对抗中毒的豁免优势
+			t.resist["毒素"] = "构装坚韧"
+		}
+		t.saveAdv = append(t.saveAdv, ttSaveAdv{ab: "all", vs: "poisoned", src: "构装坚韧"})
+	}
 	if conds["giantmight"] { // 符文骑士·巨人之力：力量豁免优势
 		t.saveAdv = append(t.saveAdv, ttSaveAdv{ab: "str", src: "巨人之力"})
 	}
@@ -609,7 +622,7 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactor
 			e = &room.Log[i]
 		}
 	}
-	if e == nil || e.Act == nil || (e.Act.Kind != "attack" && !((mode == "legendary" || mode == "interpose" || mode == "indomitable") && e.Act.Kind == "save") && mode != "absorb") {
+	if e == nil || e.Act == nil || (e.Act.Kind != "attack" && !((mode == "legendary" || mode == "interpose" || mode == "indomitable" || mode == "disciplined" || mode == "flash" || mode == "portent") && e.Act.Kind == "save") && mode != "absorb") {
 		return http.StatusBadRequest, "找不到这次结算（太久远的记录不能再反应）"
 	}
 	var h *TTActionHit
@@ -631,6 +644,14 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactor
 		ref += ":cr"
 	case "indomitable":
 		ref += ":ind"
+	case "disciplined":
+		ref += ":dsc"
+	case "guided":
+		ref += ":gs"
+	case "flash":
+		ref += ":fg"
+	case "portent":
+		ref += ":pt"
 	}
 	for _, x := range room.Log {
 		if x.Ref == ref {
@@ -643,16 +664,16 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactor
 		return http.StatusBadRequest, "目标不在当前场景"
 	}
 	rx := it // the token spending its reaction (拦截 / 符文之盾 / 云雾符文: another token)
-	if mode == "intercept" || mode == "runeshield" || mode == "cloud" {
+	if mode == "intercept" || mode == "runeshield" || mode == "cloud" || mode == "guided" || mode == "flash" || mode == "portent" {
 		rx = sc.Items[reactorID]
-		if rx == nil || rx["kind"] != "token" || (reactorID == tokenID && mode != "cloud") {
+		if rx == nil || rx["kind"] != "token" || (reactorID == tokenID && (mode == "intercept" || mode == "runeshield")) {
 			return http.StatusBadRequest, "找不到用反应的棋子"
 		}
 	}
 	if owner, _ := rx["owner"].(string); !gm && (owner == "" || owner != u.name) {
 		return http.StatusForbidden, "只能替自己的棋子使用反应"
 	}
-	if mode != "legendary" && mode != "absorb" && mode != "interpose" && mode != "indomitable" && h.Hit != "hit" && h.Hit != "crit" {
+	if mode != "legendary" && mode != "absorb" && mode != "interpose" && mode != "indomitable" && mode != "disciplined" && mode != "guided" && mode != "flash" && mode != "portent" && h.Hit != "hit" && h.Hit != "crit" {
 		return http.StatusBadRequest, "这次攻击没有命中"
 	}
 	sh := room.tokenSheet(it)
@@ -663,14 +684,16 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactor
 	var roll *TTDiceResult
 	name, note, back, after, removeStatus := "", "", 0, 0, false
 	absorbType := ""
-	var redirect map[string]interface{} // 云雾符文：改成的新目标
+	var redirect map[string]interface{}                   // 云雾符文：改成的新目标
+	reapply, reapplyCrit, failFlip := false, false, false // 导引打击 / 预兆：失手改命中、豁免成功改失败 → 重新结算
+	noReaction := mode == "portent"                       // 预兆不是反应
 	switch mode {
 	case "deflect":
 		if !ttSheetHas(sh, "拨挡攻击", "拨挡飞弹", "拨挡", "deflectattacks", "deflectmissiles") {
 			return http.StatusBadRequest, "角色卡上没有「拨挡攻击」"
 		}
-		if !h.Phys {
-			return http.StatusBadRequest, "这次攻击没有钝击 / 穿刺 / 挥砍伤害，不能拨挡"
+		if !h.Phys && ttMonkLevel(sh) < 13 { // 13 级拨挡能量：任何伤害类型都能拨挡
+			return http.StatusBadRequest, "这次攻击没有钝击 / 穿刺 / 挥砍伤害，不能拨挡（13 级拨挡能量后才可以）"
 		}
 		if taken <= 0 {
 			return http.StatusBadRequest, "这次攻击没有造成伤害"
@@ -804,13 +827,18 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactor
 		absorbType = best
 		name = "吸收元素"
 		note = best + "伤害减半：" + strconv.Itoa(amt) + " → " + strconv.Itoa(amt/2) + "，直到下回合开始对" + best + "有抗性"
-	case "indomitable": // 战士·不屈（9 级）：豁免失败时重掷，加战士等级，必须用新结果（不是反应）
+	case "indomitable", "disciplined": // 战士·不屈（9 级，加战士等级）/ 武僧·圆融自在（14 级，花 1 功力）：豁免失败时重掷，必须用新结果（不是反应）
 		if h.Saved != "no" {
-			return http.StatusBadRequest, "只有豁免失败时才能用不屈"
+			return http.StatusBadRequest, "只有豁免失败时才能重掷"
 		}
-		flv := ttClassLevel(sh, "战士")
-		if flv < 9 {
-			return http.StatusBadRequest, "需要 9 级战士的「不屈」"
+		flv := 0
+		if mode == "indomitable" {
+			flv = ttClassLevel(sh, "战士")
+			if flv < 9 {
+				return http.StatusBadRequest, "需要 9 级战士的「不屈」"
+			}
+		} else if ttClassLevel(sh, "武僧") < 14 {
+			return http.StatusBadRequest, "需要 14 级武僧的「圆融自在」"
 		}
 		ab := e.Act.Save
 		if ab == "strdex" {
@@ -830,6 +858,10 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactor
 		total := r.Total + flv
 		name = "不屈"
 		note = "重掷豁免 " + strconv.Itoa(r.Total) + " + 战士等级 " + strconv.Itoa(flv) + " = " + strconv.Itoa(total)
+		if mode == "disciplined" {
+			name = "圆融自在"
+			note = "花 1 功力重掷豁免：" + strconv.Itoa(total)
+		}
 		if len(notes) > 0 {
 			note += "（" + strings.Join(notes, "；") + "）"
 		}
@@ -889,6 +921,115 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactor
 		removeStatus = h.Status != ""
 		name = "云雾符文"
 		note = ttItemLabel(rx) + " 的云雾符文：这次攻击改为指向 " + ttItemLabel(redirect)
+	case "guided": // 战争领域·导引打击：你或 30 尺内的生物攻击失手时，花引导神力让这次攻击检定 +10（替别人用要花反应）
+		if !ttSheetHas(room.tokenSheet(rx), "导引打击", "guidedstrike") {
+			return http.StatusBadRequest, "角色卡上没有「导引打击」"
+		}
+		if h.Hit != "miss" || h.Attack == nil {
+			return http.StatusBadRequest, "只有攻击失手（不是天然 1）时才能用导引打击"
+		}
+		ac, ok := room.ttTargetAC(it)
+		if !ok {
+			return http.StatusBadRequest, "目标没有 AC"
+		}
+		noReaction = reactorID == e.Act.CasterID
+		nt := h.Attack.Total + 10
+		name = "导引打击"
+		if float64(nt) >= ac+float64(h.Cover) {
+			reapply = true
+			note = ttItemLabel(rx) + " 的导引打击：攻击 " + strconv.Itoa(h.Attack.Total) + " + 10 = " + strconv.Itoa(nt) + "，改为命中"
+		} else {
+			note = ttItemLabel(rx) + " 的导引打击：攻击 " + strconv.Itoa(nt) + "，仍然未命中"
+		}
+	case "flash": // 奇械师·灵光一闪：你或 30 尺内的生物豁免失败时，用反应加上你的智力调整值
+		rsh := room.tokenSheet(rx)
+		if !ttSheetHas(rsh, "灵光一闪", "flashofgenius") && ttClassLevel(rsh, "奇械师") < 7 {
+			return http.StatusBadRequest, "角色卡上没有「灵光一闪」"
+		}
+		if h.Saved != "no" || h.Save == nil {
+			return http.StatusBadRequest, "只有豁免失败时才能用灵光一闪"
+		}
+		im := ttSheetAbilityMod(rsh, "int")
+		if im < 1 {
+			im = 1
+		}
+		nt := h.Save.Total + im
+		name = "灵光一闪"
+		note = ttItemLabel(rx) + " 的灵光一闪：豁免 " + strconv.Itoa(h.Save.Total) + " + 智力 " + strconv.Itoa(im) + " = " + strconv.Itoa(nt)
+		if nt >= e.Act.DC {
+			left := 0
+			if e.Act.Half {
+				left = taken / 2
+			}
+			back, after = taken-left, left
+			removeStatus = h.Status != ""
+			note += "，达到 DC " + strconv.Itoa(e.Act.DC) + "：豁免成功"
+		} else {
+			note += "，仍低于 DC " + strconv.Itoa(e.Act.DC) + "：还是失败"
+		}
+	case "portent": // 预言师·预兆：用记下的一个 d20 替换这次豁免 / 攻击的 d20（不是反应）
+		vals, _ := rx["portent"].([]interface{})
+		idx, err := strconv.Atoi(extraID)
+		if err != nil || idx < 0 || idx >= len(vals) {
+			return http.StatusBadRequest, "这个预兆已经用掉了"
+		}
+		vf, _ := ttNum(vals[idx])
+		val := int(vf)
+		rest := append(append([]interface{}{}, vals[:idx]...), vals[idx+1:]...)
+		if len(rest) > 0 {
+			rx["portent"] = rest
+		} else {
+			delete(rx, "portent")
+		}
+		room.broadcastItems([]map[string]interface{}{rx})
+		name = "预兆"
+		if e.Act.Kind == "save" {
+			if h.Save == nil {
+				return http.StatusBadRequest, "这个目标没有掷豁免"
+			}
+			nat := ttNaturalD20(h.Save)
+			nt := val + h.Save.Total - nat
+			was, now := h.Saved == "yes", nt >= e.Act.DC
+			note = ttItemLabel(rx) + " 的预兆 " + strconv.Itoa(val) + " 替换 d20（" + strconv.Itoa(nat) + "）：豁免 " + strconv.Itoa(nt)
+			switch {
+			case !was && now:
+				left := 0
+				if e.Act.Half {
+					left = taken / 2
+				}
+				back, after = taken-left, left
+				removeStatus = h.Status != ""
+				note += "，改为成功"
+			case was && !now:
+				failFlip = true
+				note += "，改为失败"
+			default:
+				note += "，结果不变"
+			}
+		} else {
+			if h.Attack == nil {
+				return http.StatusBadRequest, "这次攻击没有命中骰"
+			}
+			ac, ok := room.ttTargetAC(it)
+			if !ok {
+				return http.StatusBadRequest, "目标没有 AC"
+			}
+			nat := ttNaturalD20(h.Attack)
+			nt := val + h.Attack.Total - nat
+			wasHit, nowHit := h.Hit == "hit" || h.Hit == "crit", val == 20 || (val != 1 && float64(nt) >= ac+float64(h.Cover))
+			note = ttItemLabel(rx) + " 的预兆 " + strconv.Itoa(val) + " 替换攻击者的 d20（" + strconv.Itoa(nat) + "）：攻击 " + strconv.Itoa(nt)
+			switch {
+			case wasHit && !nowHit:
+				back, after = taken, 0
+				removeStatus = h.Status != ""
+				note += "，改为未命中"
+			case !wasHit && nowHit:
+				reapply, reapplyCrit = true, val == 20
+				note += "，改为命中"
+			default:
+				note += "，结果不变"
+			}
+		}
 	case "legendary": // 传奇抗性：豁免失败改为成功
 		if h.Saved != "no" {
 			return http.StatusBadRequest, "只有豁免失败时才能用传奇抗性"
@@ -917,7 +1058,7 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactor
 	default:
 		return http.StatusBadRequest, "未知的反应"
 	}
-	if mode != "legendary" && mode != "indomitable" && room.setting("hintEcon", true) { // 记下反应已用（自己回合开始时恢复）
+	if mode != "legendary" && mode != "indomitable" && mode != "disciplined" && !noReaction && room.setting("hintEcon", true) { // 记下反应已用（自己回合开始时恢复）
 		econ, _ := rx["econ"].(map[string]interface{})
 		if econ == nil {
 			econ = map[string]interface{}{}
@@ -986,7 +1127,72 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactor
 	if redirect != nil { // 云雾符文：同一个命中值对新目标判定，命中则重新掷伤害
 		room.cloudRedirect(u, e, h, redirect)
 	}
+	if reapply { // 导引打击 / 预兆：失手改为命中——按原来的伤害骰和状态结算到这个目标
+		room.reapplyAction(u, e, tokenID, name+"：改为命中", reapplyCrit, 0)
+	}
+	if failFlip { // 预兆：豁免成功改为失败——补上成功时少受的伤害和状态
+		extra := 0
+		if e.Act.Roll != nil {
+			extra = e.Act.Roll.Total
+			if e.Act.Half {
+				extra -= e.Act.Roll.Total / 2
+			}
+		}
+		room.reapplyAction(u, e, tokenID, name+"：豁免改为失败", false, extra)
+	}
 	return 0, ""
+}
+
+// reapplyAction re-resolves part of an action on one target: a miss that became a hit (flat < 0: roll the stored
+// damage dice, doubled on a crit) or a save that became a failure (flat = the damage the success avoided, before
+// resistances), plus the stored condition. Runs through applyAction kind auto / effect so resistances, temp HP,
+// 0 HP and concentration all apply.
+func (room *TTRoom) reapplyAction(u ttUser, e *TTLogEntry, id, why string, crit bool, flat int) {
+	dmg, parts := e.Act.DmgExpr, e.Act.DmgParts
+	if e.Act.Kind == "save" {
+		dmg, parts = "", nil
+		if flat > 0 {
+			dmg = strconv.Itoa(flat)
+		}
+	} else if crit {
+		dmg = ttDoubleDice(dmg)
+		var ps []TTDamagePart
+		for _, p := range parts {
+			ps = append(ps, TTDamagePart{Dice: ttDoubleDice(p.Dice), Type: p.Type})
+		}
+		parts = ps
+	}
+	if dmg == "" && e.Act.StatusDef == nil {
+		ne := newLogEntry("sys", u.name)
+		ne.Text = why + "：没有记下伤害骰，请手动结算"
+		ne.Hidden = e.Hidden
+		room.addLog(ne)
+		return
+	}
+	kind := "auto"
+	if dmg == "" {
+		kind = "effect"
+	}
+	req := &ttOpRequest{Op: "action", Hidden: e.Hidden, Act: &TTActionReq{Name: e.Act.Name + "（" + why + "）", Kind: kind, Damage: dmg, DamageType: e.Act.DamageType,
+		Parts: parts, Status: e.Act.StatusDef, Caster: e.Act.CasterID, Magic: e.Act.Magic, Spell: e.Act.Spell, Targets: []TTActionTarget{{ID: id}}}}
+	if st, msg := room.applyAction(u, true, req); st != 0 {
+		ne := newLogEntry("sys", u.name)
+		ne.Text = why + " 时出错：" + msg
+		ne.Hidden = e.Hidden
+		room.addLog(ne)
+	}
+}
+
+// ttTargetAC: a token's AC for re-checks (haste and AC modifiers included, cover not).
+func (room *TTRoom) ttTargetAC(it map[string]interface{}) (float64, bool) {
+	ac, ok := ttNum(it["ac"])
+	if !ok || ac <= 0 {
+		return 0, false
+	}
+	if ttStatusIDs(it)["hasted"] {
+		ac += 2
+	}
+	return ac + float64(room.traitsOf(it).ac), true
 }
 
 // cloudRedirect: 云雾符文把攻击改给新目标——同一个命中值对比新目标的 AC，命中则按原伤害骰重新掷（重击时骰子已翻倍）。

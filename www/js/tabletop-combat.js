@@ -222,10 +222,11 @@ function tokenSpeed(it) {
     if (hasStatus(it, 'halted')) return 0; // 哨兵「阻拦」
     var slow = hasStatus(it, 'slowed') ? 10 : 0; // 武器精通「缓速」
     if (statusList(it).some(function(s) { return s.id === 'shifted' && s.swift; })) slow -= 10; // 化兽者·迅捷：化兽时速度 +10
-    if (num(it.speed, 0) > 0) return Math.max(0, num(it.speed, 0) - slow);
+    var dash = hasStatus(it, 'dashed') ? 2 : 1; // 疾走：本回合速度翻倍
+    if (num(it.speed, 0) > 0) return Math.max(0, num(it.speed, 0) - slow) * dash;
     var sh = it.sheet && sheets[it.sheet];
     var m = sh && String(sh.speed || '').match(/\d+/);
-    return m ? Math.max(0, parseInt(m[0], 10) - slow) : 0;
+    return m ? Math.max(0, parseInt(m[0], 10) - slow) * dash : 0;
 }
 
 // ===== 移动距离 =====

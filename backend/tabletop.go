@@ -883,7 +883,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		room.checkTriggers(sc, moved)
 		room.logHPChanges(u, sc, hpChanges)
 
-	case "fight.save", "fight.dot", "oa.hint", "fight.escape", "fight.counter": // 战斗提示（tabletop_fight.go）
+	case "fight.save", "fight.dot", "oa.hint", "fight.escape", "fight.counter", "fight.portent": // 战斗提示（tabletop_fight.go）
 		if st, msg := room.applyFight(u, gm, req); st != 0 {
 			return st, msg
 		}

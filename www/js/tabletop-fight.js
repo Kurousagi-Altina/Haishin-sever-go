@@ -315,7 +315,7 @@ function renderMultiBar() {
     if (!multi) { bar.style.display = 'none'; return; }
     var sh = sheets[multi.sheet];
     if (!sh) { multi = null; bar.style.display = 'none'; return; }
-    bar.innerHTML = '<b>⚔ ' + escapeHtml(multi.name) + ' · 多重攻击</b>' + (multi.plan.length ? multi.plan.map(function(p, i) {
+    bar.innerHTML = '<b>⚔ ' + escapeHtml(multi.name) + ' · ' + escapeHtml(multi.title || '多重攻击') + '</b>' + (multi.plan.length ? multi.plan.map(function(p, i) {
         return '<button class="tt-btn small' + (p.left > 0 ? ' primary' : '') + '" data-mi="' + i + '">' + escapeHtml(p.name) + (p.left > 0 ? ' ×' + p.left : '') + '</button>';
     }).join('') : '<span class="tt-hint">卡上没有可结算的攻击</span>') +
         '<span class="tt-hint">点一次打开一次攻击；顺序、目标由你决定</span><button class="tt-btn small" data-mi="close">✕</button>';
@@ -328,7 +328,12 @@ function onMultiBarClick(e) {
     if (b.dataset.mi === 'close') { multi = null; renderMultiBar(); return; }
     var p = multi.plan[+b.dataset.mi], sh = sheets[multi.sheet];
     if (!p || !sh) return;
-    castFromSheet(sh, p.atk != null ? { kind: 'atk', idx: String(p.atk) } : { kind: 'entry', sec: String(p.sec), idx: String(p.idx) });
+    var pc = p.caster && scene.items[p.caster];
+    if (p.unarmed && pc) monkUnarmed(pc, sh, p.cost || 'n'); // 疾风连击（卡上没有徒手攻击时）
+    else {
+        if (p.cost) actPreset = { caster: pc || null, cost: p.cost, at: Date.now() }; // 疾风连击的每一下不再记消耗
+        castFromSheet(sh, p.atk != null ? { kind: 'atk', idx: String(p.atk) } : { kind: 'entry', sec: String(p.sec), idx: String(p.idx) });
+    }
     if (p.left > 0) p.left--;
     renderMultiBar();
 }
@@ -523,6 +528,7 @@ function fightSelAct(act0, ids) {
     if (act0 === 'unarmed') {
         var ui = sh && (sh.attacks || []).findIndex(function(x) { return /徒手/.test(x.name || ''); });
         if (sh && ui >= 0) { castFromSheet(sh, { kind: 'atk', idx: String(ui) }); return true; }
+        if (sh && monkLv(sh)) { monkUnarmed(it, sh, 'a'); return true; } // 武僧：武艺骰（tabletop-class.js）
         var ufs = sheetFeat(sh, 'unarmedFS'), tb = sheetFeat(sh, 'brawler');
         openActionDialog(Object.assign(base, { name: '徒手打击', kind: 'attack', attack: signed(str + pb) || '+0', dtype: '钝击',
             damage: ufs ? '1d6' + signed(str) : tb ? '1d4' + signed(str) : String(Math.max(1, 1 + str)),
@@ -783,6 +789,8 @@ function applyActPreset() {
     if (p.caster) { act.caster = p.caster; $('acCaster').textContent = p.caster.label || '未命名棋子'; }
     if (p.targets) act.presetTargets = p.targets.slice();
     if (p.cost) { act.a.cost = p.cost; $('acCost').value = p.cost; }
+    if (p.noConc) { act.a.conc = false; $('acConc').checked = false; } // 战神祝福：不需要专注
+    if (p.noSlot) { act.a.useSlot = false; if ($('acUseSlot')) $('acUseSlot').checked = false; } // 免费施放：不扣法术位
 }
 
 // ===================== 9. 专长（2024 玩家手册） =====================
