@@ -514,7 +514,7 @@ func logEntryFor(sub *ttSub, e TTLogEntry) TTLogEntry {
 // sheetVisible: GMs see everything; players see PC sheets, shared sheets and their own.
 func sheetVisible(sub *ttSub, sh map[string]interface{}) bool {
 	owner, _ := sh["owner"].(string)
-	return sub.gm || sh["kind"] == "pc" || ttBool(sh["shared"]) || (owner != "" && owner == sub.name)
+	return sub.gm || sh["kind"] == "pc" || sh["kind"] == "summon" || ttBool(sh["shared"]) || (owner != "" && owner == sub.name)
 }
 
 func (room *TTRoom) sheetsFor(sub *ttSub) []map[string]interface{} {
@@ -1060,8 +1060,8 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		created := sh == nil
 		if sh == nil {
 			kind, _ := req.Sheet["kind"].(string)
-			if !gm && kind != "pc" {
-				return http.StatusForbidden, "玩家只能导入自己的角色卡"
+			if !gm && kind != "pc" && kind != "summon" {
+				return http.StatusForbidden, "玩家只能导入自己的角色卡或随从卡"
 			}
 			if len(room.Sheets) >= ttMaxSheets {
 				return http.StatusBadRequest, "角色卡数量已达上限"

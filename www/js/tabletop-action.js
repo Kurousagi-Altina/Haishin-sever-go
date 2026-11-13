@@ -243,10 +243,17 @@ function readParts(s) {
     return out;
 }
 
-function sheetCasting(sh) { return sh && sh.casting && sh.casting[0] || null; }
+// 随从卡自己没有施法数据时用主控的（tabletop-summon.js）
+function castingSheet(sh) {
+    if (sh && sh.casting && sh.casting[0]) return sh;
+    var m = typeof masterSheet === 'function' && masterSheet(sh);
+    return m && m.casting && m.casting[0] ? m : sh;
+}
+function sheetCasting(sh) { var s = castingSheet(sh); return s && s.casting && s.casting[0] || null; }
 
 function castingMod(sh) {
     var c = sheetCasting(sh);
+    sh = castingSheet(sh);
     if (!c || !sh.abilities) return 0;
     var ab = sh.abilities.filter(function(a) { return a.name === c.ability || a.key === ABIL_KEY[c.ability]; })[0];
     return ab ? num(String(ab.mod || '0').replace('+', ''), 0) : 0;
@@ -387,6 +394,7 @@ function actionFromAttack(sh, at) {
 // 打开行动框：kind = atk / spell / entry / feat
 function castFromSheet(sh, ds) {
     if (!sh) return;
+    sh = viewSheet(sh); // 随从：【…】按主控换算
     var caster = casterFor(sh);
     if (ds.kind === 'atk') { var aa = actionFromAttack(sh, sh.attacks[+ds.idx]); openActionDialog(aa, caster, sh); fillMasteryFromRules(aa, sh); return; }
     if (ds.kind === 'spell') {

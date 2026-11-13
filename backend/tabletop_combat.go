@@ -366,6 +366,9 @@ func (room *TTRoom) applyCombat(u ttUser, gm bool, req *ttOpRequest) (int, strin
 		sys("开始了战斗 · 第 1 轮")
 		room.ensureCombatRes(order)
 		room.turnStart(sc, order[0])
+		for _, c := range room.companionsOf(sc, order[0]) {
+			room.turnStart(sc, c)
+		}
 	case "next", "prev":
 		if state == nil || len(order) == 0 {
 			return http.StatusBadRequest, "战斗尚未开始"
@@ -376,6 +379,11 @@ func (room *TTRoom) applyCombat(u ttUser, gm bool, req *ttOpRequest) (int, strin
 				// timed conditions count down at the END of the affected creature's turn,
 				// so "1 round" lasts through its next turn
 				room.tickStatus(order[idx])
+				// 跟随主控的随从和主控一起结束回合
+				for _, c := range room.companionsOf(sc, order[idx]) {
+					room.turnEnd(sc, c, nil)
+					room.tickStatus(c)
+				}
 			}
 			if gone {
 				idx = after - 1
@@ -392,6 +400,9 @@ func (room *TTRoom) applyCombat(u ttUser, gm bool, req *ttOpRequest) (int, strin
 				}
 			}
 			room.turnStart(sc, order[idx]) // 回合开始：恢复动作 / 反应、闪避结束、传奇动作恢复、充能
+			for _, c := range room.companionsOf(sc, order[idx]) {
+				room.turnStart(sc, c)
+			}
 		} else {
 			if gone {
 				idx = after
@@ -739,7 +750,35 @@ func ttSetDeathSaves(it map[string]interface{}, s, f int) string {
 
 // isPC: a player character — controlled by a player or linked to a PC sheet. Only player
 // characters make death saving throws; everything else dies at 0 HP.
+// companionsOf: summons that act on this token's turn — their sheet is kind "summon" with
+// master = this token's sheet, initMode isn't "own" and they are not in the tracker themselves.
+func (room *TTRoom) companionsOf(sc *TTScene, it map[string]interface{}) []map[string]interface{} {
+	mid, _ := it["sheet"].(string)
+	if mid == "" {
+		return nil
+	}
+	var out []map[string]interface{}
+	for _, o := range sc.Items {
+		if o["kind"] != "token" {
+			continue
+		}
+		if _, in := o["init"]; in {
+			continue
+		}
+		sh := room.tokenSheet(o)
+		if sh == nil || sh["kind"] != "summon" || sh["master"] != mid || sh["initMode"] == "own" {
+			continue
+		}
+		out = append(out, o)
+	}
+	return out
+}
+
 func (room *TTRoom) isPC(it map[string]interface{}) bool {
+	// 随从 / 召唤物（kind summon）倒下就是摧毁，没有死亡豁免
+	if sh := room.tokenSheet(it); sh != nil && sh["kind"] == "summon" {
+		return false
+	}
 	if owner, _ := it["owner"].(string); owner != "" {
 		return true
 	}

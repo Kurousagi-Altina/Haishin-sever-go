@@ -460,6 +460,7 @@ function handleMsg(m) {
     case 'sheets':
         m.sheets.forEach(function(sh) { sheets[sh.id] = sh; });
         renderSheetsRemote();
+        renderCombatHud(); // 随从的行动方式 / 主控改了：先攻条上的随从头像跟着变
         break;
     case 'sheetdel':
         m.ids.forEach(function(id) { delete sheets[id]; });
@@ -2783,7 +2784,12 @@ function tokenHpPatch(it, delta) {
 // 掉到 0 HP：玩家角色加「昏迷」（要做死亡豁免），GM 的怪物加「死亡」（先攻里自动跳过）；专注结束。
 // 从 0 恢复：去掉昏迷 / 死亡 / 稳定，清空死亡豁免
 // 玩家角色：玩家控制的棋子，或关联了人物卡。只有玩家角色在 0 生命值时做死亡豁免，其他直接死亡
-function isPC(it) { return !!it.owner || !!(it.sheet && sheets[it.sheet] && sheets[it.sheet].kind === 'pc'); }
+// 随从 / 召唤物不是玩家角色：倒下就是摧毁 / 消失，没有死亡豁免
+function isPC(it) {
+    var sh = it.sheet && sheets[it.sheet];
+    if (sh && sh.kind === 'summon') return false;
+    return !!it.owner || !!(sh && sh.kind === 'pc');
+}
 
 // 血量文字「生命+临时 / 上限」，临时生命为 0 时不显示 +0
 function hpNumText(it) {
@@ -3705,6 +3711,7 @@ function init() {
 
     bindSettings();
     initSheets();
+    initSummon();
     initCombat();
     initStatus();
     initAction();

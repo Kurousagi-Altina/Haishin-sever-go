@@ -87,6 +87,7 @@ function onSheetPaneClick(e) {
         return;
     }
     var id = b.dataset.id;
+    if (onSummonClick(b, sh)) return;
     switch (b.dataset.act) {
     case 'back': sheetView = sheetView.back || { mode: 'list' }; renderSheets(); break;
     case 'open': openSheet(id, ''); break;
@@ -200,6 +201,7 @@ function renderSheets() {
     if (sheetView.mode === 'sheet' && sheets[sheetView.id]) pane.innerHTML = sheetHtml(sheets[sheetView.id], false);
     else if (sheetView.mode === 'preview' && sheetView.tmp) pane.innerHTML = sheetHtml(sheetView.tmp, true);
     else if (sheetView.mode === 'lookup') pane.innerHTML = lookupHtml();
+    else if (sheetView.mode === 'newsummon') pane.innerHTML = newSummonHtml();
     else { sheetView.mode = 'list'; pane.innerHTML = listHtml(); scroll = 0; }
     pane.scrollTop = scroll;
     renderCharQuick();
@@ -208,10 +210,11 @@ function renderSheets() {
 function listHtml() {
     var all = Object.keys(sheets).map(function(id) { return sheets[id]; });
     all.sort(function(a, b) { return (a.name || '').localeCompare(b.name || ''); });
-    var groups = [['pc', '角色'], ['monster', '怪物 / NPC'], ['item', '物品 / 资料']];
+    var groups = [['pc', '角色'], ['summon', '随从 / 召唤物'], ['monster', '怪物 / NPC'], ['item', '物品 / 资料']];
     var h = '<div class="lobby-row" style="gap:6px;">' +
         '<button class="tt-btn primary" data-act="xlsx" title="DND 5E2024 人物卡（.xlsx），或 obr-suite 角色卡的 data.json">导入人物卡 (Excel / JSON)</button>' +
-        '<button class="tt-btn" data-act="lookup">📖 不全书图鉴</button></div>';
+        '<button class="tt-btn" data-act="lookup">📖 不全书图鉴</button>' +
+        (masterChoices().length ? '<button class="tt-btn" data-act="newsummon" title="魔能炮台这类没有独立怪物卡的召唤物：攻击和 DC 跟随主控">＋ 随从</button>' : '') + '</div>';
     groups.forEach(function(g) {
         var list = all.filter(function(sh) { return sh.kind === g[0]; });
         if (!list.length && g[0] !== 'pc') return;
@@ -219,10 +222,10 @@ function listHtml() {
         if (!list.length) h += '<div class="tt-hint">还没有角色卡。点「导入人物卡」选择你的 Excel 人物卡，或 obr-suite 角色卡导出的 JSON。</div>';
         list.forEach(function(sh) {
             h += '<div class="sheet-row"><div class="info" data-act="open" data-id="' + escapeHtml(sh.id) + '">' +
-                '<div class="name">' + escapeHtml(sh.name) + (sh.shared && sh.kind !== 'pc' ? ' <span class="tt-hint">已共享</span>' : '') + '</div>' +
+                '<div class="name">' + escapeHtml(sh.name) + (sh.shared && sh.kind !== 'pc' && sh.kind !== 'summon' ? ' <span class="tt-hint">已共享</span>' : '') + (masterSheet(sh) ? ' <span class="tt-hint">主控：' + escapeHtml(masterSheet(sh).name) + '</span>' : '') + '</div>' +
                 '<div class="sub">' + escapeHtml(sheetSub(sh)) + '</div></div>' +
                 (sh.kind !== 'item' && canEditSheet(sh) ? '<button class="tt-btn small" data-act="place" data-id="' + escapeHtml(sh.id) + '" title="在地图中央放置关联棋子">放置</button>' : '') +
-                (me.gm && sh.kind !== 'pc' ? '<button class="tt-btn small" data-act="share" data-id="' + escapeHtml(sh.id) + '" title="让玩家也能看到这张卡">' + (sh.shared ? '取消共享' : '共享') + '</button>' : '') +
+                (me.gm && sh.kind !== 'pc' && sh.kind !== 'summon' ? '<button class="tt-btn small" data-act="share" data-id="' + escapeHtml(sh.id) + '" title="让玩家也能看到这张卡">' + (sh.shared ? '取消共享' : '共享') + '</button>' : '') +
                 (canEditSheet(sh) ? '<button class="tt-btn small danger" data-act="del" data-id="' + escapeHtml(sh.id) + '">✕</button>' : '') +
                 '</div>';
         });
@@ -237,6 +240,7 @@ function chip(label, value) {
 
 function sheetHtml(sh, preview) {
     var edit = !preview && canEditSheet(sh);
+    if (!preview) sh = viewSheet(sh); // 随从：【…】按主控换算
     var tok = sheetView.tokenId && scene.items[sheetView.tokenId];
     var h = '<div class="sheet-head"><button class="tt-btn small" data-act="back">←</button>' +
         '<div class="title"><div class="name">' + escapeHtml(sh.name) + '</div><div class="sub">' + escapeHtml(sheetSub(sh)) + '</div></div></div>';
@@ -258,6 +262,9 @@ function sheetHtml(sh, preview) {
         h += '<div class="lobby-row" style="gap:6px;"><button class="tt-btn small" data-act="place" data-id="' + escapeHtml(sh.id) + '">放置棋子</button>' +
             (tok ? '<span class="tt-hint">正在查看棋子「' + escapeHtml(tok.label || '') + '」</span>' : '') + '</div>';
     }
+
+    if (!preview) h += summonHeadHtml(sh, edit);
+    if (!preview && edit && sheetView.edit && isSummonSheet(sh)) h += summonEditHtml(sh);
 
     if (sh.kind === 'item') {
         if (sh.meta) h += '<div class="item-meta">' + escapeHtml(sh.meta) + '</div>';
@@ -353,7 +360,7 @@ function sheetHtml(sh, preview) {
         h += '<div class="side-section"><h5>' + escapeHtml(sec.title) + '</h5>' + sec.entries.map(function(en, ei) {
             var label = (en.name || sec.title).replace(/。$/, '');
             var multiBtn = /多重攻击|multiattack/i.test(en.name || '') ? '<button class="tt-btn small cast-btn" data-act="multi" data-sec="' + si + '" data-idx="' + ei + '" title="列出这次多重攻击要做的攻击，逐个结算">⚡</button>' : '';
-            return '<div class="entry">' + (multiBtn || (entryActionable(en.text) ? '<button class="tt-btn small cast-btn" data-act="cast" data-kind="entry" data-sec="' + si + '" data-idx="' + ei + '" title="选择目标、显示范围并自动结算">⚡</button>' : '')) +
+            return '<div class="entry">' + (multiBtn || (!en.noCast && entryActionable(en.text) ? '<button class="tt-btn small cast-btn" data-act="cast" data-kind="entry" data-sec="' + si + '" data-idx="' + ei + '" title="选择目标、显示范围并自动结算">⚡</button>' : '')) +
                 (en.name ? '<b>' + escapeHtml(en.name.replace(/。$/, '')) + '。</b>' : '') + rollify(en.text, label) + '</div>';
         }).join('') + '</div>';
     });
@@ -398,8 +405,9 @@ function placeSheetToken(sh, asset) {
     if (max > 0) { it.hpMax = max; it.hp = num(sh.hp.cur, max); }
     if (sh.hp && num(sh.hp.temp, 0) > 0) it.hpTemp = num(sh.hp.temp, 0);
     if (me.gm && sh.kind === 'pc' && sh.owner) it.owner = sh.owner;
-    if (me.gm && gmPref('ttPlaceHidden', true) && !it.owner) it.hidden = true; // GM 从资料拉出来的棋子默认先对玩家隐藏（已分配给玩家的角色除外）
-    var joining = me.gm && combatState() && sh.kind !== 'item';
+    summonPlaceAdjust(sh, it);
+    if (me.gm && gmPref('ttPlaceHidden', true) && !it.owner && sh.kind !== 'summon') it.hidden = true; // GM 从资料拉出来的棋子默认先对玩家隐藏（已分配给玩家的角色除外）
+    var joining = me.gm && combatState() && sh.kind !== 'item' && !(sh.kind === 'summon' && sh.initMode !== 'own'); // 跟随主控的随从在主控回合行动，不自动掷先攻
     if (joining) { it.init = 0; it.initTie = Math.random(); }
     createItems([it]);
     if (joining) setTimeout(function() { rollInit([it.id]); }, 600); // 战斗中放下的单位自动掷先攻加入
