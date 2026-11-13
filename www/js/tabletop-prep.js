@@ -93,11 +93,7 @@ function wallVertexDown(w, start, e) {
 function wallVertexMove(w, e) {
     var g = gesture;
     if (!g.start.moved) return;
-    var p = wallSnap(w, true);
-    if (!e.altKey) {
-        var near = wallVertexAt(w, g.skip); // 靠近别的拐点：吸上去（方便接上）
-        p = near ? { x: near.x, y: near.y } : wallSnap(w, false);
-    }
+    var p = wallSnap(w, e.altKey, g.skip); // 默认自由拖动、靠近别的拐点吸上去；Alt = 吸附半格
     g.target = p;
     g.refs.forEach(function(r) {
         var it = scene.items[r.id];

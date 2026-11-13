@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css?v=2026111315">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026111319">
 </head>
 <body class="tt-body">
 
@@ -156,11 +156,13 @@
                     <button class="tt-btn small" data-wallmode="auto" title="根据地图图片自动识别墙：拖框识别墙线，或拖框后点地板围出房间">🪄 自动</button>
                     <button class="tt-btn small" data-wallmode="doors" title="找出墙线之间一格左右的缺口，点一下补成门">🚪 找门洞</button>
                     <span class="sep"></span>
-                    <span class="tt-hint">单击逐点画墙（吸附半格，Alt 自由），双击 / 右键 / Enter 结束</span>
+                    <span class="tt-hint">单击逐点画墙（不吸附网格，靠近已有拐点会接上；按住 Alt 吸附半格），双击 / Enter 结束，右键取消</span>
                     <button class="tt-btn small danger" onclick="clearWalls()">清除墙体</button>
                     <div class="aw-panel" id="autoWallPanel" style="display:none;">
+                        <button class="tt-btn small" data-aw="band" title="适合写实 / 彩色地图：直接找出墙本身（两侧有清楚边缘的带子），沿墙中间画一条横平竖直的线">识别墙体</button>
                         <button class="tt-btn small" data-aw="line" title="适合墙是深色线条的地图（线稿、地下城生成器）">识别线条</button>
                         <button class="tt-btn small" data-aw="floor" title="适合彩色 / 写实地图：点地板，沿地板边缘围墙">点地板</button>
+                        <label data-awfor="band" title="越高找到的墙越多（也更容易把家具、地板缝当成墙）">灵敏度 <input type="range" id="awSens" min="2" max="20" step="1"> <b id="awSensV"></b></label>
                         <label data-awfor="line" title="比这个亮度暗的像素算墙线；按「自动」恢复自动阈值">深浅 <input type="range" id="awThr" min="10" max="245" step="1"> <b id="awThrV"></b> <button class="tt-btn small" id="awAuto">自动</button></label>
                         <label data-awfor="line" title="比这个更细的线忽略（网格线、纹理）">忽略细线 <input type="range" id="awThick" min="0" max="6" step="1"> <b id="awThickV"></b></label>
                         <label data-awfor="floor" title="和点到的地板颜色差多少以内算地板">容差 <input type="range" id="awTol" min="5" max="90" step="1"> <b id="awTolV"></b></label>
@@ -555,17 +557,17 @@
     </div>
 
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js?v=2026111315"></script>
-    <script src="js/tabletop-combat.js?v=2026111315"></script>
-    <script src="js/tabletop-status.js?v=2026111315"></script>
-    <script src="js/tabletop-action.js?v=2026111315"></script>
-    <script src="js/tabletop-extra.js?v=2026111315"></script>
-    <script src="js/tabletop-autowall.js?v=2026111315"></script>
-    <script src="js/tabletop-prep.js?v=2026111315"></script>
-    <script src="js/tabletop-dm.js?v=2026111315"></script>
-    <script src="js/tabletop-fight.js?v=2026111315"></script>
-    <script src="js/tabletop-summon.js?v=2026111315"></script>
-    <script src="js/tabletop-class.js?v=2026111315"></script>
-    <script src="js/tabletop.js?v=2026111315"></script>
+    <script src="js/tabletop-sheets.js?v=2026111319"></script>
+    <script src="js/tabletop-combat.js?v=2026111319"></script>
+    <script src="js/tabletop-status.js?v=2026111319"></script>
+    <script src="js/tabletop-action.js?v=2026111319"></script>
+    <script src="js/tabletop-extra.js?v=2026111319"></script>
+    <script src="js/tabletop-autowall.js?v=2026111319"></script>
+    <script src="js/tabletop-prep.js?v=2026111319"></script>
+    <script src="js/tabletop-dm.js?v=2026111319"></script>
+    <script src="js/tabletop-fight.js?v=2026111319"></script>
+    <script src="js/tabletop-summon.js?v=2026111319"></script>
+    <script src="js/tabletop-class.js?v=2026111319"></script>
+    <script src="js/tabletop.js?v=2026111319"></script>
 </body>
 </html>

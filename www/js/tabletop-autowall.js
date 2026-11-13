@@ -1,10 +1,13 @@
 // ===== 自动画墙（墙体工具 → 🪄 自动）=====
 // 全部在浏览器里算：把框内的地图图片画到离屏 canvas 上取像素（地图是同源的 /tabletop-assets/，不会污染 canvas）。
+//   墙体模式（默认，适合写实 / 彩色地图）：墙 = 两条方向相反、间距等于墙厚的平行边缘，中间比较平整，并沿墙方向延续。
+//     横墙、竖墙各做一次匹配滤波（墙厚 0.08~0.45 格逐个试），沿墙方向平滑压掉短纹理 → 横跨墙的方向取极大值（= 墙的中线）
+//     → 只留全图主导墙厚附近的 → 聚成横平竖直的线段 → 共线的接上、端点接到垂直的墙上 → 去掉孤立的短段（家具、楼梯）
 //   线条模式：深色像素 → 开运算去掉网格等细线 → 闭运算补小缺口 → 去小斑点 → Zhang-Suen 细化成中心线 → 追踪成折线 → 道格拉斯-普克精简
 //   地板模式：先拖框，再点地板（可点多个房间）→ 按颜色相近程度泛洪填充 → 填掉小洞（家具） → marching squares 取边界 → 精简
 // 结果先画成青色虚线预览，滑块实时重算，满意了点「生成墙体」才真正创建（一次撤销可撤回）。
 
-var autoWall = { mode: 'line', box: null, work: null, fill: null, seeds: [], lines: [], thr: -1, thick: 1, simp: 3, tol: 30, timer: 0 };
+var autoWall = { mode: 'band', box: null, work: null, fill: null, seeds: [], lines: [], thr: -1, thick: 1, simp: 3, tol: 30, sens: 17, timer: 0 };
 var AW_MAX = 1024; // 处理用的最大边长（像素），太大的框会先缩小
 
 function autoWallActive() { return tool === 'wall' && wallOpts.mode === 'auto'; }
@@ -20,10 +23,12 @@ function autoWallSync() {
     $('awThick').value = autoWall.thick; $('awThickV').textContent = autoWall.thick;
     $('awSimp').value = autoWall.simp; $('awSimpV').textContent = autoWall.simp;
     $('awTol').value = autoWall.tol; $('awTolV').textContent = autoWall.tol;
+    if ($('awSens')) { $('awSens').value = autoWall.sens; $('awSensV').textContent = autoWall.sens; }
     var n = autoWall.lines.length;
     $('awGo').disabled = !n;
     $('awGo').textContent = n ? '生成墙体（' + n + ' 段）' : '生成墙体';
-    $('awInfo').textContent = !autoWall.box ? (autoWall.mode === 'line' ? '在地图上拖一个框，自动找出框里的墙线' : '先拖框圈住房间，再点框里的地板（可点多个房间）')
+    $('awInfo').textContent = !autoWall.box ? (autoWall.mode === 'band' ? '在地图上拖一个框，自动找出框里的墙，沿墙中间画线（右键取消）'
+        : autoWall.mode === 'line' ? '在地图上拖一个框，自动找出框里的墙线' : '先拖框圈住房间，再点框里的地板（可点多个房间）')
         : autoWall.mode === 'floor' && !autoWall.seeds.length ? '点一下框里的地板' : n ? '青色虚线是预览：调滑块，或重新拖框' : '没有识别到墙，调一下滑块试试';
 }
 
@@ -71,7 +76,7 @@ function autoWallBox(a, b) {
     autoWall.work = { W: W, H: H, sc: W / (x1 - x0), rgb: data, lum: lum, otsu: awOtsu(lum), blur: null };
     autoWall.fill = null; autoWall.seeds = [];
     autoWall.lines = [];
-    if (autoWall.mode === 'line') awRun();
+    if (autoWall.mode !== 'floor') awRun();
     autoWallSync();
     requestRender();
 }
@@ -95,7 +100,7 @@ function awSchedule() {
 function awRun() {
     var wk = autoWall.work;
     if (!wk) return;
-    var paths = autoWall.mode === 'line' ? awLines(wk) : awFloor(wk);
+    var paths = autoWall.mode === 'band' ? awBand(wk) : autoWall.mode === 'line' ? awLines(wk) : awFloor(wk);
     var b = autoWall.box, g = gridSize();
     var eps = Math.max(0.7, g * autoWall.simp / 20 * wk.sc), minLen = g * 0.4 * wk.sc;
     var out = [];
@@ -126,6 +131,178 @@ function autoWallCommit() {
     createItems(items);
     notice('已生成 ' + items.length + ' 段墙体（Ctrl+Z 可撤销）；门洞可以用「🚪 找门洞」一键补门，多余的墙在「选择」里框选删除', false, 6000);
     autoWallClear();
+}
+
+// ---------- 墙体模式 ----------
+// 一维滑动平均（越界当 0）：horiz = 沿行方向
+function awBox1D(src, W, H, k, horiz) {
+    var out = new Float32Array(W * H), r = k >> 1, x, y, s, i;
+    if (k <= 1) { out.set(src); return out; }
+    if (horiz) {
+        for (y = 0; y < H; y++) {
+            var row = y * W;
+            s = 0;
+            for (x = 0; x < Math.min(r, W); x++) s += src[row + x];
+            for (x = 0; x < W; x++) {
+                if (x + r < W) s += src[row + x + r];
+                if (x - r - 1 >= 0) s -= src[row + x - r - 1];
+                out[row + x] = s / k;
+            }
+        }
+    } else {
+        for (x = 0; x < W; x++) {
+            s = 0;
+            for (y = 0; y < Math.min(r, H); y++) s += src[y * W + x];
+            for (y = 0; y < H; y++) {
+                if (y + r < H) s += src[(y + r) * W + x];
+                if (y - r - 1 >= 0) s -= src[(y - r - 1) * W + x];
+                out[y * W + x] = s / k;
+            }
+        }
+    }
+    return out;
+}
+
+// 墙带匹配滤波：axis 0 = 横墙（看上下方向的亮度变化），1 = 竖墙。返回每个像素的最佳响应和对应的半墙厚
+function awBandResp(L, W, H, axis, hmin, hmax, along) {
+    var n = W * H, gd = new Float32Array(n), ag = new Float32Array(n), i, x, y;
+    var st = axis === 0 ? W : 1;
+    for (y = 0; y < H; y++) for (x = 0; x < W; x++) {
+        i = y * W + x;
+        var c = axis === 0 ? y : x, lim = axis === 0 ? H : W;
+        if (c > 0 && c < lim - 1) { gd[i] = (L[i + st] - L[i - st]) / 2; ag[i] = Math.abs(gd[i]); }
+    }
+    var best = new Float32Array(n), bh = new Uint8Array(n), r = new Float32Array(n);
+    for (var h = hmin; h <= hmax; h++) {
+        var inner = awBox1D(ag, W, H, Math.max(1, 2 * h - 3) | 1, axis === 1);
+        for (y = 0; y < H; y++) for (x = 0; x < W; x++) {
+            i = y * W + x;
+            var c2 = axis === 0 ? y : x, lim2 = axis === 0 ? H : W, v = 0;
+            if (c2 - h >= 0 && c2 + h < lim2) {
+                var a = gd[i - h * st], b = gd[i + h * st];
+                if (a * b < 0) v = Math.max(0, Math.min(Math.abs(a), Math.abs(b)) - inner[i] * 0.5); // 两侧边缘方向相反，中间平整
+            }
+            r[i] = v;
+        }
+        var sm = awBox1D(r, W, H, along, axis === 0); // 沿墙方向平滑：短纹理被压下去
+        for (i = 0; i < n; i++) if (sm[i] > best[i]) { best[i] = sm[i]; bh[i] = h; }
+    }
+    return { R: best, Hh: bh };
+}
+
+function awBand(wk) {
+    var W = wk.W, H = wk.H, n = W * H, cell = gridSize() * wk.sc, i, x, y;
+    if (!wk.band) {
+        var L0 = new Float32Array(n);
+        for (i = 0; i < n; i++) L0[i] = wk.lum[i];
+        var L = awBox1D(awBox1D(L0, W, H, 3, true), W, H, 3, false);
+        var hmin = Math.max(2, Math.floor(cell * 0.08)), hmax = Math.max(hmin + 1, Math.min(40, Math.floor(cell * 0.45)));
+        var along = Math.max(5, Math.floor(cell * 0.6)) | 1;
+        wk.band = [awBandResp(L, W, H, 0, hmin, hmax, along), awBandResp(L, W, H, 1, hmin, hmax, along)];
+    }
+    var thr = Math.max(1, 22 - autoWall.sens);
+    // 横跨墙的方向取极大值 = 墙的中线
+    var masks = wk.band.map(function(b, axis) {
+        var st = axis === 0 ? W : 1, m = new Uint8Array(n);
+        for (y = 1; y < H - 1; y++) for (x = 1; x < W - 1; x++) {
+            i = y * W + x;
+            var v = b.R[i];
+            if (v > thr && v >= b.R[i - st] && v > b.R[i + st]) m[i] = 1;
+        }
+        return m;
+    });
+    // 全图主导墙厚：同一张地图的墙一般一样厚，厚度差太多的（地板缝、家具）去掉
+    var hist = [];
+    wk.band.forEach(function(b, axis) { for (i = 0; i < n; i++) if (masks[axis][i]) hist[b.Hh[i]] = (hist[b.Hh[i]] || 0) + b.R[i]; });
+    var hd = 0, hb = -1;
+    hist.forEach(function(v, h) { if (v > hb) { hb = v; hd = h; } });
+    var hdTol = Math.max(2, hd * 0.4);
+    wk.band.forEach(function(b, axis) { for (i = 0; i < n; i++) if (masks[axis][i] && Math.abs(b.Hh[i] - hd) > hdTol) masks[axis][i] = 0; });
+    var segs = awBandSegs(masks[0], W, H, 0, cell).concat(awBandSegs(masks[1], W, H, 1, cell));
+    segs = awBandPrune(awBandJoin(segs, cell), cell);
+    return segs.map(function(s) {
+        return s.o === 'h' ? [[s.a, s.p], [s.b, s.p]] : [[s.p, s.a], [s.p, s.b]];
+    });
+}
+
+// 中线像素 → 横平竖直的线段 {o: 'h'|'v', p: 横墙的 y / 竖墙的 x, a, b: 沿墙方向的起止}
+function awBandSegs(m, W, H, axis, cell) {
+    var gap = Math.max(1, Math.round(cell * 0.15)), n = W * H;
+    var lab = new Int32Array(n), id = 0, stack = [], out = [];
+    for (var i0 = 0; i0 < n; i0++) {
+        if (!m[i0] || lab[i0]) continue;
+        id++;
+        lab[i0] = id; stack.length = 0; stack.push(i0);
+        var ps = [], mn = 1e9, mx = -1e9, cmn = 1e9, cmx = -1e9;
+        while (stack.length) {
+            var p = stack.pop(), x = p % W, y = (p - x) / W;
+            var al = axis === 0 ? x : y, cr = axis === 0 ? y : x;
+            ps.push(cr);
+            if (al < mn) mn = al; if (al > mx) mx = al; if (cr < cmn) cmn = cr; if (cr > cmx) cmx = cr;
+            // 沿墙方向跨过 gap 个像素的小缺口，横跨方向只允许 1 像素抖动
+            for (var da = -gap; da <= gap; da++) for (var dc = -1; dc <= 1; dc++) {
+                var nx = axis === 0 ? x + da : x + dc, ny = axis === 0 ? y + dc : y + da;
+                if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
+                var q = ny * W + nx;
+                if (m[q] && !lab[q]) { lab[q] = id; stack.push(q); }
+            }
+        }
+        var len = mx - mn;
+        if (len < cell * 0.7 || cmx - cmn > Math.max(3, len * 0.25)) continue;
+        ps.sort(function(a, b) { return a - b; });
+        out.push({ o: axis === 0 ? 'h' : 'v', p: ps[ps.length >> 1], a: mn, b: mx });
+    }
+    return out;
+}
+
+// 共线且离得近的接成一段；端点接到附近垂直的墙上（补拐角、丁字口）
+function awBandJoin(S, cell) {
+    var tol = cell * 0.15, gap = cell * 0.6, i, j, changed = true;
+    while (changed) {
+        changed = false;
+        for (i = 0; i < S.length && !changed; i++) for (j = i + 1; j < S.length; j++) {
+            var a = S[i], b = S[j];
+            if (a.o !== b.o || Math.abs(a.p - b.p) > tol || b.a - a.b > gap || a.a - b.b > gap) continue;
+            var la = a.b - a.a || 1, lb = b.b - b.a || 1;
+            S[i] = { o: a.o, p: (a.p * la + b.p * lb) / (la + lb), a: Math.min(a.a, b.a), b: Math.max(a.b, b.b) };
+            S.splice(j, 1);
+            changed = true;
+            break;
+        }
+    }
+    S.forEach(function(s) {
+        ['a', 'b'].forEach(function(e) {
+            var best = null;
+            S.forEach(function(t) {
+                if (t.o === s.o || s.p < t.a - gap || s.p > t.b + gap) return;
+                var d = t.p - s[e];
+                if (Math.abs(d) <= gap && (best === null || Math.abs(d) < Math.abs(best - s[e]))) best = t.p;
+            });
+            if (best !== null) s[e] = best;
+        });
+        if (s.a > s.b) { var tmp = s.a; s.a = s.b; s.b = tmp; }
+    });
+    return S;
+}
+
+// 去掉孤立的短段：至少 1.5 格长，或者端点连着保留下来的墙
+function awBandPrune(S, cell) {
+    var touch = cell * 0.2;
+    var ends = function(s) { return s.o === 'h' ? [[s.a, s.p], [s.b, s.p]] : [[s.p, s.a], [s.p, s.b]]; };
+    var near = function(pt, t) {
+        var al = t.o === 'h' ? pt[0] : pt[1], cr = t.o === 'h' ? pt[1] : pt[0];
+        return al >= t.a - touch && al <= t.b + touch && Math.abs(cr - t.p) <= touch;
+    };
+    var keep = S.map(function(s) { return s.b - s.a >= cell * 1.5; }), changed = true;
+    while (changed) {
+        changed = false;
+        S.forEach(function(s, i) {
+            if (keep[i]) return;
+            var hit = S.some(function(t, j) { return j !== i && keep[j] && ends(s).some(function(pt) { return near(pt, t); }); });
+            if (hit) { keep[i] = true; changed = true; }
+        });
+    }
+    return S.filter(function(s, i) { return keep[i]; });
 }
 
 // ---------- 线条模式 ----------
@@ -519,7 +696,7 @@ function initAutoWall() {
             if (autoWall.mode !== b.dataset.aw) {
                 autoWall.mode = b.dataset.aw;
                 autoWall.seeds = []; autoWall.fill = null; autoWall.lines = [];
-                if (autoWall.mode === 'line' && autoWall.work) awRun();
+                if (autoWall.mode !== 'floor' && autoWall.work) awRun();
             }
         } else if (b.id === 'awGo') autoWallCommit();
         else if (b.id === 'awClear') autoWallClear();
@@ -534,10 +711,25 @@ function initAutoWall() {
         else if (t.id === 'awThick') autoWall.thick = parseInt(t.value, 10);
         else if (t.id === 'awSimp') autoWall.simp = parseInt(t.value, 10);
         else if (t.id === 'awTol') autoWall.tol = parseInt(t.value, 10);
+        else if (t.id === 'awSens') autoWall.sens = parseInt(t.value, 10);
         else return;
         autoWallSync();
         awSchedule();
     });
+    // 右键轻点 = 取消当前的识别（拖框 / 预览 / 地板点）；右键拖动仍然是平移
+    var board = $('board'), rdown = null;
+    if (board) {
+        board.addEventListener('pointerdown', function(e) {
+            rdown = e.button === 2 && autoWallActive() ? { x: e.clientX, y: e.clientY } : null;
+        }, true);
+        board.addEventListener('pointerup', function(e) {
+            var d = rdown;
+            rdown = null;
+            if (!d || e.button !== 2 || !autoWallActive() || Math.hypot(e.clientX - d.x, e.clientY - d.y) > 5) return;
+            if (gesture && gesture.auto) gesture = null;
+            if (autoWall.box || autoWall.lines.length || autoWall.seeds.length) { autoWallClear(); notice('已取消自动识别'); }
+        }, true);
+    }
     window.addEventListener('keydown', function(e) {
         if (!autoWallActive() || /INPUT|TEXTAREA|SELECT/.test((e.target && e.target.tagName) || '')) return;
         if (e.key === 'Escape' && (autoWall.box || autoWall.lines.length)) { autoWallClear(); e.preventDefault(); }
