@@ -42,7 +42,12 @@ function econAfterAction(a, caster) {
     if (!hintOn('hintEcon') || !caster || !canEdit(caster) || !combatState() || !inInit(caster)) return;
     var cost = a.cost || 'a';
     var e = JSON.parse(JSON.stringify(caster.econ || {}));
-    if (cost !== 'n') e[cost] = true;
+    var csh = caster.sheet && sheets[caster.sheet], per = a.kind === 'attack' && cost === 'a' && !a.isSpell ? attacksPerAction(csh) : 1;
+    if (per > 1 && !e.a) { // 额外攻击：攻击动作打满 per 下才算用掉动作
+        e.atk = (e.atk || 0) + 1;
+        if (e.atk < per) notice('额外攻击：攻击动作第 ' + e.atk + '/' + per + ' 击，还可以再攻击 ' + (per - e.atk) + ' 次', false, 3500);
+        else { e.a = true; delete e.atk; }
+    } else if (cost !== 'n') e[cost] = true;
     if (a.useSlot && a.slotLevel > 0) {
         if (e.slot) notice('2024 规则：一回合只能用法术位施放一个法术（戏法不受限）。这次照样结算了，请 GM 斟酌', true, 6000);
         e.slot = true;
@@ -166,7 +171,7 @@ function fightLogBtns(e) {
 function fightTargetBtns(e, t, r) {
     if (!t.id || !e.id) return '';
     var mb = masteryBtns(e, t, r) + sneakBtns(e, t, r) + shoveBtns(e, t, r) + featAtkBtns(e, t, r); // 武器精通 / 偷袭 / 推撞 / 顺势斩 / 阻拦（出手的人看得到）
-    var tok = scene.items[t.id], ic = interceptBtns(e, t, r); // 拦截（旁边盟友的控制者看得到）
+    var tok = scene.items[t.id], ic = interceptBtns(e, t, r) + cxTargetBtns(e, t, r); // 拦截、职业特性（各自判断谁看得到）
     if (!tok || !(me.gm || (tok.owner && tok.owner === me.name))) return mb + ic;
     var h = '', m = String(t.note || '').match(/(?:需专注豁免|专注豁免改为) DC (\d+)/);
     if (m && hasStatus(tok, 'concentration') && !logEntries.some(function(x) { return x.ref === 'conc:' + e.id + ':' + t.id; }))
@@ -189,6 +194,7 @@ function fightLogClick(el) {
     if (d.mst) return masteryClick(el);
     if (d.cs || d.hr) return reactSpellClick(el);
     if (d.ft) return featClick(el);
+    if (d.cx) return cxClick(el);
     if (d.oaspell) return warCasterClick(el);
     if (d.sa) return sneakClick(el);
     if (d.shove) { masteryDone[d.log + ':' + d.shove + ':push'] = true; el.remove(); pushToken(d.shove, d.from, 5); return true; }
@@ -508,7 +514,7 @@ function unarmedRowHtml(it) {
 }
 
 function fightSelAct(act0, ids) {
-    if (classSelAct(act0, ids) || featSelAct(act0, ids)) return true; // 职业特性 / 专长一键
+    if (classSelAct(act0, ids) || featSelAct(act0, ids) || cxSelAct(act0, ids)) return true; // 职业特性 / 专长一键
     if (act0 !== 'unarmed' && act0 !== 'grapple' && act0 !== 'shove') return false;
     var it = scene.items[ids[0]];
     if (!it) return true;
@@ -596,6 +602,7 @@ function classRowHtml(it) {
         var lvD = bard || parseInt(sh.level, 10) || 1, cha = Math.max(1, sheetAbilityMod(sh, 'cha'));
         b.push('<button class="tt-btn small" data-act="cf-bardic" title="附赠动作：60 尺内一名其他生物获得一颗诗人激励骰（' + byLevel(CF.bardDie, lvD) + '）">🎵 诗人激励（' + featLeft(it, '诗人激励', cha) + '）</button>');
     }
+    b = b.concat(cxPanelBtns(it, sh)); // tabletop-class.js：战士 / 符文骑士 / 化兽…
     return b.length ? '<div class="prop-row"><label>职业</label><span class="prop-btns" style="margin:0;">' + b.join('') + '</span></div>' : '';
 }
 
@@ -616,10 +623,16 @@ function classSelAct(act0, ids) {
         if (!spendFeat(it, '回气', byLevel(CF.windUses, lf))) return true;
         openActionDialog({ name: '回气', kind: 'heal', damage: '1d10+' + lf, cost: 'b', area: { shape: '', size: 0, width: 5 }, targets: 1, scaleNote: '回气：1d10 + 战士等级 ' + lf }, it, sh);
         act.presetTargets = [it.id];
+        if (lf >= 5 && hintOn('hintClass')) { // 战术转进：用回气时可以移动至多一半速度，不引发借机攻击
+            var dg = STATUS_BY_ID.disengaged;
+            addStatusTo(it, { id: 'disengaged', name: dg.name, icon: dg.icon, color: dg.color });
+            notice('战术转进：本回合可以移动至多一半速度，不会引发借机攻击（已挂上「撤离」）', false, 5000);
+        }
     } else if (act0 === 'cf-surge') {
         if (!spendFeat(it, '动作如潮', byLevel(CF.surgeUses, Math.max(2, lv('战士', 2))))) return true;
         var e = JSON.parse(JSON.stringify(it.econ || {}));
         delete e.a;
+        delete e.atk; // 新的动作可以重新执行攻击动作（额外攻击重新计数）
         e.surge = true;
         patchItems([{ id: it.id, econ: e }]);
         notice((it.label || '') + ' 动作如潮：本回合多一个动作（不能是魔法动作）');
@@ -811,20 +824,27 @@ function isHeavyAttack(a) { return /重型|heavy/i.test(a.props || '') || HEAVY_
 function featDialogSync(a, caster, sh) {
     var row = $('acFeatRow');
     if (!row) return;
-    row.style.display = 'none';
     $('acGwm').checked = false;
+    $('acGwmWrap').style.display = 'none';
+    var gwf = gwfSync(a, caster, sh); // 巨武器战斗（tabletop-class.js）
     var s = sh || (caster && caster.sheet && sheets[caster.sheet]);
-    if (!caster || a.kind !== 'attack' || a.gwmAdded || a.isSpell || !sheetFeat(s, 'gwm') || !isHeavyAttack(a)) return;
-    var pb = sheetProf(s);
-    $('acGwmN').textContent = '+' + pb;
-    $('acGwm').dataset.n = pb;
-    $('acGwm').checked = (a.cost || 'a') === 'a';
-    row.style.display = '';
+    var gwm = !!caster && a.kind === 'attack' && !a.gwmAdded && !a.isSpell && sheetFeat(s, 'gwm') && isHeavyAttack(a);
+    if (gwm) {
+        var pb = sheetProf(s);
+        $('acGwmN').textContent = '+' + pb;
+        $('acGwm').dataset.n = pb;
+        $('acGwm').checked = (a.cost || 'a') === 'a';
+        $('acGwmWrap').style.display = '';
+    }
+    row.style.display = gwm || gwf ? '' : 'none';
 }
 function featDialogApply(a) {
-    if ($('acFeatRow').style.display === 'none' || !$('acGwm').checked || a.gwmAdded) return;
-    a.damage = addToDamage(a.damage || '', '+' + $('acGwm').dataset.n);
-    a.gwmAdded = true;
+    if ($('acFeatRow').style.display === 'none') return;
+    if ($('acGwmWrap').style.display !== 'none' && $('acGwm').checked && !a.gwmAdded) {
+        a.damage = addToDamage(a.damage || '', '+' + $('acGwm').dataset.n);
+        a.gwmAdded = true;
+    }
+    gwfApply(a);
 }
 
 // 确认目标时：神射手 / 强弩专家 / 擒抱者对掩护、优劣势的修正（只在这次真的改了判定时写进记录）

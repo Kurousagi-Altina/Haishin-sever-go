@@ -185,7 +185,8 @@ function statusAttackMods(att, tgt, dist) {
     [['invisible', '隐形'], ['hidden', '躲藏'], ['advantage', '优势']].forEach(function(c) {
         if (hasStatus(att, c[0])) r.adv.push(aName + c[1]);
     });
-    if (statusList(att).some(function(s) { return s.id === 'vex' && s.vs === tgt.id; })) r.adv.push(aName + '侵扰（武器精通）');
+    var vx = statusList(att).filter(function(s) { return s.id === 'vex' && s.vs === tgt.id; })[0]; // 精通「侵扰」/ 战士「究明攻击」
+    if (vx) r.adv.push(aName + (vx.name === '究明攻击' ? '究明攻击' : '侵扰（武器精通）'));
     if (hasStatus(att, 'sapped')) r.dis.push(aName + '被削弱（武器精通）');
     if (hasStatus(att, 'lucky')) r.adv.push(aName + '幸运');
     [['blinded', '目盲'], ['paralyzed', '麻痹'], ['petrified', '石化'], ['restrained', '束缚'], ['stunned', '震慑'], ['unconscious', '昏迷']].forEach(function(c) {

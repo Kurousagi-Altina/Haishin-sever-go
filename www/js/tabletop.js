@@ -3712,6 +3712,7 @@ function init() {
     bindSettings();
     initSheets();
     initSummon();
+    initClassFeats();
     initCombat();
     initStatus();
     initAction();

@@ -221,6 +221,7 @@ function drawRulerCells(a, b, color) {
 function tokenSpeed(it) {
     if (hasStatus(it, 'halted')) return 0; // 哨兵「阻拦」
     var slow = hasStatus(it, 'slowed') ? 10 : 0; // 武器精通「缓速」
+    if (statusList(it).some(function(s) { return s.id === 'shifted' && s.swift; })) slow -= 10; // 化兽者·迅捷：化兽时速度 +10
     if (num(it.speed, 0) > 0) return Math.max(0, num(it.speed, 0) - slow);
     var sh = it.sheet && sheets[it.sheet];
     var m = sh && String(sh.speed || '').match(/\d+/);
