@@ -328,7 +328,7 @@ function sheetHtml(sh, preview) {
                 (a.atk ? '<button class="roll-btn" data-d20="' + escapeHtml(a.atk) + '" data-atk="1" data-range="' + escapeHtml((a.props || '') + ' ' + (a.range || '')) +
                     '" data-label="' + escapeHtml(a.name + ' 命中') + '">命中 ' + escapeHtml(a.atk) + '</button>' : '') +
                 (a.damage ? rollBtn('roll', a.damage, a.name + ' 伤害' + (a.type ? '（' + a.type + '）' : ''), a.damage + (a.type ? ' ' + a.type : '')) : '') +
-                (a.props || a.mastery ? '<div class="tt-hint">' + escapeHtml([a.props, a.mastery ? '精通：' + a.mastery : ''].filter(Boolean).join(' · ')) + '</div>' : '') +
+                (a.props || a.mastery ? '<div class="tt-hint">' + escapeHtml([a.props, a.mastery ? '精通：' + a.mastery + (weaponMastered(sh, a) ? '' : '（未精通）') : ''].filter(Boolean).join(' · ')) + '</div>' : '') +
                 '</div>';
         }).join('') + '</div>';
     }
@@ -402,8 +402,61 @@ function sizeCells(sh) {
     return 1;
 }
 
+// 队伍角色（pc 卡 / pc 的随从）放到地图上：先问服务器它在别的地图上最近的那枚棋子，沿用它的属性、头像、状态、资源和跟随物
 function placeSheetToken(sh, asset) {
     if (!sh) return;
+    if (sh.kind !== 'pc' && sh.kind !== 'summon') { placeSheetTokenNow(sh, asset, null); return; }
+    api('/api/tabletop/carry?room=' + enc(roomId) + '&sheet=' + enc(sh.id) + (isDoor() ? '&name=' + enc(nickname) : ''), 'GET')
+        .then(function(d) { placeSheetTokenNow(sh, asset, d && d.token ? d : null); }, function() { placeSheetTokenNow(sh, asset, null); });
+}
+
+// 不跟着换地图的字段：位置 / 层级 / 先攻 / 本回合的动作经济和移动 / 隐藏锁定 / 传送门、遭遇这类属于原地图的东西
+var CARRY_SKIP = { id: 1, kind: 1, x: 1, y: 1, z: 1, w: 1, h: 1, sheet: 1, follow: 1, owner: 1, hidden: 1, locked: 1, hpPct: 1,
+    init: 1, initMod: 1, initRolled: 1, initTie: 1, initHidden: 1, initD20: 1, initB: 1,
+    econ: 1, moved: 1, movedKey: 1, turnStart: 1, portal: 1, enc: 1 };
+
+function carryCopy(src, dst) {
+    for (var k in src) if (!CARRY_SKIP[k] && src[k] != null) dst[k] = JSON.parse(JSON.stringify(src[k]));
+}
+
+// 把来源棋子 d.token 的东西搬到新棋子 it 上（保持 it 的中心，按两张图的格子大小缩放体型）；返回要一起建的跟随物
+function carryInto(it, d) {
+    var s = d.token, g = gridSize(), ratio = num(d.grid, 0) > 0 ? g / num(d.grid, g) : 1;
+    var cx = it.x + it.w / 2, cy = it.y + it.h / 2;
+    carryCopy(s, it);
+    if (me.gm && !it.owner && s.owner) it.owner = s.owner;
+    var w = num(s.w, it.w) * ratio, h = num(s.h, it.h) * ratio;
+    it.w = r1(w); it.h = r1(h); it.x = r1(cx - w / 2); it.y = r1(cy - h / 2);
+    if (it.gmSize && ratio !== 1) { it.gmSize.w = r1(num(it.gmSize.w, 0) * ratio); it.gmSize.h = r1(num(it.gmSize.h, 0) * ratio); }
+    // 别的地图上的人施加的「到它回合为止」/ 擒抱者留在原地图 → 这些状态不带过来
+    if (Array.isArray(it.status)) it.status = it.status.filter(function(st) {
+        return !(st.by && st.by !== s.id) && !(st.exp && st.exp.id && st.exp.id !== s.id);
+    }).map(function(st) { if (st.exp && st.exp.id === s.id) st.exp.id = it.id; return st; });
+    if (d.same) return []; // 来源就在这张图上：跟随物已经在了
+    var scx = num(s.x, 0) + num(s.w, 0) / 2, scy = num(s.y, 0) + num(s.h, 0) / 2, out = [], z = it.z;
+    (d.followers || []).forEach(function(f) {
+        if (f.kind === 'draw' && !me.gm && !roomSetting('playerDraw', true)) return;
+        if (f.kind === 'token' && f.sheet && sortedItems().some(function(t) { return t.kind === 'token' && t.sheet === f.sheet; })) return; // 这张图上已经有它了
+        var c = { id: genId(), kind: f.kind };
+        carryCopy(f, c);
+        c.follow = it.id;
+        c.x = r1(cx + (num(f.x, 0) - scx) * ratio);
+        c.y = r1(cy + (num(f.y, 0) - scy) * ratio);
+        ['w', 'h', 'r'].forEach(function(k) { if (c[k] != null) c[k] = r1(num(c[k], 0) * ratio); });
+        if (Array.isArray(c.points) && ratio !== 1) c.points = c.points.map(function(p) { return [r1(p[0] * ratio), r1(p[1] * ratio)]; });
+        if (c.zone) {
+            if (c.zone.caster === s.id) c.zone.caster = it.id;
+            if (c.zone.conc === s.id) c.zone.conc = it.id;
+            delete c.zone.hits;
+        }
+        c.z = f.kind === 'token' ? ++z : num(f.z, 0);
+        if (f.owner && me.gm) c.owner = f.owner;
+        out.push(c);
+    });
+    return out;
+}
+
+function placeSheetTokenNow(sh, asset, carry) {
     asset = asset || sh.tokenImg || '';
     var g = gridSize(), cells = sizeCells(sh), w = g * cells;
     var c = toWorld(canvas.clientWidth / 2, canvas.clientHeight / 2);
@@ -419,17 +472,24 @@ function placeSheetToken(sh, asset) {
     if (sh.hp && num(sh.hp.temp, 0) > 0) it.hpTemp = num(sh.hp.temp, 0);
     if (me.gm && sh.kind === 'pc' && sh.owner) it.owner = sh.owner;
     summonPlaceAdjust(sh, it);
-    if (me.gm && gmPref('ttPlaceHidden', true) && !it.owner && sh.kind !== 'summon') it.hidden = true; // GM 从资料拉出来的棋子默认先对玩家隐藏（已分配给玩家的角色除外）
+    var extra = carry ? carryInto(it, carry) : [];
+    if (carry) { if (me.gm && carry.token.hidden) it.hidden = true; } // 从别的地图带过来：原来公开就公开
+    else if (me.gm && gmPref('ttPlaceHidden', true) && !it.owner && sh.kind !== 'summon') it.hidden = true; // GM 从资料拉出来的棋子默认先对玩家隐藏（已分配给玩家的角色除外）
     var joining = me.gm && combatState() && sh.kind !== 'item' && !(sh.kind === 'summon' && sh.initMode !== 'own'); // 跟随主控的随从在主控回合行动，不自动掷先攻
     var prevTok = sortedItems().filter(function(t) { return t.sheet === sh.id && t.kind === 'token'; })[0];
     if (prevTok && prevTok.manualInit) it.manualInit = true; // 同一角色的其他棋子设了自己掷先攻
     if (prevTok && prevTok.manualSave) it.manualSave = true;
     if (joining) { it.init = 0; it.initTie = Math.random(); }
-    createItems([it]);
+    createItems([it].concat(extra));
     if (joining && !it.manualInit) setTimeout(function() { rollInit([it.id]); }, 600); // 战斗中放下的单位自动掷先攻加入
     else if (joining) sendFx({ t: 'initask' }); // 自己掷先攻的角色：提示玩家
     setTool('select');
     selectOnly([it.id]);
+    if (carry) {
+        notice('已放置「' + it.label + '」：沿用了它在「' + (carry.sceneName || '其他场景') + '」' + (carry.same ? '（本场景）' : '') + '的血量、状态、资源和头像' +
+            (extra.length ? '，' + extra.length + ' 个跟随物（光环 / 跟随的棋子）也一起带过来了' : ''), false, 6000);
+        return;
+    }
     notice('已放置「' + it.label + '」' + (it.hidden ? '（对玩家隐藏，在属性面板取消勾选「对玩家隐藏」即可公开）' : '') + '，可把资产库里的图片拖到棋子上更换头像', false, 5000);
 }
 

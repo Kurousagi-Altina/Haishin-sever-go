@@ -95,6 +95,8 @@ type TTRoom struct {
 	CreatedAt string       `json:"created_at"`
 	UpdatedAt string       `json:"updated_at"`
 	Active    string       `json:"active"`
+	// scenes that were active before, most recent first (carrySource in tabletop_carry.go)
+	Recent    []string     `json:"recent,omitempty"`
 	Scenes    []*TTScene   `json:"scenes"`
 	Assets    []TTAsset    `json:"assets"`
 	Log       []TTLogEntry `json:"log"`
@@ -1071,6 +1073,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		if target == nil {
 			return http.StatusNotFound, "场景不存在"
 		}
+		room.noteSceneLeft(room.Active, target.ID)
 		room.Active = target.ID
 		e := newLogEntry("sys", u.name)
 		e.Text = "切换到场景「" + target.Name + "」"

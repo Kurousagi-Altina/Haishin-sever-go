@@ -66,6 +66,7 @@ func main() {
 	protected.HandleFunc("/api/tabletop/upload", tabletop.HandleUpload)
 	protected.HandleFunc("/api/tabletop/import", tabletop.HandleImport)
 	protected.HandleFunc("/api/tabletop/charsheet", tabletop.HandleCharSheet)
+	protected.HandleFunc("/api/tabletop/carry", tabletop.HandleCarry)
 	protected.HandleFunc("/api/tabletop/5e/search", tabletop.Handle5eSearch)
 	protected.HandleFunc("/api/tabletop/5e/page", tabletop.Handle5ePage)
 	protected.HandleFunc("/api/tabletop/5e/bestiary", tabletop.HandleBestiary)
@@ -95,6 +96,7 @@ func main() {
 	mux.Handle("/api/tabletop/upload", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/tabletop/import", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/tabletop/charsheet", AuthMiddleware(tm)(protected))
+	mux.Handle("/api/tabletop/carry", AuthMiddleware(tm)(protected))
 	mux.Handle("/api/tabletop/5e/", AuthMiddleware(tm)(protected))
 	// SSE / export / images can't set headers — they validate ?token= themselves
 	mux.HandleFunc("/api/tabletop/events", tabletop.HandleEvents)
