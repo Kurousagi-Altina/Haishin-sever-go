@@ -17,7 +17,7 @@ var view = { x: 0, y: 0, s: 1 };
 var tool = 'select';
 var drawOpts = { shape: 'pen', color: '#e53935', width: 4, fill: false };
 var fogOpts = { mode: 'cover', shape: 'rect' };
-var wallOpts = { type: 'wall', mode: 'draw' };
+var wallOpts = { type: 'wall', mode: 'draw', shape: 'line' }; // shape：line 逐点折线 / rect 拖出矩形 / ellipse 拖出圆形
 var wallDraft = null;
 var wallsVersion = 0;
 var visCache = { key: '', polys: [] };
@@ -27,6 +27,7 @@ var gesture = null;
 var polyDraft = null;
 var cursorWorld = { x: 0, y: 0 };
 var cursorAlt = false; // 最近一次指针移动时是否按着 Alt（画墙预览用）
+var cursorShift = false; // 是否按着 Shift（画墙：锁定水平 / 竖直 / 45°）
 var spaceDown = false;
 var assetFilter = 'all';
 var remote = { pointers: {}, rulers: {}, pings: [] };
@@ -1469,6 +1470,7 @@ function drawOverlays() {
     if (rulerPath) drawRulerPath(rulerPathPoints(), me.color, '');
     drawTokenHandles();
 
+    if (gesture && gesture.type === 'wshape') drawWallShape(gesture);
     if (gesture) {
         if (gesture.type === 'marquee') {
             var m = gesture;
@@ -1904,7 +1906,7 @@ function drawWalls(items, gmView) {
 
     if (wallDraft && gmView) {
         var st2 = WALL_STYLE[wallDraft.type];
-        var cur = wallSnap(cursorWorld, cursorAlt);
+        var cur = wallNext(cursorWorld, cursorAlt, cursorShift);
         ctx.save();
         ctx.strokeStyle = st2.color;
         ctx.lineWidth = 3 / view.s;
@@ -1917,6 +1919,23 @@ function drawWalls(items, gmView) {
         var last = wallDraft.points[wallDraft.points.length - 1];
         drawLabel(distText(Math.hypot(cur.x - last.x, cur.y - last.y)), cur.x, cur.y, st2.color);
     }
+    if (gmView && tool === 'wall' && wallOpts.mode === 'draw' && !gesture) drawWallCursor();
+}
+
+// 画墙时光标处的落点：已经画下的点 + 下一个点会落在哪（吸到已有墙的拐点时画成实心大点）
+function drawWallCursor() {
+    var st = WALL_STYLE[wallDraft ? wallDraft.type : wallOpts.type] || WALL_STYLE.wall;
+    var cur = wallNext(cursorWorld, cursorAlt, cursorShift);
+    var snapped = Math.hypot(cur.x - cursorWorld.x, cur.y - cursorWorld.y) > 0.01;
+    ctx.save();
+    ctx.fillStyle = st.color;
+    if (wallDraft) wallDraft.points.forEach(function(p) { ctx.beginPath(); ctx.arc(p.x, p.y, 4 / view.s, 0, Math.PI * 2); ctx.fill(); });
+    ctx.strokeStyle = st.color;
+    ctx.lineWidth = 2 / view.s;
+    ctx.beginPath();
+    ctx.arc(cur.x, cur.y, (snapped ? 7 : 5) / view.s, 0, Math.PI * 2);
+    if (snapped) ctx.fill(); else ctx.stroke();
+    ctx.restore();
 }
 
 // 画墙落点：默认不吸附网格（贴着地图上的墙画），靠近已有墙的拐点时吸上去方便接上；按住 Alt = 吸附半格
@@ -1924,6 +1943,47 @@ function wallSnap(w, grid, skip) {
     if (grid) return snapToGrid(w.x, w.y, gridSize() / 2);
     var near = typeof wallVertexAt === 'function' ? wallVertexAt(w, skip) : null;
     return near ? { x: near.x, y: near.y } : { x: w.x, y: w.y };
+}
+
+// 拖出来的矩形 / 圆形墙：a = 起点（吸附过），b = 光标；Shift = 正方形 / 正圆，Alt = 吸附半格。返回闭合的点列
+function wallShapePoints(g) {
+    var a = g.a, b = g.grid ? snapToGrid(g.b.x, g.b.y, gridSize() / 2) : wallSnap(g.b, false);
+    var dx = b.x - a.x, dy = b.y - a.y;
+    if (g.sq) { var m = Math.max(Math.abs(dx), Math.abs(dy)); dx = (dx < 0 ? -m : m); dy = (dy < 0 ? -m : m); }
+    if (Math.abs(dx) < 2 || Math.abs(dy) < 2) return null;
+    if (g.shape === 'rect') return [a, { x: a.x + dx, y: a.y }, { x: a.x + dx, y: a.y + dy }, { x: a.x, y: a.y + dy }, { x: a.x, y: a.y }];
+    var cx = a.x + dx / 2, cy = a.y + dy / 2, rx = Math.abs(dx) / 2, ry = Math.abs(dy) / 2;
+    var n = Math.max(12, Math.min(48, Math.round(Math.PI * (rx + ry) / (gridSize() * 0.4)))), pts = [];
+    for (var i = 0; i <= n; i++) { var t = i / n * Math.PI * 2; pts.push({ x: cx + rx * Math.cos(t), y: cy + ry * Math.sin(t) }); }
+    return pts;
+}
+
+function drawWallShape(g) {
+    var pts = wallShapePoints(g);
+    if (!pts) return;
+    var st = WALL_STYLE[g.wtype] || WALL_STYLE.wall;
+    ctx.save();
+    ctx.strokeStyle = st.color;
+    ctx.lineWidth = 3 / view.s;
+    ctx.setLineDash([6 / view.s, 4 / view.s]);
+    ctx.beginPath();
+    pts.forEach(function(p, i) { if (i) ctx.lineTo(p.x, p.y); else ctx.moveTo(p.x, p.y); });
+    ctx.stroke();
+    ctx.restore();
+    var xs = pts.map(function(p) { return p.x; }), ys = pts.map(function(p) { return p.y; });
+    var w = Math.max.apply(null, xs) - Math.min.apply(null, xs), h = Math.max.apply(null, ys) - Math.min.apply(null, ys);
+    drawLabel(distText(w) + ' × ' + distText(h), Math.max.apply(null, xs), Math.max.apply(null, ys), st.color);
+}
+
+// 下一个墙点：先吸附（拐点 / Alt 半格），按住 Shift 时以上一个点为准锁定到水平 / 竖直 / 45°
+function wallNext(w, grid, lock) {
+    var p = wallSnap(w, grid);
+    var last = wallDraft && wallDraft.points[wallDraft.points.length - 1];
+    if (!lock || !last) return p;
+    var dx = w.x - last.x, dy = w.y - last.y;
+    var a = Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) * (Math.PI / 4);
+    var d = dx * Math.cos(a) + dy * Math.sin(a);
+    return { x: last.x + Math.cos(a) * d, y: last.y + Math.sin(a) * d };
 }
 
 function finishWall() {
@@ -1956,6 +2016,7 @@ function doorAt(w) {
 function syncWallOpts() {
     document.querySelectorAll('[data-walltype]').forEach(function(b) { b.classList.toggle('active', b.dataset.walltype === wallOpts.type && wallOpts.mode === 'draw'); });
     document.querySelectorAll('[data-wallmode]').forEach(function(b) { b.classList.toggle('active', b.dataset.wallmode === wallOpts.mode); });
+    document.querySelectorAll('[data-wallshape]').forEach(function(b) { b.classList.toggle('active', b.dataset.wallshape === wallOpts.shape && wallOpts.mode === 'draw'); });
     if (typeof autoWallSync === 'function') autoWallSync();
     if (typeof doorGapSync === 'function') doorGapSync();
 }
@@ -2020,7 +2081,12 @@ function onPointerDown(e) {
     var w = toWorld(s.x, s.y);
     var start = { s: s, w: w, moved: false };
 
-    if (tool === 'wall' && wallDraft && e.button === 2) { wallDraft = null; requestRender(); notice('已取消这段墙（双击 / Enter 才是结束并生成）'); return; } // 右键取消正在画的墙
+    if (tool === 'wall' && wallDraft && e.button === 2) { // 右键：回退上一个点；只剩起点时取消这段墙
+        if (wallDraft.points.length > 1) wallDraft.points.pop();
+        else { wallDraft = null; notice('已取消这段墙（双击 / Enter 才是结束并生成）'); }
+        requestRender();
+        return;
+    }
     if (rulerPath && e.button === 2) { endRulerPath(); return; } // 右键结束尺子
     // 时间停止：玩家只能平移 / 缩放
     if (timeStopped() && !me.gm && tool !== 'select' && tool !== 'pan' && !(e.button === 1 || e.button === 2 || spaceDown)) { notice('⏸ 时间停止中', true); return; }
@@ -2063,8 +2129,13 @@ function onPointerDown(e) {
     if (tool === 'wall' && wallOpts.mode === 'auto') { autoWallPointerDown(w, start); return; } // 自动画墙：拖框 / 点地板
     if (tool === 'wall' && wallOpts.mode === 'doors') { doorGapPointerDown(w, e); requestRender(); return; } // 找门洞：点缺口补门
 
+    if (tool === 'wall' && wallOpts.mode === 'draw' && !wallDraft && wallOpts.shape !== 'line' && (wallOpts.type === 'wall' || wallOpts.type === 'window')) {
+        gesture = { type: 'wshape', start: start, a: wallSnap(w, e.altKey), b: w, shape: wallOpts.shape, wtype: wallOpts.type }; // 拖出矩形 / 圆形墙
+        requestRender();
+        return;
+    }
     if (tool === 'wall' && wallOpts.mode === 'draw') {
-        var wp = wallSnap(w, e.altKey);
+        var wp = wallNext(w, e.altKey, e.shiftKey);
         if (!wallDraft) wallDraft = { type: wallOpts.type, points: [] };
         wallDraft.points.push(wp);
         if ((wallDraft.type === 'door' || wallDraft.type === 'secret') && wallDraft.points.length >= 2) finishWall(); // 门是一段直线
@@ -2175,7 +2246,8 @@ function onPointerMove(e) {
     var w = toWorld(s.x, s.y);
     cursorWorld = w;
     cursorAlt = !!e.altKey;
-    if (polyDraft) requestRender();
+    cursorShift = !!e.shiftKey;
+    if (polyDraft || (tool === 'wall' && wallOpts.mode === 'draw')) requestRender(); // 画墙：预览线 / 落点跟着光标走
     if (rulerPath && !gesture) {
         rulerPath.b = rulerPoint(w, e.altKey);
         sendRulerPath();
@@ -2262,6 +2334,9 @@ function onPointerMove(e) {
         break;
     case 'marquee':
         gesture.b = w;
+        break;
+    case 'wshape':
+        gesture.b = w; gesture.sq = e.shiftKey; gesture.grid = e.altKey;
         break;
     case 'wvert':
         wallVertexMove(w, e);
@@ -2388,6 +2463,12 @@ function onPointerUp(e) {
         $('selPanel').dataset.ids = '';
         renderSelPanel();
         updateCursor();
+        break;
+    case 'wshape':
+        var spts = wallShapePoints(g);
+        if (!g.start.moved || !spts) { requestRender(); break; }
+        var so = spts[0];
+        createItems([{ id: genId(), kind: 'wall', wtype: g.wtype, x: so.x, y: so.y, z: nextZ(), points: spts.map(function(p) { return [p.x - so.x, p.y - so.y]; }) }]);
         break;
     case 'marquee':
         if (g.auto) { autoWallPointerUp(g); requestRender(); break; }
@@ -2531,6 +2612,12 @@ function onKeyDown(e) {
         return;
     }
     if (k === '0') { fitView(); return; }
+    if (e.key === 'Backspace' && wallDraft) { // 画墙中：回退上一个点
+        e.preventDefault();
+        if (wallDraft.points.length > 1) wallDraft.points.pop(); else wallDraft = null;
+        requestRender();
+        return;
+    }
     if (e.key === 'Delete' || e.key === 'Backspace') {
         e.preventDefault();
         var del = selectedIds().filter(function(id) { return canEdit(scene.items[id]); });
@@ -3673,6 +3760,7 @@ function init() {
         var b = e.target.closest('button');
         if (!b) return;
         if (b.dataset.walltype) { wallOpts.type = b.dataset.walltype; wallOpts.mode = 'draw'; }
+        if (b.dataset.wallshape) { wallOpts.shape = b.dataset.wallshape; wallOpts.mode = 'draw'; }
         if (b.dataset.wallmode) wallOpts.mode = b.dataset.wallmode;
         finishWall();
         if (wallOpts.mode === 'draw') selectOnly([]);

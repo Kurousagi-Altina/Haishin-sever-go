@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css?v=2026111319">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026111323">
 </head>
 <body class="tt-body">
 
@@ -152,20 +152,25 @@
                     <button class="tt-btn small" data-walltype="window" title="不挡视线、挡移动">窗</button>
                     <button class="tt-btn small" data-walltype="door" title="两次点击画一扇门；玩家可点击开关">门</button>
                     <button class="tt-btn small" data-walltype="secret" title="暗门：玩家看不到也打不开，GM 点击打开后才通行">暗门</button>
+                    <span class="sep"></span>
+                    <button class="tt-btn small" data-wallshape="line" title="单击逐点画折线">折线</button>
+                    <button class="tt-btn small" data-wallshape="rect" title="拖一下画出矩形墙（按住 Shift = 正方形，Alt = 吸附半格），适合围石头、柱子、箱子">▭ 矩形</button>
+                    <button class="tt-btn small" data-wallshape="ellipse" title="拖一下画出圆形墙（按住 Shift = 正圆，Alt = 吸附半格），适合围树、圆柱">◯ 圆形</button>
+                    <span class="sep"></span>
                     <button class="tt-btn small" data-wallmode="select" title="选择、移动、删除墙体">选择</button>
                     <button class="tt-btn small" data-wallmode="auto" title="根据地图图片自动识别墙：拖框识别墙线，或拖框后点地板围出房间">🪄 自动</button>
                     <button class="tt-btn small" data-wallmode="doors" title="找出墙线之间一格左右的缺口，点一下补成门">🚪 找门洞</button>
                     <span class="sep"></span>
-                    <span class="tt-hint">单击逐点画墙（不吸附网格，靠近已有拐点会接上；按住 Alt 吸附半格），双击 / Enter 结束，右键取消</span>
+                    <span class="tt-hint">矩形 / 圆形：在地图上拖一下（Shift 正方形 / 正圆）；折线：单击逐点画墙（不吸附网格，靠近已有拐点会接上；按住 Alt 吸附半格，按住 Shift 锁定水平 / 竖直 / 45°），光标处的圆点 = 下一个点落在哪，双击 / Enter 结束，右键或 Backspace 回退上一个点（只剩起点时取消）</span>
                     <button class="tt-btn small danger" onclick="clearWalls()">清除墙体</button>
                     <div class="aw-panel" id="autoWallPanel" style="display:none;">
                         <button class="tt-btn small" data-aw="band" title="适合写实 / 彩色地图：直接找出墙本身（两侧有清楚边缘的带子），沿墙中间画一条横平竖直的线">识别墙体</button>
                         <button class="tt-btn small" data-aw="line" title="适合墙是深色线条的地图（线稿、地下城生成器）">识别线条</button>
-                        <button class="tt-btn small" data-aw="floor" title="适合彩色 / 写实地图：点地板，沿地板边缘围墙">点地板</button>
+                        <button class="tt-btn small" data-aw="floor" title="适合洞穴、岩浆等不规则的地图：点一块地面，沿它和周围的分界（岩石边、墙的轮廓）围墙；也可以点墙外的虚空 / 岩浆。可连点多处，右键撤销上一个点">点地板</button>
                         <label data-awfor="band" title="越高找到的墙越多（也更容易把家具、地板缝当成墙）">灵敏度 <input type="range" id="awSens" min="2" max="20" step="1"> <b id="awSensV"></b></label>
                         <label data-awfor="line" title="比这个亮度暗的像素算墙线；按「自动」恢复自动阈值">深浅 <input type="range" id="awThr" min="10" max="245" step="1"> <b id="awThrV"></b> <button class="tt-btn small" id="awAuto">自动</button></label>
                         <label data-awfor="line" title="比这个更细的线忽略（网格线、纹理）">忽略细线 <input type="range" id="awThick" min="0" max="6" step="1"> <b id="awThickV"></b></label>
-                        <label data-awfor="floor" title="和点到的地板颜色差多少以内算地板">容差 <input type="range" id="awTol" min="5" max="90" step="1"> <b id="awTolV"></b></label>
+                        <label data-awfor="floor" title="越大越容易连成一片（填得更满，也更容易漏到墙外）">容差 <input type="range" id="awTol" min="5" max="90" step="1"> <b id="awTolV"></b></label>
                         <label title="越大越平直、段数越少">精简 <input type="range" id="awSimp" min="1" max="10" step="1"> <b id="awSimpV"></b></label>
                         <button class="tt-btn small" id="awUndoSeed" data-awfor="floor" title="撤销上一个地板点">撤点</button>
                         <button class="tt-btn small primary" id="awGo">生成墙体</button>
@@ -557,17 +562,17 @@
     </div>
 
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js?v=2026111319"></script>
-    <script src="js/tabletop-combat.js?v=2026111319"></script>
-    <script src="js/tabletop-status.js?v=2026111319"></script>
-    <script src="js/tabletop-action.js?v=2026111319"></script>
-    <script src="js/tabletop-extra.js?v=2026111319"></script>
-    <script src="js/tabletop-autowall.js?v=2026111319"></script>
-    <script src="js/tabletop-prep.js?v=2026111319"></script>
-    <script src="js/tabletop-dm.js?v=2026111319"></script>
-    <script src="js/tabletop-fight.js?v=2026111319"></script>
-    <script src="js/tabletop-summon.js?v=2026111319"></script>
-    <script src="js/tabletop-class.js?v=2026111319"></script>
-    <script src="js/tabletop.js?v=2026111319"></script>
+    <script src="js/tabletop-sheets.js?v=2026111323"></script>
+    <script src="js/tabletop-combat.js?v=2026111323"></script>
+    <script src="js/tabletop-status.js?v=2026111323"></script>
+    <script src="js/tabletop-action.js?v=2026111323"></script>
+    <script src="js/tabletop-extra.js?v=2026111323"></script>
+    <script src="js/tabletop-autowall.js?v=2026111323"></script>
+    <script src="js/tabletop-prep.js?v=2026111323"></script>
+    <script src="js/tabletop-dm.js?v=2026111323"></script>
+    <script src="js/tabletop-fight.js?v=2026111323"></script>
+    <script src="js/tabletop-summon.js?v=2026111323"></script>
+    <script src="js/tabletop-class.js?v=2026111323"></script>
+    <script src="js/tabletop.js?v=2026111323"></script>
 </body>
 </html>
