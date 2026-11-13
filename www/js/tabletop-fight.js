@@ -477,6 +477,34 @@ function normMastery(s) {
 // 武器名 → 规则库里的武器（去掉 +1、括号）
 function weaponBaseName(n) { return String(n || '').replace(/[+＋]\s*\d/g, '').replace(/[（(][^）)]*[）)]/g, '').replace(/^\s*(魔法|精制)\s*/, '').trim(); }
 
+// 角色有没有精通这把武器（武器上写的精通词条只是武器的属性，角色要有「武器精通」特性才能用）：
+// 攻击条目上手动设过 mastered 就按它；否则角色卡有「武器精通」特性才算——特性文字里点名了自己的哪几把武器就只算那几把，没点名就都算
+function weaponMastered(sh, at) {
+    if (!at) return false;
+    if (typeof at.mastered === 'boolean') return at.mastered;
+    if (!sh) return false;
+    var texts = [];
+    var push = function(e) { if (/武器精通|weaponmastery/i.test(String(e && e.name || '').replace(/\s/g, ''))) texts.push((e.name || '') + ' ' + (e.text || e.desc || '')); };
+    (sh.features || []).forEach(push);
+    (sh.sections || []).forEach(function(sec) { (sec.entries || []).forEach(push); });
+    if (!texts.length) return false;
+    var txt = texts.join(' '), mine = weaponBaseName(at.name);
+    var named = (sh.attacks || []).map(function(x) { return weaponBaseName(x.name); }).filter(function(n) { return n && txt.indexOf(n) >= 0; });
+    return !named.length || named.indexOf(mine) >= 0;
+}
+
+// 行动框里改了「已精通」：记到角色卡的这条武器攻击上（下次默认就按它）
+function masteredSave() {
+    if (!act || act.a.atkIdx == null || !act.sheet) return;
+    var sh = sheets[act.sheet.id], at = sh && sh.attacks && sh.attacks[act.a.atkIdx];
+    if (!at || !canEditSheet(sh)) return;
+    var on = $('acMastered').checked, auto = weaponMastered(sh, { name: at.name, mastered: null });
+    var attacks = JSON.parse(JSON.stringify(sh.attacks));
+    if (on === auto) delete attacks[act.a.atkIdx].mastered; else attacks[act.a.atkIdx].mastered = on;
+    sh.attacks = attacks;
+    op({ op: 'sheet', sheet: { id: sh.id, attacks: attacks } });
+}
+
 // 角色卡的武器攻击没写精通、但角色有「武器精通」时，从规则库的武器表补上
 function fillMasteryFromRules(a, sh) {
     if (a.mastery || !sh || !sheetHasEntry(sh, /武器精通|weaponmastery/i)) return;

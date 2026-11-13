@@ -411,7 +411,7 @@ function actionFromAttack(sh, at) {
     var r = parseAttackRange((at.props || '') + ' ' + (at.range || ''));
     var dmgStr = String(at.damage || '').replace(/\s/g, '');
     var magic = /[+＋]\s*[1-3](?!\d)|魔法/.test((at.name || '') + ' ' + (at.props || ''));
-    return { name: at.name, kind: 'attack', attack: normBonus(at.atk) || '+0', damage: dmgStr, dtype: at.type || '', magic: magic, mastery: normMastery(at.mastery), props: at.props || '',
+    return { name: at.name, kind: 'attack', attack: normBonus(at.atk) || '+0', damage: dmgStr, dtype: at.type || '', magic: magic, mastery: normMastery(at.mastery), mastered: weaponMastered(sh, at), props: at.props || '',
         range: r.normal || 0, rangeLong: r.long || 0, reach: r.reach || 0, area: { shape: '', size: 0, width: 5, self: false }, targets: 1 };
 }
 
@@ -420,7 +420,7 @@ function castFromSheet(sh, ds) {
     if (!sh) return;
     sh = viewSheet(sh); // 随从：【…】按主控换算
     var caster = casterFor(sh);
-    if (ds.kind === 'atk') { var aa = actionFromAttack(sh, sh.attacks[+ds.idx]); openActionDialog(aa, caster, sh); fillMasteryFromRules(aa, sh); return; }
+    if (ds.kind === 'atk') { var aa = actionFromAttack(sh, sh.attacks[+ds.idx]); aa.atkIdx = +ds.idx; openActionDialog(aa, caster, sh); fillMasteryFromRules(aa, sh); return; }
     if (ds.kind === 'spell') {
         var sp = sh.spells[+ds.idx];
         // 本地规则库（data/5e）里有这道法术：直接用结构化数据，不用联网，也不靠文字猜
@@ -628,6 +628,7 @@ function openActionDialog(a, caster, sh) {
     f('acUntil').value = a.until || '';
     f('acConc').checked = !!a.conc;
     f('acMastery').value = normMastery(a.mastery);
+    f('acMastered').checked = a.mastered == null ? !!a.mastery : !!a.mastered; // 没精通这把武器：不出精通按钮
     f('acCost').value = a.cost || 'a';
     setTimeout(econWarnSync, 0); // 本回合动作 / 附赠 / 反应 / 法术位已用：提醒
     f('acRepeat').checked = !!a.repeatSave;
@@ -670,7 +671,8 @@ function readActionDialog() {
     a.until = v('acUntil');
     a.conc = $('acConc').checked;
     a.hidden = $('acHidden').checked;
-    a.mastery = a.kind === 'attack' ? v('acMastery') : '';
+    a.mastered = $('acMastered').checked;
+    a.mastery = a.kind === 'attack' && a.mastered ? v('acMastery') : '';
     classDialogApply(a); // 勾了狂暴伤害：伤害加上
     featDialogApply(a);  // 勾了巨武器大师：伤害加熟练加值
     casterDialogApply(a); // 勾了奥法火器：伤害 +1d8
@@ -684,7 +686,9 @@ function syncActionDialog() {
     var k = $('acKind').value, shape = $('acShape').value;
     $('acAttackRow').style.display = k === 'attack' ? '' : 'none';
     $('acMasteryRow').style.display = k === 'attack' ? '' : 'none';
-    $('acMasteryHint').textContent = MASTERY[$('acMastery').value] || '';
+    var mOn = $('acMastered').checked, mv = $('acMastery').value;
+    $('acMasteryHint').textContent = !mv ? '' : mOn ? MASTERY[mv] || '' : '没有精通这把武器：不做精通判定（勾上「已精通」才会出「' + mv + '」按钮）';
+    $('acMastery').style.opacity = mv && !mOn ? '0.55' : '';
     $('acSaveRow').style.display = k === 'save' ? '' : 'none';
     $('acDamageRow').style.display = k === 'effect' ? 'none' : '';
     $('acDamageLabel').textContent = k === 'heal' ? '治疗' : k === 'temp' ? '临时生命' : '伤害';
@@ -1413,7 +1417,8 @@ function initAction() {
             if (e.target.value === 'ring' && act.a.area && act.a.area.ringSize) $('acSize').value = act.a.area.ringSize;
             if (hasWidth({ shape: e.target.value }) && !$('acWidth').value) $('acWidth').value = e.target.value === 'line' ? 5 : 1;
         }
-        if (e.target.id === 'acKind' || e.target.id === 'acShape' || e.target.id === 'acMastery') syncActionDialog();
+        if (e.target.id === 'acKind' || e.target.id === 'acShape' || e.target.id === 'acMastery' || e.target.id === 'acMastered') syncActionDialog();
+        if (e.target.id === 'acMastered') masteredSave();
         if (e.target.id === 'acSlot' && act) { // 换环阶：自动改成对应的伤害 / 治疗公式和目标数
             applySlotLevel(act.a, parseInt(e.target.value, 10) || act.a.spellLevel);
             $('acDamage').value = act.a.damage || '';
