@@ -83,6 +83,9 @@ type TTScene struct {
 	Name  string                            `json:"name"`
 	Props map[string]interface{}            `json:"props"`
 	Items map[string]map[string]interface{} `json:"items"`
+	// Stash: items bound to maps that are not on the table right now, keyed by map asset id
+	// ("" = no map). Server-only — never sent to clients (sceneView picks fields explicitly).
+	Stash map[string][]map[string]interface{} `json:"stash,omitempty"`
 }
 
 type TTRoom struct {
@@ -315,6 +318,16 @@ func newTTRoom(name, owner string) *TTRoom {
 		Settings:  make(map[string]interface{}),
 		subs:      make(map[*ttSub]struct{}),
 	}
+}
+
+// mapBound: items that belong to the map (stashed with it when the GM swaps maps): everything
+// except player-side tokens (an owner, or linked to a player character sheet).
+func (room *TTRoom) mapBound(it map[string]interface{}) bool {
+	if it["kind"] != "token" {
+		return true
+	}
+	owner, _ := it["owner"].(string)
+	return owner == "" && !room.partyToken(it)
 }
 
 func newTTScene(name string) *TTScene {
@@ -768,7 +781,7 @@ func ttCanEdit(room *TTRoom, item map[string]interface{}, u ttUser, patch map[st
 func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 	sc := room.activeScene()
 	gmOnly := map[string]bool{
-		"props": true, "scene.add": true, "scene.duplicate": true, "scene.rename": true,
+		"props": true, "map.set": true, "scene.add": true, "scene.duplicate": true, "scene.rename": true,
 		"scene.delete": true, "scene.activate": true, "room.rename": true, "room.settings": true,
 		"asset.delete": true, "log.clear": true, "action.undo": true,
 		"handout": true, "handout.show": true, "handout.delete": true,
@@ -953,6 +966,48 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 			}
 		}
 		room.broadcastProps(sc)
+
+	case "map.set":
+		// 换地图：这张地图上的墙、迷雾、笔记、触发区域、绘制、怪物 / 道具棋子跟着旧地图收起来（服务器保存），
+		// 新地图以前放过的东西拿回来；玩家角色（有主控或关联玩家角色卡）的棋子留在桌上
+		if len(req.Props) == 0 {
+			return http.StatusBadRequest, "无效的地图"
+		}
+		oldMap, _ := sc.Props["mapAsset"].(string)
+		newMap, _ := req.Props["mapAsset"].(string)
+		if oldMap != newMap {
+			if sc.Stash == nil {
+				sc.Stash = map[string][]map[string]interface{}{}
+			}
+			var keep []map[string]interface{}
+			for id, it := range sc.Items {
+				if room.mapBound(it) {
+					keep = append(keep, it)
+					delete(sc.Items, id)
+				}
+			}
+			back := sc.Stash[newMap]
+			delete(sc.Stash, newMap)
+			if len(keep) > 0 {
+				sc.Stash[oldMap] = keep
+			}
+			for _, it := range back {
+				if id, _ := it["id"].(string); id != "" && sc.Items[id] == nil {
+					sc.Items[id] = it
+				}
+			}
+			if len(sc.Stash) == 0 {
+				sc.Stash = nil
+			}
+		}
+		for k, v := range req.Props {
+			if v == nil {
+				delete(sc.Props, k)
+			} else {
+				sc.Props[k] = v
+			}
+		}
+		room.broadcastState()
 
 	case "scene.add":
 		if len(room.Scenes) >= 100 {

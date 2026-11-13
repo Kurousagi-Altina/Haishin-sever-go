@@ -17,8 +17,9 @@ var view = { x: 0, y: 0, s: 1 };
 var tool = 'select';
 var drawOpts = { shape: 'pen', color: '#e53935', width: 4, fill: false };
 var fogOpts = { mode: 'cover', shape: 'rect' };
-var wallOpts = { type: 'wall', mode: 'draw', shape: 'line' }; // shape：line 逐点折线 / rect 拖出矩形 / ellipse 拖出圆形
+var wallOpts = { type: 'wall', mode: 'draw', shape: 'line', lockDoor: false }; // shape：line 逐点折线 / rect 拖出矩形 / ellipse 拖出圆形
 var wallDraft = null;
+var delConfirm = null; // Delete 删很多个物件时的二次确认
 var wallsVersion = 0;
 var visCache = { key: '', polys: [] };
 var explored = {}; // 场景 id → 已探索的视野多边形（仅本机内存）
@@ -402,10 +403,15 @@ function handleMsg(m) {
     switch (m.type) {
     case 'state':
         me = m.me;
-        var newScene = m.scene.id !== scene.id;
+        var newScene = m.scene.id !== scene.id, oldMap = scene.props && scene.props.mapAsset;
         setRoomMeta(m.room);
         scene = { id: m.scene.id, name: m.scene.name, props: m.scene.props || {}, items: {} };
         m.scene.items.forEach(function(it) { scene.items[it.id] = it; });
+        if (newScene || oldMap !== scene.props.mapAsset) { // 规划中的墙（自动识别预览 / 描过的段）属于原来那张图
+            if (typeof autoWallClear === 'function') autoWallClear();
+            if (typeof wallSeg !== 'undefined') wallSeg = null;
+            wallDraft = null;
+        }
         if (newScene) {
             selected = {}; gesture = null; polyDraft = null; wallDraft = null; fitPending = true;
             if (actionMode) cancelActionTargeting(); // 换了场景：之前的选目标作废
@@ -1476,7 +1482,7 @@ function drawOverlays() {
 
     if (gesture && gesture.type === 'wshape') drawWallShape(gesture);
     if (gesture) {
-        if (gesture.type === 'marquee') {
+        if (gesture.type === 'marquee' && !gesture.line) {
             var m = gesture;
             ctx.save();
             ctx.fillStyle = 'rgba(66,165,245,0.12)';
@@ -1905,6 +1911,20 @@ function drawWalls(items, gmView) {
             ctx.fillStyle = st.color;
             pts.forEach(function(p) { ctx.beginPath(); ctx.arc(p[0], p[1], 3.5 / view.s, 0, Math.PI * 2); ctx.fill(); });
         }
+        if (strong && wallSeg && wallSeg.id === it.id && selected[it.id] && pts[wallSeg.seg + 1]) { // 选中的那一段：黄色加粗
+            ctx.setLineDash([]);
+            ctx.globalAlpha = 0.85;
+            ctx.strokeStyle = '#ffeb3b';
+            ctx.lineWidth = 8 / view.s;
+            ctx.beginPath(); ctx.moveTo(pts[wallSeg.seg][0], pts[wallSeg.seg][1]); ctx.lineTo(pts[wallSeg.seg + 1][0], pts[wallSeg.seg + 1][1]); ctx.stroke();
+        }
+        if (gmView && !preview && it.wtype === 'door' && it.locked && pts.length > 1) { // 锁着的门：中间画个锁
+            ctx.setLineDash([]);
+            ctx.globalAlpha = 1;
+            ctx.font = Math.round(16 / view.s) + 'px sans-serif';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText('🔒', (pts[0][0] + pts[1][0]) / 2, (pts[0][1] + pts[1][1]) / 2);
+        }
         ctx.restore();
     });
 
@@ -2004,6 +2024,7 @@ function finishWall() {
     var it = { id: genId(), kind: 'wall', wtype: type, x: o.x, y: o.y, z: nextZ(),
         points: pts.map(function(p) { return [p.x - o.x, p.y - o.y]; }) };
     if (type === 'door' || type === 'secret') it.open = false;
+    if (type === 'door' && wallOpts.lockDoor) it.locked = true;
     createItems([it]);
 }
 
@@ -2021,15 +2042,57 @@ function syncWallOpts() {
     document.querySelectorAll('[data-walltype]').forEach(function(b) { b.classList.toggle('active', b.dataset.walltype === wallOpts.type && wallOpts.mode === 'draw'); });
     document.querySelectorAll('[data-wallmode]').forEach(function(b) { b.classList.toggle('active', b.dataset.wallmode === wallOpts.mode); });
     document.querySelectorAll('[data-wallshape]').forEach(function(b) { b.classList.toggle('active', b.dataset.wallshape === wallOpts.shape && wallOpts.mode === 'draw'); });
+    if ($('wallDoorLockL')) { $('wallDoorLockL').style.display = wallOpts.type === 'door' && wallOpts.mode === 'draw' ? '' : 'none'; $('wallDoorLock').checked = !!wallOpts.lockDoor; }
     if (typeof autoWallSync === 'function') autoWallSync();
     if (typeof doorGapSync === 'function') doorGapSync();
 }
 
-function clearWalls() {
-    var ids = sortedItems().filter(function(it) { return it.kind === 'wall'; }).map(function(it) { return it.id; });
+// 一键清除：先在下拉里选类型，再点出现的红色按钮确认（不用浏览器的 confirm 弹窗——内嵌页面里它会被直接当成「取消」）
+var WALL_CLEAR_NAME = { wall: '墙', window: '窗', door: '门', secret: '暗门', all: '墙体（含门窗）' }, wallClearPending = null;
+function wallClearIds(type) {
+    return sortedItems().filter(function(it) { return it.kind === 'wall' && (type === 'all' || (it.wtype || 'wall') === type); }).map(function(it) { return it.id; });
+}
+function wallClearCounts() {
+    var sel = $('wallClearSel');
+    if (!sel) return;
+    Array.prototype.forEach.call(sel.options, function(o) {
+        if (o.value) o.textContent = (o.value === 'all' ? '全部（墙 + 门窗）' : '全部' + WALL_CLEAR_NAME[o.value]) + '（' + wallClearIds(o.value).length + '）';
+    });
+}
+function wallClearReset() {
+    clearTimeout(wallClearPending && wallClearPending.timer);
+    wallClearPending = null;
+    if ($('wallClearSel')) $('wallClearSel').value = '';
+    if ($('wallClearGo')) $('wallClearGo').style.display = 'none';
+}
+function wallClearPick(type) {
+    wallClearReset();
+    if (!type) return;
+    var ids = wallClearIds(type);
+    if (!ids.length) { notice('本场景没有' + WALL_CLEAR_NAME[type]); return; }
+    $('wallClearSel').value = type;
+    var go = $('wallClearGo');
+    go.textContent = '确认删除 ' + ids.length + ' 段' + WALL_CLEAR_NAME[type];
+    go.style.display = '';
+    wallClearPending = { type: type, timer: setTimeout(wallClearReset, 8000) };
+}
+function wallClearGo() {
+    if (!wallClearPending) return;
+    var type = wallClearPending.type, ids = wallClearIds(type);
+    wallClearReset();
     if (!ids.length) return;
-    if (!confirm('删除本场景的全部墙体、门窗（共 ' + ids.length + ' 段）？')) return;
     deleteItems(ids);
+    notice('已删除 ' + ids.length + ' 段' + WALL_CLEAR_NAME[type] + '（Ctrl+Z 撤销）');
+}
+function clearWalls(type) { wallClearPick(type || 'all'); }
+
+// 清空规划：还没变成墙的东西（自动识别预览、描过的段、没画完的折线）
+function clearWallPlan() {
+    var had = !!wallDraft || (typeof autoWall !== 'undefined' && (autoWall.lines.length || autoWall.tseeds.length || autoWall.seeds.length || autoWall.box));
+    wallDraft = null;
+    if (typeof autoWallClear === 'function') autoWallClear();
+    requestRender();
+    notice(had ? '已清空规划' : '没有要清空的规划');
 }
 
 // ===== 工具 =====
@@ -2160,8 +2223,19 @@ function onPointerDown(e) {
         }
         var hit = tool === 'select' ? selectedZoneAt(w) : null;
         if (!hit) hit = hitTest(w, tool === 'fog' ? ['fog'] : tool === 'wall' ? ['wall'] : tool === 'note' ? ['note', 'trigger'] : me.gm ? ['token', 'note', 'trigger', 'draw'] : ['token', 'draw']);
+        if (tool === 'wall' && typeof wallSegAt === 'function') { // 墙：点中的是折线里的哪一段
+            var wsg = !e.shiftKey && hit && wallSegAt(w), prevSeg = wallSeg && wallSeg.id + ':' + wallSeg.seg;
+            wallSeg = wsg && wsg.id === hit.id ? { id: wsg.id, seg: wsg.seg } : null;
+            if ((wallSeg && wallSeg.id + ':' + wallSeg.seg) !== prevSeg) { $('selPanel').dataset.ids = ''; renderSelPanel(); requestRender(); }
+        }
         if (!hit && tool === 'select') {
             var door = doorAt(w);
+            if (door && me.gm && e.altKey && door.wtype === 'door') {
+                patchItems([{ id: door.id, locked: !door.locked || null }]);
+                notice(door.locked ? '已解锁：玩家可以开关这扇门' : '已上锁：玩家打不开这扇门');
+                return;
+            }
+            if (door && !me.gm && door.locked) { notice('这扇门锁着', true); return; }
             if (door && (me.gm || (!door.locked && roomSetting('playerDoors', true) && !timeStopped()))) {
                 patchItems([{ id: door.id, open: !door.open || null }]);
                 return;
@@ -2624,10 +2698,19 @@ function onKeyDown(e) {
     }
     if (e.key === 'Delete' || e.key === 'Backspace') {
         e.preventDefault();
+        if (tool === 'wall' && typeof wallSegApply === 'function' && wallSegApply('')) return; // 只删选中的这一段墙
         var del = selectedIds().filter(function(id) { return canEdit(scene.items[id]); });
         if (!del.length) return;
         var fighters = del.filter(function(id) { return inInit(scene.items[id]); }).length;
-        if ((del.length > 3 || fighters) && !confirm('删除选中的 ' + del.length + ' 个物件' + (fighters ? '（其中 ' + fighters + ' 个在先攻里）' : '') + '？')) return;
+        if (del.length > 3 || fighters) { // 删得多 / 有在先攻里的：2.5 秒内再按一次才删（内嵌浏览器会吞掉 confirm 弹窗）
+            var dkey = del.slice().sort().join(',');
+            if (!delConfirm || delConfirm.key !== dkey || performance.now() - delConfirm.t > 2500) {
+                delConfirm = { key: dkey, t: performance.now() };
+                notice('再按一次 ' + e.key + ' 确认删除选中的 ' + del.length + ' 个物件' + (fighters ? '（其中 ' + fighters + ' 个在先攻里）' : ''), true);
+                return;
+            }
+            delConfirm = null;
+        }
         deleteItems(del);
         notice('已删除 ' + del.length + ' 个物件，Ctrl+Z 撤销');
         return;
@@ -3142,8 +3225,7 @@ function importUVTT(file) {
                 extra.gridOffY = 0;
                 if (size.x && size.y) { extra.mapW = size.x * ppg; extra.mapH = size.y * ppg; }
             }
-            setMapAsset(asset.id, extra);
-            if (ppg > 0) importUVTTWalls(j, ppg);
+            return setMapAsset(asset.id, extra).then(function() { if (ppg > 0) importUVTTWalls(j, ppg); }); // 墙要等换完地图再建，不然会跟着旧地图收起来
         });
     }).catch(function(e) { apiError(typeof e === 'string' ? e : '无法解析该文件'); });
 }
@@ -3171,19 +3253,39 @@ function importUVTTWalls(j, ppg) {
     notice('已导入 ' + (walls.length - doors) + ' 段墙体、' + doors + ' 扇门；在「设置」中开启动态视野即可生效');
 }
 
+// 换地图走服务器的 map.set：墙、迷雾、笔记、绘制、怪物 / 道具棋子跟着旧地图收起来，换回那张图时原样回来；玩家角色棋子留在桌上
 function setMapAsset(id, extra) {
-    loadImageSize(id).then(function(img) {
+    return loadImageSize(id).then(function(img) {
         var props = { mapAsset: id, mapW: img.naturalWidth, mapH: img.naturalHeight };
         for (var k in extra || {}) props[k] = extra[k];
+        var swap = (scene.props.mapAsset || '') !== id;
         fitPending = true;
-        setProps(props);
-        notice('地图已更新');
+        var done = mapSwap(props);
+        notice(swap ? '地图已更换：上一张图的墙、迷雾、笔记和怪物跟着那张图收起来了，换回去会恢复' : '地图已更新');
+        return done;
     }).catch(apiError);
 }
 
+function mapSwap(props) {
+    undoStack = []; redoStack = []; // 旧地图的东西收起来了，撤销记录作废
+    var body = { op: 'map.set', props: props };
+    if (isDoor()) body.name = nickname;
+    return api('/api/tabletop/op?room=' + enc(roomId), 'POST', body).catch(function(e) {
+        if (e === '未知操作') { setProps(props); return; } // 服务器还是旧版本：照旧只换地图
+        apiError(e);
+    });
+}
+
+var removeMapAsk = 0;
 function removeMap() {
-    if (!scene.props.mapAsset || !confirm('移除当前场景的地图？（棋子和绘制保留）')) return;
-    setProps({ mapAsset: null, mapW: null, mapH: null });
+    if (!scene.props.mapAsset) return;
+    if (performance.now() - removeMapAsk > 4000) { // 内嵌浏览器会吞掉 confirm：点两次确认
+        removeMapAsk = performance.now();
+        notice('再点一次确认移除地图：这张图上的墙、迷雾、笔记和怪物会跟着收起来（重新放回这张图时恢复），玩家角色棋子保留', true, 4000);
+        return;
+    }
+    removeMapAsk = 0;
+    mapSwap({ mapAsset: null, mapW: null, mapH: null });
 }
 
 // ===== 场景 =====

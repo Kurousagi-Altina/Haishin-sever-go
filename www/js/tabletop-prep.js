@@ -74,6 +74,53 @@ function wallSegAt(w) {
     return best;
 }
 
+// ===== 选中折线里的某一段（两个拐点之间）：单独删掉 / 单独改成门窗 =====
+var wallSeg = null; // { id, seg }：第 seg 段 = 第 seg 和 seg+1 个拐点之间
+function wallSegSel() {
+    var s = wallSeg, it = s && scene.items[s.id];
+    if (!it || !selected[s.id] || Object.keys(selected).length !== 1 || !it.points || s.seg >= it.points.length - 1) return null;
+    return { it: it, seg: s.seg };
+}
+
+// 把折线在第 seg 段处拆开：返回 { before, mid, after }（世界坐标点列；闭合的折线转一圈成一条：mid 之后接回 mid 之前）
+function wallSegSplit(it, seg) {
+    var p = wallAbsPts(it), closed = p.length > 3 && wallNear(p[0], p[p.length - 1]);
+    var mid = [p[seg], p[seg + 1]];
+    if (closed) return { before: [], mid: mid, after: p.slice(seg + 1).concat(p.slice(1, seg + 1)) };
+    return { before: p.slice(0, seg + 1), mid: mid, after: p.slice(seg + 1) };
+}
+
+// type 为空 = 删掉这一段；否则这一段改成 type（单独成一条），其余部分保持原类型
+function wallSegApply(type) {
+    var s = wallSegSel();
+    if (!s) return false;
+    var it = s.it, parts = wallSegSplit(it, s.seg), z = nextZ(), creates = [], name = (WALL_STYLE[it.wtype] || WALL_STYLE.wall).name;
+    if (type && (it.wtype || 'wall') === type) return true;
+    if (it.points.length === 2) { // 只有一段：整条删 / 整条改
+        if (!type) { deleteItems([it.id]); notice('已删除这段' + name + '（Ctrl+Z 撤销）'); }
+        else {
+            var isDoor = type === 'door' || type === 'secret';
+            patchItems([{ id: it.id, wtype: type, open: isDoor ? !!it.open : null, locked: isDoor && it.locked ? true : null }]);
+            notice('已改为' + WALL_STYLE[type].name);
+        }
+        wallSeg = null; $('selPanel').dataset.ids = ''; renderSelPanel();
+        return true;
+    }
+    [parts.before, parts.after].forEach(function(pts) { if (pts.length >= 2) creates.push(wallFrom(it, pts, z + creates.length)); });
+    var midIt = null;
+    if (type) {
+        midIt = wallFrom({ wtype: type, open: false, locked: false }, parts.mid, z + creates.length);
+        if (type === 'door' && wallOpts.lockDoor) midIt.locked = true;
+        creates.push(midIt);
+    }
+    prepCommit([], creates, [it.id]);
+    wallSeg = midIt ? { id: midIt.id, seg: 0 } : null;
+    selectOnly(midIt ? [midIt.id] : []);
+    $('selPanel').dataset.ids = ''; renderSelPanel();
+    notice(type ? '这一段已改为' + WALL_STYLE[type].name + '（Ctrl+Z 撤销）' : '已删除这一段' + name + '（Ctrl+Z 撤销）');
+    return true;
+}
+
 // 墙体「选择」模式下按住拐点：拖动它（和它重合的其他墙的拐点一起动；按住 Alt 只拖这一条）
 function wallVertexDown(w, start, e) {
     var v = wallVertexAt(w);
@@ -174,15 +221,24 @@ function wallSelHtml(ids) {
             return '<button class="tt-btn small" data-act="wset-' + t + '">' + WALL_STYLE[t].name + '</button>';
         }).join('') + '</div>';
     }
+    var sg = wallSegSel();
+    if (sg && sg.it.points.length > 2) {
+        h += '<div class="prop-btns"><span class="tt-hint">黄色这一段：</span><button class="tt-btn small danger" data-act="wsegdel" title="只删这一段（Delete 键也一样）；整条删掉用上面的删除">删除这一段</button>' +
+            ['wall', 'window', 'door', 'secret'].filter(function(t) { return t !== (sg.it.wtype || 'wall'); }).map(function(t) {
+                return '<button class="tt-btn small" data-act="wseg-' + t + '">改为' + WALL_STYLE[t].name + '</button>';
+            }).join('') + '</div>';
+    }
     var multi = ws.some(function(id) { return (scene.items[id].points || []).length > 2; });
     h += '<div class="prop-btns">' +
         (multi ? '<button class="tt-btn small" data-act="wexplode" title="把折线拆成一段一段，方便单独删掉或改成门">拆成单段</button>' : '') +
         (ws.length > 1 ? '<button class="tt-btn small" data-act="wmerge" title="首尾相连的同类墙合并成一条折线">合并相连</button>' : '') + '</div>';
-    h += '<div class="tt-hint">拖拐点移动（相连的墙一起动，靠近别的拐点会接上；Alt 只拖这一条、不吸附）。双击线段加拐点，双击拐点删除；右键中间的拐点在此断开。Shift+拖动框选多段墙</div>';
+    h += '<div class="tt-hint">点在线上 = 选中那一段（黄色），Delete 只删这一段。拖拐点移动（相连的墙一起动，靠近别的拐点会接上；Alt 只拖这一条、不吸附）。双击线段加拐点，双击拐点删除；右键中间的拐点在此断开。Shift+拖动框选多段墙</div>';
     return h;
 }
 
 function wallSelAct(act, ids) {
+    if (act === 'wsegdel') { wallSegApply(''); return; }
+    if (act.indexOf('wseg-') === 0) { wallSegApply(act.slice(5)); return; }
     var ws = ids.filter(function(id) { return scene.items[id] && scene.items[id].kind === 'wall'; }).map(function(id) { return scene.items[id]; });
     if (!ws.length) return;
     if (act.indexOf('wset-') === 0) {
@@ -460,7 +516,7 @@ function focusNote(id) {
 // 属性面板按钮（墙体编辑 / 笔记）；处理了返回 true
 function prepSelAct(act, ids) {
     if (!act) return false;
-    if (/^w(set-|explode$|merge$)/.test(act)) { wallSelAct(act, ids); return true; }
+    if (/^w(set-|seg-|segdel$|explode$|merge$)/.test(act)) { wallSelAct(act, ids); return true; }
     var it = scene.items[ids[0]];
     if (act === 'noteShow' && it) {
         openHandoutEditor(null, { title: it.title || ('笔记 ' + (it.num || '')), text: it.read || '' });
