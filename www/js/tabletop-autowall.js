@@ -29,7 +29,10 @@ function autoWallSync() {
     $('awGo').textContent = n ? '生成墙体（' + n + ' 段）' : '生成墙体';
     $('awInfo').textContent = !autoWall.box ? (autoWall.mode === 'band' ? '在地图上拖一个框，自动找出框里的墙，沿墙中间画线（右键取消）'
         : autoWall.mode === 'line' ? '在地图上拖一个框，自动找出框里的墙线' : '先拖框圈住房间，再点框里的地板（可点多个房间）')
-        : autoWall.mode === 'floor' && !autoWall.seeds.length ? '点一下框里的地板' : n ? '青色虚线是预览：调滑块，或重新拖框' : '没有识别到墙，调一下滑块试试';
+        : autoWall.mode === 'floor' && !autoWall.seeds.length ? '点一下框里的地面（洞穴、岩浆图也可以点墙外的虚空 / 岩浆）；右键撤销上一个点'
+        : n ? '青色虚线是预览：调滑块，或重新拖框' + (autoWall.skipped ? '（已跳过和现有墙重合的部分）' : '')
+        : autoWall.skipped ? '识别到的墙都已经画过了'
+        : autoWall.mode === 'band' ? '没找到横平竖直的墙：洞穴等不规则的墙用「点地板」（点地面，或点墙外的虚空 / 岩浆）' : '没有识别到墙，调一下滑块试试';
 }
 
 function autoWallClear() {
@@ -102,7 +105,7 @@ function awRun() {
     if (!wk) return;
     var paths = autoWall.mode === 'band' ? awBand(wk) : autoWall.mode === 'line' ? awLines(wk) : awFloor(wk);
     var b = autoWall.box, g = gridSize();
-    var eps = Math.max(0.7, g * autoWall.simp / 20 * wk.sc), minLen = g * 0.4 * wk.sc;
+    var eps = Math.max(0.7, g * autoWall.simp / (autoWall.mode === 'floor' ? 8 : 20) * wk.sc), minLen = g * 0.4 * wk.sc; // 点地板只要大致轮廓，精简得狠一些
     var out = [];
     paths.forEach(function(pts) {
         if (pts.length < 2) return;
@@ -112,7 +115,46 @@ function awRun() {
         if (closed && s.length < 4) return;
         out.push(s.map(function(p) { return [b.x0 + (p[0] + 0.5) / wk.sc, b.y0 + (p[1] + 0.5) / wk.sc]; }));
     });
-    autoWall.lines = out.slice(0, 400);
+    autoWall.lines = awDropExisting(out, g * 0.25, g * 0.3).slice(0, 400);
+}
+
+// 去掉和现有墙重合的部分（反复框同一块地方不会画出重复的墙）：沿线每隔一小段取样，离现有墙 tol 以内的算已经画过
+function awDropExisting(lines, tol, minLen) {
+    var segs = [];
+    Object.keys(scene.items).forEach(function(id) {
+        var it = scene.items[id];
+        if (it.kind !== 'wall' || !it.points) return;
+        for (var i = 1; i < it.points.length; i++) segs.push([it.x + it.points[i - 1][0], it.y + it.points[i - 1][1], it.x + it.points[i][0], it.y + it.points[i][1]]);
+    });
+    autoWall.skipped = false;
+    if (!segs.length) return lines;
+    var near = function(x, y, ux, uy) { // (ux, uy)：新线这一段的单位方向；只有方向基本平行的现有墙才算重合（垂直接上的不算）
+        return segs.some(function(s) {
+            var dx = s[2] - s[0], dy = s[3] - s[1], L2 = dx * dx + dy * dy;
+            if (L2 && Math.abs(dx * uy - dy * ux) / Math.sqrt(L2) > 0.34) return false;
+            var t = L2 ? Math.max(0, Math.min(1, ((x - s[0]) * dx + (y - s[1]) * dy) / L2)) : 0;
+            return Math.hypot(x - s[0] - t * dx, y - s[1] - t * dy) <= tol;
+        });
+    };
+    var out = [];
+    lines.forEach(function(pts) {
+        var cur = null, tail = null; // cur：当前这段没画过的部分；tail：它最后一个取样点（还不是拐点）
+        var close = function() {
+            if (cur) { if (tail) cur.push(tail); if (awLen(cur) >= minLen) out.push(cur); }
+            cur = null; tail = null;
+        };
+        for (var i = 1; i < pts.length; i++) {
+            var a = pts[i - 1], b = pts[i], L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1, k = Math.max(1, Math.ceil(L / tol));
+            var ux = (b[0] - a[0]) / L, uy = (b[1] - a[1]) / L;
+            for (var j = i === 1 ? 0 : 1; j <= k; j++) {
+                var q = [a[0] + (b[0] - a[0]) * j / k, a[1] + (b[1] - a[1]) * j / k];
+                if (near(q[0], q[1], ux, uy)) { autoWall.skipped = true; close(); continue; }
+                if (!cur) { cur = [q]; tail = null; } else if (j === k) { cur.push(q); tail = null; } else tail = q;
+            }
+        }
+        close();
+    });
+    return out;
 }
 
 function autoWallCommit() {
@@ -507,37 +549,78 @@ function awTrace(m, W, H, minLen) {
 }
 
 // ---------- 地板模式 ----------
+// 点一块地面（或墙外的虚空、岩浆），把和它连成一片的区域找出来，沿边缘围墙。可走的像素要同时满足：
+//   不在强边缘上（先按 0.08 格模糊抹掉砖缝、木纹，再取梯度最大的那部分当屏障——洞穴的岩石边、墙的轮廓线），
+//   颜色和点到的地方接近（按点击处周围半格的中位数 / 离散程度算，光照渐变也容得下）。
+// 防漏：可走区域先腐蚀约 0.25 格再从点击处连通，窄于半格的缝（墙上的小缺口、边缘断开处）过不去，连通后再膨胀回来。
+// 「容差」越大：边缘屏障越少、颜色范围越宽（填得更满，也更容易漏）
 function awFloor(wk) {
-    var W = wk.W, H = wk.H, n = W * H;
+    var W = wk.W, H = wk.H, n = W * H, i, x, y;
     if (!autoWall.seeds.length) return [];
-    // 先按格子大小模糊（抹掉地砖缝、纹理），再从点到的地方往外长：相邻像素颜色差 ≤ 步长（容得下光照渐变），
-    // 且和起点颜色差 ≤ 上限（防止一路渐变漏到墙上）；两者都由「容差」滑块决定
-    var cell0 = gridSize() * wk.sc, br = Math.max(2, Math.round(cell0 * 0.05));
-    if (!wk.blur || wk.blurR !== br) { wk.blur = awBlurRGB(wk.rgb, W, H, br); wk.blurR = br; }
-    var bl = wk.blur, step = autoWall.tol / 5, cap = autoWall.tol * 3, st2 = step * step * 3, cap2 = cap * cap * 3;
-    var fill = new Uint8Array(n);
-    autoWall.seeds.forEach(function(s) {
-        var si = s.py * W + s.px, r0 = bl[si * 3], g0 = bl[si * 3 + 1], b0 = bl[si * 3 + 2];
-        if (fill[si]) return;
-        var stack = [si];
-        fill[si] = 1;
-        while (stack.length) {
-            var p = stack.pop(), x = p % W, y = (p - x) / W;
-            var cand = [x > 0 ? p - 1 : -1, x < W - 1 ? p + 1 : -1, y > 0 ? p - W : -1, y < H - 1 ? p + W : -1];
-            for (var k = 0; k < 4; k++) {
-                var q = cand[k];
-                if (q < 0 || fill[q]) continue;
-                var dr = bl[q * 3] - bl[p * 3], dg = bl[q * 3 + 1] - bl[p * 3 + 1], db = bl[q * 3 + 2] - bl[p * 3 + 2];
-                if (dr * dr + dg * dg + db * db > st2) continue;
-                dr = bl[q * 3] - r0; dg = bl[q * 3 + 1] - g0; db = bl[q * 3 + 2] - b0;
-                if (dr * dr + dg * dg + db * db <= cap2) { fill[q] = 1; stack.push(q); }
+    var cell = gridSize() * wk.sc, br = Math.max(1, Math.round(cell * 0.08));
+    if (!wk.blur || wk.blurR !== br) { wk.blur = awBlurRGB(wk.rgb, W, H, br); wk.blurR = br; wk.grad = null; }
+    var bl = wk.blur;
+    if (!wk.grad) { // 模糊后的颜色梯度
+        var gr = new Float32Array(n);
+        for (y = 1; y < H - 1; y++) for (x = 1; x < W - 1; x++) {
+            i = y * W + x;
+            var s2 = 0;
+            for (var c = 0; c < 3; c++) {
+                var gx = (bl[(i + 1) * 3 + c] - bl[(i - 1) * 3 + c]) / 2, gy = (bl[(i + W) * 3 + c] - bl[(i - W) * 3 + c]) / 2;
+                s2 += gx * gx + gy * gy;
             }
+            gr[i] = Math.sqrt(s2);
         }
+        var smp = [];
+        for (i = 0; i < n; i += 7) smp.push(gr[i]);
+        smp.sort(function(a, b) { return a - b; });
+        wk.grad = gr; wk.gradSorted = smp;
+    }
+    var tol = autoWall.tol, pct = Math.min(0.97, 0.8 + tol / 600), capk = Math.max(1, tol / 10) * Math.sqrt(3);
+    var T = wk.gradSorted[Math.floor(wk.gradSorted.length * pct)];
+    var r = Math.max(1, Math.round(cell * 0.25)), fill = new Uint8Array(n), lost = 0;
+    autoWall.seeds.forEach(function(sd) {
+        // 点击处周围半格的颜色：中位数 + 绝对偏差（不怕旁边有家具、灯光）
+        var rr = Math.max(2, Math.round(cell * 0.5)), cols = [[], [], []];
+        for (var yy = Math.max(0, sd.py - rr); yy < Math.min(H, sd.py + rr); yy++) for (var xx = Math.max(0, sd.px - rr); xx < Math.min(W, sd.px + rr); xx++) {
+            var k = (yy * W + xx) * 3;
+            cols[0].push(bl[k]); cols[1].push(bl[k + 1]); cols[2].push(bl[k + 2]);
+        }
+        var med = function(a) { a = a.slice().sort(function(p, q) { return p - q; }); return a[a.length >> 1]; };
+        var mu = cols.map(med), sdv = cols.map(function(a, ci) { return med(a.map(function(v) { return Math.abs(v - mu[ci]); })) * 1.4826 + 4; });
+        var free = new Uint8Array(n);
+        for (i = 0; i < n; i++) {
+            if (wk.grad[i] > T) continue;
+            var d0 = (bl[i * 3] - mu[0]) / sdv[0], d1 = (bl[i * 3 + 1] - mu[1]) / sdv[1], d2 = (bl[i * 3 + 2] - mu[2]) / sdv[2];
+            if (d0 * d0 + d1 * d1 + d2 * d2 < capk * capk) free[i] = 1;
+        }
+        var ero = awErode(free, W, H, r);
+        // 点击处附近（2r 以内）最近的一个腐蚀后仍可走的像素作为起点
+        var start = -1, bd = 1e9;
+        for (var y2 = Math.max(0, sd.py - 2 * r); y2 <= Math.min(H - 1, sd.py + 2 * r); y2++) for (var x2 = Math.max(0, sd.px - 2 * r); x2 <= Math.min(W - 1, sd.px + 2 * r); x2++) {
+            var d = (x2 - sd.px) * (x2 - sd.px) + (y2 - sd.py) * (y2 - sd.py);
+            if (ero[y2 * W + x2] && d < bd) { bd = d; start = y2 * W + x2; }
+        }
+        if (start < 0) { lost++; return; }
+        var reg = new Uint8Array(n), stack = [start];
+        reg[start] = 1;
+        while (stack.length) {
+            var p = stack.pop(), px = p % W, py = (p - px) / W;
+            if (px > 0 && ero[p - 1] && !reg[p - 1]) { reg[p - 1] = 1; stack.push(p - 1); }
+            if (px < W - 1 && ero[p + 1] && !reg[p + 1]) { reg[p + 1] = 1; stack.push(p + 1); }
+            if (py > 0 && ero[p - W] && !reg[p - W]) { reg[p - W] = 1; stack.push(p - W); }
+            if (py < H - 1 && ero[p + W] && !reg[p + W]) { reg[p + W] = 1; stack.push(p + W); }
+        }
+        var grow = awDilate(reg, W, H, r), edge = awDilate(reg, W, H, 1);
+        for (i = 0; i < n; i++) if (grow[i] && (free[i] || edge[i])) fill[i] = 1;
     });
-    fill = awErode(awDilate(fill, W, H, 2), W, H, 2); // 闭运算：抹平锯齿、合上地板纹理的细缝
-    var cell = gridSize() * wk.sc;
-    awRemoveSmall(fill, W, H, 0, cell * cell * 0.6, true, 1); // 房间里的小洞（家具、地毯花纹）填掉；大柱子保留
-    awRemoveSmall(fill, W, H, 1, cell * cell * 0.25);          // 漏出去的小碎块
+    if (lost) notice('有 ' + lost + ' 个点附近太杂（纹理、家具），找不到成片的地面——换个空一点的地方点，或调大容差', true);
+    // 只要大致轮廓（和手画一样沿边缘拉直线）：闭运算抹平小凹口、连上纹理处没填满的地方，开运算去掉细毛刺，2×2 格以内的障碍直接填掉
+    var cr = Math.max(1, Math.round(cell * 0.4)), orr = Math.max(1, Math.round(cell * 0.2));
+    fill = awErode(awDilate(fill, W, H, cr), W, H, cr);
+    fill = awDilate(awErode(fill, W, H, orr), W, H, orr);
+    awRemoveSmall(fill, W, H, 0, cell * cell * 4, true, 1);   // 区域里的小洞（家具、骨堆、花纹）填掉；大的石柱 / 岛保留
+    awRemoveSmall(fill, W, H, 1, cell * cell * 0.25);         // 小碎块
     autoWall.fill = fill;
     return awContours(fill, W, H);
 }
@@ -727,7 +810,8 @@ function initAutoWall() {
             rdown = null;
             if (!d || e.button !== 2 || !autoWallActive() || Math.hypot(e.clientX - d.x, e.clientY - d.y) > 5) return;
             if (gesture && gesture.auto) gesture = null;
-            if (autoWall.box || autoWall.lines.length || autoWall.seeds.length) { autoWallClear(); notice('已取消自动识别'); }
+            if (autoWall.mode === 'floor' && autoWall.seeds.length) { autoWall.seeds.pop(); awRun(); autoWallSync(); requestRender(); notice('已撤销上一个地面点（没有点了再右键 = 取消）'); }
+            else if (autoWall.box || autoWall.lines.length) { autoWallClear(); notice('已取消自动识别'); }
         }, true);
     }
     window.addEventListener('keydown', function(e) {
