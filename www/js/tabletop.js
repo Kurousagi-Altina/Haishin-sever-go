@@ -1565,6 +1565,8 @@ function drawOverlays() {
         } else if (gesture.type === 'rotate') {
             var tr = scene.items[gesture.id];
             if (tr) drawLabel((tr.rot || 0) + '°', tr.x + (tr.w || g) / 2, tr.y - 30 / view.s, '#fff');
+        } else if (gesture.type === 'dxform') {
+            drawLabel(dxLabel(gesture), gesture.c.x, gesture.c.y, '#fff');
         }
     }
 
@@ -1676,6 +1678,7 @@ function tokenHandles() {
     var ids = selectedIds();
     if (ids.length !== 1 || tool !== 'select' || (gesture && gesture.type === 'move')) return null;
     var it = scene.items[ids[0]];
+    if (it.kind === 'draw') return drawXformable(it) ? drawHandles(it) : null; // 绘制：四角缩放 / 顶上旋转
     if (it.kind !== 'token' || !canEdit(it) || it.locked) return null;
     var g = gridSize(), c = tokenCenter(it), pad = 3 / view.s;
     var hw = (it.w || g) / 2 + pad, hh = (it.h || g) / 2 + pad, a = (it.rot || 0) * Math.PI / 180;
@@ -1693,7 +1696,7 @@ function handleAt(w) {
     var h = tokenHandles();
     if (!h) return null;
     var near = function(p) { return Math.hypot(w.x - p.x, w.y - p.y) <= h.r * 1.8; };
-    if (near(h.rot)) return { kind: 'rot', h: h };
+    if (h.rot && near(h.rot)) return { kind: 'rot', h: h };
     for (var i = 0; i < 4; i++) if (near(h.corners[i])) return { kind: 'corner', h: h, corner: h.corners[i] };
     return null;
 }
@@ -1704,10 +1707,17 @@ function drawTokenHandles() {
     ctx.save();
     ctx.strokeStyle = '#42a5f5';
     ctx.lineWidth = 1.5 / view.s;
-    ctx.beginPath();
-    ctx.moveTo(h.top.x, h.top.y);
-    ctx.lineTo(h.rot.x, h.rot.y);
-    ctx.stroke();
+    if (h.box) { // 绘制：虚线外框
+        ctx.setLineDash([5 / view.s, 4 / view.s]);
+        ctx.strokeRect(h.box[0], h.box[1], h.box[2] - h.box[0], h.box[3] - h.box[1]);
+        ctx.setLineDash([]);
+    }
+    if (h.rot) {
+        ctx.beginPath();
+        ctx.moveTo(h.top.x, h.top.y);
+        ctx.lineTo(h.rot.x, h.rot.y);
+        ctx.stroke();
+    }
     ctx.fillStyle = '#fff';
     ctx.lineWidth = 2 / view.s;
     h.corners.forEach(function(p) {
@@ -1718,6 +1728,7 @@ function drawTokenHandles() {
         ctx.strokeRect(-h.r, -h.r, h.r * 2, h.r * 2);
         ctx.restore();
     });
+    if (!h.rot) { ctx.restore(); return; }
     ctx.beginPath();
     ctx.arc(h.rot.x, h.rot.y, h.r * 1.15, 0, Math.PI * 2);
     ctx.fill();
@@ -2221,15 +2232,14 @@ function onPointerDown(e) {
     if (timeStopped() && !me.gm && tool !== 'select' && tool !== 'pan' && !(e.button === 1 || e.button === 2 || spaceDown)) { notice('⏸ 时间停止中', true); return; }
     closeTokenMenu();
     if (e.pointerType === 'touch' && (tool === 'select' || tool === 'pan') && !actionMode) { // 触屏长按棋子 = 右键菜单
-        var lpHit = hitTest(w, ['token']), lpId = e.pointerId;
+        var lpId = e.pointerId;
         clearTimeout(longPressTimer);
         longPressTimer = setTimeout(function() {
             var p = pointers[lpId];
             if (!p || Math.hypot(p.x - s.x, p.y - s.y) > 10 || Object.keys(pointers).length > 1) return;
             if (gesture && gesture.snap) cancelGesture();
             gesture = null;
-            if (lpHit) openTokenMenu(lpHit, s.x, s.y);
-            else { remote.pings.push({ x: w.x, y: w.y, color: me.color, at: performance.now() }); sendFx({ t: 'ping', x: w.x, y: w.y }); requestRender(); }
+            if (!rightTapMenu(w, s.x, s.y)) { remote.pings.push({ x: w.x, y: w.y, color: me.color, at: performance.now() }); sendFx({ t: 'ping', x: w.x, y: w.y }); requestRender(); }
         }, 550);
     }
     if (e.button === 2 && tool === 'wall' && wallOpts.mode === 'select' && !spaceDown && wallSplitAt(w)) { requestRender(); return; } // 右键拐点：断开
@@ -2275,6 +2285,7 @@ function onPointerDown(e) {
     if (tool === 'select' || tool === 'note' || (tool === 'fog' && fogOpts.shape === 'select') || (tool === 'wall' && wallOpts.mode === 'select')) {
         if (tool === 'wall' && !e.shiftKey && wallVertexDown(w, start, e)) { requestRender(); return; } // 拖墙的拐点
         var hh = tool === 'select' ? handleAt(w) : null;
+        if (hh && hh.h.draw) { gesture = dxStart(hh, start); canvas.style.cursor = hh.kind === 'rot' ? 'grabbing' : handleCursor(hh); return; }
         if (hh) {
             var t = scene.items[hh.h.id];
             var orig = { w: t.w || gridSize(), h: t.h || gridSize(), x: t.x, y: t.y, rot: t.rot || 0 };
@@ -2472,6 +2483,9 @@ function onPointerMove(e) {
         tr.rot = ((deg % 360) + 360) % 360;
         if (performance.now() - gesture.lastSent > 80) { gesture.lastSent = performance.now(); queueItems([{ id: tr.id, rot: tr.rot || null }]); }
         break;
+    case 'dxform':
+        dxMove(gesture, w, e);
+        break;
     case 'marquee':
         gesture.b = w;
         break;
@@ -2598,6 +2612,12 @@ function onPointerUp(e) {
         renderSelPanel();
         updateCursor();
         break;
+    case 'dxform':
+        dxEnd(g);
+        $('selPanel').dataset.ids = '';
+        renderSelPanel();
+        updateCursor();
+        break;
     case 'rotate':
         var tr = scene.items[g.id];
         if (tr) queueItems([{ id: tr.id, rot: tr.rot || null }]);
@@ -2643,8 +2663,7 @@ function onPointerUp(e) {
     case 'pointer':
     case 'rpointer':
         if (!g.start.moved) {
-            var rh = g.type === 'rpointer' ? hitTest(g.start.w, ['token']) : null;
-            if (rh) { openTokenMenu(rh, g.start.s.x, g.start.s.y); break; } // 右键轻点棋子：快捷菜单
+            if (g.type === 'rpointer' && rightTapMenu(g.start.w, g.start.s.x, g.start.s.y)) break; // 右键轻点物件：快捷菜单（框选了多个 = 批量菜单）
             remote.pings.push({ x: w.x, y: w.y, color: me.color, at: performance.now() });
             sendFx({ t: 'ping', x: w.x, y: w.y });
         }
@@ -2671,7 +2690,7 @@ function cancelGesture() {
     var g = gesture;
     if (g && g.type === 'ruler') sendFx({ t: 'ruler-end' });
     gesture = null;
-    if (g && (g.type === 'move' || g.type === 'resize' || g.type === 'rotate' || g.type === 'wvert') && g.start && g.start.moved && g.snap) {
+    if (g && (g.type === 'move' || g.type === 'resize' || g.type === 'rotate' || g.type === 'wvert' || g.type === 'dxform') && g.start && g.start.moved && g.snap) {
         var back = [];
         g.snap.forEach(function(s) {
             var it = scene.items[s.id];
