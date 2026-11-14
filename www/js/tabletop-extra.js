@@ -146,12 +146,22 @@ function drawTextItem(c, it) {
 }
 
 function createTextAt(w) {
-    var text = prompt('输入文字（换行用 \\n）：');
-    if (!text || !text.trim()) return;
-    var it = { id: genId(), kind: 'draw', shape: 'text', x: w.x, y: w.y, text: text.replace(/\\n/g, '\n').slice(0, 500),
-        size: Math.round(gridSize() * 0.45), color: drawOpts.color, z: nextZ() };
-    createItems([it]);
-    selectOnly([it.id]);
+    ttAsk({ title: '✏ 在地图上写字', input: { multiline: true, maxlength: 500, placeholder: '要写的文字，可以换行' }, ok: '放置', hint: 'Ctrl+Enter 放置' }).then(function(text) {
+        if (!text || !text.trim()) return;
+        var it = { id: genId(), kind: 'draw', shape: 'text', x: w.x, y: w.y, text: text.slice(0, 500),
+            size: Math.round(gridSize() * 0.45), color: drawOpts.color, z: nextZ() };
+        createItems([it]);
+        selectOnly([it.id]);
+    });
+}
+
+// 选择工具双击文字：改内容
+function editTextItem(it) {
+    ttAsk({ title: '✏ 修改文字', input: { multiline: true, maxlength: 500, value: it.text || '' }, ok: '保存', hint: 'Ctrl+Enter 保存' }).then(function(text) {
+        if (text == null || !scene.items[it.id]) return;
+        if (!text.trim()) { notice('文字不能为空；要删掉请右键选「删除」', true); return; }
+        patchItems([{ id: it.id, text: text.slice(0, 500) }]);
+    });
 }
 
 // ===== 黑暗环境与光源 =====
@@ -312,17 +322,17 @@ function checkPortals(movedIds) {
     if (!gate) return;
     var tag = portalOf(gate).tag || '';
     var dests = sortedItems().filter(function(p) { return p.id !== gate.id && portalOf(p) && (portalOf(p).tag || '') === tag; });
-    var target = '';
-    if (dests.length > 1) {
-        var choice = prompt('传送到哪里？\n' + dests.map(function(d, i) { return (i + 1) + '. ' + (d.label || '传送门 ' + (i + 1)); }).join('\n'), '1');
-        if (choice == null) return;
-        var d = dests[parseInt(choice, 10) - 1];
-        if (!d) { notice('没有这个选项', true); return; }
-        target = d.id;
-    } else if (!confirm('进入传送门「' + (gate.label || tag || '传送门') + '」？')) return;
-    else if (dests.length === 1) target = dests[0].id;
-    var ids = [tok.id];
-    op({ op: 'portal', scene: gate.id, ids: ids, target: target });
+    var name = gate.label || tag || '传送门';
+    var ask = dests.length > 1 ?
+        ttAsk({ title: '⭘ ' + name, text: '「' + (tok.label || '棋子') + '」要传送到哪里？', cancel: '留在这里',
+            choices: dests.map(function(d, i) { return { label: d.label || '传送门 ' + (i + 1), value: d.id }; }) }) :
+        ttAsk({ title: '⭘ ' + name, text: '「' + (tok.label || '棋子') + '」进入传送门？', ok: '进入', cancel: '留在这里' }).then(function(v) {
+            return v ? (dests.length === 1 ? dests[0].id : '') : null;
+        });
+    ask.then(function(target) {
+        if (target == null || !scene.items[tok.id] || !scene.items[gate.id]) return;
+        op({ op: 'portal', scene: gate.id, ids: [tok.id], target: target });
+    });
 }
 
 // ===== 变身 =====
@@ -486,6 +496,61 @@ function onLogClick(e) {
 }
 
 // ===== 棋子快捷菜单（右键 / 触屏长按）=====
+// ===== 页内对话框：替代 prompt / confirm（内嵌浏览器会吞掉原生弹窗，点了没反应）=====
+// opts: {title, text, hint, input: {value, placeholder, multiline, maxlength}, choices: [{label, value}], ok, cancel, danger}
+// 返回 Promise：确定 → 输入框的文字（没有输入框 = true）或所点选项的 value；取消 / Esc → null
+var askCur = null;
+function askOpen() { return !!askCur; }
+function ttAsk(opts) {
+    if (askCur) askCur(null);
+    return new Promise(function(resolve) {
+        var inp = opts.input, el = document.createElement('div');
+        el.className = 'roll-dialog ask-dialog';
+        var h = '<div class="roll-box ask-box">' + (opts.title ? '<div class="rd-who">' + escapeHtml(opts.title) + '</div>' : '') +
+            (opts.text ? '<div class="ask-text">' + escapeHtml(opts.text) + '</div>' : '');
+        if (inp) {
+            var attrs = ' class="tt-input ask-input" maxlength="' + (inp.maxlength || 500) + '" placeholder="' + escapeHtml(inp.placeholder || '') + '"';
+            h += inp.multiline ? '<textarea' + attrs + ' rows="4"></textarea>' : '<input' + attrs + '>';
+        }
+        if (opts.choices) h += '<div class="ask-choices">' + opts.choices.map(function(c, i) {
+            return '<button class="tt-btn" data-ask="' + i + '">' + escapeHtml(c.label) + '</button>';
+        }).join('') + '</div>';
+        h += '<div class="rd-btns">' + (opts.hint ? '<span class="tt-hint">' + escapeHtml(opts.hint) + '</span>' : '') +
+            '<button class="tt-btn" data-ask="x">' + escapeHtml(opts.cancel || '取消') + '</button>' +
+            (opts.choices ? '' : '<button class="tt-btn ' + (opts.danger ? 'danger' : 'primary') + '" data-ask="ok">' + escapeHtml(opts.ok || '确定') + '</button>') +
+            '</div></div>';
+        el.innerHTML = h;
+        document.body.appendChild(el);
+        var field = el.querySelector('.ask-input');
+        if (field) field.value = inp.value || '';
+        var done = function(v) {
+            if (askCur !== done) return;
+            askCur = null;
+            el.remove();
+            resolve(v);
+        };
+        askCur = done;
+        var okVal = function() { return field ? field.value : true; };
+        el.addEventListener('click', function(e) {
+            var b = e.target.closest('[data-ask]');
+            if (!b) return;
+            var k = b.dataset.ask;
+            done(k === 'x' ? null : k === 'ok' ? okVal() : opts.choices[+k].value);
+        });
+        el.addEventListener('keydown', function(e) {
+            e.stopPropagation(); // 不触发地图快捷键（Delete、方向键……）
+            if (e.key === 'Escape') { done(null); return; }
+            if (e.key !== 'Enter' || e.target.tagName === 'BUTTON' || opts.choices) return;
+            if (field && field.tagName === 'TEXTAREA' && !e.ctrlKey && !e.metaKey) return; // 多行：Enter 换行，Ctrl+Enter 确定
+            e.preventDefault();
+            done(okVal());
+        });
+        setTimeout(function() {
+            if (field) { field.focus(); field.select(); } else { var f = el.querySelector('[data-ask=ok],[data-ask="0"]'); if (f) f.focus(); }
+        }, 0);
+    });
+}
+
 var tokMenuEl = null;
 function closeTokenMenu() { if (tokMenuEl) { tokMenuEl.remove(); tokMenuEl = null; } }
 
@@ -725,7 +790,7 @@ function onTokenMenu(e) {
         patchItems([{ id: it.id, z: act2 === 'top' ? (zs.length ? Math.max.apply(null, zs) + 1 : 0) : (zs.length ? Math.min.apply(null, zs) - 1 : 0) }]);
     }
     else if (act2 === 'del') {
-        if (inInit(it) && !confirm('「' + (it.label || '棋子') + '」在先攻里，确定删除？')) return;
+        if (inInit(it) && !b.dataset.armed) { b.dataset.armed = '1'; b.textContent = '⚠ 在先攻里，再点一次删除'; return; }
         deleteItems([it.id]);
         notice('已删除，Ctrl+Z 撤销');
     }
