@@ -617,7 +617,7 @@ function onNotesPaneClick(e) {
     if (el.dataset.hoedit) { openHandoutEditor(handouts.find(function(h) { return h.id === el.dataset.hoedit; })); return; }
     if (el.dataset.hodel) {
         var hd = handouts.find(function(h) { return h.id === el.dataset.hodel; });
-        if (hd && confirm('删除讲义「' + hd.title + '」？玩家那边也会一起消失。')) op({ op: 'handout.delete', ids: [hd.id] });
+        if (hd) ttAsk({ title: '删除讲义', text: '删除讲义「' + hd.title + '」？玩家那边也会一起消失。', ok: '删除', danger: true }).then(function(ok) { if (ok) op({ op: 'handout.delete', ids: [hd.id] }); });
         return;
     }
     if (el.dataset.hoview) { var hv = handouts.find(function(h) { return h.id === el.dataset.hoview; }); if (hv) showHandout(hv); }

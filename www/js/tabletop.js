@@ -278,8 +278,9 @@ function createRoom() {
 }
 
 function deleteRoom(id, name) {
-    if (!confirm('确定删除房间「' + name + '」？所有场景和记录将被永久删除（建议先导出备份）。')) return;
-    api('/api/tabletop/rooms?id=' + enc(id), 'DELETE').then(loadRooms).catch(apiError);
+    ttAsk({ title: '删除房间', text: '确定删除房间「' + name + '」？所有场景和记录将被永久删除，不能恢复（建议先进房间导出备份）。', ok: '删除房间', danger: true }).then(function(ok) {
+        if (ok) api('/api/tabletop/rooms?id=' + enc(id), 'DELETE').then(loadRooms).catch(apiError);
+    });
 }
 
 function importRoom(input) {
@@ -352,7 +353,7 @@ function copyRoomLink() {
     if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(link).then(function() { notice('已复制邀请链接'); });
     } else {
-        prompt('复制下面的邀请链接：', link);
+        ttAsk({ title: '邀请链接', text: '浏览器不让自动复制，请手动复制下面的链接（已全选）：', input: { value: link, maxlength: 400 }, ok: '好', cancel: '关闭' });
     }
 }
 
@@ -406,8 +407,9 @@ function handleMsg(m) {
         me = m.me;
         var newScene = m.scene.id !== scene.id, oldMap = scene.props && scene.props.mapAsset;
         setRoomMeta(m.room);
-        scene = { id: m.scene.id, name: m.scene.name, props: m.scene.props || {}, items: {} };
+        scene = { id: m.scene.id, name: m.scene.name, props: m.scene.props || {}, items: {}, stash: m.scene.stash || {} };
         m.scene.items.forEach(function(it) { scene.items[it.id] = it; });
+        renderAssets(); // 资产库的「当前地图 / 收着 N 件」标记
         if (newScene || oldMap !== scene.props.mapAsset) { // 规划中的墙（自动识别预览 / 描过的段）属于原来那张图
             if (typeof autoWallClear === 'function') autoWallClear();
             if (typeof wallSeg !== 'undefined') wallSeg = null;
@@ -602,8 +604,11 @@ function onPropsChanged() {
         $('setDark').checked = !!p.dark;
         $('setCells').value = p.mapW ? Math.round(p.mapW / gridSize() * 100) / 100 : '';
     }
+    var stashN = Object.keys(scene.stash || {}).filter(function(k) { return k && k !== p.mapAsset; }).length;
+    $('mapInfo').dataset.stash = stashN ? '　这个场景还有 ' + stashN + ' 张地图收着东西，资产库里标了 📦' : '';
     $('mapInfo').textContent = p.mapAsset ? '当前地图：' + p.mapW + ' × ' + p.mapH + ' px，约 ' +
         Math.round(p.mapW / gridSize() * 10) / 10 + ' × ' + Math.round(p.mapH / gridSize() * 10) / 10 + ' 格' : '当前场景没有地图';
+    if ($('mapInfo').dataset.stash) $('mapInfo').textContent += $('mapInfo').dataset.stash;
     if (fitPending && (!p.mapAsset || getImg(p.mapAsset).complete)) { fitPending = false; startView(); }
     renderSceneEnter();
     onCombatChanged();
@@ -3234,7 +3239,7 @@ function renderAssets() {
     }
     $('assetGrid').innerHTML = list.map(function(a) {
         return '<div class="asset-card" draggable="true" data-asset="' + escapeHtml(a.id) + '" title="' + escapeHtml(a.name + '（' + a.by + ' 上传）') + '">' +
-            '<span class="kind">' + (a.kind === 'map' ? '地图' : '棋子') + '</span>' +
+            '<span class="kind">' + (a.kind === 'map' ? '地图' : '棋子') + '</span>' + assetMapBadge(a) +
             '<img loading="lazy" src="' + assetURL(a.id) + '" alt="">' +
             '<div class="name">' + escapeHtml(a.name) + '</div>' +
             '<div class="ops"><button class="tt-btn small" data-place="' + escapeHtml(a.id) + '">放置</button>' +
@@ -3242,6 +3247,14 @@ function renderAssets() {
                 '<button class="tt-btn small danger" data-delasset="' + escapeHtml(a.id) + '">✕</button>' : '') +
             '</div></div>';
     }).join('');
+}
+
+// GM：资产卡片上标出当前地图，以及换图时跟着这张图收起来的东西（换回这张图就恢复）
+function assetMapBadge(a) {
+    if (!me || !me.gm) return '';
+    if (scene.props && scene.props.mapAsset === a.id) return '<span class="asset-badge cur">当前地图</span>';
+    var n = scene.stash && scene.stash[a.id];
+    return n ? '<span class="asset-badge" title="这个场景换图前在这张图上放的 ' + n + ' 个物件（墙、迷雾、笔记、怪物……）收着，点「作地图」换回来就恢复">📦 ' + n + '</span>' : '';
 }
 
 function onAssetClick(e) {
@@ -3373,9 +3386,12 @@ function removeMap() {
 
 // ===== 场景 =====
 function renderScenes() {
-    $('sceneList').innerHTML = (room.scenes || []).map(function(s) {
+    var all = room.scenes || [];
+    $('sceneList').innerHTML = all.map(function(s, i) {
         var active = s.id === room.active;
         return '<li class="' + (active ? 'active' : '') + '"><span class="name">' + (active ? '▶ ' : '') + escapeHtml(s.name) + '</span>' +
+            '<button class="tt-btn small" data-sact="up" data-sid="' + escapeHtml(s.id) + '" title="上移"' + (i ? '' : ' disabled') + '>↑</button>' +
+            '<button class="tt-btn small" data-sact="down" data-sid="' + escapeHtml(s.id) + '" title="下移"' + (i < all.length - 1 ? '' : ' disabled') + '>↓</button>' +
             (active ? '' : '<button class="tt-btn small primary" data-sact="activate" data-sid="' + escapeHtml(s.id) + '">切换</button>') +
             '<button class="tt-btn small" data-sact="rename" data-sid="' + escapeHtml(s.id) + '">改名</button>' +
             '<button class="tt-btn small" data-sact="duplicate" data-sid="' + escapeHtml(s.id) + '">复制</button>' +
@@ -3392,6 +3408,7 @@ function onSceneClick(e) {
     switch (b.dataset.sact) {
     case 'activate': op({ op: 'scene.activate', scene: s.id }); break;
     case 'duplicate': op({ op: 'scene.duplicate', scene: s.id }); break;
+    case 'up': case 'down': op({ op: 'scene.move', scene: s.id, mode: b.dataset.sact }); break;
     case 'export': exportScene(s.id); break;
     case 'rename':
         ttAsk({ title: '场景改名', input: { value: s.name, maxlength: 40, placeholder: '场景名' }, ok: '改名' }).then(function(name) {
@@ -3416,7 +3433,7 @@ function exportRoom() {
 }
 
 function clearLog() {
-    if (confirm('清空本房间的所有掷骰与聊天记录？')) op({ op: 'log.clear' });
+    ttAsk({ title: '清空记录', text: '清空本房间的所有掷骰与聊天记录？不能恢复。', ok: '清空', danger: true }).then(function(ok) { if (ok) op({ op: 'log.clear' }); });
 }
 
 // ===== 骰子 =====
@@ -3565,9 +3582,14 @@ function onMacroClick(e) {
     if (t.id === 'addMacroBtn') {
         var expr = $('diceExpr').value.replace(/\s/g, '') + signed(parseInt($('diceMod').value, 10) || 0);
         if (!$('diceExpr').value.trim()) { notice('先在上方选骰子或输入表达式', true); return; }
-        var name = prompt('快捷骰名称（如：长剑攻击）：', $('diceLabel').value.trim() || expr);
-        if (!name) return;
-        list.push({ name: name.slice(0, 20), expr: expr });
+        ttAsk({ title: '保存快捷骰', text: expr, input: { value: $('diceLabel').value.trim() || expr, maxlength: 20, placeholder: '名称，如：长剑攻击' }, ok: '保存' }).then(function(name) {
+            if (!name || !name.trim()) return;
+            var l2 = loadMacros();
+            l2.push({ name: name.trim().slice(0, 20), expr: expr });
+            localStorage.setItem(macroKey(), JSON.stringify(l2));
+            renderMacros();
+        });
+        return;
     } else if (t.dataset.macro) {
         var m = list[parseInt(t.dataset.macro, 10)];
         if (m) {

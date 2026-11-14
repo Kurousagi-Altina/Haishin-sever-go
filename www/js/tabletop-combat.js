@@ -640,13 +640,20 @@ function combatAction(action) {
         renderCombatHud();
         return;
     }
-    if (action === 'end' && !confirm('结束战斗？先攻列表会保留，下次开战需要重新掷先攻。')) return;
+    var go = function(ok) { if (ok) op({ op: 'combat', action: action }); };
+    if (action === 'end') {
+        ttAsk({ title: '⚔ 结束战斗', text: '结束战斗？先攻列表会保留，下次开战需要重新掷先攻。', ok: '结束战斗' }).then(go);
+        return;
+    }
     if (action === 'start') {
         var pend = initOrder().filter(initPending);
-        if (pend.length && !confirm('还有 ' + pend.length + ' 个单位没掷先攻：' + pend.map(function(t) { return t.label || '未命名'; }).slice(0, 8).join('、') +
-            (pend.length > 8 ? '…' : '') + '\n它们按先攻 0 排在最后。仍要开始战斗？')) return;
+        if (pend.length) {
+            ttAsk({ title: '⚔ 开始战斗', text: '还有 ' + pend.length + ' 个单位没掷先攻：' + pend.map(function(t) { return t.label || '未命名'; }).slice(0, 8).join('、') +
+                (pend.length > 8 ? '…' : '') + '\n它们按先攻 0 排在最后。仍要开始战斗？', ok: '仍然开始' }).then(go);
+            return;
+        }
     }
-    op({ op: 'combat', action: action });
+    go(true);
 }
 
 function focusToken(id) {

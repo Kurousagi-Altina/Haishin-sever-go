@@ -157,9 +157,12 @@ function onStatusPanelClick(b, it) {
     if (b.dataset.sttimer != null) { editStatusTimer(it, parseInt(b.dataset.sttimer, 10)); return true; }
     if (b.dataset.stescape != null) { // 挣脱擒抱：运动 / 特技对抗擒抱时的 DC（服务器掷）
         var gs = statusList(it).filter(function(s) { return s.id === 'grappled'; })[0], edc = gs && gs.dc;
-        if (!edc) { var v = prompt('擒抱的 DC 是多少？（8 + 擒抱者力量调整值 + 熟练加值）', '12'); edc = parseInt(v, 10); if (!(edc > 0)) return true; }
-        op({ op: 'fight.escape', ids: [it.id], dc: edc });
-        econAfterAction({ cost: 'a' }, it);
+        var escape = function(dc) { op({ op: 'fight.escape', ids: [it.id], dc: dc }); econAfterAction({ cost: 'a' }, it); };
+        if (edc) { escape(edc); return true; }
+        ttAsk({ title: '挣脱擒抱', text: '擒抱的 DC 是多少？（8 + 擒抱者力量调整值 + 熟练加值）', input: { value: '12', maxlength: 3 }, ok: '掷骰挣脱' }).then(function(v) {
+            var dc = parseInt(v, 10);
+            if (dc > 0 && scene.items[it.id]) escape(dc);
+        });
         return true;
     }
     if (b.dataset.act !== 'stadd') return false;
@@ -167,9 +170,9 @@ function onStatusPanelClick(b, it) {
     var rounds = parseInt(panel.querySelector('[data-strounds]').value, 10) || 0;
     if (!id) { notice('先选择要添加的状态', true); return true; }
     if (id === 'custom') {
-        var name = prompt('状态名称：');
-        if (!name || !name.trim()) return true;
-        addStatus(it, '', rounds, name.trim());
+        ttAsk({ title: '自定义状态', input: { maxlength: 20, placeholder: '状态名称' }, ok: '添加' }).then(function(name) {
+            if (name && name.trim() && scene.items[it.id]) addStatus(scene.items[it.id], '', rounds, name.trim());
+        });
     } else addStatus(it, id, rounds);
     return true;
 }

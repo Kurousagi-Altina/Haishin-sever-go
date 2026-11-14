@@ -515,7 +515,15 @@ func (room *TTRoom) sceneView(sc *TTScene, gm bool, name string) map[string]inte
 		}
 		items = append(items, it)
 	}
-	return map[string]interface{}{"id": sc.ID, "name": sc.Name, "props": sc.propsFor(gm), "items": items}
+	view := map[string]interface{}{"id": sc.ID, "name": sc.Name, "props": sc.propsFor(gm), "items": items}
+	if gm && len(sc.Stash) > 0 { // GM：哪些地图在这个场景里收着东西（地图 asset id → 件数），资产库里标出来
+		stash := make(map[string]int, len(sc.Stash))
+		for k, v := range sc.Stash {
+			stash[k] = len(v)
+		}
+		view["stash"] = stash
+	}
+	return view
 }
 
 // logEntryFor masks hidden rolls for everyone except GMs and the roller.
@@ -783,7 +791,7 @@ func ttCanEdit(room *TTRoom, item map[string]interface{}, u ttUser, patch map[st
 func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 	sc := room.activeScene()
 	gmOnly := map[string]bool{
-		"props": true, "map.set": true, "scene.add": true, "scene.duplicate": true, "scene.rename": true,
+		"props": true, "map.set": true, "scene.add": true, "scene.duplicate": true, "scene.rename": true, "scene.move": true,
 		"scene.delete": true, "scene.activate": true, "room.rename": true, "room.settings": true,
 		"asset.delete": true, "log.clear": true, "action.undo": true,
 		"handout": true, "handout.show": true, "handout.delete": true,
@@ -1046,6 +1054,24 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		}
 		target.Name = ttCleanName(req.Text, 40, target.Name)
 		room.broadcastMeta()
+
+	case "scene.move":
+		// 场景列表调顺序：mode up / down
+		for i, s := range room.Scenes {
+			if s.ID != req.Scene {
+				continue
+			}
+			j := i - 1
+			if req.Mode == "down" {
+				j = i + 1
+			}
+			if j >= 0 && j < len(room.Scenes) {
+				room.Scenes[i], room.Scenes[j] = room.Scenes[j], room.Scenes[i]
+				room.broadcastMeta()
+			}
+			return 0, ""
+		}
+		return http.StatusNotFound, "场景不存在"
 
 	case "scene.delete":
 		if len(room.Scenes) <= 1 {
