@@ -2734,7 +2734,7 @@ function onWheel(e) {
 function onKeyDown(e) {
     var tag = (e.target.tagName || '').toLowerCase();
     if (tag === 'input' || tag === 'textarea' || tag === 'select' || $('table').style.display === 'none') return;
-    if ($('rollDialog').style.display !== 'none' || $('actDialog').style.display !== 'none' || $('hoDialog').style.display !== 'none' || $('hoView').style.display !== 'none' || $('tbDialog').style.display !== 'none') return;
+    if (askOpen() || $('rollDialog').style.display !== 'none' || $('actDialog').style.display !== 'none' || $('hoDialog').style.display !== 'none' || $('hoView').style.display !== 'none' || $('tbDialog').style.display !== 'none') return;
     if (actionMode) {
         if (e.key === 'Escape') { cancelActionTargeting(); return; }
         var am = actionMode, pathOpen = isPathShape(am.act.area) && !am.locked && am.pts && am.pts.length;
@@ -2942,7 +2942,7 @@ function renderSelPanel() {
         h += row('颜色', '<input class="tt-input" type="color" data-prop="color" value="' + escapeHtml(it.color || '#e53935') + '">' +
             (it.shape === 'rect' || it.shape === 'circle' || it.shape === 'cone' ? '<label><input type="checkbox" data-prop="fill"' + (it.fill ? ' checked' : '') + '> 填充</label>' : ''));
         if (it.shape === 'text') {
-            h += row('文字', '<input class="tt-input" data-prop="text" maxlength="500" value="' + escapeHtml(it.text || '') + '" style="flex:1;">');
+            h += row('文字', '<textarea class="tt-input" data-prop="text" maxlength="500" rows="3" style="flex:1;resize:vertical;">' + escapeHtml(it.text || '') + '</textarea>');
             h += row('字号', '<input class="tt-input narrow" type="number" min="6" max="400" data-prop="size" value="' + Math.round(num(it.size, gridSize() * 0.45)) + '">');
         } else h += row('线宽', '<input class="tt-input narrow" type="number" min="1" max="64" data-prop="width" value="' + (it.width || 4) + '">');
         if (it.shape === 'circle') h += row('半径', '<span>' + distText(it.r || 0) + '</span>');
@@ -3256,7 +3256,8 @@ function onAssetClick(e) {
     } else if (b.dataset.setmap) {
         setMapAsset(a.id, null);
     } else if (b.dataset.delasset) {
-        if (confirm('从资产库移除「' + a.name + '」？（已放置的棋子不受影响）')) op({ op: 'asset.delete', ids: [a.id] });
+        ttAsk({ title: '移除图片', text: '从资产库移除「' + a.name + '」？已经放在地图上的棋子和正在用的地图不受影响。', ok: '移除', danger: true })
+            .then(function(ok) { if (ok) op({ op: 'asset.delete', ids: [a.id] }); });
     }
 }
 
@@ -3393,11 +3394,14 @@ function onSceneClick(e) {
     case 'duplicate': op({ op: 'scene.duplicate', scene: s.id }); break;
     case 'export': exportScene(s.id); break;
     case 'rename':
-        var name = prompt('新的场景名：', s.name);
-        if (name && name.trim()) op({ op: 'scene.rename', scene: s.id, text: name.trim() });
+        ttAsk({ title: '场景改名', input: { value: s.name, maxlength: 40, placeholder: '场景名' }, ok: '改名' }).then(function(name) {
+            if (name && name.trim() && name.trim() !== s.name) op({ op: 'scene.rename', scene: s.id, text: name.trim() });
+        });
         break;
     case 'delete':
-        if (confirm('删除场景「' + s.name + '」？场景内所有棋子、绘制、迷雾将被删除。')) op({ op: 'scene.delete', scene: s.id });
+        if ((room.scenes || []).length <= 1) { notice('至少要保留一个场景', true); break; }
+        ttAsk({ title: '删除场景', text: '删除场景「' + s.name + '」？里面的地图、棋子、绘制、墙和迷雾会一起删除，不能撤销。需要的话先点「导出」备份。',
+            ok: '删除场景', danger: true }).then(function(ok) { if (ok) op({ op: 'scene.delete', scene: s.id }); });
         break;
     }
 }
@@ -3907,7 +3911,9 @@ function init() {
         if (tool === 'wall' && wallOpts.mode === 'select') { var ws = eventPos(e); wallDblClick(toWorld(ws.x, ws.y)); return; } // 加 / 删拐点
         if (tool !== 'select') return;
         var s = eventPos(e), hit = hitTest(toWorld(s.x, s.y), ['token']);
-        if (hit && hit.sheet && sheets[hit.sheet]) openSheet(hit.sheet, hit.id);
+        if (hit && hit.sheet && sheets[hit.sheet]) { openSheet(hit.sheet, hit.id); return; }
+        var th = hit ? null : hitTest(toWorld(s.x, s.y), ['draw']);
+        if (th && th.shape === 'text' && canEdit(th)) editTextItem(th); // 双击文字：改内容
     });
     $('stage').addEventListener('dragover', onDragOver);
     $('stage').addEventListener('dragleave', function() { $('stage').classList.remove('drop-hover'); });

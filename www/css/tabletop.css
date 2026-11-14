@@ -314,6 +314,12 @@ details.feature summary { cursor: pointer; font-size: 13px; }
 .rd-preview { display: flex; align-items: center; gap: 6px; }
 .rd-preview .rd-expr { flex: 1; min-width: 0; color: #ffd54f; font-size: 16px; font-weight: bold; background: #1f2229; }
 .rd-btns { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+.ask-box { width: min(420px, calc(100vw - 32px)); }
+.ask-text { color: #ddd; line-height: 1.6; margin: 4px 0 12px; white-space: pre-wrap; word-break: break-word; }
+.ask-input { width: 100%; box-sizing: border-box; margin-bottom: 10px; }
+textarea.ask-input { resize: vertical; min-height: 80px; }
+.ask-choices { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.ask-choices .tt-btn { text-align: left; }
 .rd-btns .tt-hint { flex: 1; }
 
 /* ===== 战斗：先攻 / 回合 / 目标 / 资源 ===== */
