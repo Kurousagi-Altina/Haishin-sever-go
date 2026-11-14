@@ -388,15 +388,23 @@ function shortRest(it) {
     var sh = it.sheet && sheets[it.sheet];
     var m = sh && String(sh.hd || '').match(/(\d+)\s*\/\s*(\d+)\s*(?:d(\d+))?/i);
     var cur = m ? parseInt(m[1], 10) : 0, max = m ? parseInt(m[2], 10) : 0, die = m && m[3] ? parseInt(m[3], 10) : 0;
-    if (!die) {
-        var d = prompt('生命骰是几面骰？（如 8 表示 d8）', '8');
+    var title = '🛌 短休：' + (it.label || '棋子');
+    var askDie = die ? Promise.resolve(die) : ttAsk({ title: title, text: '角色卡上没写生命骰的面数。生命骰是几面骰？（如 8 表示 d8）', input: { value: '8', maxlength: 3 }, ok: '下一步' })
+        .then(function(d) {
+            if (d == null) return 0;
+            d = parseInt(d, 10);
+            if (!(d >= 4 && d <= 12)) { notice('生命骰面数不对', true); return 0; }
+            return d;
+        });
+    askDie.then(function(d) {
         if (!d) return;
-        die = parseInt(d, 10);
-        if (!(die >= 4 && die <= 12)) { notice('生命骰面数不对', true); return; }
-    }
-    var n = prompt('花费几个生命骰？' + (max ? '（剩余 ' + cur + ' / ' + max + '）' : ''), '1');
-    if (!n) return;
-    n = parseInt(n, 10);
+        die = d;
+        return ttAsk({ title: title, text: '花费几个 d' + die + ' 生命骰？' + (max ? '（剩余 ' + cur + ' / ' + max + '）' : ''), input: { value: '1', maxlength: 3 }, ok: '回血' })
+            .then(function(n) { if (n != null) shortRestSpend(it, sh, parseInt(n, 10), die, cur, max); });
+    });
+}
+
+function shortRestSpend(it, sh, n, die, cur, max) {
     if (!(n > 0) || (max && n > cur)) { notice('生命骰不够', true); return; }
     var con = 0;
     if (sh && sh.abilities) {
@@ -487,7 +495,10 @@ function onLogClick(e) {
     if (rb) { useReaction(rb); return; }
     var u = e.target.closest('[data-undo]');
     if (u) {
-        if (confirm('撤销这次结算？目标的生命值、临时生命、状态和死亡豁免会恢复到结算前。')) op({ op: 'action.undo', text: u.dataset.undo });
+        var undoId = u.dataset.undo;
+        ttAsk({ title: '↶ 撤销结算', text: '撤销这次结算？目标的生命值、临时生命、状态和死亡豁免会恢复到结算前。', ok: '撤销' }).then(function(ok) {
+            if (ok) op({ op: 'action.undo', text: undoId });
+        });
         return;
     }
     var b = e.target.closest('[data-reroll]');
@@ -921,8 +932,10 @@ function onStatusBarClick(e) {
     if (a.dataset.sbendconc) {
         var t = scene.items[a.dataset.sbendconc];
         if (!t || !canEdit(t)) return;
-        if (!confirm('结束「' + (t.label || '') + '」的专注？留在地图上的专注区域会一起移除。')) return;
-        patchItems([{ id: t.id, status: (t.status || []).filter(function(s) { return s.id !== 'concentration'; }) }]);
+        ttAsk({ title: '结束专注', text: '结束「' + (t.label || '') + '」的专注？留在地图上的专注区域会一起移除。', ok: '结束专注' }).then(function(ok) {
+            var tt = ok && scene.items[t.id];
+            if (tt) patchItems([{ id: tt.id, status: (tt.status || []).filter(function(s) { return s.id !== 'concentration'; }) }]);
+        });
     }
 }
 

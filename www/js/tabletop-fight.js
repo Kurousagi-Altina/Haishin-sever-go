@@ -288,10 +288,12 @@ function editStatusTimer(it, i) {
     if (!s) return;
     var cur = [s.save ? (ABIL_CN[s.save.ab] || '') + ' ' + s.save.dc + (s.save.when === 'start' ? ' 开始' : '') : '',
         s.dot ? s.dot.dice + ' ' + (s.dot.type || '') + (s.dot.when === 'end' ? ' 结束' : '') : ''].filter(Boolean).join('；');
-    var v = prompt('「' + (s.name || '状态') + '」的回合效果（用分号隔开，留空 = 清除）：\n' +
-        '· 回合结束时重复豁免：如「感知 15」（加「开始」改为回合开始时）\n' +
-        '· 回合开始时受到伤害：如「1d6 火焰」（加「结束」改为回合结束时）', cur);
-    if (v == null) return;
+    ttAsk({ title: '「' + (s.name || '状态') + '」的回合效果', input: { value: cur, maxlength: 80, placeholder: '留空 = 清除' }, ok: '保存',
+        text: '用分号隔开，留空 = 清除：\n· 回合结束时重复豁免：如「感知 15」（加「开始」改为回合开始时）\n· 回合开始时受到伤害：如「1d6 火焰」（加「结束」改为回合结束时）' })
+        .then(function(v) { if (v != null && scene.items[it.id]) statusTimerApply(it, list, s, v); });
+}
+
+function statusTimerApply(it, list, s, v) {
     delete s.save; delete s.dot;
     String(v).split(/[；;]/).forEach(function(part) {
         part = part.trim();

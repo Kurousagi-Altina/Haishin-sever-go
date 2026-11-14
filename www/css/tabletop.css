@@ -315,6 +315,8 @@ details.feature summary { cursor: pointer; font-size: 13px; }
 .rd-preview .rd-expr { flex: 1; min-width: 0; color: #ffd54f; font-size: 16px; font-weight: bold; background: #1f2229; }
 .rd-btns { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
 .ask-box { width: min(420px, calc(100vw - 32px)); }
+.asset-card .asset-badge { position: absolute; top: 4px; right: 4px; padding: 1px 6px; border-radius: 8px; font-size: 11px; background: rgba(255,183,77,0.9); color: #222; z-index: 1; }
+.asset-card .asset-badge.cur { background: rgba(129,199,132,0.92); }
 .ask-text { color: #ddd; line-height: 1.6; margin: 4px 0 12px; white-space: pre-wrap; word-break: break-word; }
 .ask-input { width: 100%; box-sizing: border-box; margin-bottom: 10px; }
 textarea.ask-input { resize: vertical; min-height: 80px; }

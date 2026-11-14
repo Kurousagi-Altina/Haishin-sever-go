@@ -94,7 +94,9 @@ function onSheetPaneClick(e) {
     case 'place': placeSheetToken(sheets[id] || sh); break;
     case 'share': op({ op: 'sheet', sheet: { id: id, shared: !sheets[id].shared || null } }); break;
     case 'del':
-        if (confirm('删除「' + sheets[id].name + '」？已放置的棋子会保留，但不再关联这张卡。')) op({ op: 'sheet.delete', ids: [id] });
+        ttAsk({ title: '删除角色卡', text: '删除「' + sheets[id].name + '」？已放置的棋子会保留，但不再关联这张卡。', ok: '删除', danger: true }).then(function(ok) {
+            if (ok) op({ op: 'sheet.delete', ids: [id] });
+        });
         break;
     case 'xlsx': $('xlsxFile').click(); break;
     case 'lookup': openLookup(''); break;
@@ -507,9 +509,13 @@ function importXlsx(input) {
         var existing = Object.keys(sheets).map(function(id) { return sheets[id]; }).filter(function(x) {
             return x.kind === 'pc' && x.name === sh.name && canEditSheet(x);
         })[0];
-        if (existing && confirm('已存在角色「' + sh.name + '」，用新文件覆盖更新吗？（取消则另建一张）')) sh.id = existing.id;
-        else sh.id = genId();
-        importSheet(sh);
+        if (!existing) { sh.id = genId(); importSheet(sh); return; }
+        ttAsk({ title: '导入角色卡', text: '已经有角色「' + sh.name + '」了。', cancel: '取消导入',
+            choices: [{ label: '用新文件覆盖更新这张卡', value: 'over' }, { label: '另建一张新卡', value: 'new' }] }).then(function(v) {
+            if (!v) return;
+            sh.id = v === 'over' ? existing.id : genId();
+            importSheet(sh);
+        });
     }).catch(apiError);
 }
 

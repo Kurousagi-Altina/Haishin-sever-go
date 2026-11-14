@@ -361,13 +361,16 @@ function dmPaneClick(e) {
         patchItems(mh.map(function(t) { return { id: t.id, hidden: allHidden ? null : true }; }));
         notice(allHidden ? '遭遇「' + d.enchide + '」对玩家显示了' : '遭遇「' + d.enchide + '」已对玩家隐藏');
     } else if (d.encdel) {
-        if (confirm('解散遭遇「' + d.encdel + '」？棋子保留在地图上。')) patchItems(encMembers(d.encdel).map(function(t) { return { id: t.id, enc: null }; }));
+        var encName = d.encdel;
+        ttAsk({ title: '解散遭遇', text: '解散遭遇「' + encName + '」？棋子保留在地图上。', ok: '解散' }).then(function(ok) {
+            if (ok) patchItems(encMembers(encName).map(function(t) { return { id: t.id, enc: null }; }));
+        });
     } else if (d.tbnew) openTableEditor(null);
     else if (d.tbroll) op({ op: 'table.roll', text: d.tbroll, hidden: !!d.hide });
     else if (d.tbedit) openTableEditor(tables.find(function(t) { return t.id === d.tbedit; }));
     else if (d.tbdel) {
         var tb = tables.find(function(t) { return t.id === d.tbdel; });
-        if (tb && confirm('删除随机表「' + tb.name + '」？')) op({ op: 'table.delete', ids: [tb.id] });
+        if (tb) ttAsk({ title: '删除随机表', text: '删除随机表「' + tb.name + '」？', ok: '删除', danger: true }).then(function(ok) { if (ok) op({ op: 'table.delete', ids: [tb.id] }); });
     }
     notesDirty();
     return true;
