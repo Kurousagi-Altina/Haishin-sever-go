@@ -866,7 +866,7 @@ function hitItem(it, w) {
     if (it.kind === 'portal') return Math.hypot(w.x - it.x, w.y - it.y) <= portalR() + 2 / view.s;
     var tol = 6 / view.s;
     var lx = w.x - (it.x || 0), ly = w.y - (it.y || 0);
-    if (it.kind === 'tile' && it.locked) return false; // 锁定的地图块点不到（防止点地图时误拖）
+    if (it.kind === 'tile' && it.locked) return false; // 锁定的地形点不到（防止点地图时误拖）
     if (it.kind === 'token' || it.kind === 'tile' || it.shape === 'text') {
         var b = itemBBox(it);
         return w.x >= b.x0 && w.x <= b.x1 && w.y >= b.y0 && w.y <= b.y1;
@@ -1188,7 +1188,7 @@ function render() {
         var img = getImg(p.mapAsset);
         if (imgReady(img)) ctx.drawImage(img, 0, 0, p.mapW || img.naturalWidth, p.mapH || img.naturalHeight);
     }
-    if (typeof drawMapTiles === 'function') drawMapTiles(); // 地图块（tabletop-maps.js）
+    if (typeof drawMapTiles === 'function') drawMapTiles(); // 地形（tabletop-maps.js）
     drawGrid();
 
     var items = sortedItems();
@@ -1707,7 +1707,7 @@ function tokenHandles() {
     var it = scene.items[ids[0]];
     if (it.kind === 'draw') return drawXformable(it) ? drawHandles(it) : null; // 绘制：四角缩放 / 顶上旋转
     if ((it.kind !== 'token' && it.kind !== 'tile') || !canEdit(it) || it.locked) return null;
-    if (it.kind === 'tile') { // 地图块：四角自由缩放，不旋转
+    if (it.kind === 'tile') { // 地形：四角自由缩放，不旋转
         var tc = { x: (it.x || 0) + (it.w || 0) / 2, y: (it.y || 0) + (it.h || 0) / 2 }, tw = (it.w || 0) / 2, th = (it.h || 0) / 2;
         return { id: it.id, c: tc, a: 0, r: 7 / view.s, top: { x: tc.x, y: tc.y - th }, rot: null,
             corners: [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(function(k) { return { x: tc.x + k[0] * tw, y: tc.y + k[1] * th, k: k }; }) };
@@ -2888,7 +2888,8 @@ function onDrop(e) {
     }
     if (assetId) {
         var a = room.assets.filter(function(x) { return x.id === assetId; })[0];
-        if (a) placeToken(a, w.x, w.y);
+        if (a && a.kind === 'terrain' && me.gm && typeof tileAdd === 'function') tileAdd(a, w); // 地形：落点就是这块地形的中心
+        else if (a) placeToken(a, w.x, w.y);
         return;
     }
     var files = Array.prototype.filter.call(e.dataTransfer.files || [], function(f) { return /^image\//.test(f.type); });
@@ -2925,7 +2926,7 @@ function renderSelPanel() {
     }
 
     var it = scene.items[ids[0]];
-    if (it.kind === 'tile' && typeof tileSelHtml === 'function') { panel.innerHTML = tileSelHtml(it); return; } // 地图块（tabletop-maps.js）
+    if (it.kind === 'tile' && typeof tileSelHtml === 'function') { panel.innerHTML = tileSelHtml(it); return; } // 地形（tabletop-maps.js）
     var edit = canEdit(it), g = gridSize();
     var title = it.zone ? '持续区域' : it.kind === 'portal' ? '🌀 传送门' : it.kind === 'note' ? '📌 笔记' : it.kind === 'trigger' ? '⚠ 触发区域' : it.kind === 'token' ? '棋子' : it.kind === 'fog' ? (it.cut ? '揭示区域' : '迷雾') :
         it.kind === 'wall' ? (WALL_STYLE[it.wtype] || WALL_STYLE.wall).name : '绘制';
@@ -3213,7 +3214,7 @@ function onSelPanelClick(e) {
     var ids = selectedIds();
     if (portalSelAct(b)) return; // 传送门（tabletop-portal.js）
     if (prepSelAct(b.dataset.act, ids)) return; // 墙体编辑 / 笔记（tabletop-prep.js）
-    if (typeof tileSelAct === 'function' && tileSelAct(b.dataset.act, ids)) return; // 地图块（tabletop-maps.js）
+    if (typeof tileSelAct === 'function' && tileSelAct(b.dataset.act, ids)) return; // 地形（tabletop-maps.js）
     if (dmSelAct(b.dataset.act, ids)) return; // 遭遇 / 触发区域（tabletop-dm.js）
     if (fightSelAct(b.dataset.act, ids)) return; // 徒手打击 / 擒抱 / 推撞（tabletop-fight.js）
     if (b.dataset.act === 'zoneGo') { zoneRetrigger(scene.items[ids[0]]); return; }
@@ -3279,21 +3280,27 @@ function onSelPanelClick(e) {
 }
 
 // ===== 资产栏 =====
+var ASSET_KIND_NAME = { token: '棋子', map: '地图', terrain: '地形' };
 function renderAssets() {
     var list = (room.assets || []).filter(function(a) { return a.kind !== 'audio' && (assetFilter === 'all' || a.kind === assetFilter); });
     if (!list.length) {
-        $('assetGrid').innerHTML = '<div class="tt-hint" style="grid-column:1/-1;">还没有' + (assetFilter === 'map' ? '地图' : '图片') + '，点上方按钮上传</div>';
+        $('assetGrid').innerHTML = '<div class="tt-hint" style="grid-column:1/-1;">还没有' + (ASSET_KIND_NAME[assetFilter] || '图片') + '，点上方按钮上传' + (assetFilter === 'terrain' ? '；地图是整块区域，地形是放在地图上任意位置的一块块地形图（草地、洞穴、房间……）' : '') + '</div>';
         return;
     }
     $('assetGrid').innerHTML = list.map(function(a) {
-        return '<div class="asset-card" draggable="true" data-asset="' + escapeHtml(a.id) + '" title="' + escapeHtml(a.name + '（' + a.by + ' 上传）') + '">' +
-            '<span class="kind">' + (a.kind === 'map' ? '地图' : '棋子') + '</span>' + assetMapBadge(a) +
+        var id = escapeHtml(a.id), k = a.kind === 'map' || a.kind === 'terrain' ? a.kind : 'token';
+        // 主按钮按分类：棋子 = 放置，地图 = 作地图（整块区域），地形 = 放到地图上（可放多块、任意位置）
+        var main = k === 'map' ? (me.gm ? '<button class="tt-btn small" data-setmap="' + id + '" title="把它作为这个场景的地图（整块区域）">作地图</button>' : '')
+            : k === 'terrain' ? (me.gm ? '<button class="tt-btn small" data-tile="' + id + '" title="把这块地形放到地图上（放在现在看着的位置，也可以直接拖到地图上）">放地形</button>' : '')
+            : '<button class="tt-btn small" data-place="' + id + '">放置</button>';
+        return '<div class="asset-card" draggable="true" data-asset="' + id + '" title="' + escapeHtml(a.name + '（' + a.by + ' 上传）') + '">' +
+            '<span class="kind">' + ASSET_KIND_NAME[k] + '</span>' + assetMapBadge(a) +
             '<img loading="lazy" src="' + assetURL(a.id) + '" alt="">' +
             '<div class="name">' + escapeHtml(a.name) + '</div>' +
-            '<div class="ops"><button class="tt-btn small" data-place="' + escapeHtml(a.id) + '">放置</button>' +
-            (me.gm ? '<button class="tt-btn small" data-setmap="' + escapeHtml(a.id) + '">作地图</button>' +
-                '<button class="tt-btn small" data-tile="' + escapeHtml(a.id) + '" title="作为地图块拼进当前场景（可以放多张地形图，每张单独对齐网格）">＋地图块</button>' +
-                '<button class="tt-btn small danger" data-delasset="' + escapeHtml(a.id) + '">✕</button>' : '') +
+            '<div class="ops">' + main +
+            (me.gm ? '<select class="tt-btn small" data-kindsel="' + id + '" title="改分类：棋子 / 地图（整块区域）/ 地形（放在地图上的一块块地形）">' +
+                ['token', 'map', 'terrain'].map(function(x) { return '<option value="' + x + '"' + (x === k ? ' selected' : '') + '>' + ASSET_KIND_NAME[x] + '</option>'; }).join('') + '</select>' +
+                '<button class="tt-btn small danger" data-delasset="' + id + '" title="从资产库移除">✕</button>' : '') +
             '</div></div>';
     }).join('');
 }
@@ -3304,6 +3311,12 @@ function assetMapBadge(a) {
     if (scene.props && scene.props.mapAsset === a.id) return '<span class="asset-badge cur">当前地图</span>';
     var n = scene.stash && scene.stash[a.id];
     return n ? '<span class="asset-badge" title="这个场景换图前在这张图上放的 ' + n + ' 个物件（墙、迷雾、笔记、怪物……）收着，点「作地图」换回来就恢复">📦 ' + n + '</span>' : '';
+}
+
+function onAssetKindChange(e) {
+    var sel = e.target.closest('[data-kindsel]');
+    if (!sel || !me.gm) return;
+    op({ op: 'asset.kind', ids: [sel.dataset.kindsel], text: sel.value });
 }
 
 function onAssetClick(e) {
@@ -3323,6 +3336,19 @@ function onAssetClick(e) {
         ttAsk({ title: '移除图片', text: '从资产库移除「' + a.name + '」？已经放在地图上的棋子和正在用的地图不受影响。', ok: '移除', danger: true })
             .then(function(ok) { if (ok) op({ op: 'asset.delete', ids: [a.id] }); });
     }
+}
+
+// 上传地形：传到资产库（分类「地形」），依次放到地图上
+function uploadTerrain(input) {
+    var files = Array.prototype.slice.call(input.files);
+    input.value = '';
+    var chain = Promise.resolve();
+    files.forEach(function(f) {
+        chain = chain.then(function() {
+            notice('正在上传 ' + f.name + '...');
+            return uploadAsset(f, 'terrain').then(function(asset) { if (asset && typeof tileAdd === 'function') tileAdd(asset); }).catch(apiError);
+        });
+    });
 }
 
 function uploadTokens(input) {
@@ -4045,6 +4071,7 @@ function init() {
     $('selPanel').addEventListener('pointerdown', function(e) { e.stopPropagation(); });
 
     $('assetGrid').addEventListener('click', onAssetClick);
+    $('assetGrid').addEventListener('change', onAssetKindChange); // 资产改分类
     $('assetGrid').addEventListener('dragstart', function(e) {
         var card = e.target.closest('[data-asset]');
         if (card) e.dataTransfer.setData('text/tt-asset', card.dataset.asset);

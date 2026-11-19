@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css?v=2026111361">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026111362">
 </head>
 <body class="tt-body">
 
@@ -322,7 +322,9 @@
                     <div class="side-scroll">
                         <div class="lobby-row" style="gap:6px;">
                             <button class="tt-btn primary" onclick="$('tokenFile').click()">上传棋子</button>
-                            <button class="tt-btn gm-only" onclick="$('mapFile').click()">导入地图</button>
+                            <button class="tt-btn gm-only" onclick="$('mapFile').click()" title="地图 = 场景的整块区域">导入地图</button>
+                            <button class="tt-btn gm-only" onclick="$('terrainFile').click()" title="地形 = 放在地图上任意位置的一块块地形图（可以选多张）；自带网格的会自动对齐">上传地形</button>
+                            <input type="file" id="terrainFile" accept="image/*" multiple style="display:none;" onchange="uploadTerrain(this)">
                             <button class="tt-btn" onclick="addMarker()" title="不需要图片的彩色标记">添加标记</button>
                             <input type="file" id="tokenFile" accept="image/*" multiple style="display:none;" onchange="uploadTokens(this)">
                         </div>
@@ -330,6 +332,7 @@
                             <button class="tt-btn small active" data-filter="all">全部</button>
                             <button class="tt-btn small" data-filter="token">棋子</button>
                             <button class="tt-btn small" data-filter="map">地图</button>
+                            <button class="tt-btn small" data-filter="terrain">地形</button>
                         </div>
                         <div class="asset-grid" id="assetGrid"></div>
                         <p class="tt-hint">把缩略图拖到地图上即可放置棋子，也可以直接把电脑里的图片拖进地图。支持 PNG / JPG / GIF / WebP，单个不超过 25MB。</p>
@@ -367,7 +370,7 @@
                                 <button class="tt-btn small" onclick="mapFitMain()" title="识别地图自带的方格线（很多地图图片自己画了网格），按它设置格子大小和偏移">🔍 识别地图网格</button>
                                 <button class="tt-btn small" onclick="mapBoxStart('main')" title="在地图上拖框框住正好一个格子，手动设置网格">▢ 框一格</button>
                             </div>
-                            <h5 style="margin-top:10px;">地图块</h5>
+                            <h5 style="margin-top:10px;">地形</h5>
                             <div id="tileList"></div>
                             <div class="tt-hint">支持普通图片，以及 Dungeondraft / DungeonFog 等导出的 Universal VTT 文件（.dd2vtt / .uvtt / .df2vtt，自动读取网格）。</div>
                         </div>
@@ -592,19 +595,19 @@
     </div>
 
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js?v=2026111361"></script>
-    <script src="js/tabletop-combat.js?v=2026111361"></script>
-    <script src="js/tabletop-status.js?v=2026111361"></script>
-    <script src="js/tabletop-action.js?v=2026111361"></script>
-    <script src="js/tabletop-extra.js?v=2026111361"></script>
-    <script src="js/tabletop-autowall.js?v=2026111361"></script>
-    <script src="js/tabletop-prep.js?v=2026111361"></script>
-    <script src="js/tabletop-maps.js?v=2026111361"></script>
-    <script src="js/tabletop-dm.js?v=2026111361"></script>
-    <script src="js/tabletop-fight.js?v=2026111361"></script>
-    <script src="js/tabletop-summon.js?v=2026111361"></script>
-    <script src="js/tabletop-class.js?v=2026111361"></script>
-    <script src="js/tabletop-portal.js?v=2026111361"></script>
-    <script src="js/tabletop.js?v=2026111361"></script>
+    <script src="js/tabletop-sheets.js?v=2026111362"></script>
+    <script src="js/tabletop-combat.js?v=2026111362"></script>
+    <script src="js/tabletop-status.js?v=2026111362"></script>
+    <script src="js/tabletop-action.js?v=2026111362"></script>
+    <script src="js/tabletop-extra.js?v=2026111362"></script>
+    <script src="js/tabletop-autowall.js?v=2026111362"></script>
+    <script src="js/tabletop-prep.js?v=2026111362"></script>
+    <script src="js/tabletop-maps.js?v=2026111362"></script>
+    <script src="js/tabletop-dm.js?v=2026111362"></script>
+    <script src="js/tabletop-fight.js?v=2026111362"></script>
+    <script src="js/tabletop-summon.js?v=2026111362"></script>
+    <script src="js/tabletop-class.js?v=2026111362"></script>
+    <script src="js/tabletop-portal.js?v=2026111362"></script>
+    <script src="js/tabletop.js?v=2026111362"></script>
 </body>
 </html>
