@@ -163,7 +163,7 @@ function drawTriggers(items) {
         ctx.setLineDash([10 / view.s, 6 / view.s]);
         ctx.strokeRect(b.x0, b.y0, b.x1 - b.x0, b.y1 - b.y0);
         ctx.restore();
-        drawLabel('⚠ ' + (it.label || '触发区域') + (it.off ? '（停用）' : it.once && it.fired ? '（已触发）' : ''), b.x0 + (b.x1 - b.x0) / 2, b.y0, spent ? '#9e9e9e' : '#ff7043');
+        drawLabel('⚠ ' + (it.label || '触发区域') + (it.off ? '（停用）' : it.once && it.fired ? '（已触发）' : ''), b.x0 + (b.x1 - b.x0) / 2, b.y0, spent ? '#9e9e9e' : '#ff7043', false, true);
     });
     if (gesture && gesture.type === 'trig') {
         var g = gesture;

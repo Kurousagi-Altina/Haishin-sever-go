@@ -83,6 +83,9 @@ func ttHPStep(props map[string]interface{}) float64 {
 // server-side unless the boss bar is set to public numbers).
 // party: 关联玩家角色卡（或主控是玩家角色的随从）的棋子——队友的血量 / AC 玩家都能看到，即使暂时由 GM 代管
 func ttPlayerItem(it map[string]interface{}, hpStep float64, party bool) map[string]interface{} {
+	if it["kind"] == "portal" {
+		return ttPlayerPortal(it)
+	}
 	// secret doors: a closed one looks like a plain wall, an opened one like an open (locked) door
 	if it["kind"] == "wall" && it["wtype"] == "secret" {
 		cp := make(map[string]interface{}, len(it))
@@ -908,6 +911,7 @@ func (room *TTRoom) applyDeath(u ttUser, gm bool, req *ttOpRequest) (int, string
 }
 
 // ===== Portals =====
+// Legacy portals (new ones are item kind "portal", see tabletop_portal.go):
 // A portal is a token with item["portal"] = {tag, r} (r = trigger radius in scene units).
 // {op:"portal", ids:[token], from:portalId (scene), target:portalId (optional)} moves the
 // token (and its followers) to another portal with the same tag. Hidden portals work as
@@ -939,6 +943,9 @@ func ttItemCenter(it map[string]interface{}) (float64, float64) {
 func (room *TTRoom) applyPortal(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 	sc := room.activeScene()
 	from := sc.Items[req.Scene]
+	if from != nil && from["kind"] == "portal" { // 新版传送门（tabletop_portal.go）
+		return room.usePortal(u, gm, sc, from, req)
+	}
 	tag, radius, ok := ttPortal(from)
 	if !ok || len(req.IDs) == 0 || (!gm && ttHiddenFrom(from, u.name)) {
 		return http.StatusBadRequest, "不是传送门"

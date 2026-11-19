@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css?v=2026111347">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026111348">
 </head>
 <body class="tt-body">
 
@@ -93,6 +93,7 @@
                 <button class="tool-btn gm-only" data-tool="fog" title="迷雾 (F)">☁</button>
                 <button class="tool-btn gm-only" data-tool="wall" title="墙体 / 门窗 (W)">🧱</button>
                 <button class="tool-btn gm-only" data-tool="note" title="房间笔记 (B)：单击地图放置编号笔记，只有 GM 看得到">📌</button>
+                <button class="tool-btn gm-only" data-tool="portal" title="传送门 (O)：单击地图放置；「连线」模式里先点出发的门再点要去的门（单向，Shift = 双向）；选中传送门在属性里设名字、手动 / 自动、目标">🌀</button>
                 <div class="tool-sep"></div>
                 <button class="tool-btn" onclick="fitView()" title="适配视图 (0)">⛶</button>
             </div>
@@ -147,6 +148,16 @@
                     <button class="tt-btn small" data-notemode="trigger" title="玩家棋子走进去时提醒 GM">⚠ 触发区域</button>
                     <span class="tt-hint" id="noteHint"></span>
                     <button class="tt-btn small" onclick="switchPane('notes')">笔记与讲义</button>
+                </div>
+
+                <!-- 传送门选项 -->
+                <div class="tool-opts" id="optsPortal">
+                    <button class="tt-btn small" data-portalmode="place" title="单击地图放一个传送门（自动命名 传送门1、2、3…）；拖动传送门可以移动">放置</button>
+                    <button class="tt-btn small" data-portalmode="link" title="先点出发的传送门，再点要去的传送门 = 加上 / 去掉一条单向通路；Shift+点 = 双向；点空地结束">🔗 连线</button>
+                    <span class="sep"></span>
+                    <label class="tt-hint" title="新放的传送门：角色走进判定圈就自动传送（不勾 = 手动，角色在一格内点击传送门）"><input type="checkbox" id="portalAutoNew"> 新放的默认自动传送</label>
+                    <select class="tt-btn small" id="portalJump" title="定位到本场景的某个传送门"><option value="">跳到传送门…</option></select>
+                    <span class="tt-hint" id="portalHint"></span>
                 </div>
 
                 <!-- 墙体选项 -->
@@ -574,17 +585,18 @@
     </div>
 
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js?v=2026111347"></script>
-    <script src="js/tabletop-combat.js?v=2026111347"></script>
-    <script src="js/tabletop-status.js?v=2026111347"></script>
-    <script src="js/tabletop-action.js?v=2026111347"></script>
-    <script src="js/tabletop-extra.js?v=2026111347"></script>
-    <script src="js/tabletop-autowall.js?v=2026111347"></script>
-    <script src="js/tabletop-prep.js?v=2026111347"></script>
-    <script src="js/tabletop-dm.js?v=2026111347"></script>
-    <script src="js/tabletop-fight.js?v=2026111347"></script>
-    <script src="js/tabletop-summon.js?v=2026111347"></script>
-    <script src="js/tabletop-class.js?v=2026111347"></script>
-    <script src="js/tabletop.js?v=2026111347"></script>
+    <script src="js/tabletop-sheets.js?v=2026111348"></script>
+    <script src="js/tabletop-combat.js?v=2026111348"></script>
+    <script src="js/tabletop-status.js?v=2026111348"></script>
+    <script src="js/tabletop-action.js?v=2026111348"></script>
+    <script src="js/tabletop-extra.js?v=2026111348"></script>
+    <script src="js/tabletop-autowall.js?v=2026111348"></script>
+    <script src="js/tabletop-prep.js?v=2026111348"></script>
+    <script src="js/tabletop-dm.js?v=2026111348"></script>
+    <script src="js/tabletop-fight.js?v=2026111348"></script>
+    <script src="js/tabletop-summon.js?v=2026111348"></script>
+    <script src="js/tabletop-class.js?v=2026111348"></script>
+    <script src="js/tabletop-portal.js?v=2026111348"></script>
+    <script src="js/tabletop.js?v=2026111348"></script>
 </body>
 </html>

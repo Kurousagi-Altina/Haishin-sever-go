@@ -304,7 +304,7 @@ function drawPortal(it) {
     ctx.arc(c.x, c.y, r, 0, Math.PI * 2);
     ctx.stroke();
     ctx.restore();
-    if (me.gm) drawLabel('⭘ 传送门 ' + (p.tag || ''), c.x, c.y - r - 22 / view.s, '#d1c4e9');
+    if (me.gm) drawLabel('⭘ 传送门 ' + (p.tag || ''), c.x, c.y - r, '#d1c4e9', false, true);
 }
 
 // 棋子停在传送门上：选择目的地后由服务器传送（隐藏的传送门可以当作单向出口）
@@ -640,7 +640,7 @@ function dxLabel(g) {
 
 // 右键轻点 / 触屏长按：点到已选中的多个物件之一（或选区范围里的空地）→ 批量菜单；点到单个物件 → 它的菜单
 function rightTapMenu(w, sx, sy) {
-    var sel = selectedIds(), rh = hitTest(w, me.gm ? ['token', 'note', 'trigger', 'draw'] : ['token', 'draw']);
+    var sel = selectedIds(), rh = hitTest(w, me.gm ? ['token', 'note', 'trigger', 'portal', 'draw'] : ['token', 'draw']);
     if (sel.length > 1 && (rh ? selected[rh.id] : pointInSelection(w, sel))) { openItemsMenu(sel, sx, sy); return true; }
     if (rh) { openTokenMenu(rh, sx, sy); return true; }
     return false;
@@ -661,6 +661,7 @@ function itemKindName(it) {
     if (it.kind === 'token') return it.label || '棋子';
     if (it.kind === 'note') return '笔记' + (it.title ? '：' + it.title : '');
     if (it.kind === 'trigger') return '触发区域' + (it.label ? '：' + it.label : '');
+    if (it.kind === 'portal') return '传送门：' + portalTitle(it);
     if (it.kind === 'fog') return '迷雾';
     if (it.kind === 'wall') return '墙';
     if (it.zone) return '区域：' + (it.label || '');
@@ -747,7 +748,7 @@ function openOtherMenu(it, sx, sy) {
     var edit = canEdit(it), h = '<div class="tm-title">' + escapeHtml(itemKindName(it)) + '</div>';
     if (it.kind === 'draw' && it.zone && edit) h += '<button data-tm="zone">⚡ 对区域内的生物结算</button>';
     if (it.kind === 'draw' && edit && !it.zone && !it.locked) h += '<div class="tm-hint">' + (it.shape === 'text' ? '选中后拖四角缩放' : '选中后拖四角缩放、拖顶上的圆点旋转') + '</div>';
-    if (me.gm && it.kind === 'draw') h += '<button data-tm="hide">' + (it.hidden ? '👁 对玩家显示' : '🙈 对玩家隐藏') + '</button>';
+    if (me.gm && (it.kind === 'draw' || it.kind === 'portal')) h += '<button data-tm="hide">' + (it.hidden ? '👁 对玩家显示' : '🙈 对玩家隐藏') + '</button>';
     if (me.gm) h += '<button data-tm="lock">' + (it.locked ? '🔓 解锁' : '🔒 锁定位置') + '</button>';
     if (edit && it.kind === 'draw') h += '<button data-tm="top">⬆ 移到最上层</button><button data-tm="bottom">⬇ 移到最下层</button>';
     if (edit) h += '<button data-tm="del" class="tm-danger">🗑 删除</button>';

@@ -488,7 +488,7 @@ function drawNotes(items) {
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText(label, it.x, it.y + r * 0.06);
         ctx.restore();
-        if (it.title && (selected[it.id] || r * view.s >= 10)) drawLabel(it.title, it.x, it.y + r, it.color || '#ffca28', true);
+        if (it.title) drawLabel(it.title, it.x, it.y + r, it.color || '#ffca28', true, true);
     });
 }
 
