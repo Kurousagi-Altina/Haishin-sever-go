@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css?v=2026111347">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026111360">
 </head>
 <body class="tt-body">
 
@@ -350,7 +350,14 @@
                                 <input type="file" id="mapFile" accept="image/*,.dd2vtt,.uvtt,.df2vtt,.json" style="display:none;" onchange="importMap(this)">
                             </div>
                             <div class="tt-hint" id="mapInfo" style="margin-bottom:8px;"></div>
+                            <div class="set-row"><label>地图缩放 %</label><input class="tt-input" id="setMapPct" type="number" min="1" step="1" placeholder="原图 100%" title="主地图按原图大小的百分比自由缩放（墙、棋子不跟着动）"></div>
                             <div class="set-row"><label>横向格数</label><input class="tt-input" id="setCells" type="number" min="1" step="1" placeholder="按地图宽度自动算格子大小"></div>
+                            <div class="lobby-row" style="gap:6px;margin:4px 0;">
+                                <button class="tt-btn small" onclick="mapFitMain()" title="识别地图自带的方格线（很多地图图片自己画了网格），按它设置格子大小和偏移">🔍 识别地图网格</button>
+                                <button class="tt-btn small" onclick="mapBoxStart('main')" title="在地图上拖框框住正好一个格子，手动设置网格">▢ 框一格</button>
+                            </div>
+                            <h5 style="margin-top:10px;">地图块</h5>
+                            <div id="tileList"></div>
                             <div class="tt-hint">支持普通图片，以及 Dungeondraft / DungeonFog 等导出的 Universal VTT 文件（.dd2vtt / .uvtt / .df2vtt，自动读取网格）。</div>
                         </div>
                         <div class="side-section" id="sceneEnterBox"></div>
@@ -361,7 +368,7 @@
                             <div class="set-row"><label>格子大小(px)</label><input class="tt-input" id="setGridSize" type="number" min="8" step="0.5"></div>
                             <div class="set-row"><label>偏移 X / Y</label><input class="tt-input" id="setGridOffX" type="number" step="0.5"><input class="tt-input" id="setGridOffY" type="number" step="0.5"></div>
                             <div class="set-row"><label>颜色</label><input class="tt-input" id="setGridColor" type="color"><input type="range" id="setGridAlpha" min="0" max="1" step="0.05"></div>
-                            <div class="set-row"><label>每格距离</label><input class="tt-input" id="setGridScale" type="number" min="0" step="0.5"><input class="tt-input" id="setGridUnit" maxlength="8" style="width:60px;flex:none;"></div>
+                            <div class="set-row"><label>每格距离</label><input class="tt-input" id="setGridScale" type="number" min="0.5" step="0.5" placeholder="5" title="一格代表多少尺（默认 5 尺）"><span style="flex:none;align-self:center;">尺</span></div>
                             <div class="set-row"><label>网格类型</label>
                                 <select class="tt-select" id="setGridType"><option value="square">方格</option><option value="hexRows">六角格（横排）</option><option value="hexCols">六角格（竖排）</option></select>
                             </div>
@@ -574,17 +581,18 @@
     </div>
 
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js?v=2026111347"></script>
-    <script src="js/tabletop-combat.js?v=2026111347"></script>
-    <script src="js/tabletop-status.js?v=2026111347"></script>
-    <script src="js/tabletop-action.js?v=2026111347"></script>
-    <script src="js/tabletop-extra.js?v=2026111347"></script>
-    <script src="js/tabletop-autowall.js?v=2026111347"></script>
-    <script src="js/tabletop-prep.js?v=2026111347"></script>
-    <script src="js/tabletop-dm.js?v=2026111347"></script>
-    <script src="js/tabletop-fight.js?v=2026111347"></script>
-    <script src="js/tabletop-summon.js?v=2026111347"></script>
-    <script src="js/tabletop-class.js?v=2026111347"></script>
-    <script src="js/tabletop.js?v=2026111347"></script>
+    <script src="js/tabletop-sheets.js?v=2026111360"></script>
+    <script src="js/tabletop-combat.js?v=2026111360"></script>
+    <script src="js/tabletop-status.js?v=2026111360"></script>
+    <script src="js/tabletop-action.js?v=2026111360"></script>
+    <script src="js/tabletop-extra.js?v=2026111360"></script>
+    <script src="js/tabletop-autowall.js?v=2026111360"></script>
+    <script src="js/tabletop-prep.js?v=2026111360"></script>
+    <script src="js/tabletop-maps.js?v=2026111360"></script>
+    <script src="js/tabletop-dm.js?v=2026111360"></script>
+    <script src="js/tabletop-fight.js?v=2026111360"></script>
+    <script src="js/tabletop-summon.js?v=2026111360"></script>
+    <script src="js/tabletop-class.js?v=2026111360"></script>
+    <script src="js/tabletop.js?v=2026111360"></script>
 </body>
 </html>

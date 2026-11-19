@@ -159,7 +159,7 @@ function gridSteps(dx, dy) {
 }
 
 function stepsToUnits(steps) { return steps * num(scene.props.gridScale, 5); }
-function unitName() { return scene.props.gridUnit || 'ft'; }
+function unitName() { return '尺'; } // 单位固定用尺
 
 // 生物之间的距离：判定圆边缘之间（按测距规则计算圆心距离，再减去两个半径）
 function creatureDist(a, b, aCenter, bCenter) {

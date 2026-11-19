@@ -595,7 +595,6 @@ function onPropsChanged() {
         $('setGridColor').value = p.gridColor || '#000000';
         $('setGridAlpha').value = num(p.gridAlpha, 0.35);
         $('setGridScale').value = num(p.gridScale, 5);
-        $('setGridUnit').value = p.gridUnit || 'ft';
         $('setMeasure').value = p.measure || 'euclidean';
         $('setBg').value = p.bg || '#1b1d22';
         $('setVision').checked = !!p.vision;
@@ -603,6 +602,8 @@ function onPropsChanged() {
         $('setGridType').value = p.gridType || 'square';
         $('setDark').checked = !!p.dark;
         $('setCells').value = p.mapW ? Math.round(p.mapW / gridSize() * 100) / 100 : '';
+        var mimg = p.mapAsset && getImg(p.mapAsset);
+        $('setMapPct').value = p.mapW && mimg && mimg.naturalWidth ? Math.round(p.mapW / mimg.naturalWidth * 1000) / 10 : '';
     }
     var stashN = Object.keys(scene.stash || {}).filter(function(k) { return k && k !== p.mapAsset; }).length;
     $('mapInfo').dataset.stash = stashN ? '　这个场景还有 ' + stashN + ' 张地图收着东西，资产库里标了 📦' : '';
@@ -656,10 +657,14 @@ function bindSettings() {
     bind('setGridColor', 'gridColor', text);
     bind('setGridAlpha', 'gridAlpha', number);
     bind('setGridScale', 'gridScale', number);
-    bind('setGridUnit', 'gridUnit', text);
     bind('setMeasure', 'measure', text);
     bind('setBg', 'bg', text);
     bind('setVision', 'vision', function(el) { return el.checked || null; });
+    $('setMapPct').addEventListener('change', function() { // 主地图自由缩放（按原图宽度的百分比）
+        var p = scene.props, pct = parseFloat(this.value), img = p.mapAsset && getImg(p.mapAsset);
+        if (!img || !img.naturalWidth || !(pct > 0)) return;
+        setProps({ mapW: Math.round(img.naturalWidth * pct) / 100, mapH: Math.round(img.naturalHeight * pct) / 100 });
+    });
     $('setCells').addEventListener('change', function() {
         var cells = parseFloat(this.value);
         if (!scene.props.mapW || !(cells >= 1)) return;
@@ -741,9 +746,9 @@ function zoomBy(factor) {
 }
 
 function fitView() {
-    var p = scene.props, b = null;
-    if (p.mapAsset && p.mapW) {
-        b = { x0: 0, y0: 0, x1: p.mapW, y1: p.mapH };
+    var p = scene.props, b = typeof mapBounds === 'function' ? mapBounds() : null;
+    if (b) {
+        b = { x0: b.x0, y0: b.y0, x1: b.x1, y1: b.y1 };
     } else {
         Object.keys(scene.items).forEach(function(id) {
             var bb = itemBBox(scene.items[id]);
@@ -782,7 +787,7 @@ function measureText(ax, ay, bx, by) {
 }
 
 function fmtDist(v) {
-    return (Math.round(v * 10) / 10) + ' ' + (scene.props.gridUnit || 'ft');
+    return (Math.round(v * 10) / 10) + ' 尺'; // 单位固定用尺
 }
 
 function distText(len) { return fmtDist(len / gridSize() * num(scene.props.gridScale, 5)); }
@@ -811,6 +816,7 @@ function canMove(it) {
 function itemBBox(it) {
     var x = it.x || 0, y = it.y || 0;
     if (it.kind === 'token') return { x0: x, y0: y, x1: x + (it.w || gridSize()), y1: y + (it.h || gridSize()) };
+    if (it.kind === 'tile') return { x0: x, y0: y, x1: x + (it.w || 0), y1: y + (it.h || 0) };
     if (it.kind === 'note') { var nr = noteRadius(); return { x0: x - nr, y0: y - nr, x1: x + nr, y1: y + nr }; }
     if (it.kind === 'trigger') return trigRect(it);
     if (it.shape === 'text') return textBBox(it);
@@ -858,7 +864,8 @@ function hitItem(it, w) {
     if (it.kind === 'trigger') return trigHit(it, w); // 触发区域：点边框选中
     var tol = 6 / view.s;
     var lx = w.x - (it.x || 0), ly = w.y - (it.y || 0);
-    if (it.kind === 'token' || it.shape === 'text') {
+    if (it.kind === 'tile' && it.locked) return false; // 锁定的地图块点不到（防止点地图时误拖）
+    if (it.kind === 'token' || it.kind === 'tile' || it.shape === 'text') {
         var b = itemBBox(it);
         return w.x >= b.x0 && w.x <= b.x1 && w.y >= b.y0 && w.y <= b.y1;
     }
@@ -1116,8 +1123,8 @@ function toolRightUndo(kind) {
 }
 
 function fogCoverAll() {
-    var p = scene.props, g = gridSize(), b;
-    if (p.mapAsset && p.mapW) b = { x: 0, y: 0, w: p.mapW, h: p.mapH };
+    var p = scene.props, g = gridSize(), b, mb = typeof mapBounds === 'function' ? mapBounds() : null;
+    if (mb) b = { x: mb.x0, y: mb.y0, w: mb.x1 - mb.x0, h: mb.y1 - mb.y0 };
     else { var c = toWorld(0, 0), d = toWorld(canvas.clientWidth, canvas.clientHeight); b = { x: c.x - g * 20, y: c.y - g * 20, w: d.x - c.x + g * 40, h: d.y - c.y + g * 40 }; }
     createItems([{ id: genId(), kind: 'fog', shape: 'rect', x: b.x, y: b.y, points: [[0, 0], [b.w, b.h]], z: nextZ() }]);
 }
@@ -1179,6 +1186,7 @@ function render() {
         var img = getImg(p.mapAsset);
         if (imgReady(img)) ctx.drawImage(img, 0, 0, p.mapW || img.naturalWidth, p.mapH || img.naturalHeight);
     }
+    if (typeof drawMapTiles === 'function') drawMapTiles(); // 地图块（tabletop-maps.js）
     drawGrid();
 
     var items = sortedItems();
@@ -1197,6 +1205,7 @@ function render() {
     if (me.gm) drawWalls(items, true);
     if (me.gm) drawAutoWall();
     if (me.gm) { drawDoorGaps(); drawFogRoomPreview(); drawTriggers(items); drawNotes(items); }
+    if (typeof drawTileOutlines === 'function') { drawTileOutlines(); drawMapBox(); }
     drawOverlays();
 
     var animating = remote.pings.length || Object.keys(remote.pointers).length || Object.keys(remote.rulers).length;
@@ -1210,10 +1219,10 @@ function drawGrid() {
     if (g * view.s < 5) return;
     var ox = num(p.gridOffX, 0), oy = num(p.gridOffY, 0);
     var a = toWorld(0, 0), b = toWorld(canvas.clientWidth, canvas.clientHeight);
-    var x0 = a.x, y0 = a.y, x1 = b.x, y1 = b.y;
-    if (p.mapAsset && p.mapW) {
-        x0 = Math.max(x0, 0); y0 = Math.max(y0, 0);
-        x1 = Math.min(x1, p.mapW); y1 = Math.min(y1, p.mapH);
+    var x0 = a.x, y0 = a.y, x1 = b.x, y1 = b.y, mb = typeof mapBounds === 'function' ? mapBounds() : (p.mapAsset && p.mapW ? { x0: 0, y0: 0, x1: p.mapW, y1: p.mapH } : null);
+    if (mb) {
+        x0 = Math.max(x0, mb.x0); y0 = Math.max(y0, mb.y0);
+        x1 = Math.min(x1, mb.x1); y1 = Math.min(y1, mb.y1);
         if (x0 >= x1 || y0 >= y1) return;
     }
     if (isHex()) {
@@ -1684,7 +1693,12 @@ function tokenHandles() {
     if (ids.length !== 1 || tool !== 'select' || (gesture && gesture.type === 'move')) return null;
     var it = scene.items[ids[0]];
     if (it.kind === 'draw') return drawXformable(it) ? drawHandles(it) : null; // 绘制：四角缩放 / 顶上旋转
-    if (it.kind !== 'token' || !canEdit(it) || it.locked) return null;
+    if ((it.kind !== 'token' && it.kind !== 'tile') || !canEdit(it) || it.locked) return null;
+    if (it.kind === 'tile') { // 地图块：四角自由缩放，不旋转
+        var tc = { x: (it.x || 0) + (it.w || 0) / 2, y: (it.y || 0) + (it.h || 0) / 2 }, tw = (it.w || 0) / 2, th = (it.h || 0) / 2;
+        return { id: it.id, c: tc, a: 0, r: 7 / view.s, top: { x: tc.x, y: tc.y - th }, rot: null,
+            corners: [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(function(k) { return { x: tc.x + k[0] * tw, y: tc.y + k[1] * th, k: k }; }) };
+    }
     var g = gridSize(), c = tokenCenter(it), pad = 3 / view.s;
     var hw = (it.w || g) / 2 + pad, hh = (it.h || g) / 2 + pad, a = (it.rot || 0) * Math.PI / 180;
     var cos = Math.cos(a), sin = Math.sin(a);
@@ -1875,7 +1889,7 @@ function visionViewers() {
 function computeVision() {
     var g = gridSize(), p = scene.props;
     var viewers = visionViewers();
-    var key = wallsVersion + '|' + (p.mapW || 0) + '|' + (p.dark ? 1 : 0) + '|' + viewers.map(function(t) {
+    var key = wallsVersion + '|' + (typeof mapBoundsKey === 'function' ? mapBoundsKey() : (p.mapW || 0)) + '|' + (p.dark ? 1 : 0) + '|' + viewers.map(function(t) {
         return t.id + ',' + Math.round(t.x) + ',' + Math.round(t.y) + ',' + (t.sight || 0);
     }).join(';') + '|' + (p.dark ? lightTokens().map(function(t) {
         return t.id + ',' + Math.round(t.x) + ',' + Math.round(t.y) + ',' + num(t.light.bright, 0) + ',' + num(t.light.dim, 0);
@@ -1883,7 +1897,8 @@ function computeVision() {
     if (key === visCache.key) return visCache.polys;
 
     var b;
-    if (p.mapAsset && p.mapW) b = { x0: -g, y0: -g, x1: p.mapW + g, y1: p.mapH + g };
+    var vb = typeof mapBounds === 'function' ? mapBounds() : null;
+    if (vb) b = { x0: vb.x0 - g, y0: vb.y0 - g, x1: vb.x1 + g, y1: vb.y1 + g };
     else b = { x0: -20000, y0: -20000, x1: 20000, y1: 20000 };
     var segs = wallSegments(false);
     var polys = viewers.map(function(t) {
@@ -2295,12 +2310,12 @@ function onPointerDown(e) {
             var t = scene.items[hh.h.id];
             var orig = { w: t.w || gridSize(), h: t.h || gridSize(), x: t.x, y: t.y, rot: t.rot || 0 };
             gesture = { type: hh.kind === 'rot' ? 'rotate' : 'resize', start: start, id: t.id, ids: idSet([t.id]), orig: orig, lastSent: 0, snap: snapshotItems([t.id], ['x', 'y', 'w', 'h', 'rot', 'fp']) };
-            if (hh.kind !== 'rot') { var pp = {}; pinTokenCells(t, pp); gesture.pinFp = pp.fp || 0; } // 缩放图片不改判定圆
+            if (hh.kind !== 'rot' && t.kind === 'token') { var pp = {}; pinTokenCells(t, pp); gesture.pinFp = pp.fp || 0; } // 缩放图片不改判定圆
             canvas.style.cursor = hh.kind === 'rot' ? 'grabbing' : handleCursor(hh);
             return;
         }
         var hit = tool === 'select' ? selectedZoneAt(w) : null;
-        if (!hit) hit = hitTest(w, tool === 'fog' ? ['fog'] : tool === 'wall' ? ['wall'] : tool === 'note' ? ['note', 'trigger'] : me.gm ? ['token', 'note', 'trigger', 'draw'] : ['token', 'draw']);
+        if (!hit) hit = hitTest(w, tool === 'fog' ? ['fog'] : tool === 'wall' ? ['wall'] : tool === 'note' ? ['note', 'trigger'] : me.gm ? ['token', 'note', 'trigger', 'draw', 'tile'] : ['token', 'draw']);
         if (tool === 'wall' && typeof wallSegAt === 'function') { // 墙：点中的是折线里的哪一段
             var wsg = !e.shiftKey && hit && wallSegAt(w), prevSeg = wallSeg && wallSeg.id + ':' + wallSeg.seg;
             wallSeg = wsg && wsg.id === hit.id ? { id: wsg.id, seg: wsg.seg } : null;
@@ -2883,6 +2898,7 @@ function renderSelPanel() {
     }
 
     var it = scene.items[ids[0]];
+    if (it.kind === 'tile' && typeof tileSelHtml === 'function') { panel.innerHTML = tileSelHtml(it); return; } // 地图块（tabletop-maps.js）
     var edit = canEdit(it), g = gridSize();
     var title = it.zone ? '持续区域' : it.kind === 'note' ? '📌 笔记' : it.kind === 'trigger' ? '⚠ 触发区域' : it.kind === 'token' ? '棋子' : it.kind === 'fog' ? (it.cut ? '揭示区域' : '迷雾') :
         it.kind === 'wall' ? (WALL_STYLE[it.wtype] || WALL_STYLE.wall).name : '绘制';
@@ -2926,7 +2942,7 @@ function renderSelPanel() {
         h += row('旋转', '<input type="range" data-prop="rot" min="0" max="359" step="1" value="' + (it.rot || 0) + '" style="flex:1;"><span class="tt-hint">' + (it.rot || 0) + '°</span>');
         if (!it.locked) h += '<div class="tt-hint" style="margin:-4px 0 8px;">地图上拖四角自由缩放（Shift 吸附半格）、拖顶部圆钮旋转（Alt 不吸附）；也可 Alt+滚轮旋转、Shift+滚轮缩放。缩放只改图片，判定圆按体型</div>';
         h += row('视野', '<input class="tt-input narrow" data-prop="sight" type="number" min="0" step="5" value="' + (it.sight || '') + '" placeholder="不限"> ' +
-            escapeHtml(scene.props.gridUnit || 'ft') + '<span class="tt-hint">（动态视野用）</span>');
+            '尺<span class="tt-hint">（动态视野用）</span>');
         h += combatPanelHtml(it, row);
         h += statusPanelHtml(it, row);
         var lt = it.light || {};
@@ -3166,6 +3182,7 @@ function onSelPanelClick(e) {
     if (!b) return;
     var ids = selectedIds();
     if (prepSelAct(b.dataset.act, ids)) return; // 墙体编辑 / 笔记（tabletop-prep.js）
+    if (typeof tileSelAct === 'function' && tileSelAct(b.dataset.act, ids)) return; // 地图块（tabletop-maps.js）
     if (dmSelAct(b.dataset.act, ids)) return; // 遭遇 / 触发区域（tabletop-dm.js）
     if (fightSelAct(b.dataset.act, ids)) return; // 徒手打击 / 擒抱 / 推撞（tabletop-fight.js）
     if (b.dataset.act === 'zoneGo') { zoneRetrigger(scene.items[ids[0]]); return; }
@@ -3244,6 +3261,7 @@ function renderAssets() {
             '<div class="name">' + escapeHtml(a.name) + '</div>' +
             '<div class="ops"><button class="tt-btn small" data-place="' + escapeHtml(a.id) + '">放置</button>' +
             (me.gm ? '<button class="tt-btn small" data-setmap="' + escapeHtml(a.id) + '">作地图</button>' +
+                '<button class="tt-btn small" data-tile="' + escapeHtml(a.id) + '" title="作为地图块拼进当前场景（可以放多张地形图，每张单独对齐网格）">＋地图块</button>' +
                 '<button class="tt-btn small danger" data-delasset="' + escapeHtml(a.id) + '">✕</button>' : '') +
             '</div></div>';
     }).join('');
@@ -3260,12 +3278,14 @@ function assetMapBadge(a) {
 function onAssetClick(e) {
     var b = e.target.closest('button');
     if (!b) return;
-    var id = b.dataset.place || b.dataset.setmap || b.dataset.delasset;
+    var id = b.dataset.place || b.dataset.setmap || b.dataset.delasset || b.dataset.tile;
     var a = room.assets.filter(function(x) { return x.id === id; })[0];
     if (!a) return;
     if (b.dataset.place) {
         var c = toWorld(canvas.clientWidth / 2, canvas.clientHeight / 2);
         placeToken(a, c.x, c.y);
+    } else if (b.dataset.tile) {
+        tileAdd(a);
     } else if (b.dataset.setmap) {
         setMapAsset(a.id, null);
     } else if (b.dataset.delasset) {
