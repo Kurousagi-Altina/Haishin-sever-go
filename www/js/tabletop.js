@@ -542,7 +542,7 @@ function renderUsers() {
 
 function updateGmUi() {
     document.querySelectorAll('.gm-only').forEach(function(el) { el.style.display = me.gm ? '' : 'none'; });
-    if (!me.gm && (tool === 'fog' || tool === 'wall' || tool === 'note')) setTool('select');
+    if (!me.gm && (tool === 'fog' || tool === 'wall' || tool === 'note' || tool === 'portal')) setTool('select');
     var activeTab = document.querySelector('.side-tab.active');
     if (activeTab && activeTab.style.display === 'none') switchPane('dice');
 }
@@ -818,6 +818,7 @@ function itemBBox(it) {
     if (it.kind === 'token') return { x0: x, y0: y, x1: x + (it.w || gridSize()), y1: y + (it.h || gridSize()) };
     if (it.kind === 'tile') return { x0: x, y0: y, x1: x + (it.w || 0), y1: y + (it.h || 0) };
     if (it.kind === 'note') { var nr = noteRadius(); return { x0: x - nr, y0: y - nr, x1: x + nr, y1: y + nr }; }
+    if (it.kind === 'portal') { var pr = portalR(); return { x0: x - pr, y0: y - pr, x1: x + pr, y1: y + pr }; }
     if (it.kind === 'trigger') return trigRect(it);
     if (it.shape === 'text') return textBBox(it);
     if (it.shape === 'circle') { var r = it.r || 0; return { x0: x - r, y0: y - r, x1: x + r, y1: y + r }; }
@@ -862,6 +863,7 @@ function pointInPoly(x, y, pts) {
 function hitItem(it, w) {
     if (it.kind === 'note') return Math.hypot(w.x - it.x, w.y - it.y) <= noteRadius() + 2 / view.s; // 房间笔记的编号圆
     if (it.kind === 'trigger') return trigHit(it, w); // 触发区域：点边框选中
+    if (it.kind === 'portal') return Math.hypot(w.x - it.x, w.y - it.y) <= portalR() + 2 / view.s;
     var tol = 6 / view.s;
     var lx = w.x - (it.x || 0), ly = w.y - (it.y || 0);
     if (it.kind === 'tile' && it.locked) return false; // 锁定的地图块点不到（防止点地图时误拖）
@@ -1191,6 +1193,7 @@ function render() {
 
     var items = sortedItems();
     items.forEach(function(it) { if (it.kind === 'draw') drawShape(ctx, it); });
+    drawPortals(items);
     var vision = visionActive() ? computeVision() : null;
     items.forEach(function(it) {
         if (it.kind !== 'token') return;
@@ -1296,11 +1299,12 @@ function drawShape(c, it) {
         if (it.zone && !it.fill) { c.globalAlpha = 0.55; c.lineCap = 'butt'; } // 墙类区域：按厚度画成半透明的带子
         c.stroke();
         c.globalAlpha = 1;
-        if (it.zone && it.label) { // 区域名称
+        var zk = it.zone && it.label ? labelScale() : 0; // 区域名称跟着缩放（同 drawLabel），缩得太小不画
+        if (zk) { // 区域名称
             var zc = { x: 0, y: 0 }, zp = shapePoints(it);
             if (it.shape !== 'circle' && zp.length) zc = { x: zp.reduce(function(s, p) { return s + p[0]; }, 0) / zp.length, y: zp.reduce(function(s, p) { return s + p[1]; }, 0) / zp.length };
             c.setLineDash([]);
-            c.font = 'bold ' + Math.round(13 / view.s) + 'px sans-serif';
+            c.font = 'bold ' + Math.round(13 * zk / view.s) + 'px sans-serif';
             c.textAlign = 'center';
             c.textBaseline = 'middle';
             c.lineWidth = 3 / view.s;
@@ -1379,7 +1383,7 @@ function drawToken(it) {
             ctx.restore();
         }
     }
-    if (it.label) drawLabel(it.label, x + w / 2, y + h, it.hidden ? '#ba68c8' : '#fff', true);
+    if (it.label) drawLabel(it.label, x + w / 2, y + h, it.hidden ? '#ba68c8' : '#fff', true, true);
     drawTokenBadges(it);
     drawStatusIcons(it);
     drawPortal(it);
@@ -1394,20 +1398,29 @@ function drawToken(it) {
 }
 
 // 屏幕尺寸固定的文字标签；below=true 时画在点的下方
-function drawLabel(text, wx, wy, color, below) {
+// 地图上物件的名字（棋子、笔记、触发区域、传送门）跟着缩放变大变小：一格在屏幕上约 64 px 时是 12 px 字，
+// 夹在 0.55～2.5 倍之间；缩得很小（一格不到约 19 px）就不画，免得盖住整张图。测距、手势读数等提示不缩放
+function labelScale() {
+    var k = gridSize() * view.s / 64;
+    return k < 0.3 ? 0 : Math.max(0.55, Math.min(2.5, k));
+}
+
+function drawLabel(text, wx, wy, color, below, scaled) {
+    var k = scaled ? labelScale() : 1;
+    if (!k) return;
     var s = toScreen(wx, wy);
     ctx.save();
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.font = '12px sans-serif';
-    var tw = ctx.measureText(text).width + 10;
-    var ty = below ? s.y + 3 : s.y - 22;
+    ctx.font = Math.round(12 * k * 10) / 10 + 'px sans-serif';
+    var tw = ctx.measureText(text).width + 10 * k, bh = 18 * k;
+    var ty = below ? s.y + 3 * k : s.y - 22 * k;
     ctx.fillStyle = 'rgba(0,0,0,0.72)';
-    roundRect(ctx, s.x - tw / 2, ty, tw, 18, 5);
+    roundRect(ctx, s.x - tw / 2, ty, tw, bh, 5 * k);
     ctx.fill();
     ctx.fillStyle = color || '#fff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(text, s.x, ty + 9.5);
+    ctx.fillText(text, s.x, ty + bh / 2 + 0.5 * k);
     ctx.restore();
 }
 
@@ -1503,7 +1516,7 @@ function drawTurnStart() {
     ctx.lineWidth = 1.5 / view.s;
     ctx.stroke();
     ctx.restore();
-    drawLabel('回合开始', sx, sy + r, '#ffd54f', true);
+    drawLabel('回合开始', sx, sy + r, '#ffd54f', true, true);
 }
 
 function drawOverlays() {
@@ -1537,7 +1550,7 @@ function drawOverlays() {
                 ctx.strokeStyle = '#ce93d8';
                 ctx.beginPath(); ctx.moveTo(c1.x, c1.y); ctx.lineTo(c2.x, c2.y); ctx.stroke();
                 ctx.restore();
-                drawLabel('🔗 跟随 ' + (lead.label || ''), c1.x, c1.y - (it.h || g) / 2 - 26 / view.s, '#e1bee7');
+                drawLabel('🔗 跟随 ' + (lead.label || ''), c1.x, c1.y - (it.h || g) / 2 - 4 / view.s, '#e1bee7', false, true);
             }
         }
     });
@@ -2181,7 +2194,7 @@ function clearWallPlan() {
 // ===== 工具 =====
 function setTool(t) {
     if (t === 'pointer') t = 'select'; // 指示已合并进选择工具（右键拖动）
-    if ((t === 'fog' || t === 'wall' || t === 'note') && !me.gm) return;
+    if ((t === 'fog' || t === 'wall' || t === 'note' || t === 'portal') && !me.gm) return;
     if (t !== 'ruler') endRulerPath();
     if (tool === 'wall' && t !== 'wall') finishWall();
     tool = t;
@@ -2191,6 +2204,9 @@ function setTool(t) {
     $('optsFog').classList.toggle('show', t === 'fog');
     $('optsWall').classList.toggle('show', t === 'wall');
     $('optsNote').classList.toggle('show', t === 'note');
+    $('optsPortal').classList.toggle('show', t === 'portal');
+    if (t !== 'portal') portalLinkSrc = '';
+    portalSyncUI();
     if (typeof doorGapSync === 'function') doorGapSync();
     if (t !== 'select' && !(t === 'fog' && fogOpts.shape === 'select') && !(t === 'wall' && wallOpts.mode === 'select')) selectOnly([]);
     updateCursor();
@@ -2201,7 +2217,7 @@ function updateCursor() {
     var c = 'default';
     if (gesture && gesture.type === 'pan') c = 'grabbing';
     else if (spaceDown || tool === 'pan') c = 'grab';
-    else if (tool === 'draw' || tool === 'ruler' || tool === 'note' || (tool === 'fog' && fogOpts.shape !== 'select') || (tool === 'wall' && (wallOpts.mode === 'draw' || wallOpts.mode === 'auto'))) c = 'crosshair';
+    else if (tool === 'draw' || tool === 'ruler' || tool === 'note' || (tool === 'portal' && portalOpts.mode === 'place') || (tool === 'fog' && fogOpts.shape !== 'select') || (tool === 'wall' && (wallOpts.mode === 'draw' || wallOpts.mode === 'auto'))) c = 'crosshair';
     canvas.style.cursor = c;
 }
 
@@ -2302,7 +2318,8 @@ function onPointerDown(e) {
         return;
     }
 
-    if (tool === 'select' || tool === 'note' || (tool === 'fog' && fogOpts.shape === 'select') || (tool === 'wall' && wallOpts.mode === 'select')) {
+    if (tool === 'portal' && portalOpts.mode === 'link') { portalLinkClick(w, e.shiftKey); return; } // 🌀 连线
+    if (tool === 'select' || tool === 'note' || tool === 'portal' || (tool === 'fog' && fogOpts.shape === 'select') || (tool === 'wall' && wallOpts.mode === 'select')) {
         if (tool === 'wall' && !e.shiftKey && wallVertexDown(w, start, e)) { requestRender(); return; } // 拖墙的拐点
         var hh = tool === 'select' ? handleAt(w) : null;
         if (hh && hh.h.draw) { gesture = dxStart(hh, start); canvas.style.cursor = hh.kind === 'rot' ? 'grabbing' : handleCursor(hh); return; }
@@ -2315,7 +2332,7 @@ function onPointerDown(e) {
             return;
         }
         var hit = tool === 'select' ? selectedZoneAt(w) : null;
-        if (!hit) hit = hitTest(w, tool === 'fog' ? ['fog'] : tool === 'wall' ? ['wall'] : tool === 'note' ? ['note', 'trigger'] : me.gm ? ['token', 'note', 'trigger', 'draw', 'tile'] : ['token', 'draw']);
+        if (!hit) hit = hitTest(w, tool === 'fog' ? ['fog'] : tool === 'wall' ? ['wall'] : tool === 'note' ? ['note', 'trigger'] : tool === 'portal' ? ['portal'] : me.gm ? ['token', 'note', 'trigger', 'portal', 'draw', 'tile'] : ['token', 'portal', 'draw']);
         if (tool === 'wall' && typeof wallSegAt === 'function') { // 墙：点中的是折线里的哪一段
             var wsg = !e.shiftKey && hit && wallSegAt(w), prevSeg = wallSeg && wallSeg.id + ':' + wallSeg.seg;
             wallSeg = wsg && wsg.id === hit.id ? { id: wsg.id, seg: wsg.seg } : null;
@@ -2334,6 +2351,8 @@ function onPointerDown(e) {
                 return;
             }
         }
+        // 点击传送门 = 使用（玩家总是；GM 要先选中附近的棋子，否则照常选中传送门）
+        if (hit && hit.kind === 'portal' && tool === 'select' && !e.shiftKey && (!me.gm || portalUsers(hit).length)) { portalClick(hit); return; }
         if (hit) {
             if (e.shiftKey) {
                 if (selected[hit.id]) delete selected[hit.id]; else selected[hit.id] = true;
@@ -2347,6 +2366,8 @@ function onPointerDown(e) {
                 movable.forEach(function(id) { orig[id] = { x: scene.items[id].x || 0, y: scene.items[id].y || 0 }; });
                 gesture = { type: 'move', start: start, ids: idSet(movable), orig: orig, lastSent: 0, snap: snapshotItems(movable, ['x', 'y', 'moved', 'movedKey']) };
             }
+        } else if (tool === 'portal' && !e.shiftKey) {
+            createPortalAt(w); // 🌀：单击放传送门
         } else if (tool === 'note' && !e.shiftKey) {
             if (dmNoteMode === 'trigger') trigDown(w, start); else createNoteAt(w); // 📌：单击放笔记 / 拖出触发区域
         } else if (tool === 'select' && !e.shiftKey && e.pointerType === 'touch') {
@@ -2612,7 +2633,7 @@ function onPointerUp(e) {
         });
         if (movedZones.length === 1) { var mz = movedZones[0]; setTimeout(function() { if (!actionMode && scene.items[mz.id]) zoneRetrigger(scene.items[mz.id], true); }, 50); }
         queueItems(patches);
-        if (!blocked) setTimeout(function() { checkPortals(Object.keys(g.orig)); }, 50);
+        if (!blocked) setTimeout(function() { if (!portalAfterMove(g.orig)) checkPortals(Object.keys(g.orig)); }, 50);
         Object.keys(g.orig).forEach(function(mid) { oaCheckMove(mid, g.orig[mid], g.trail); }); // 借机攻击提示
         break;
     case 'wvert':
@@ -2771,7 +2792,7 @@ function onKeyDown(e) {
         else if (ck === 'v' && clipItems.length) { e.preventDefault(); pasteItems(); }
         return;
     }
-    var keyTools = { v: 'select', h: 'pan', d: 'draw', m: 'ruler', l: 'select', f: 'fog', w: 'wall', b: 'note' };
+    var keyTools = { v: 'select', h: 'pan', d: 'draw', m: 'ruler', l: 'select', f: 'fog', w: 'wall', b: 'note', o: 'portal' };
     var k = e.key.toLowerCase();
     if (k === 't') {
         var hov = hitTest(cursorWorld, ['token']);
@@ -2832,7 +2853,13 @@ function onKeyDown(e) {
             if (add) { p.moved = add.moved; p.movedKey = add.movedKey; }
             return p;
         }).filter(Boolean);
-        if (patches.length) { e.preventDefault(); patchItems(patches); }
+        if (patches.length) {
+            e.preventDefault();
+            var before = {};
+            patches.forEach(function(p) { before[p.id] = { x: scene.items[p.id].x || 0, y: scene.items[p.id].y || 0 }; });
+            patchItems(patches);
+            setTimeout(function() { portalAfterMove(before); }, 50); // 方向键走进自动传送门
+        }
     }
 }
 
@@ -2900,7 +2927,7 @@ function renderSelPanel() {
     var it = scene.items[ids[0]];
     if (it.kind === 'tile' && typeof tileSelHtml === 'function') { panel.innerHTML = tileSelHtml(it); return; } // 地图块（tabletop-maps.js）
     var edit = canEdit(it), g = gridSize();
-    var title = it.zone ? '持续区域' : it.kind === 'note' ? '📌 笔记' : it.kind === 'trigger' ? '⚠ 触发区域' : it.kind === 'token' ? '棋子' : it.kind === 'fog' ? (it.cut ? '揭示区域' : '迷雾') :
+    var title = it.zone ? '持续区域' : it.kind === 'portal' ? '🌀 传送门' : it.kind === 'note' ? '📌 笔记' : it.kind === 'trigger' ? '⚠ 触发区域' : it.kind === 'token' ? '棋子' : it.kind === 'fog' ? (it.cut ? '揭示区域' : '迷雾') :
         it.kind === 'wall' ? (WALL_STYLE[it.wtype] || WALL_STYLE.wall).name : '绘制';
     var h = '<h4>' + title + ' <button class="tt-btn small" data-act="close">✕</button></h4>';
     if (!edit) {
@@ -2950,8 +2977,8 @@ function renderSelPanel() {
             '<input class="tt-input narrow" data-prop="lightD" type="number" min="0" step="5" value="' + (lt.dim || '') + '" placeholder="微光" title="明亮之外再延伸的微光（尺）" style="width:52px;">' +
             '<select class="tt-select" data-prop="lightPreset" style="width:72px;"><option value="">预设</option><option value="20/20">火把</option><option value="30/30">提灯</option>' +
             '<option value="60/60">牛眼提灯</option><option value="20/20">光亮术</option><option value="40/40">日光术(大)</option><option value="0/0">熄灭</option></select>');
-        if (me.gm) h += row('传送门', '<label><input type="checkbox" data-prop="portalOn"' + (it.portal ? ' checked' : '') + '> 是传送门</label>' +
-            (it.portal ? '<input class="tt-input narrow" data-prop="portalTag" maxlength="12" value="' + escapeHtml(it.portal.tag || '') + '" title="同一标签的传送门互通">' : ''));
+        if (me.gm && it.portal) h += row('传送门', '<label title="旧版传送门（同标签互通）。新的请用工具栏 🌀 放置，可以设单向 / 多个目标 / 自动传送"><input type="checkbox" data-prop="portalOn" checked> 旧版传送门</label>' +
+            '<input class="tt-input narrow" data-prop="portalTag" maxlength="12" value="' + escapeHtml(it.portal.tag || '') + '" title="同一标签的传送门互通">');
         h += transformPanelHtml(it, row);
         var linked = it.sheet && sheets[it.sheet];
         h += row('角色卡', linked ? '<button class="tt-btn small" data-act="sheet">' + escapeHtml(linked.name) + '</button>' +
@@ -2976,6 +3003,8 @@ function renderSelPanel() {
             '<label><input type="checkbox" data-prop="locked"' + (it.locked ? ' checked' : '') + '> 上锁（玩家打不开）</label>');
         h += '<div class="tt-hint">墙：挡视线和移动；窗：只挡移动；门：关着时同墙，玩家可点击开关；暗门：玩家看不到也打不开，GM 打开后才能通行。</div>';
         h += wallSelHtml([it.id]);
+    } else if (it.kind === 'portal') {
+        h += portalSelHtml(it);
     } else if (it.kind === 'note') {
         h += noteSelHtml(it);
     } else if (it.kind === 'trigger') {
@@ -3114,6 +3143,7 @@ function zeroHpStatus(it, hp, patch) {
 
 function onSelPanelChange(e) {
     var el = e.target, prop = el.dataset.prop;
+    if (portalSelChange(el)) return; // 传送门设置（tabletop-portal.js）
     var ids = selectedIds();
     if (el.dataset.zoneonce !== undefined && ids.length === 1) {
         var zi = scene.items[ids[0]];
@@ -3181,6 +3211,7 @@ function onSelPanelClick(e) {
     var b = e.target.closest('button');
     if (!b) return;
     var ids = selectedIds();
+    if (portalSelAct(b)) return; // 传送门（tabletop-portal.js）
     if (prepSelAct(b.dataset.act, ids)) return; // 墙体编辑 / 笔记（tabletop-prep.js）
     if (typeof tileSelAct === 'function' && tileSelAct(b.dataset.act, ids)) return; // 地图块（tabletop-maps.js）
     if (dmSelAct(b.dataset.act, ids)) return; // 遭遇 / 触发区域（tabletop-dm.js）
@@ -4058,6 +4089,7 @@ function init() {
     initExtra();
     initAutoWall();
     initPrep();
+    initPortals();
     initDm();
     initFight();
     $('setHpStep').addEventListener('change', function() { setProps({ hpStep: parseFloat(this.value) }); });
