@@ -17,7 +17,7 @@ var view = { x: 0, y: 0, s: 1 };
 var tool = 'select';
 var drawOpts = { shape: 'pen', color: '#e53935', width: 4, fill: false };
 var fogOpts = { mode: 'cover', shape: 'rect' };
-var recentMade = { fog: [], draw: [] }; // 自己刚画的迷雾 / 绘制（右键轻点逐笔撤销）
+var recentMade = { fog: [], draw: [], portal: [] }; // 自己刚画的迷雾 / 绘制 / 放的传送门（右键轻点逐个撤销）
 var wallOpts = { type: 'wall', mode: 'draw', shape: 'line', lockDoor: false }; // shape：line 逐点折线 / rect 拖出矩形 / ellipse 拖出圆形
 var wallDraft = null;
 var delConfirm = null; // Delete 删很多个物件时的二次确认
@@ -818,7 +818,7 @@ function itemBBox(it) {
     if (it.kind === 'token') return { x0: x, y0: y, x1: x + (it.w || gridSize()), y1: y + (it.h || gridSize()) };
     if (it.kind === 'tile') return { x0: x, y0: y, x1: x + (it.w || 0), y1: y + (it.h || 0) };
     if (it.kind === 'note') { var nr = noteRadius(); return { x0: x - nr, y0: y - nr, x1: x + nr, y1: y + nr }; }
-    if (it.kind === 'portal') { var pr = portalR(); return { x0: x - pr, y0: y - pr, x1: x + pr, y1: y + pr }; }
+    if (it.kind === 'portal') { var pr = portalR(it); return { x0: x - pr, y0: y - pr, x1: x + pr, y1: y + pr }; }
     if (it.kind === 'trigger') return trigRect(it);
     if (it.shape === 'text') return textBBox(it);
     if (it.shape === 'circle') { var r = it.r || 0; return { x0: x - r, y0: y - r, x1: x + r, y1: y + r }; }
@@ -863,7 +863,7 @@ function pointInPoly(x, y, pts) {
 function hitItem(it, w) {
     if (it.kind === 'note') return Math.hypot(w.x - it.x, w.y - it.y) <= noteRadius() + 2 / view.s; // 房间笔记的编号圆
     if (it.kind === 'trigger') return trigHit(it, w); // 触发区域：点边框选中
-    if (it.kind === 'portal') return Math.hypot(w.x - it.x, w.y - it.y) <= portalR() + 2 / view.s;
+    if (it.kind === 'portal') return Math.hypot(w.x - it.x, w.y - it.y) <= portalR(it) + 2 / view.s;
     var tol = 6 / view.s;
     var lx = w.x - (it.x || 0), ly = w.y - (it.y || 0);
     if (it.kind === 'tile' && it.locked) return false; // 锁定的地图块点不到（防止点地图时误拖）
@@ -1117,7 +1117,7 @@ function toolRightUndo(kind) {
         var id = r.pop(), it = scene.items[id];
         if (it && canEdit(it)) {
             deleteItems([id]);
-            notice(kind === 'fog' ? '已撤销上一笔' + (it.cut ? '揭示' : '遮盖') + '（Ctrl+Z 恢复）' : '已撤销上一笔（Ctrl+Z 恢复）');
+            notice(kind === 'fog' ? '已撤销上一笔' + (it.cut ? '揭示' : '遮盖') + '（Ctrl+Z 恢复）' : kind === 'portal' ? '已撤回刚放的「' + portalTitle(it) + '」（Ctrl+Z 恢复）' : '已撤销上一笔（Ctrl+Z 恢复）');
             return;
         }
     }
@@ -1594,6 +1594,8 @@ function drawOverlays() {
             if (tr) drawLabel((tr.rot || 0) + '°', tr.x + (tr.w || g) / 2, tr.y - 30 / view.s, '#fff');
         } else if (gesture.type === 'dxform') {
             drawLabel(dxLabel(gesture), gesture.c.x, gesture.c.y, '#fff');
+        } else if (gesture.type === 'pscale') {
+            drawLabel(ptScaleLabel(gesture), gesture.c.x, gesture.c.y, '#fff');
         }
     }
 
@@ -1703,8 +1705,10 @@ function drawRuler(a, b, color, who) {
 // 顶部圆形手柄拖动 = 旋转（吸附 15°，Alt 自由）。手柄跟随棋子旋转。
 function tokenHandles() {
     var ids = selectedIds();
-    if (ids.length !== 1 || tool !== 'select' || (gesture && gesture.type === 'move')) return null;
+    if (ids.length !== 1 || (gesture && gesture.type === 'move')) return null;
     var it = scene.items[ids[0]];
+    if (it && it.kind === 'portal' && (tool === 'select' || (tool === 'portal' && portalOpts.mode === 'place'))) return portalHandles(it); // 传送门：四角缩放（GM）
+    if (tool !== 'select') return null;
     if (it.kind === 'draw') return drawXformable(it) ? drawHandles(it) : null; // 绘制：四角缩放 / 顶上旋转
     if ((it.kind !== 'token' && it.kind !== 'tile') || !canEdit(it) || it.locked) return null;
     if (it.kind === 'tile') { // 地图块：四角自由缩放，不旋转
@@ -2254,7 +2258,7 @@ function onPointerDown(e) {
         return;
     }
     if (rulerPath && e.button === 2) { endRulerPath(); return; } // 右键结束尺子
-    if (e.button === 2 && !spaceDown && !actionMode && (tool === 'fog' || tool === 'draw')) { // 右键：多边形回退一个点；轻点 = 撤销上一笔；拖动 = 平移
+    if (e.button === 2 && !spaceDown && !actionMode && (tool === 'fog' || tool === 'draw' || tool === 'portal')) { // 右键：多边形回退一个点；轻点 = 撤销上一笔（🌀：点传送门 = 菜单）；拖动 = 平移
         if (tool === 'fog' && polyDraft) {
             if (polyDraft.points.length > 1) polyDraft.points.pop(); else { polyDraft = null; notice('已取消这个多边形'); }
             requestRender();
@@ -2321,7 +2325,8 @@ function onPointerDown(e) {
     if (tool === 'portal' && portalOpts.mode === 'link') { portalLinkClick(w, e.shiftKey); return; } // 🌀 连线
     if (tool === 'select' || tool === 'note' || tool === 'portal' || (tool === 'fog' && fogOpts.shape === 'select') || (tool === 'wall' && wallOpts.mode === 'select')) {
         if (tool === 'wall' && !e.shiftKey && wallVertexDown(w, start, e)) { requestRender(); return; } // 拖墙的拐点
-        var hh = tool === 'select' ? handleAt(w) : null;
+        var hh = tool === 'select' || tool === 'portal' ? handleAt(w) : null;
+        if (hh && hh.h.portal) { gesture = ptScaleStart(hh, start); canvas.style.cursor = handleCursor(hh); return; }
         if (hh && hh.h.draw) { gesture = dxStart(hh, start); canvas.style.cursor = hh.kind === 'rot' ? 'grabbing' : handleCursor(hh); return; }
         if (hh) {
             var t = scene.items[hh.h.id];
@@ -2527,6 +2532,9 @@ function onPointerMove(e) {
     case 'dxform':
         dxMove(gesture, w, e);
         break;
+    case 'pscale':
+        ptScaleMove(gesture, w, e);
+        break;
     case 'marquee':
         gesture.b = w;
         break;
@@ -2588,7 +2596,8 @@ function onPointerUp(e) {
     case 'pan':
         updateCursor();
         if (g.actionUndo && !g.start.moved) actionRightClick(); // 选目标时右键轻点
-        if (g.toolUndo && !g.start.moved) toolRightUndo(g.toolUndo); // 迷雾 / 绘制：右键轻点撤销上一笔
+        if (g.toolUndo === 'portal' && !g.start.moved) portalRightTap(g.start); // 🌀：右键轻点传送门 = 菜单，空地 = 撤回刚放的
+        else if (g.toolUndo && !g.start.moved) toolRightUndo(g.toolUndo); // 迷雾 / 绘制：右键轻点撤销上一笔
         if (g.clearSel && !g.start.moved && !e.shiftKey) selectOnly([]); // 点空地：取消选择
         break;
     case 'move':
@@ -2649,6 +2658,12 @@ function onPointerUp(e) {
             if (g.pinFp) { rp.fp = g.pinFp; t.fp = g.pinFp; }
             queueItems([rp]);
         }
+        $('selPanel').dataset.ids = '';
+        renderSelPanel();
+        updateCursor();
+        break;
+    case 'pscale':
+        ptScaleEnd(g);
         $('selPanel').dataset.ids = '';
         renderSelPanel();
         updateCursor();
@@ -2731,7 +2746,7 @@ function cancelGesture() {
     var g = gesture;
     if (g && g.type === 'ruler') sendFx({ t: 'ruler-end' });
     gesture = null;
-    if (g && (g.type === 'move' || g.type === 'resize' || g.type === 'rotate' || g.type === 'wvert' || g.type === 'dxform') && g.start && g.start.moved && g.snap) {
+    if (g && (g.type === 'move' || g.type === 'resize' || g.type === 'rotate' || g.type === 'wvert' || g.type === 'dxform' || g.type === 'pscale') && g.start && g.start.moved && g.snap) {
         var back = [];
         g.snap.forEach(function(s) {
             var it = scene.items[s.id];

@@ -403,6 +403,7 @@ func (room *TTRoom) importScenePack(pack *ttScenePack) (string, error) {
 		}
 		it["id"] = id
 	}
+	sc.migrateLegacyPortals() // 旧模板里的旧版传送门改成新的
 	var added []map[string]interface{}
 	for _, sh := range pack.Sheets {
 		if sh == nil {
