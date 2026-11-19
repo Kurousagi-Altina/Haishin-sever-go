@@ -826,7 +826,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 				continue
 			}
 			kind, _ := patch["kind"].(string)
-			if kind != "token" && kind != "draw" && !((kind == "fog" || kind == "wall" || kind == "note" || kind == "trigger" || kind == "portal") && gm) {
+			if kind != "token" && kind != "draw" && !((kind == "fog" || kind == "wall" || kind == "note" || kind == "trigger" || kind == "portal" || kind == "tile") && gm) {
 				return http.StatusForbidden, "无权创建该物件"
 			}
 			if !gm && ((kind == "token" && !room.setting("playerTokens", true)) || (kind == "draw" && !room.setting("playerDraw", true))) {
