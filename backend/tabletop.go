@@ -387,6 +387,10 @@ func (room *TTRoom) normalize() {
 			}
 			it["id"] = id
 		}
+		if n := sc.migrateLegacyPortals(); n > 0 { // 旧版传送门（棋子 + 标签）改成新的传送门物件
+			log.Printf("[TABLETOP] room %s scene %s: converted %d legacy portals", room.ID, sc.ID, n)
+			room.dirty = true
+		}
 		scenes = append(scenes, sc)
 	}
 	room.Scenes = scenes

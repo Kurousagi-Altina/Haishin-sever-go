@@ -7,7 +7,8 @@ var portalOpts = { mode: 'place' }; // place 放置 / link 连线
 var portalLinkSrc = '';
 
 function isPortal(it) { return !!it && it.kind === 'portal'; }
-function portalR() { return gridSize() * 0.5; } // 传送门本身占一格
+function portalSize(p) { return Math.max(0.25, Math.min(20, num(p && p.size, 1))); } // 直径（格），默认 1 格
+function portalR(p) { return gridSize() * portalSize(p) / 2; }
 function portalAutoR(p) { return num(p.r, gridSize() * 0.5); }
 function portalTitle(p) { return (p && p.name) || '传送门'; }
 function scenePortals() { return sortedItems().filter(isPortal); }
@@ -30,7 +31,7 @@ function createPortalAt(w) {
 function drawPortals(items) {
     var ports = items.filter(isPortal);
     if (!ports.length) return;
-    var r = portalR(), gmView = me.gm && !$('fogPreview').checked;
+    var gmView = me.gm && !$('fogPreview').checked;
     if (gmView) { // 通路箭头：🌀 工具里全部显示，平时只显示选中传送门的
         var showAll = tool === 'portal';
         ports.forEach(function(p) {
@@ -43,6 +44,7 @@ function drawPortals(items) {
         });
     }
     ports.forEach(function(p) {
+        var r = portalR(p);
         ctx.save();
         if (p.hidden) ctx.globalAlpha = 0.5;
         if (p.mode === 'auto') { // 自动传送的判定圈
@@ -92,10 +94,10 @@ function drawPortals(items) {
 function drawPortalLink(p, q, hot) {
     var dx = q.x - p.x, dy = q.y - p.y, len = Math.hypot(dx, dy);
     if (len < 1) return;
-    var ux = dx / len, uy = dy / len, off = 5 / view.s, r = portalR() + 4 / view.s;
-    var ax = p.x + ux * r - uy * off, ay = p.y + uy * r + ux * off; // 往右偏一点：双向时两条线分开
-    var bx = q.x - ux * r - uy * off, by = q.y - uy * r + ux * off;
-    if (len <= r * 2) return;
+    var ux = dx / len, uy = dy / len, off = 5 / view.s, ra = portalR(p) + 4 / view.s, rb = portalR(q) + 4 / view.s;
+    var ax = p.x + ux * ra - uy * off, ay = p.y + uy * ra + ux * off; // 往右偏一点：双向时两条线分开
+    var bx = q.x - ux * rb - uy * off, by = q.y - uy * rb + ux * off;
+    if (len <= ra + rb) return;
     ctx.save();
     ctx.strokeStyle = ctx.fillStyle = hot ? '#ffd54f' : 'rgba(179,136,255,0.75)';
     ctx.lineWidth = (hot ? 2.5 : 1.5) / view.s;
@@ -113,10 +115,10 @@ function drawPortalLink(p, q, hot) {
 }
 
 // ===== 使用 =====
-// 手动：棋子边缘离传送门（占一格）不超过一格；自动传送门的判定圈里也算
+// 手动：棋子边缘离传送门边缘不超过一格；自动传送门的判定圈里也算
 function portalReach(tok, p) {
     var g = gridSize(), c = tokenCenter(tok), d = Math.hypot(c.x - p.x, c.y - p.y), half = Math.max(tok.w || g, tok.h || g) / 2;
-    return d - half <= g * 1.6 || (p.mode === 'auto' && d <= portalAutoR(p) + g * 0.2);
+    return d - half - portalR(p) <= g * 1.1 || (p.mode === 'auto' && d <= portalAutoR(p) + g * 0.2);
 }
 
 function portalTraveller(t) { return t && t.kind === 'token' && !portalOf(t) && isCreatureToken(t); }
@@ -225,7 +227,7 @@ function portalSyncUI() {
     var src = portalLinkSrc && scene.items[portalLinkSrc];
     hint.textContent = portalOpts.mode === 'link' ?
         (isPortal(src) ? '从「' + portalTitle(src) + '」出发：点要去的传送门 = 加上 / 去掉通路（Shift+点 = 双向），点空地结束' : '先点出发的传送门') :
-        '单击地图放一个传送门；拖动可以移动；点中传送门在右侧属性里改名字、方式和目标';
+        '单击地图放一个传送门；拖动可以移动，拖四角缩放；右键点传送门 = 菜单（删除），右键点空地 = 撤回刚放的；点中传送门在左侧属性里改名字、方式和目标';
 }
 
 function portalJumpFill() {
@@ -245,6 +247,50 @@ function focusPortal(id) {
     requestRender();
 }
 
+// 🌀 工具里右键轻点：连线中 = 结束连线；点到传送门 = 它的菜单（删除、隐藏、锁定）；空地 = 撤回自己刚放的传送门
+function portalRightTap(start) {
+    if (portalLinkSrc) { portalLinkSrc = ''; selectOnly([]); portalSyncUI(); requestRender(); return; }
+    var hit = hitTest(start.w, ['portal']);
+    if (hit) { openTokenMenu(hit, start.s.x, start.s.y); return; }
+    toolRightUndo('portal');
+}
+
+// ===== 缩放（和棋子一样拖四角；只有 GM）=====
+function portalHandles(it) {
+    if (!me.gm || it.locked) return null;
+    var r = portalR(it) + 3 / view.s, c = { x: it.x || 0, y: it.y || 0 };
+    return { id: it.id, c: c, a: 0, r: 6 / view.s, portal: true, rot: null, top: { x: c.x, y: c.y - r }, box: [c.x - r, c.y - r, c.x + r, c.y + r],
+        corners: [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(function(k) { return { x: c.x + k[0] * r, y: c.y + k[1] * r, k: k }; }) };
+}
+
+function ptScaleStart(hh, start) {
+    var it = scene.items[hh.h.id];
+    return { type: 'pscale', start: start, id: it.id, ids: idSet([it.id]), c: { x: it.x || 0, y: it.y || 0 }, s0: portalSize(it),
+        d0: Math.hypot(hh.corner.x - (it.x || 0), hh.corner.y - (it.y || 0)) || 1, lastSent: 0, snap: snapshotItems([it.id], ['size']) };
+}
+
+function ptScaleMove(g, w, e) {
+    var it = scene.items[g.id];
+    if (!it) return;
+    var s = g.s0 * Math.hypot(w.x - g.c.x, w.y - g.c.y) / g.d0;
+    s = e.shiftKey ? Math.round(s * 2) / 2 : Math.round(s * 20) / 20; // Shift：按半格吸附
+    it.size = Math.max(0.25, Math.min(20, s));
+    if (performance.now() - g.lastSent > 80) { g.lastSent = performance.now(); queueItems([{ id: it.id, size: it.size }]); }
+}
+
+function ptScaleEnd(g) {
+    var it = scene.items[g.id];
+    if (!it || !g.start.moved) return;
+    if (it.size === 1) delete it.size;
+    queueItems([{ id: it.id, size: it.size || null }]);
+    pushUndo(g.snap || []);
+}
+
+function ptScaleLabel(g) {
+    var it = scene.items[g.id];
+    return '直径 ' + portalSize(it) + ' 格';
+}
+
 // ===== 属性面板 =====
 function portalSelHtml(it) {
     var row = function(label, inner) { return '<div class="prop-row"><label>' + label + '</label>' + inner + '</div>'; };
@@ -253,6 +299,7 @@ function portalSelHtml(it) {
     var from = others.filter(function(q) { return (q.to || []).indexOf(it.id) >= 0; });
     var h = row('名字', '<input class="tt-input" data-pt="name" maxlength="30" value="' + escapeHtml(it.name || '') + '" placeholder="传送门" style="flex:1;">') +
         row('', '<label title="玩家看不到这个传送门的名字（目的地列表里显示成「未知的传送门」）"><input type="checkbox" data-pt="nameHidden"' + (it.nameHidden ? ' checked' : '') + '> 名字只有 GM 看得到</label>') +
+        row('大小', '<input class="tt-input narrow" type="number" data-pt="size" min="0.25" max="20" step="0.25" value="' + portalSize(it) + '"><span class="tt-hint">格（直径）；也可以在选择工具里拖四角缩放</span>') +
         row('方式', '<select class="tt-select" data-pt="mode" style="flex:1;">' +
             '<option value=""' + (it.mode === 'auto' ? '' : ' selected') + '>手动：角色在一格内点击传送门</option>' +
             '<option value="auto"' + (it.mode === 'auto' ? ' selected' : '') + '>自动：角色走进判定圈就传送</option></select>');
@@ -282,7 +329,8 @@ function portalSelChange(el) {
         p.to = l.length ? l : null;
     } else if (el.dataset.pt === 'name') p.name = el.value.trim().slice(0, 30) || null;
     else if (el.dataset.pt === 'nameHidden') p.nameHidden = el.checked || null;
-    else if (el.dataset.pt === 'mode') { p.mode = el.value || null; if (el.value === 'auto' && !it.r) p.r = Math.round(g * 0.5); }
+    else if (el.dataset.pt === 'mode') { p.mode = el.value || null; if (el.value === 'auto' && !it.r) p.r = Math.round(Math.max(g * 0.5, portalR(it))); }
+    else if (el.dataset.pt === 'size') { var sz = parseFloat(el.value); if (!(sz > 0)) return true; sz = Math.max(0.25, Math.min(20, Math.round(sz * 100) / 100)); p.size = sz === 1 ? null : sz; }
     else if (el.dataset.pt === 'rc') { var v = parseFloat(el.value); if (!(v > 0)) return true; p.r = Math.round(Math.min(20, Math.max(0.25, v)) * g); }
     else if (el.dataset.pt === 'pick') p.pick = el.value || null;
     patchItems([p]);
