@@ -329,7 +329,7 @@ func (t *Tabletop) HandleBestiary(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		k := strings.ToLower(m.En)
-		if cur, ok := best[k]; !ok || m.rank < cur.rank {
+		if cur, ok := best[k]; !ok || kiweeBetter(m, cur) {
 			best[k] = m
 		}
 	}
@@ -473,6 +473,29 @@ func kiweeArtFind(src, en, name string, depth int) string {
 	return ""
 }
 
+// kiweeTokenName mirrors 5etools' Parser.nameToTokenName: token files drop accents (NFD + strip
+// combining marks), spell Æ / æ as AE / ae and drop double quotes — so 「Rothé」 is Rothe.webp and
+// 「Volothamp "Volo" Geddarm」 is Volothamp Volo Geddarm.webp.
+var kiweeAccents = strings.NewReplacer(
+	"À", "A", "Á", "A", "Â", "A", "Ã", "A", "Ä", "A", "Å", "A", "Ā", "A", "Ă", "A", "Ą", "A",
+	"à", "a", "á", "a", "â", "a", "ã", "a", "ä", "a", "å", "a", "ā", "a", "ă", "a", "ą", "a",
+	"Ç", "C", "Ć", "C", "Č", "C", "ç", "c", "ć", "c", "č", "c", "Ď", "D", "ď", "d",
+	"È", "E", "É", "E", "Ê", "E", "Ë", "E", "Ē", "E", "Ė", "E", "Ę", "E", "Ě", "E",
+	"è", "e", "é", "e", "ê", "e", "ë", "e", "ē", "e", "ė", "e", "ę", "e", "ě", "e",
+	"Ğ", "G", "ğ", "g", "Ì", "I", "Í", "I", "Î", "I", "Ï", "I", "Ī", "I", "Į", "I", "İ", "I",
+	"ì", "i", "í", "i", "î", "i", "ï", "i", "ī", "i", "į", "i",
+	"Ñ", "N", "Ń", "N", "Ň", "N", "ñ", "n", "ń", "n", "ň", "n",
+	"Ò", "O", "Ó", "O", "Ô", "O", "Õ", "O", "Ö", "O", "Ō", "O", "Ő", "O",
+	"ò", "o", "ó", "o", "ô", "o", "õ", "o", "ö", "o", "ō", "o", "ő", "o",
+	"Ř", "R", "ř", "r", "Ś", "S", "Š", "S", "Ş", "S", "ś", "s", "š", "s", "ş", "s",
+	"Ť", "T", "ť", "t", "Ù", "U", "Ú", "U", "Û", "U", "Ü", "U", "Ū", "U", "Ů", "U", "Ű", "U", "Ų", "U",
+	"ù", "u", "ú", "u", "û", "u", "ü", "u", "ū", "u", "ů", "u", "ű", "u", "ų", "u",
+	"Ý", "Y", "Ÿ", "Y", "ý", "y", "ÿ", "y", "Ź", "Z", "Ż", "Z", "Ž", "Z", "ź", "z", "ż", "z", "ž", "z",
+	"Æ", "AE", "æ", "ae", "\"", "",
+)
+
+func kiweeTokenName(name string) string { return kiweeAccents.Replace(name) }
+
 func kiweeImagePath(p string) string {
 	parts := strings.Split(p, "/")
 	for i, s := range parts {
@@ -535,6 +558,9 @@ func (t *Tabletop) HandleDeploy(w http.ResponseWriter, r *http.Request) {
 		return id
 	}
 	tokenID, artID := "", ""
+	tokenAt := func(ts, tn string) string {
+		return kiweeImagePath("bestiary/tokens/" + ts + "/" + kiweeTokenName(tn) + ".webp")
+	}
 	if entry.Token {
 		tn, ts := entry.En, src
 		if tk, ok := m["token"].(map[string]interface{}); ok { // token borrowed from another monster
@@ -545,7 +571,17 @@ func (t *Tabletop) HandleDeploy(w http.ResponseWriter, r *http.Request) {
 				ts = s
 			}
 		}
-		tokenID = fetchImg(kiweeImagePath("bestiary/tokens/"+ts+"/"+tn+".webp"), entry.Name)
+		tokenID = fetchImg(tokenAt(ts, tn), entry.Name)
+		if tokenID == "" {
+			log.Printf("kiwee: 怪物头像下载失败 %s/%s", ts, tn)
+		}
+	}
+	if tokenID == "" { // 这本书没有这只怪的头像：用其他书里同名怪物的
+		for _, o := range kiweeSameName(entry.En, src) {
+			if tokenID = fetchImg(tokenAt(o.Source, o.En), entry.Name); tokenID != "" {
+				break
+			}
+		}
 	}
 	if entry.Art {
 		if p := kiweeArtPath(src, entry.En, entry.Name); p != "" {
@@ -581,4 +617,36 @@ func (t *Tabletop) HandleDeploy(w http.ResponseWriter, r *http.Request) {
 		room.mu.Unlock()
 	}
 	writeJSON(w, http.StatusOK, map[string]interface{}{"success": true, "sheet": sheet, "token": tokenID, "art": artID})
+}
+
+// kiweeBetter: which copy of a monster that appears in several books the search shows — the
+// preferred book (kiweeRank), then one with a token, then the alphabetically first source, so the
+// pick no longer depends on the order the books happened to load in.
+func kiweeBetter(a, b kiweeMon) bool {
+	if a.rank != b.rank {
+		return a.rank < b.rank
+	}
+	if a.Token != b.Token {
+		return a.Token
+	}
+	return a.Source < b.Source
+}
+
+// kiweeSameName lists other books' copies of a monster (same English name) that have a token,
+// best first — the fallback when the chosen book has none.
+func kiweeSameName(en, skipSource string) []kiweeMon {
+	key := strings.ToLower(en)
+	kiwee.mu.Lock()
+	var out []kiweeMon
+	for _, m := range kiwee.list {
+		if m.Token && m.Source != skipSource && strings.ToLower(m.En) == key {
+			out = append(out, m)
+		}
+	}
+	kiwee.mu.Unlock()
+	sort.Slice(out, func(i, j int) bool { return kiweeBetter(out[i], out[j]) })
+	if len(out) > 3 {
+		out = out[:3]
+	}
+	return out
 }
