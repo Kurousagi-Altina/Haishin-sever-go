@@ -74,7 +74,7 @@ type TTLogEntry struct {
 type TTAsset struct {
 	ID   string `json:"id"` // file name in the assets directory
 	Name string `json:"name"`
-	Kind string `json:"kind"` // map / token
+	Kind string `json:"kind"` // map / terrain / token / audio / handout
 	By   string `json:"by"`
 }
 
@@ -797,7 +797,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 	gmOnly := map[string]bool{
 		"props": true, "map.set": true, "scene.add": true, "scene.duplicate": true, "scene.rename": true, "scene.move": true,
 		"scene.delete": true, "scene.activate": true, "room.rename": true, "room.settings": true,
-		"asset.delete": true, "log.clear": true, "action.undo": true,
+		"asset.delete": true, "asset.kind": true, "log.clear": true, "action.undo": true,
 		"handout": true, "handout.show": true, "handout.delete": true,
 		"table": true, "table.delete": true, "table.roll": true,
 	}
@@ -1131,6 +1131,21 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 
 	case "room.rename":
 		room.Name = ttCleanName(req.Text, 40, room.Name)
+		room.broadcastMeta()
+
+	case "asset.kind": // 资产库改分类：棋子 / 地图 / 地形
+		if req.Text != "token" && req.Text != "map" && req.Text != "terrain" {
+			return http.StatusBadRequest, "无效的分类"
+		}
+		pick := make(map[string]bool)
+		for _, id := range req.IDs {
+			pick[id] = true
+		}
+		for i := range room.Assets {
+			if k := room.Assets[i].Kind; pick[room.Assets[i].ID] && (k == "token" || k == "map" || k == "terrain") {
+				room.Assets[i].Kind = req.Text
+			}
+		}
 		room.broadcastMeta()
 
 	case "asset.delete":
@@ -1528,7 +1543,7 @@ func (t *Tabletop) HandleUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	kind := r.URL.Query().Get("kind")
-	if kind != "map" && kind != "audio" && kind != "handout" {
+	if kind != "map" && kind != "terrain" && kind != "audio" && kind != "handout" {
 		kind = "token"
 	}
 	u, nerr := t.guestUser(info, ttRequestToken(r), r.URL.Query().Get("name"))

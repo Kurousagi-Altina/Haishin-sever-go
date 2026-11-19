@@ -1,6 +1,6 @@
-// 跑团桌面：地图网格识别、多张地图块拼接
+// 跑团桌面：地图网格识别、多张地形拼接
 // 1. mapGridDetect：识别地图图片自带的方格（周期 + 偏移）
-// 2. 地图块（kind tile）：一个场景里放多张地形图，每块单独对齐网格
+// 2. 地形（kind tile）：一个场景里放多张地形图，每块单独对齐网格
 // 3. 框一格：手动框出一个格子设网格
 
 // 识别地图图片自带的方格：返回 { p: 每格像素, ox, oy: 第一条竖线 / 横线的位置（0 ≤ o < p）, conf: 可信度 }，像素都是传入图片的像素
@@ -81,14 +81,14 @@ function mapGridDetect(rgba, W, H) {
     return { p: bestP, ox: bo.x, oy: bo.y, conf: conf, ac: best };
 }
 
-// ===================== 地图块（一个场景里拼多张地形图） =====================
+// ===================== 地形（一个场景里拼多张地形图） =====================
 // 物件 kind 'tile'：{ asset, name, x, y, w, h, nw, nh（原图像素）, gp（原图每格像素）, gox, goy（原图里第一条网格线的位置）, locked }
 // 画在主地图之上、网格之下；只有 GM 能选中（锁定后点不到，在「设置 → 地图」的列表里解锁）。属于当前地图，换图时跟着收起来。
 var MAP_CONF_OK = 2.2; // 网格识别可信度：低于这个算「不太确定」
 
 function tileItems() { return sortedItems().filter(function(it) { return it.kind === 'tile'; }); }
 
-// 主地图 + 所有地图块的外框（世界坐标）；都没有时 null
+// 主地图 + 所有地形的外框（世界坐标）；都没有时 null
 function mapBounds() {
     var p = scene.props, b = null;
     var add = function(x0, y0, x1, y1) {
@@ -111,7 +111,7 @@ function drawMapTiles() {
     if (me.gm) tileListSync();
 }
 
-// GM：选中的地图块画个框（在网格、棋子之上，方便看清边界）
+// GM：选中的地形画个框（在网格、棋子之上，方便看清边界）
 function drawTileOutlines() {
     if (!me.gm) return;
     tileItems().forEach(function(t) {
@@ -171,7 +171,7 @@ function mapSnapDelta(v, off) {
     return d > g / 2 ? g - d : -d;
 }
 
-// 地图块按「原图每格 gp 像素、第一条线在 gox / goy」缩放到场景格子大小，并对齐网格线
+// 地形按「原图每格 gp 像素、第一条线在 gox / goy」缩放到场景格子大小，并对齐网格线
 function tileFeetRatio(t) { var sf = num(scene.props.gridScale, 5) || 5; return (t.gft || sf) / sf; } // 这块图一格代表的尺数 / 场景一格的尺数
 function tilePatchFit(t, gp, gox, goy) {
     var g = gridSize(), p = scene.props, s = g * tileFeetRatio(t) / gp, nw = t.nw || (t.w || 0), nh = t.nh || (t.h || 0);
@@ -185,9 +185,9 @@ function tilePatchFit(t, gp, gox, goy) {
 function tileFit(id) {
     var t = scene.items[id];
     if (!t || t.kind !== 'tile') return;
-    notice('正在识别这块地图的网格…');
+    notice('正在识别这块地形的网格…');
     mapDetectAsset(t.asset).then(function(r) {
-        return mapConfirmDetect(r, '这块地图').then(function(ok) {
+        return mapConfirmDetect(r, '这块地形').then(function(ok) {
             t = scene.items[id];
             if (!ok || !t) return;
             patchItems([tilePatchFit(t, r.p, r.ox, r.oy)]);
@@ -201,7 +201,7 @@ function tileFit(id) {
 function tileSnap(id) {
     var t = scene.items[id];
     if (!t || t.kind !== 'tile') return;
-    if (!t.gp) { notice('这块地图还没识别 / 设置网格：先点「🔍 识别网格」或「▢ 框一格」', true); return; }
+    if (!t.gp) { notice('这块地形还没识别 / 设置网格：先点「🔍 识别网格」或「▢ 框一格」', true); return; }
     var s = (t.w || 1) / (t.nw || t.w || 1), p = scene.props;
     patchItems([{ id: t.id, x: Math.round(((t.x || 0) + mapSnapDelta((t.x || 0) + t.gox * s, num(p.gridOffX, 0))) * 100) / 100,
         y: Math.round(((t.y || 0) + mapSnapDelta((t.y || 0) + t.goy * s, num(p.gridOffY, 0))) * 100) / 100 }]);
@@ -225,7 +225,7 @@ function tileSetCell(id, v) {
     renderSelPanel();
 }
 
-// 场景网格变了（主地图识别 / 框格）：已经设过网格的地图块重新缩放对齐
+// 场景网格变了（主地图识别 / 框格）：已经设过网格的地形重新缩放对齐
 function tilesRefit() {
     var patches = tileItems().filter(function(t) { return t.gp && !t.locked; }).map(function(t) { return tilePatchFit(t, t.gp, t.gox || 0, t.goy || 0); });
     if (patches.length) patchItems(patches);
@@ -235,7 +235,7 @@ function tilesRefit() {
 // 主地图：识别自带网格 → 设场景的格子大小和偏移
 function mapFitMain() {
     var p = scene.props;
-    if (!p.mapAsset) { notice('当前场景没有主地图：地图块在它的属性里单独识别', true); return; }
+    if (!p.mapAsset) { notice('当前场景没有主地图：地形在它的属性里单独识别', true); return; }
     notice('正在识别地图自带的网格…');
     mapDetectAsset(p.mapAsset).then(function(r) {
         return mapConfirmDetect(r, '这张地图').then(function(ok) {
@@ -243,12 +243,12 @@ function mapFitMain() {
             var k = (scene.props.mapW || r.nw) / r.nw, g = r.p * k;
             setProps({ gridSize: Math.round(g * 100) / 100, gridOffX: Math.round((r.ox * k % g) * 100) / 100, gridOffY: Math.round((r.oy * k % g) * 100) / 100 });
             var n = tilesRefit();
-            notice('已按地图自带的网格对齐：每格 ' + Math.round(r.p * 10) / 10 + ' 像素' + (n ? '；' + n + ' 块地图块也跟着重新对齐了' : ''));
+            notice('已按地图自带的网格对齐：每格 ' + Math.round(r.p * 10) / 10 + ' 像素' + (n ? '；' + n + ' 块地形也跟着重新对齐了' : ''));
         });
     }).catch(apiError);
 }
 
-// 没有自带网格的地图块默认跟第一张地图同样的比例（世界坐标 / 原图像素）：主地图，没有主地图就用第一块地图块
+// 没有自带网格的地形默认跟第一张地图同样的比例（世界坐标 / 原图像素）：主地图，没有主地图就用第一块地形
 function tileBaseScale() {
     var p = scene.props, mi = p.mapAsset && getImg(p.mapAsset);
     if (p.mapW && mi && mi.naturalWidth) return p.mapW / mi.naturalWidth;
@@ -256,26 +256,26 @@ function tileBaseScale() {
     return first && first.nw && first.w ? first.w / first.nw : 1;
 }
 
-// 放一块地图块：放在现在看着的地方（可以和别的地图不相连），左上角对齐网格；
+// 放一块地形：放在现在看着的地方（可以和别的地图不相连），左上角对齐网格；
 // 先按第一张地图的比例，再试着识别它自带的网格，认得准就自动缩放对齐
-function tileAdd(a) {
+function tileAdd(a, at) { // at：放置中心（世界坐标，拖到地图上的落点）；不给就放在视图中心
     var img = getImg(a.id);
     var place = function() {
         var p = scene.props, k = tileBaseScale();
-        var nw = img.naturalWidth, nh = img.naturalHeight, c = toWorld(canvas.clientWidth / 2, canvas.clientHeight / 2);
+        var nw = img.naturalWidth, nh = img.naturalHeight, c = at || toWorld(canvas.clientWidth / 2, canvas.clientHeight / 2);
         var x = c.x - nw * k / 2, y = c.y - nh * k / 2;
         x += mapSnapDelta(x, num(p.gridOffX, 0)); y += mapSnapDelta(y, num(p.gridOffY, 0));
         var t = { id: genId(), kind: 'tile', asset: a.id, name: a.name || '', x: Math.round(x * 100) / 100, y: Math.round(y * 100) / 100, w: Math.round(nw * k * 100) / 100, h: Math.round(nh * k * 100) / 100, nw: nw, nh: nh, z: nextZ() };
         createItems([t]);
         selectOnly([t.id]);
-        notice('已放上地图块「' + (a.name || '') + '」，正在识别它自带的网格…');
+        notice('已放上地形「' + (a.name || '') + '」，正在识别它自带的网格…');
         mapDetectAsset(a.id).then(function(r) {
             var cur = scene.items[t.id];
             if (!cur) return;
             if (r && r.conf >= MAP_CONF_OK) {
                 patchItems([tilePatchFit(cur, r.p, r.ox, r.oy)]);
-                notice('已放上地图块并对齐网格（原图每格 ' + Math.round(r.p * 10) / 10 + ' 像素）；拖动可以挪位置，松手后可点「吸附到网格」');
-            } else notice('已放上地图块，按第一张地图的比例缩放（没认出它自带的网格）；要单独调就在属性里点「🔍 识别网格」「▢ 框一格」或拖四角缩放', false, 6000);
+                notice('已放上地形并对齐网格（原图每格 ' + Math.round(r.p * 10) / 10 + ' 像素）；拖动可以挪位置，松手后可点「吸附到网格」');
+            } else notice('已放上地形，按第一张地图的比例缩放（没认出它自带的网格）；要单独调就在属性里点「🔍 识别网格」「▢ 框一格」或拖四角缩放', false, 6000);
             renderSelPanel();
         }).catch(function() {});
     };
@@ -286,7 +286,7 @@ function tileAdd(a) {
 function tileSelHtml(t) {
     var g = gridSize(), cols = t.w ? Math.round(t.w / g * 10) / 10 : 0, rows = t.h ? Math.round(t.h / g * 10) / 10 : 0;
     var id = escapeHtml(t.id);
-    return '<h4>🗺 地图块 <button class="tt-btn small" data-act="close">✕</button></h4>' +
+    return '<h4>⛰ 地形 <button class="tt-btn small" data-act="close">✕</button></h4>' +
         '<div class="tt-hint">' + escapeHtml(t.name || '') + (t.nw ? '<br>原图 ' + t.nw + ' × ' + t.nh + ' px，现在约 ' + cols + ' × ' + rows + ' 格' : '') + '</div>' +
         '<div class="prop-row"><label>原图每格</label><input class="tt-input narrow" type="number" min="2" step="0.1" value="' + (t.gp || '') + '" placeholder="未设置" onchange="tileSetCell(\'' + id + '\', this.value)"> 像素</div>' +
         '<div class="prop-row"><label>这张图一格</label><input class="tt-input narrow" type="number" min="0.5" step="0.5" value="' + (t.gft || num(scene.props.gridScale, 5)) + '" onchange="tileSetFeet(\'' + id + '\', this.value)"> 尺</div>' +
@@ -295,8 +295,8 @@ function tileSelHtml(t) {
         '<button class="tt-btn small" data-act="tileBox" title="在这块图上拖框框住正好一个格子（或几个格子再填格数），手动设网格">▢ 框一格</button>' +
         '<button class="tt-btn small" data-act="tileSnap" title="不改大小，只把它的网格线挪到场景网格上">吸附到网格</button>' +
         '</div><div class="prop-btns">' +
-        '<button class="tt-btn small" data-act="tileLock" title="锁定后在地图上点不到它（防止误拖），在「设置 → 地图」的地图块列表里解锁">🔒 锁定</button>' +
-        '<button class="tt-btn small" data-act="tileBack" title="画到其他地图块下面">置于底层</button>' +
+        '<button class="tt-btn small" data-act="tileLock" title="锁定后在地图上点不到它（防止误拖），在「设置 → 地图」的地形列表里解锁">🔒 锁定</button>' +
+        '<button class="tt-btn small" data-act="tileBack" title="画到其他地形下面">置于底层</button>' +
         '<button class="tt-btn small danger" data-act="del">删除</button>' +
         '</div><div class="tt-hint">拖动挪位置（方向键按格挪），拖四角自由缩放（Shift 按半格）。每块地图的网格单独设置：一格的尺数和场景一样就缩放成场景的 1 格，比如 10 尺一格的图会放大成 2 格</div>';
 }
@@ -307,7 +307,7 @@ function tileSelAct(act, ids) {
     if (act === 'tileFit') tileFit(t.id);
     else if (act === 'tileSnap') tileSnap(t.id);
     else if (act === 'tileBox') mapBoxStart(t.id);
-    else if (act === 'tileLock') { patchItems([{ id: t.id, locked: true }]); selectOnly([]); notice('已锁定地图块：在「设置 → 地图」的列表里可以解锁'); }
+    else if (act === 'tileLock') { patchItems([{ id: t.id, locked: true }]); selectOnly([]); notice('已锁定地形：在「设置 → 地图」的列表里可以解锁'); }
     else if (act === 'tileBack') {
         var minZ = Math.min.apply(null, tileItems().map(function(x) { return x.z || 0; }));
         patchItems([{ id: t.id, z: minZ - 1 }]);
@@ -315,7 +315,7 @@ function tileSelAct(act, ids) {
     return true;
 }
 
-// 设置 → 地图：地图块列表（选中 / 识别 / 锁定 / 删除）
+// 设置 → 地图：地形列表（选中 / 识别 / 锁定 / 删除）
 var tileListSig = '';
 function tileListSync() {
     var box = $('tileList');
@@ -339,16 +339,16 @@ function tileListSync() {
     box.innerHTML = tiles.length ? tiles.map(function(t, i) {
         var tid = escapeHtml(t.id);
         return '<div class="lobby-row" style="gap:4px;align-items:center;margin:2px 0;"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + escapeHtml(t.name || '') + '">' +
-            (i + 1) + '. ' + escapeHtml(t.name || '地图块') + (t.gp ? '' : ' <span class="tt-hint">（未对齐）</span>') + '</span>' +
+            (i + 1) + '. ' + escapeHtml(t.name || '地形') + (t.gp ? '' : ' <span class="tt-hint">（未对齐）</span>') + '</span>' +
             '<button class="tt-btn small" data-tl="sel" data-tid="' + tid + '" title="选中（锁着的会先解锁）">选中</button>' +
             '<button class="tt-btn small" data-tl="fit" data-tid="' + tid + '" title="识别它自带的网格并对齐">🔍</button>' +
             '<button class="tt-btn small" data-tl="lock" data-tid="' + tid + '" title="' + (t.locked ? '解锁' : '锁定') + '">' + (t.locked ? '🔒' : '🔓') + '</button>' +
             '<button class="tt-btn small danger" data-tl="del" data-tid="' + tid + '" title="删除（Ctrl+Z 撤销）">✕</button></div>';
-    }).join('') : '<div class="tt-hint">还没有地图块：在资产库图片上点「＋地图块」，可以在同一张地图上放多张地形图（连着拼或分开放都行）；自带网格的会自动对齐，没有的按第一张地图的比例</div>';
+    }).join('') : '<div class="tt-hint">还没有地形：在资产库图片上点「放地形」，可以在同一张地图上放多张地形图（连着拼或分开放都行）；自带网格的会自动对齐，没有的按第一张地图的比例</div>';
 }
 
 // ===== 框一格：在图上拖框框住一个格子（或几个格子），手动设网格 =====
-// target：'main' = 主地图（改场景网格），否则地图块 id（改这块的缩放 / 对齐）
+// target：'main' = 主地图（改场景网格），否则地形 id（改这块的缩放 / 对齐）
 var mapBox = null;
 function mapBoxStart(target) {
     if (target === 'main' && !scene.props.mapAsset) { notice('当前场景没有主地图', true); return; }
@@ -378,7 +378,7 @@ function mapBoxStart(target) {
         }, true);
         window.addEventListener('keydown', function(e) { if (mapBox && e.key === 'Escape') { mapBox = null; requestRender(); } });
     }
-    notice('在' + (target === 'main' ? '地图' : '这块地图') + '上拖一个框，正好框住一个格子（框住几个格子也行，松手后填格数）；右键 / Esc 取消', false, 8000);
+    notice('在' + (target === 'main' ? '地图' : '这块地形') + '上拖一个框，正好框住一个格子（框住几个格子也行，松手后填格数）；右键 / Esc 取消', false, 8000);
     requestRender();
 }
 
@@ -393,7 +393,7 @@ function mapBoxFinish() {
         if (mb.target === 'main') {
             setProps({ gridSize: Math.round(cell * 100) / 100, gridOffX: Math.round((x0 % cell + cell) % cell * 100) / 100, gridOffY: Math.round((y0 % cell + cell) % cell * 100) / 100 });
             var k = tilesRefit();
-            notice('已按框的格子设置网格：每格 ' + Math.round(cell * 10) / 10 + ' 像素' + (k ? '；' + k + ' 块地图块也跟着重新对齐了' : ''));
+            notice('已按框的格子设置网格：每格 ' + Math.round(cell * 10) / 10 + ' 像素' + (k ? '；' + k + ' 块地形也跟着重新对齐了' : ''));
             return;
         }
         var t = scene.items[mb.target];
@@ -401,7 +401,7 @@ function mapBoxFinish() {
         var s = (t.w || 1) / (t.nw || t.w || 1), gp = cell / s; // 框住的是这块图自己的一格（当前缩放下的原图像素）
         var gox = (((x0 - (t.x || 0)) / s) % gp + gp) % gp, goy = (((y0 - (t.y || 0)) / s) % gp + gp) % gp;
         patchItems([tilePatchFit(t, gp, gox, goy)]);
-        notice('已按框的格子对齐这块地图：原图每格 ' + Math.round(gp * 10) / 10 + ' 像素');
+        notice('已按框的格子对齐这块地形：原图每格 ' + Math.round(gp * 10) / 10 + ' 像素');
         renderSelPanel();
     };
     var ratio = bw / bh;
