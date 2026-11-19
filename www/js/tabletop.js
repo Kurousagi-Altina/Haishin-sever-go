@@ -677,6 +677,43 @@ function bindSettings() {
 
 // ===== 图片 =====
 function assetURL(id) { return '/tabletop-assets/' + enc(id) + '?token=' + enc(authToken); }
+function assetThumbURL(id) { return '/tabletop-assets/thumb/' + enc(id) + '?token=' + enc(authToken); }
+
+// ===== 资产库缩略图：浏览器缩到 ≤ 320 像素上传（服务器不解码大图）=====
+// 新上传的图当场做；以前的图卡片先要缩略图，没有（404）就退回原图，原图加载完 GM / 上传者顺手补一张
+var THUMB_MAX = 320, thumbTried = {}, thumbChain = Promise.resolve();
+function thumbMake(src, id) { // src：Image / ImageBitmap
+    if (thumbTried[id]) return;
+    thumbTried[id] = true;
+    thumbChain = thumbChain.then(function() {
+        var w = src.naturalWidth || src.width, h = src.naturalHeight || src.height;
+        if (!w || !h) return;
+        var k = Math.min(1, THUMB_MAX / Math.max(w, h)), c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round(w * k)); c.height = Math.max(1, Math.round(h * k));
+        var cx = c.getContext('2d');
+        cx.imageSmoothingQuality = 'high';
+        cx.drawImage(src, 0, 0, c.width, c.height);
+        if (src.close) src.close();
+        return new Promise(function(resolve) { c.toBlob(resolve, 'image/webp', 0.82); }).then(function(blob) {
+            if (!blob) return;
+            var fd = new FormData();
+            fd.append('file', blob, 'thumb');
+            return api('/api/tabletop/thumb?room=' + enc(roomId) + '&id=' + enc(id) + (isDoor() ? '&name=' + enc(nickname) : ''), 'POST', fd);
+        }).catch(function() { /* 缩略图失败不影响使用 */ });
+    });
+}
+function thumbCanMake(id) {
+    var a = (room.assets || []).filter(function(x) { return x.id === id; })[0];
+    return !!a && (me.gm || a.by === me.name);
+}
+// 卡片缩略图加载失败：换成原图，加载好了补一张缩略图
+function assetThumbMiss(img) {
+    if (img.dataset.full === '1') return;
+    img.dataset.full = '1';
+    var id = img.dataset.aid;
+    if (thumbCanMake(id)) img.addEventListener('load', function() { thumbMake(img, id); }, { once: true });
+    img.src = assetURL(id);
+}
 
 function getImg(id) {
     var img = imgCache[id];
@@ -697,7 +734,12 @@ function uploadAsset(file, kind) {
     var fd = new FormData();
     fd.append('file', file);
     var url = '/api/tabletop/upload?room=' + enc(roomId) + '&kind=' + kind + (isDoor() ? '&name=' + enc(nickname) : '');
-    return api(url, 'POST', fd).then(function(data) { return data.asset; });
+    return api(url, 'POST', fd).then(function(data) {
+        var a = data.asset;
+        if (a && /^image\//.test(file.type || '') && kind !== 'handout' && window.createImageBitmap) // 缩略图：资产库卡片用，原图太大时卡片会一直黑着
+            createImageBitmap(file).then(function(bmp) { thumbMake(bmp, a.id); }).catch(function() {});
+        return a;
+    });
 }
 
 function loadImageSize(id) {
@@ -3310,7 +3352,7 @@ function renderAssets() {
             : '<button class="tt-btn small" data-place="' + id + '">放置</button>';
         return '<div class="asset-card" draggable="true" data-asset="' + id + '" title="' + escapeHtml(a.name + '（' + a.by + ' 上传）') + '">' +
             '<span class="kind">' + ASSET_KIND_NAME[k] + '</span>' + assetMapBadge(a) +
-            '<img loading="lazy" src="' + assetURL(a.id) + '" alt="">' +
+            '<img loading="lazy" src="' + assetThumbURL(a.id) + '" data-aid="' + id + '" onerror="assetThumbMiss(this)" alt="">' +
             '<div class="name">' + escapeHtml(a.name) + '</div>' +
             '<div class="ops">' + main +
             (me.gm ? '<select class="tt-btn small" data-kindsel="' + id + '" title="改分类：棋子 / 地图（整块区域）/ 地形（放在地图上的一块块地形）">' +
