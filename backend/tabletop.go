@@ -1618,6 +1618,10 @@ func (t *Tabletop) HandleAsset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	id := strings.TrimPrefix(r.URL.Path, "/tabletop-assets/")
+	if strings.HasPrefix(id, "thumb/") { // 资产库缩略图（tabletop_thumb.go）
+		t.serveThumb(w, r, id)
+		return
+	}
 	if !ttAssetRe.MatchString(id) {
 		http.NotFound(w, r)
 		return
