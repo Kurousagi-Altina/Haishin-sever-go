@@ -165,19 +165,20 @@ function editTextItem(it) {
 }
 
 // ===== 黑暗环境与光源 =====
-// 光源：棋子的 light = { bright, dim }（尺）。黑暗场景下，玩家只看得见视线内且被光照到、
-// 或在黑暗视觉（棋子「视野」距离）范围内的地方；明亮光照完全可见，微光处半暗。
+// 角色光源：棋子的 light = { bright, dim, off }（尺）；环境光源（item kind "light"）和 computeLights 在 tabletop-light.js。
+// 黑暗场景下，玩家只看得见视线内且被光照到、或在黑暗视觉（棋子「视野」距离）范围内的地方；明亮光照完全可见，微光处半暗。
+// 光照 L：圆形 {x, y, bright, r, pts}（半径 + 视线多边形），或自画范围 {area, dimOnly}。
 var litCanvas = null, litCtx = null;
 
 function lightTokens() {
-    return sortedItems().filter(function(t) { return t.kind === 'token' && t.light && (num(t.light.bright, 0) + num(t.light.dim, 0)) > 0; });
+    return sortedItems().filter(function(t) { return t.kind === 'token' && t.light && !t.light.off && (num(t.light.bright, 0) + num(t.light.dim, 0)) > 0; });
 }
 
-function computeLights(segs, b) {
-    return lightTokens().map(function(t) {
-        var c = tokenCenter(t), br = feetToPx(num(t.light.bright, 0)), all = feetToPx(num(t.light.bright, 0) + num(t.light.dim, 0));
-        return { x: c.x, y: c.y, bright: br, r: all, pts: visibilityPolygon(c.x, c.y, segs, b) };
-    });
+function fillArea(c, pts) {
+    c.beginPath();
+    pts.forEach(function(q, i) { if (i) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); });
+    c.closePath();
+    c.fill();
 }
 
 function fillClipped(c, x, y, r, pts) {
@@ -205,6 +206,7 @@ function cutDarkness(polys) {
             applyView(litCtx);
             litCtx.fillStyle = '#000';
             lights.forEach(function(L) {
+                if (L.area) { if (pass[0] === 'dim' || !L.dimOnly) fillArea(litCtx, L.area); return; } // 自画范围
                 var r = pass[0] === 'dim' ? L.r : L.bright;
                 if (r > 0) fillClipped(litCtx, L.x, L.y, r, L.pts);
             });
@@ -225,7 +227,7 @@ function cutDarkness(polys) {
 }
 
 function inLight(x, y, polys) {
-    return (polys.lights || []).some(function(L) { return Math.hypot(x - L.x, y - L.y) <= L.r && pointInPoly(x, y, L.pts); });
+    return (polys.lights || []).some(function(L) { return L.area ? pointInPoly(x, y, L.area) : Math.hypot(x - L.x, y - L.y) <= L.r && pointInPoly(x, y, L.pts); });
 }
 
 // ===== 横幅 / 时间停止 =====
@@ -663,6 +665,7 @@ function itemKindName(it) {
     if (it.kind === 'note') return '笔记' + (it.title ? '：' + it.title : '');
     if (it.kind === 'trigger') return '触发区域' + (it.label ? '：' + it.label : '');
     if (it.kind === 'portal') return '传送门：' + portalTitle(it);
+    if (it.kind === 'light') return '环境光源：' + lightTitle(it);
     if (it.kind === 'fog') return '迷雾';
     if (it.kind === 'wall') return '墙';
     if (it.zone) return '区域：' + (it.label || '');
@@ -749,7 +752,7 @@ function openOtherMenu(it, sx, sy) {
     var edit = canEdit(it), h = '<div class="tm-title">' + escapeHtml(itemKindName(it)) + '</div>';
     if (it.kind === 'draw' && it.zone && edit) h += '<button data-tm="zone">⚡ 对区域内的生物结算</button>';
     if (it.kind === 'draw' && edit && !it.zone && !it.locked) h += '<div class="tm-hint">' + (it.shape === 'text' ? '选中后拖四角缩放' : '选中后拖四角缩放、拖顶上的圆点旋转') + '</div>';
-    if (me.gm && (it.kind === 'draw' || it.kind === 'portal')) h += '<button data-tm="hide">' + (it.hidden ? '👁 对玩家显示' : '🙈 对玩家隐藏') + '</button>';
+    if (me.gm && (it.kind === 'draw' || it.kind === 'portal' || it.kind === 'light')) h += '<button data-tm="hide">' + (it.hidden ? '👁 对玩家显示' : '🙈 对玩家隐藏') + '</button>';
     if (me.gm) h += '<button data-tm="lock">' + (it.locked ? '🔓 解锁' : '🔒 锁定位置') + '</button>';
     if (edit && it.kind === 'draw') h += '<button data-tm="top">⬆ 移到最上层</button><button data-tm="bottom">⬇ 移到最下层</button>';
     if (edit) h += '<button data-tm="del" class="tm-danger">🗑 删除</button>';

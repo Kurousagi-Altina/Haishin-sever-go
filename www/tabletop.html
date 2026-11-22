@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css?v=2026111365">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026111366">
 </head>
 <body class="tt-body">
 
@@ -95,6 +95,7 @@
                 <button class="tool-btn gm-only" data-tool="wall" title="墙体 / 门窗 (W)">🧱</button>
                 <button class="tool-btn gm-only" data-tool="note" title="房间笔记 (B)：单击地图放置编号笔记，只有 GM 看得到">📌</button>
                 <button class="tool-btn gm-only" data-tool="portal" title="传送门 (O)：单击地图放置；「连线」模式里先点出发的门再点要去的门（单向，Shift = 双向）；选中传送门在属性里设名字、手动 / 自动、目标">🌀</button>
+                <button class="tool-btn gm-only" data-tool="light" title="光源 (G)：单击地图放环境光源（火把标记默认只有你看得到），或逐点画出光照范围；工具栏「光源列表」统一管理所有角色和环境光源">💡</button>
                 <div class="tool-sep"></div>
                 <button class="tool-btn" onclick="fitView()" title="适配视图 (0)">⛶</button>
             </div>
@@ -159,6 +160,21 @@
                     <label class="tt-hint" title="新放的传送门：角色走进判定圈就自动传送（不勾 = 手动，角色在一格内点击传送门）"><input type="checkbox" id="portalAutoNew"> 新放的默认自动传送</label>
                     <select class="tt-btn small" id="portalJump" title="定位到本场景的某个传送门"><option value="">跳到传送门…</option></select>
                     <span class="tt-hint" id="portalHint"></span>
+                </div>
+
+                <!-- 光源选项 -->
+                <div class="tool-opts" id="optsLight">
+                    <button class="tt-btn small" data-lightmode="place" title="单击地图放一个圆形环境光源（和棋子一样按明亮 / 微光尺数，被墙挡）">放置</button>
+                    <button class="tt-btn small" data-lightmode="area" title="逐点围出光照范围（不被墙挡）：点回第一个点 / 双击 / Enter 结束">✏ 画范围</button>
+                    <select class="tt-btn small" id="lightPresetNew" title="新放的光源用哪种亮度">
+                        <option value="20/20">火把（20 / 20 尺）</option><option value="30/30">提灯（30 / 30）</option><option value="60/60">牛眼提灯（60 / 60）</option>
+                        <option value="5/5">蜡烛（5 / 5）</option><option value="60/60">日光术（60 / 60）</option><option value="0/40">只有微光（0 / 40）</option>
+                    </select>
+                    <span class="sep"></span>
+                    <label class="tt-hint" title="黑暗环境：玩家只看得见被光照到、或黑暗视觉范围内的地方（要开动态视野）"><input type="checkbox" id="lightDarkTool"> 黑暗环境</label>
+                    <button class="tt-btn small" id="lightListBtn" title="列出本场景所有光源：角色光源和环境光源，逐个调亮度、熄灭 / 点亮、定位">光源列表</button>
+                    <span class="tt-hint" id="lightHint"></span>
+                    <div class="light-list" id="lightList" style="display:none;"></div>
                 </div>
 
                 <!-- 墙体选项 -->
@@ -272,9 +288,27 @@
                         <div class="quick-chips" id="labelChips"></div>
                         <div class="dice-btns" id="diceBtns"></div>
                         <div class="dice-row">
-                            <input class="tt-input" id="diceExpr" placeholder="1d20+5、4d6dl1、2d20kh1、3d6!" autocomplete="off">
+                            <input class="tt-input" id="diceExpr" placeholder="1d20+5、adv(1d20)、max(1d20,10)、burst(2d6)" autocomplete="off">
+                            <button class="tt-btn small" id="diceHelpBtn" title="表达式说明">?</button>
                             <button class="tt-btn danger small" onclick="clearTray()" title="清空骰子、修正和说明">清空</button>
                             <button class="tt-btn primary" onclick="rollFromTray()">投掷</button>
+                        </div>
+                        <div class="dice-help" id="diceHelp" style="display:none;">
+                            <div class="tt-hint">点一条填进上面的框；聊天框里 <code>/r 表达式 说明</code> 也能用，中文括号、逗号也认。</div>
+                            <div data-ex="2d6+1d20+5"><code>2d6+1d20+5</code> 几种骰子和加值一起投</div>
+                            <div data-ex="adv(1d20)"><code>adv(1d20)</code> 优势：投两次取高</div>
+                            <div data-ex="dis(1d20)"><code>dis(1d20)</code> 劣势：投两次取低</div>
+                            <div data-ex="max(1d20,10)"><code>max(1d20,10)</code> 保底：低于 10 按 10 算（每颗骰子）</div>
+                            <div data-ex="min(1d20,15)"><code>min(1d20,15)</code> 封顶：高于 15 按 15 算</div>
+                            <div data-ex="reset(1d20,12)"><code>reset(1d20,12)</code> 投到 12 重投一次</div>
+                            <div data-ex="resetmin(1d20,5)"><code>resetmin(1d20,5)</code> 投到 ≤5 重投一次（如巨武器战斗 resetmin(2d6,2)）</div>
+                            <div data-ex="resetmax(1d20,18)"><code>resetmax(1d20,18)</code> 投到 ≥18 重投一次</div>
+                            <div data-ex="repeat(3,1d20+5)"><code>repeat(3,1d20+5)</code> 重复投 3 次，每次的总数单独显示（只能写在最外层）</div>
+                            <div data-ex="same(2d20)"><code>same(2d20)</code> 点数相同的骰子高亮</div>
+                            <div data-ex="burst(2d6)"><code>burst(2d6)</code> 爆骰：掷到最大点再追加一颗（追加的也会再爆）</div>
+                            <div data-ex="burst(1d8,3)"><code>burst(1d8,3)</code> 术法爆发：8 再加一颗 d8，最多加 3 颗（施法调整值）</div>
+                            <div data-ex="max(adv(1d20),10)+5"><code>max(adv(1d20),10)+5</code> 可以嵌套</div>
+                            <div data-ex="1d7"><code>1d7</code>、<code>1d600</code> 非标准骰也行</div>
                         </div>
                         <div class="dice-row">
                             <span class="seg" id="modeSeg">
@@ -596,20 +630,21 @@
     </div>
 
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js?v=2026111365"></script>
-    <script src="js/tabletop-combat.js?v=2026111365"></script>
-    <script src="js/tabletop-status.js?v=2026111365"></script>
-    <script src="js/tabletop-action.js?v=2026111365"></script>
-    <script src="js/tabletop-extra.js?v=2026111365"></script>
-    <script src="js/tabletop-autowall.js?v=2026111365"></script>
-    <script src="js/tabletop-prep.js?v=2026111365"></script>
-    <script src="js/tabletop-maps.js?v=2026111365"></script>
-    <script src="js/tabletop-dm.js?v=2026111365"></script>
-    <script src="js/tabletop-fight.js?v=2026111365"></script>
-    <script src="js/tabletop-summon.js?v=2026111365"></script>
-    <script src="js/tabletop-class.js?v=2026111365"></script>
-    <script src="js/tabletop-portal.js?v=2026111365"></script>
-    <script src="js/tabletop-coc.js?v=2026111365"></script>
-    <script src="js/tabletop.js?v=2026111365"></script>
+    <script src="js/tabletop-sheets.js?v=2026111366"></script>
+    <script src="js/tabletop-combat.js?v=2026111366"></script>
+    <script src="js/tabletop-status.js?v=2026111366"></script>
+    <script src="js/tabletop-action.js?v=2026111366"></script>
+    <script src="js/tabletop-extra.js?v=2026111366"></script>
+    <script src="js/tabletop-autowall.js?v=2026111366"></script>
+    <script src="js/tabletop-prep.js?v=2026111366"></script>
+    <script src="js/tabletop-maps.js?v=2026111366"></script>
+    <script src="js/tabletop-dm.js?v=2026111366"></script>
+    <script src="js/tabletop-fight.js?v=2026111366"></script>
+    <script src="js/tabletop-summon.js?v=2026111366"></script>
+    <script src="js/tabletop-class.js?v=2026111366"></script>
+    <script src="js/tabletop-portal.js?v=2026111366"></script>
+    <script src="js/tabletop-light.js?v=2026111366"></script>
+    <script src="js/tabletop-coc.js?v=2026111366"></script>
+    <script src="js/tabletop.js?v=2026111366"></script>
 </body>
 </html>

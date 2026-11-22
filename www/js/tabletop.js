@@ -17,7 +17,7 @@ var view = { x: 0, y: 0, s: 1 };
 var tool = 'select';
 var drawOpts = { shape: 'pen', color: '#e53935', width: 4, fill: false };
 var fogOpts = { mode: 'cover', shape: 'rect' };
-var recentMade = { fog: [], draw: [], portal: [] }; // 自己刚画的迷雾 / 绘制 / 放的传送门（右键轻点逐个撤销）
+var recentMade = { fog: [], draw: [], portal: [], light: [] }; // 自己刚画的迷雾 / 绘制 / 放的传送门（右键轻点逐个撤销）
 var wallOpts = { type: 'wall', mode: 'draw', shape: 'line', lockDoor: false }; // shape：line 逐点折线 / rect 拖出矩形 / ellipse 拖出圆形
 var wallDraft = null;
 var delConfirm = null; // Delete 删很多个物件时的二次确认
@@ -453,6 +453,7 @@ function handleMsg(m) {
             scene.items[it.id] = it;
         });
         renderSelPanel();
+        if (tool === 'light') lightSyncUI(); // 💡 光源列表跟着刷新
         notesDirty();
         scheduleCombatUi();
         requestRender();
@@ -542,7 +543,7 @@ function renderUsers() {
 
 function updateGmUi() {
     document.querySelectorAll('.gm-only').forEach(function(el) { el.style.display = me.gm ? '' : 'none'; });
-    if (!me.gm && (tool === 'fog' || tool === 'wall' || tool === 'note' || tool === 'portal')) setTool('select');
+    if (!me.gm && (tool === 'fog' || tool === 'wall' || tool === 'note' || tool === 'portal' || tool === 'light')) setTool('select');
     var activeTab = document.querySelector('.side-tab.active');
     if (activeTab && activeTab.style.display === 'none') switchPane('dice');
 }
@@ -601,6 +602,7 @@ function onPropsChanged() {
         $('setHpStep').value = String(p.hpStep != null ? p.hpStep : 25);
         $('setGridType').value = p.gridType || 'square';
         $('setDark').checked = !!p.dark;
+        if ($('lightDarkTool')) $('lightDarkTool').checked = !!p.dark;
         $('setCells').value = p.mapW ? Math.round(p.mapW / gridSize() * 100) / 100 : '';
         var mimg = p.mapAsset && getImg(p.mapAsset);
         $('setMapPct').value = p.mapW && mimg && mimg.naturalWidth ? Math.round(p.mapW / mimg.naturalWidth * 1000) / 10 : '';
@@ -861,6 +863,7 @@ function itemBBox(it) {
     if (it.kind === 'tile') return { x0: x, y0: y, x1: x + (it.w || 0), y1: y + (it.h || 0) };
     if (it.kind === 'note') { var nr = noteRadius(); return { x0: x - nr, y0: y - nr, x1: x + nr, y1: y + nr }; }
     if (it.kind === 'portal') { var pr = portalR(it); return { x0: x - pr, y0: y - pr, x1: x + pr, y1: y + pr }; }
+    if (it.kind === 'light') { var lr = gridSize() * 0.32; return { x0: x - lr, y0: y - lr, x1: x + lr, y1: y + lr }; }
     if (it.kind === 'trigger') return trigRect(it);
     if (it.shape === 'text') return textBBox(it);
     if (it.shape === 'circle') { var r = it.r || 0; return { x0: x - r, y0: y - r, x1: x + r, y1: y + r }; }
@@ -906,6 +909,7 @@ function hitItem(it, w) {
     if (it.kind === 'note') return Math.hypot(w.x - it.x, w.y - it.y) <= noteRadius() + 2 / view.s; // 房间笔记的编号圆
     if (it.kind === 'trigger') return trigHit(it, w); // 触发区域：点边框选中
     if (it.kind === 'portal') return Math.hypot(w.x - it.x, w.y - it.y) <= portalR(it) + 2 / view.s;
+    if (it.kind === 'light') return lightHit(it, w); // 火把标记看得到时才点得中
     var tol = 6 / view.s;
     var lx = w.x - (it.x || 0), ly = w.y - (it.y || 0);
     if (it.kind === 'tile' && it.locked) return false; // 锁定的地形点不到（防止点地图时误拖）
@@ -1236,6 +1240,7 @@ function render() {
     var items = sortedItems();
     items.forEach(function(it) { if (it.kind === 'draw') drawShape(ctx, it); });
     drawPortals(items);
+    drawLights(items); // 环境光源的火把标记、💡 工具里的光照范围（tabletop-light.js）
     var vision = visionActive() ? computeVision() : null;
     items.forEach(function(it) {
         if (it.kind !== 'token') return;
@@ -1950,9 +1955,7 @@ function computeVision() {
     var viewers = visionViewers();
     var key = wallsVersion + '|' + (typeof mapBoundsKey === 'function' ? mapBoundsKey() : (p.mapW || 0)) + '|' + (p.dark ? 1 : 0) + '|' + viewers.map(function(t) {
         return t.id + ',' + Math.round(t.x) + ',' + Math.round(t.y) + ',' + (t.sight || 0);
-    }).join(';') + '|' + (p.dark ? lightTokens().map(function(t) {
-        return t.id + ',' + Math.round(t.x) + ',' + Math.round(t.y) + ',' + num(t.light.bright, 0) + ',' + num(t.light.dim, 0);
-    }).join(';') : '');
+    }).join(';') + '|' + (p.dark ? lightsKey() : '');
     if (key === visCache.key) return visCache.polys;
 
     var b;
@@ -2240,8 +2243,9 @@ function clearWallPlan() {
 // ===== 工具 =====
 function setTool(t) {
     if (t === 'pointer') t = 'select'; // 指示已合并进选择工具（右键拖动）
-    if ((t === 'fog' || t === 'wall' || t === 'note' || t === 'portal') && !me.gm) return;
+    if ((t === 'fog' || t === 'wall' || t === 'note' || t === 'portal' || t === 'light') && !me.gm) return;
     if (t !== 'ruler') endRulerPath();
+    if (t !== 'light') cancelLightArea();
     if (tool === 'wall' && t !== 'wall') finishWall();
     tool = t;
     polyDraft = null;
@@ -2251,8 +2255,10 @@ function setTool(t) {
     $('optsWall').classList.toggle('show', t === 'wall');
     $('optsNote').classList.toggle('show', t === 'note');
     $('optsPortal').classList.toggle('show', t === 'portal');
+    $('optsLight').classList.toggle('show', t === 'light');
     if (t !== 'portal') portalLinkSrc = '';
     portalSyncUI();
+    lightSyncUI();
     if (typeof doorGapSync === 'function') doorGapSync();
     if (t !== 'select' && !(t === 'fog' && fogOpts.shape === 'select') && !(t === 'wall' && wallOpts.mode === 'select')) selectOnly([]);
     updateCursor();
@@ -2263,7 +2269,7 @@ function updateCursor() {
     var c = 'default';
     if (gesture && gesture.type === 'pan') c = 'grabbing';
     else if (spaceDown || tool === 'pan') c = 'grab';
-    else if (tool === 'draw' || tool === 'ruler' || tool === 'note' || (tool === 'portal' && portalOpts.mode === 'place') || (tool === 'fog' && fogOpts.shape !== 'select') || (tool === 'wall' && (wallOpts.mode === 'draw' || wallOpts.mode === 'auto'))) c = 'crosshair';
+    else if (tool === 'draw' || tool === 'ruler' || tool === 'note' || (tool === 'portal' && portalOpts.mode === 'place') || tool === 'light' || (tool === 'fog' && fogOpts.shape !== 'select') || (tool === 'wall' && (wallOpts.mode === 'draw' || wallOpts.mode === 'auto'))) c = 'crosshair';
     canvas.style.cursor = c;
 }
 
@@ -2300,7 +2306,7 @@ function onPointerDown(e) {
         return;
     }
     if (rulerPath && e.button === 2) { endRulerPath(); return; } // 右键结束尺子
-    if (e.button === 2 && !spaceDown && !actionMode && (tool === 'fog' || tool === 'draw' || tool === 'portal')) { // 右键：多边形回退一个点；轻点 = 撤销上一笔（🌀：点传送门 = 菜单）；拖动 = 平移
+    if (e.button === 2 && !spaceDown && !actionMode && (tool === 'fog' || tool === 'draw' || tool === 'portal' || tool === 'light')) { // 右键：多边形回退一个点；轻点 = 撤销上一笔（🌀：点传送门 = 菜单）；拖动 = 平移
         if (tool === 'fog' && polyDraft) {
             if (polyDraft.points.length > 1) polyDraft.points.pop(); else { polyDraft = null; notice('已取消这个多边形'); }
             requestRender();
@@ -2365,7 +2371,8 @@ function onPointerDown(e) {
     }
 
     if (tool === 'portal' && portalOpts.mode === 'link') { portalLinkClick(w, e.shiftKey); return; } // 🌀 连线
-    if (tool === 'select' || tool === 'note' || tool === 'portal' || (tool === 'fog' && fogOpts.shape === 'select') || (tool === 'wall' && wallOpts.mode === 'select')) {
+    if (tool === 'light' && lightOpts.mode === 'area') { lightAreaClick(w); return; } // 💡 画范围
+    if (tool === 'select' || tool === 'note' || tool === 'portal' || tool === 'light' || (tool === 'fog' && fogOpts.shape === 'select') || (tool === 'wall' && wallOpts.mode === 'select')) {
         if (tool === 'wall' && !e.shiftKey && wallVertexDown(w, start, e)) { requestRender(); return; } // 拖墙的拐点
         var hh = tool === 'select' || tool === 'portal' ? handleAt(w) : null;
         if (hh && hh.h.portal) { gesture = ptScaleStart(hh, start); canvas.style.cursor = handleCursor(hh); return; }
@@ -2379,7 +2386,7 @@ function onPointerDown(e) {
             return;
         }
         var hit = tool === 'select' ? selectedZoneAt(w) : null;
-        if (!hit) hit = hitTest(w, tool === 'fog' ? ['fog'] : tool === 'wall' ? ['wall'] : tool === 'note' ? ['note', 'trigger'] : tool === 'portal' ? ['portal'] : me.gm ? ['token', 'note', 'trigger', 'portal', 'draw', 'tile'] : ['token', 'portal', 'draw']);
+        if (!hit) hit = hitTest(w, tool === 'fog' ? ['fog'] : tool === 'wall' ? ['wall'] : tool === 'note' ? ['note', 'trigger'] : tool === 'portal' ? ['portal'] : tool === 'light' ? ['light'] : me.gm ? ['token', 'note', 'trigger', 'portal', 'light', 'draw', 'tile'] : ['token', 'portal', 'draw']);
         if (tool === 'wall' && typeof wallSegAt === 'function') { // 墙：点中的是折线里的哪一段
             var wsg = !e.shiftKey && hit && wallSegAt(w), prevSeg = wallSeg && wallSeg.id + ':' + wallSeg.seg;
             wallSeg = wsg && wsg.id === hit.id ? { id: wsg.id, seg: wsg.seg } : null;
@@ -2415,6 +2422,8 @@ function onPointerDown(e) {
             }
         } else if (tool === 'portal' && !e.shiftKey) {
             createPortalAt(w); // 🌀：单击放传送门
+        } else if (tool === 'light' && !e.shiftKey) {
+            createLightAt(w); // 💡：单击放环境光源
         } else if (tool === 'note' && !e.shiftKey) {
             if (dmNoteMode === 'trigger') trigDown(w, start); else createNoteAt(w); // 📌：单击放笔记 / 拖出触发区域
         } else if (tool === 'select' && !e.shiftKey && e.pointerType === 'touch') {
@@ -2486,7 +2495,7 @@ function onPointerMove(e) {
     cursorWorld = w;
     cursorAlt = !!e.altKey;
     cursorShift = !!e.shiftKey;
-    if (polyDraft || (tool === 'wall' && wallOpts.mode === 'draw')) requestRender(); // 画墙：预览线 / 落点跟着光标走
+    if (polyDraft || lightDraft || (tool === 'wall' && wallOpts.mode === 'draw')) requestRender(); // 画墙：预览线 / 落点跟着光标走
     if (rulerPath && !gesture) {
         rulerPath.b = rulerPoint(w, e.altKey);
         sendRulerPath();
@@ -2639,6 +2648,7 @@ function onPointerUp(e) {
         updateCursor();
         if (g.actionUndo && !g.start.moved) actionRightClick(); // 选目标时右键轻点
         if (g.toolUndo === 'portal' && !g.start.moved) portalRightTap(g.start); // 🌀：右键轻点传送门 = 菜单，空地 = 撤回刚放的
+        else if (g.toolUndo === 'light' && !g.start.moved) lightRightTap(g.start); // 💡：画范围中回退一个点；点光源 = 菜单；空地 = 撤回刚放的
         else if (g.toolUndo && !g.start.moved) toolRightUndo(g.toolUndo); // 迷雾 / 绘制：右键轻点撤销上一笔
         if (g.clearSel && !g.start.moved && !e.shiftKey) selectOnly([]); // 点空地：取消选择
         break;
@@ -2833,6 +2843,7 @@ function onKeyDown(e) {
     var tag = (e.target.tagName || '').toLowerCase();
     if (tag === 'input' || tag === 'textarea' || tag === 'select' || $('table').style.display === 'none') return;
     if (askOpen() || $('rollDialog').style.display !== 'none' || $('actDialog').style.display !== 'none' || $('hoDialog').style.display !== 'none' || $('hoView').style.display !== 'none' || $('tbDialog').style.display !== 'none') return;
+    if (lightKey(e)) return; // 💡 画范围：Enter 结束 / Esc 取消 / Backspace 回退
     if (actionMode) {
         if (e.key === 'Escape') { cancelActionTargeting(); return; }
         var am = actionMode, pathOpen = isPathShape(am.act.area) && !am.locked && am.pts && am.pts.length;
@@ -2849,7 +2860,7 @@ function onKeyDown(e) {
         else if (ck === 'v' && clipItems.length) { e.preventDefault(); pasteItems(); }
         return;
     }
-    var keyTools = { v: 'select', h: 'pan', d: 'draw', m: 'ruler', l: 'select', f: 'fog', w: 'wall', b: 'note', o: 'portal' };
+    var keyTools = { v: 'select', h: 'pan', d: 'draw', m: 'ruler', l: 'select', f: 'fog', w: 'wall', b: 'note', o: 'portal', g: 'light' };
     var k = e.key.toLowerCase();
     if (k === 't') {
         var hov = hitTest(cursorWorld, ['token']);
@@ -2985,7 +2996,7 @@ function renderSelPanel() {
     var it = scene.items[ids[0]];
     if (it.kind === 'tile' && typeof tileSelHtml === 'function') { panel.innerHTML = tileSelHtml(it); return; } // 地形（tabletop-maps.js）
     var edit = canEdit(it), g = gridSize();
-    var title = it.zone ? '持续区域' : it.kind === 'portal' ? '🌀 传送门' : it.kind === 'note' ? '📌 笔记' : it.kind === 'trigger' ? '⚠ 触发区域' : it.kind === 'token' ? '棋子' : it.kind === 'fog' ? (it.cut ? '揭示区域' : '迷雾') :
+    var title = it.zone ? '持续区域' : it.kind === 'portal' ? '🌀 传送门' : it.kind === 'light' ? '🔥 环境光源' : it.kind === 'note' ? '📌 笔记' : it.kind === 'trigger' ? '⚠ 触发区域' : it.kind === 'token' ? '棋子' : it.kind === 'fog' ? (it.cut ? '揭示区域' : '迷雾') :
         it.kind === 'wall' ? (WALL_STYLE[it.wtype] || WALL_STYLE.wall).name : '绘制';
     var h = '<h4>' + title + ' <button class="tt-btn small" data-act="close">✕</button></h4>';
     if (!edit) {
@@ -3063,6 +3074,8 @@ function renderSelPanel() {
         h += wallSelHtml([it.id]);
     } else if (it.kind === 'portal') {
         h += portalSelHtml(it);
+    } else if (it.kind === 'light') {
+        h += lightSelHtml(it);
     } else if (it.kind === 'note') {
         h += noteSelHtml(it);
     } else if (it.kind === 'trigger') {
@@ -3202,6 +3215,7 @@ function zeroHpStatus(it, hp, patch) {
 function onSelPanelChange(e) {
     var el = e.target, prop = el.dataset.prop;
     if (portalSelChange(el)) return; // 传送门设置（tabletop-portal.js）
+    if (lightSelChange(el)) return; // 环境光源（tabletop-light.js）
     var ids = selectedIds();
     if (el.dataset.zoneonce !== undefined && ids.length === 1) {
         var zi = scene.items[ids[0]];
@@ -3617,18 +3631,25 @@ function buildTrayExpr() {
 
 function signed(n) { return n > 0 ? '+' + n : n < 0 ? String(n) : ''; }
 
-// 优势 / 劣势：把表达式里第一颗 d20 变成 2d20 取高 / 取低，其余项不变
+// 优势 / 劣势：把表达式里第一颗 d20 变成 2d20 取高 / 取低，其余项不变（函数写法里的也认，如 max(1d20,10)；已经写了 adv / dis 的不动）
 function applyMode(expr, mode) {
-    if (!mode) return expr;
-    return expr.replace(/(^|[+\-])1?d20(?![\dkd!])/i, function(m, sign) {
+    if (!mode || /\b(adv|dis)[(（]/i.test(expr)) return expr;
+    return expr.replace(/(^|[+\-(,（，])1?d20(?![\dkd!])/i, function(m, sign) {
         return sign + '2d20' + (mode === 'adv' ? 'kh1' : 'kl1');
     });
+}
+
+// 在表达式末尾加修正值：repeat(n, …) 要加到括号里面（每次都加）
+function exprAddTail(expr, tail) {
+    if (!tail) return expr;
+    var m = expr.match(/^(repeat[(（].*)([)）])$/i);
+    return m ? m[1] + tail + m[2] : expr + tail;
 }
 
 function trayExpr() {
     var expr = $('diceExpr').value.replace(/\s/g, '');
     if (!expr) return '';
-    return applyMode(expr, advMode) + signed(parseInt($('diceMod').value, 10) || 0);
+    return exprAddTail(applyMode(expr, advMode), signed(parseInt($('diceMod').value, 10) || 0));
 }
 
 function updateTrayPreview() {
@@ -3695,10 +3716,30 @@ function roll(expr, label, hidden, vs) {
 function sendChat() {
     var text = $('chatInput').value.trim();
     if (!text) return;
-    var m = text.match(/^\/(r|roll|gr)\s+(\S+)\s*(.*)$/i);
-    if (m) roll(m[2], m[3], m[1].toLowerCase() === 'gr');
-    else op({ op: 'chat', text: text });
+    var m = text.match(/^\/(r|roll|gr)\s+([\s\S]+)$/i);
+    if (m) {
+        var sp = splitRollText(m[2]);
+        roll(sp.expr, sp.label, m[1].toLowerCase() === 'gr');
+    } else op({ op: 'chat', text: text });
     $('chatInput').value = '';
+}
+
+// 「/r max(1d20, 10) 力量检定」：表达式到括号外的第一个空格为止（函数写法的括号里可以有空格），后面是说明
+function splitRollText(s) {
+    var depth = 0;
+    for (var i = 0; i < s.length; i++) {
+        var c = s[i];
+        if (c === '(' || c === '（') depth++;
+        else if (c === ')' || c === '）') depth = Math.max(0, depth - 1);
+        else if (/\s/.test(c) && depth === 0) {
+            var rest = s.slice(i).trim();
+            if (!/^[+\-]/.test(rest)) return { expr: s.slice(0, i), label: rest }; // 「1d20 + 5」这种带空格的加减也算表达式
+            var nx = rest.match(/^[+\-]\s*/);
+            s = s.slice(0, i) + nx[0].trim() + rest.slice(nx[0].length);
+            i--;
+        }
+    }
+    return { expr: s, label: '' };
 }
 
 function macroKey() { return 'ttMacros:' + roomId; }
@@ -3804,9 +3845,9 @@ function applyD20Mode(expr, mode) {
 // 最终公式 = 基础公式（可在「将投掷」里直接改）+ 优势 / 劣势 + 暴击翻倍 + 祝福 / 灾祸 + 调整值
 function rollDialogExpr() {
     var base = rd.base;
-    if (/d20/i.test(base)) base = applyD20Mode(base, rd.mode);
+    if (/d20/i.test(base) && !/\b(adv|dis)[(（]/i.test(base)) base = applyD20Mode(base, rd.mode);
     if (rd.crit) base = doubleDice(base);
-    return base + rd.extra + signed(rd.adj);
+    return exprAddTail(base, rd.extra + signed(rd.adj));
 }
 
 function quickRoll(o) {
@@ -3929,6 +3970,16 @@ function initDiceTray() {
         if (b) setTrayMode(b.dataset.mode);
     });
     $('diceExpr').addEventListener('input', function() { dicePool = {}; renderDiceButtons(); });
+    $('diceHelpBtn').addEventListener('click', function() { var h = $('diceHelp'); h.style.display = h.style.display === 'none' ? '' : 'none'; });
+    $('diceHelp').addEventListener('click', function(e) { // 点一条示例：填进表达式框
+        var ex = e.target.closest('[data-ex]');
+        if (!ex) return;
+        dicePool = {};
+        $('diceExpr').value = ex.dataset.ex;
+        renderDiceButtons();
+        updateTrayPreview();
+        $('diceExpr').focus();
+    });
     $('diceMod').addEventListener('input', updateTrayPreview);
     $('charQuickChips').addEventListener('click', onCharQuickClick);
     $('charQuickSel').addEventListener('change', function() {
@@ -3952,24 +4003,36 @@ function userColor(name) {
     return '#ccc';
 }
 
-function rollHtml(r) {
+// 一次掷骰的明细：[骰子…] 加减 = 总数。d.x 爆骰追加、d.r 重投过、d.o 保底 / 封顶前的点数、d.s 点数相同（same）
+function rollDetail(r) {
     var crit = false, fumble = false;
-    var detail = r.terms.map(function(t, i) {
+    var detail = (r.terms || []).map(function(t, i) {
         var op = i === 0 ? (t.sign < 0 ? '-' : '') : (t.sign < 0 ? ' - ' : ' + ');
         if (!t.sides) return op + t.value;
         var dice = t.rolls.map(function(d) {
-            var cls = d.v === t.sides ? 'max' : d.v === 1 ? 'min' : '';
+            var cls = (d.v === t.sides ? 'max' : d.v === 1 ? 'min' : '') + (d.s ? ' same' : '');
             if (t.sides === 20 && !d.d) { if (d.v === 20) crit = true; if (d.v === 1) fumble = true; }
-            var s = cls ? '<span class="' + cls + '">' + d.v + '</span>' : String(d.v);
-            if (d.x) s += '!';
-            if (d.r) s += '<sup title="重骰过">↺</sup>';
+            var s = cls ? '<span class="' + cls.trim() + '"' + (d.s ? ' title="点数相同"' : '') + '>' + d.v + '</span>' : String(d.v);
+            if (d.o) s += '<span class="die-orig" title="掷出 ' + d.o + '，按保底 / 封顶算 ' + d.v + '">(原' + d.o + ')</span>';
+            if (d.x) s += '<sup title="掷到最大点，追加一颗">✦</sup>';
+            if (d.r) s += '<sup title="重投过">↺</sup>';
             return d.d ? '<s>' + d.v + '</s>' : s;
         }).join(', ');
         return op + '[' + dice + ']';
     }).join('');
-    var cls = crit && !fumble ? 'crit' : fumble && !crit ? 'fumble' : '';
-    return '<div class="log-roll"><span class="expr">' + escapeHtml(r.expr) + '</span> → <span class="detail">' + detail +
-        '</span> = <span class="total ' + cls + '">' + r.total + '</span></div>';
+    return { html: detail, cls: crit && !fumble ? 'crit' : fumble && !crit ? 'fumble' : '' };
+}
+
+function rollHtml(r) {
+    if (r.repeats && r.repeats.length) { // repeat(n, …)：每次单独一行
+        return '<div class="log-roll"><span class="expr">' + escapeHtml(r.expr) + '</span></div>' + r.repeats.map(function(x, i) {
+            var dt = rollDetail(x);
+            return '<div class="log-roll repeat"><span class="tt-hint">第 ' + (i + 1) + ' 次</span> <span class="detail">' + dt.html + '</span> = <span class="total ' + dt.cls + '">' + x.total + '</span></div>';
+        }).join('');
+    }
+    var d = rollDetail(r);
+    return '<div class="log-roll"><span class="expr">' + escapeHtml(r.expr) + '</span> → <span class="detail">' + d.html +
+        '</span> = <span class="total ' + d.cls + '">' + r.total + '</span></div>';
 }
 
 function logHtml(e) {
@@ -4066,6 +4129,7 @@ function init() {
         if (rulerPath) { endRulerPath(); return; }
         if (polyDraft) { finishPoly(); return; }
         if (wallDraft) { finishWall(); return; }
+        if (lightDraft && tool === 'light') { finishLightArea(); return; }
         if (tool === 'wall' && wallOpts.mode === 'select') { var ws = eventPos(e); wallDblClick(toWorld(ws.x, ws.y)); return; } // 加 / 删拐点
         if (tool !== 'select') return;
         var s = eventPos(e), hit = hitTest(toWorld(s.x, s.y), ['token']);
@@ -4177,6 +4241,7 @@ function init() {
     initAutoWall();
     initPrep();
     initPortals();
+    initLights();
     initDm();
     initFight();
     $('setHpStep').addEventListener('change', function() { setProps({ hpStep: parseFloat(this.value) }); });
