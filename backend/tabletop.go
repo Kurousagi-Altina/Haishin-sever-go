@@ -66,6 +66,8 @@ type TTLogEntry struct {
 	Cover  string `json:"cover,omitempty"`
 	// kind "action": an attack / spell resolved against several tokens
 	Act *TTActionResult `json:"act,omitempty"`
+	// kind "coc": COC 7 版检定 / 理智检定 / 成长检定的结果（tabletop_coc.go）
+	Coc *TTCocResult `json:"coc,omitempty"`
 	// only the GM (and the player named in For) receives it, e.g. HP changes of hidden tokens
 	GMOnly bool   `json:"gmOnly,omitempty"`
 	For    string `json:"for,omitempty"`
@@ -160,6 +162,8 @@ type ttOpRequest struct {
 	Table *TTTable `json:"table"`
 	// fight.save (concentration): the DC
 	DC int `json:"dc"`
+	// coc: COC 7 版检定（tabletop_coc.go）
+	Coc *TTCocReq `json:"coc"`
 }
 
 type Tabletop struct {
@@ -1239,6 +1243,11 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		}
 		room.addLog(e)
 
+	case "coc":
+		if st, msg := room.applyCoc(u, gm, req); st != 0 {
+			return st, msg
+		}
+
 	case "init":
 		if st, msg := room.applyInit(u, gm, req); st != 0 {
 			return st, msg
@@ -1897,6 +1906,8 @@ func ttCleanName(s string, max int, def string) string {
 var ttSettingKeys = map[string]bool{
 	"playerTokens": true, "playerDraw": true, "playerMoveOthers": true, "playerDoors": true,
 	"timeStop": true, "music": true,
+	// 规则体系："coc" = 克苏鲁的呼唤 7 版人物卡与检定，缺省 = DnD 2024
+	"rules": true,
 	// 战斗提示开关（tabletop_fight.go，默认开）
 	"hintOA": true, "hintEcon": true, "hintTurn": true, "hintLegend": true, "hintMastery": true, "hintClass": true, "hintReact": true, "hintFeat": true,
 	// 自动化分类（www/js/tabletop-fight.js AUTO_GROUPS）：判定、种族、分职业

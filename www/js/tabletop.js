@@ -3758,6 +3758,7 @@ function renderCharQuick() {
     $('charQuickSel').style.display = list.length > 1 ? '' : 'none';
     var chips = [];
     var chip = function(text, data) { chips.push('<span class="chip" ' + data + '>' + escapeHtml(text) + '</span>'); };
+    if (isCocSheet(cur)) cocQuickChips(cur, chip);
     if (cur.init != null && cur.init !== '') chip('先攻 ' + (normBonus(cur.init) || '+0'), 'data-qd20="' + escapeHtml(cur.init) + '" data-qlabel="先攻"');
     (cur.skills || []).forEach(function(s) {
         if (s.name === '察觉' || s.name === '隐匿') chip(s.name + ' ' + (normBonus(s.bonus) || '+0'), 'data-qd20="' + escapeHtml(s.bonus) + '" data-qlabel="' + escapeHtml(s.name) + '"');
@@ -3777,6 +3778,7 @@ function onCharQuickClick(e) {
     var sh = sheets[$('charQuickChips').dataset.sheet];
     if (!sh) return;
     if (c.dataset.qopen) { openSheet(sh.id, ''); return; }
+    if (c.dataset.qcoc != null) { cocCheck(sh, c.dataset.qlabel, c.dataset.qcoc, 0, c.dataset.qlabel === '幸运' ? '' : c.dataset.qlabel); return; }
     var o = { who: sh.name, label: c.dataset.qlabel };
     if (c.dataset.qd20 != null) o.bonus = c.dataset.qd20; else o.expr = c.dataset.qexpr;
     if (c.dataset.qatk != null) { o.attack = true; o.range = parseAttackRange(c.dataset.qatk); }
@@ -3978,7 +3980,7 @@ function logHtml(e) {
     var label = e.act && e.act.caster ? e.act.caster + ' · ' + (e.label || '') : e.label;
     var h = '<div class="log-entry">' + who + (label ? '<span class="label">' + escapeHtml(label) + '</span>' : '') +
         (e.hidden ? '<span class="hidden-tag">暗骰</span>' : '') + time;
-    h += e.act ? actionLogHtml(e) : e.roll ? rollHtml(e.roll) : '<div class="tt-hint">' + escapeHtml(e.text || '') + '</div>';
+    h += e.act ? actionLogHtml(e) : e.coc ? cocLogHtml(e) : e.roll ? rollHtml(e.roll) : '<div class="tt-hint">' + escapeHtml(e.text || '') + '</div>';
     if (e.roll && e.text) h += '<div class="tt-hint">' + escapeHtml(e.text) + '</div>';
     if (e.kind === 'action' && me.gm && e.act && (e.act.targets || []).some(function(t) { return t.amount || t.status || t.note; })) h +=
         '<button class="reroll" data-undo="' + escapeHtml(e.id) + '" title="撤销这次结算：恢复目标的生命值、状态和死亡豁免">↶</button>';
@@ -4004,7 +4006,7 @@ function appendLog(e, live) {
     var atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
     el.insertAdjacentHTML('beforeend', logHtml(e));
     if (atBottom || e.who === me.name) el.scrollTop = el.scrollHeight;
-    if (live && e.kind === 'roll') showRollToast(e);
+    if (live && (e.kind === 'roll' || e.kind === 'coc')) showRollToast(e);
     if (live && e.kind === 'action' && e.act) {
         var t = document.createElement('div');
         t.className = 'roll-toast';
@@ -4019,7 +4021,7 @@ function showRollToast(e) {
     var t = document.createElement('div');
     t.className = 'roll-toast';
     t.innerHTML = '🎲 <span style="color:' + escapeHtml(userColor(e.who)) + '">' + escapeHtml(e.who) + '</span> ' +
-        escapeHtml(e.label || '') + (e.roll ? ' <span class="tt-hint">' + escapeHtml(e.roll.expr) + '</span><b>' + e.roll.total + '</b>' : ' 进行了一次暗骰');
+        escapeHtml(e.label || '') + (e.coc ? ' <b>' + escapeHtml(cocToastText(e)) + '</b>' : e.roll ? ' <span class="tt-hint">' + escapeHtml(e.roll.expr) + '</span><b>' + e.roll.total + '</b>' : ' 进行了一次暗骰');
     $('rollToasts').appendChild(t);
     setTimeout(function() { t.remove(); }, 4000);
 }
@@ -4165,6 +4167,7 @@ function init() {
 
     bindSettings();
     initSheets();
+    initCoc();
     initSummon();
     initClassFeats();
     initCombat();

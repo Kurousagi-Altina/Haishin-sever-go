@@ -22,6 +22,7 @@ function onSheetsState(list) {
 function canEditSheet(sh) { return me.gm || (sh.owner && sh.owner === me.name); }
 
 function sheetSub(sh) {
+    if (isCocSheet(sh)) return cocSheetSub(sh);
     if (sh.kind === 'pc') {
         return [sh.race, sh.class + (sh.subclass ? '（' + sh.subclass + '）' : '') + (sh.level ? ' ' + sh.level + '级' : ''), sh.player ? '玩家：' + sh.player : '']
             .filter(Boolean).join(' · ');
@@ -86,6 +87,7 @@ function onSheetPaneClick(e) {
         else openRollDialog({ who: sh && sh.name, label: b.dataset.label, expr: b.dataset.roll });
         return;
     }
+    if (onCocClick(b, sh, e)) return; // COC 人物卡（tabletop-coc.js）
     var id = b.dataset.id;
     if (onSummonClick(b, sh)) return;
     switch (b.dataset.act) {
@@ -226,7 +228,7 @@ function listHtml() {
     var all = Object.keys(sheets).map(function(id) { return sheets[id]; });
     all.sort(function(a, b) { return (a.name || '').localeCompare(b.name || ''); });
     var groups = [['pc', '角色'], ['summon', '随从 / 召唤物'], ['monster', '怪物 / NPC'], ['item', '物品 / 资料']];
-    var h = '<div class="lobby-row" style="gap:6px;">' +
+    var h = isCoc() ? cocListButtons() : '<div class="lobby-row" style="gap:6px;">' +
         '<button class="tt-btn primary" data-act="xlsx" title="DND 5E2024 人物卡（.xlsx），或 obr-suite 角色卡的 data.json">导入人物卡 (Excel / JSON)</button>' +
         '<button class="tt-btn" data-act="lookup">📖 不全书图鉴</button>' +
         (masterChoices().length ? '<button class="tt-btn" data-act="newsummon" title="魔能炮台这类没有独立怪物卡的召唤物：攻击和 DC 跟随主控">＋ 随从</button>' : '') + '</div>';
@@ -234,7 +236,7 @@ function listHtml() {
         var list = all.filter(function(sh) { return sh.kind === g[0]; });
         if (!list.length && g[0] !== 'pc') return;
         h += '<div class="side-section"><h5>' + g[1] + '</h5>';
-        if (!list.length) h += '<div class="tt-hint">还没有角色卡。点「导入人物卡」选择你的 Excel 人物卡，或 obr-suite 角色卡导出的 JSON。</div>';
+        if (!list.length) h += '<div class="tt-hint">' + (isCoc() ? '还没有调查员。点「新建调查员」创建 COC 7 版人物卡。' : '还没有角色卡。点「导入人物卡」选择你的 Excel 人物卡，或 obr-suite 角色卡导出的 JSON。') + '</div>';
         list.forEach(function(sh) {
             h += '<div class="sheet-row"><div class="info" data-act="open" data-id="' + escapeHtml(sh.id) + '">' +
                 '<div class="name">' + escapeHtml(sh.name) + (sh.shared && sh.kind !== 'pc' && sh.kind !== 'summon' ? ' <span class="tt-hint">已共享</span>' : '') + (masterSheet(sh) ? ' <span class="tt-hint">主控：' + escapeHtml(masterSheet(sh).name) + '</span>' : '') + '</div>' +
@@ -254,6 +256,7 @@ function chip(label, value) {
 }
 
 function sheetHtml(sh, preview) {
+    if (isCocSheet(sh)) return cocSheetHtml(sh, preview); // COC 7 版人物卡（tabletop-coc.js）
     var edit = !preview && canEditSheet(sh);
     if (!preview) sh = viewSheet(sh); // 随从：【…】按主控换算
     var tok = sheetView.tokenId && scene.items[sheetView.tokenId];
@@ -1139,6 +1142,7 @@ function parseItems(doc, path) {
 function initSheets() {
     $('sheetPane').addEventListener('click', onSheetPaneClick);
     $('sheetPane').addEventListener('change', function(e) {
+        if (cocOnChange(e)) return;
         if (e.target.dataset.temp != null) setTempHp(currentSheet(), e.target.value);
         if (e.target.id === 'mdT') syncModForm();
     });
