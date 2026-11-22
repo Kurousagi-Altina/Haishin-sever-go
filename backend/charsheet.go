@@ -423,6 +423,13 @@ func (t *Tabletop) HandleCharSheet(w http.ResponseWriter, r *http.Request) {
 			writeJSON(w, http.StatusOK, map[string]interface{}{"success": true, "sheet": sheet})
 			return
 		}
+	} else if cocCells, cocErr := readXlsxSheet(zr, "人物卡"); cocErr == nil { // COC 7 版人物卡（tabletop_coc.go）
+		var sheet map[string]interface{}
+		if sheet, err = parseCocCard(cocCells); err == nil {
+			t.db.RecordAction(getClientIP(r), getTokenInfo(r).Username, "tabletop_charsheet", header.Filename)
+			writeJSON(w, http.StatusOK, map[string]interface{}{"success": true, "sheet": sheet})
+			return
+		}
 	}
 	writeJSON(w, http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
 }

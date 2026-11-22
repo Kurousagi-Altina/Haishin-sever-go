@@ -286,6 +286,7 @@ function applyRoomSettings() {
     if (drawBtn) drawBtn.style.display = !me.gm && roomSetting('playerDraw', true) === false ? 'none' : '';
     applyMusic();
     renderMusicPanel();
+    cocApplyRules(); // 右上角 DnD / COC 切换（tabletop-coc.js）
 }
 
 // ===== 传送门 =====
