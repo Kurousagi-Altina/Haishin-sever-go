@@ -694,3 +694,26 @@ textarea.ask-input { resize: vertical; min-height: 80px; }
 .coc-lv.fumble { background: #b71c1c; color: #fff; }
 @media (max-width: 760px) { .rules-switch button { padding: 3px 6px; } }
 .log-entry .reroll[data-cocpush] { position: static; margin-top: 3px; }
+
+/* 骰子：函数写法说明、日志里的 same / 保底 / repeat */
+.dice-help { margin: 4px 0 6px; padding: 6px 8px; border: 1px solid #3a3d46; border-radius: 8px; background: rgba(20, 22, 28, 0.6); font-size: 12px; line-height: 1.7; }
+.dice-help [data-ex] { cursor: pointer; border-radius: 4px; padding: 0 4px; }
+.dice-help [data-ex]:hover { background: rgba(255, 255, 255, 0.08); }
+.dice-help code { color: #ffd166; font-size: 12px; }
+.log-roll .same { background: rgba(255, 209, 102, 0.28); border-radius: 3px; padding: 0 2px; outline: 1px solid rgba(255, 209, 102, 0.6); }
+.log-roll .die-orig { color: #888; font-size: 11px; margin-left: 1px; }
+.log-roll.repeat { padding-left: 10px; }
+
+/* 光源列表（💡 工具栏）*/
+#optsLight { position: relative; }
+.light-list { position: absolute; left: 0; top: 100%; margin-top: 6px; z-index: 30; width: min(560px, 92vw); max-height: 60vh; overflow: auto; padding: 8px 10px;
+    background: rgba(22, 24, 30, 0.97); border: 1px solid #3a3d46; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); font-size: 12px; }
+.light-list-head { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.light-list-head b { flex: 1; }
+.light-group { margin: 8px 0 3px; color: #ffe082; font-weight: bold; }
+.light-row { display: flex; align-items: center; gap: 4px; padding: 3px 4px; border-radius: 6px; background: #202329; margin-bottom: 3px; }
+.light-row.off { opacity: 0.55; }
+.light-row .lname { flex: 1; min-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.light-row .tt-input.narrow { width: 48px; padding: 2px 4px; }
+.light-row .tt-select { width: 64px; padding: 2px; }
+.light-list .warn { color: #ffab91; margin-top: 6px; }
