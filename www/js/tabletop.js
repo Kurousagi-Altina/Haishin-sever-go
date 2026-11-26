@@ -486,6 +486,7 @@ function handleMsg(m) {
         onTrigLog(m.entry);
         pendingSaveNotice(m.entry); // 手动豁免：提醒自己的角色要掷
         fightNotice(m.entry);       // 借机攻击 / 专注豁免：提醒控制它的玩家
+        groupOnLog(m.entry);        // 群体投掷：结果挂到面板和地图上
         break;
     case 'users':
         users = m.users;
@@ -543,7 +544,7 @@ function renderUsers() {
 
 function updateGmUi() {
     document.querySelectorAll('.gm-only').forEach(function(el) { el.style.display = me.gm ? '' : 'none'; });
-    if (!me.gm && (tool === 'fog' || tool === 'wall' || tool === 'note' || tool === 'portal' || tool === 'light')) setTool('select');
+    if (!me.gm && (tool === 'fog' || tool === 'wall' || tool === 'note' || tool === 'portal' || tool === 'light' || tool === 'group')) setTool('select');
     var activeTab = document.querySelector('.side-tab.active');
     if (activeTab && activeTab.style.display === 'none') switchPane('dice');
 }
@@ -1603,6 +1604,7 @@ function drawOverlays() {
     });
     drawTarget();
     drawActionOverlay();
+    drawGroup(); // 👥 群体区域（tabletop-group.js）
     if (rulerPath) drawRulerPath(rulerPathPoints(), me.color, '');
     drawTokenHandles();
 
@@ -2243,7 +2245,7 @@ function clearWallPlan() {
 // ===== 工具 =====
 function setTool(t) {
     if (t === 'pointer') t = 'select'; // 指示已合并进选择工具（右键拖动）
-    if ((t === 'fog' || t === 'wall' || t === 'note' || t === 'portal' || t === 'light') && !me.gm) return;
+    if ((t === 'fog' || t === 'wall' || t === 'note' || t === 'portal' || t === 'light' || t === 'group') && !me.gm) return;
     if (t !== 'ruler') endRulerPath();
     if (t !== 'light') cancelLightArea();
     if (tool === 'wall' && t !== 'wall') finishWall();
@@ -2256,9 +2258,11 @@ function setTool(t) {
     $('optsNote').classList.toggle('show', t === 'note');
     $('optsPortal').classList.toggle('show', t === 'portal');
     $('optsLight').classList.toggle('show', t === 'light');
+    $('optsGroup').classList.toggle('show', t === 'group');
     if (t !== 'portal') portalLinkSrc = '';
     portalSyncUI();
     lightSyncUI();
+    groupRender();
     if (typeof doorGapSync === 'function') doorGapSync();
     if (t !== 'select' && !(t === 'fog' && fogOpts.shape === 'select') && !(t === 'wall' && wallOpts.mode === 'select')) selectOnly([]);
     updateCursor();
@@ -2269,7 +2273,7 @@ function updateCursor() {
     var c = 'default';
     if (gesture && gesture.type === 'pan') c = 'grabbing';
     else if (spaceDown || tool === 'pan') c = 'grab';
-    else if (tool === 'draw' || tool === 'ruler' || tool === 'note' || (tool === 'portal' && portalOpts.mode === 'place') || tool === 'light' || (tool === 'fog' && fogOpts.shape !== 'select') || (tool === 'wall' && (wallOpts.mode === 'draw' || wallOpts.mode === 'auto'))) c = 'crosshair';
+    else if (tool === 'draw' || tool === 'ruler' || tool === 'note' || (tool === 'portal' && portalOpts.mode === 'place') || tool === 'light' || tool === 'group' || (tool === 'fog' && fogOpts.shape !== 'select') || (tool === 'wall' && (wallOpts.mode === 'draw' || wallOpts.mode === 'auto'))) c = 'crosshair';
     canvas.style.cursor = c;
 }
 
@@ -2306,7 +2310,7 @@ function onPointerDown(e) {
         return;
     }
     if (rulerPath && e.button === 2) { endRulerPath(); return; } // 右键结束尺子
-    if (e.button === 2 && !spaceDown && !actionMode && (tool === 'fog' || tool === 'draw' || tool === 'portal' || tool === 'light')) { // 右键：多边形回退一个点；轻点 = 撤销上一笔（🌀：点传送门 = 菜单）；拖动 = 平移
+    if (e.button === 2 && !spaceDown && !actionMode && (tool === 'fog' || tool === 'draw' || tool === 'portal' || tool === 'light' || tool === 'group')) { // 右键：多边形回退一个点；轻点 = 撤销上一笔（🌀：点传送门 = 菜单）；拖动 = 平移
         if (tool === 'fog' && polyDraft) {
             if (polyDraft.points.length > 1) polyDraft.points.pop(); else { polyDraft = null; notice('已取消这个多边形'); }
             requestRender();
@@ -2372,6 +2376,7 @@ function onPointerDown(e) {
 
     if (tool === 'portal' && portalOpts.mode === 'link') { portalLinkClick(w, e.shiftKey); return; } // 🌀 连线
     if (tool === 'light' && lightOpts.mode === 'area') { lightAreaClick(w); return; } // 💡 画范围
+    if (tool === 'group' && me.gm) { groupPointerDown(w, start, e); return; } // 👥 圈选群体
     if (tool === 'select' || tool === 'note' || tool === 'portal' || tool === 'light' || (tool === 'fog' && fogOpts.shape === 'select') || (tool === 'wall' && wallOpts.mode === 'select')) {
         if (tool === 'wall' && !e.shiftKey && wallVertexDown(w, start, e)) { requestRender(); return; } // 拖墙的拐点
         var hh = tool === 'select' || tool === 'portal' ? handleAt(w) : null;
@@ -2592,6 +2597,9 @@ function onPointerMove(e) {
     case 'wshape':
         gesture.b = w; gesture.sq = e.shiftKey; gesture.grid = e.altKey;
         break;
+    case 'garea':
+        gesture.b = w;
+        break;
     case 'wvert':
         wallVertexMove(w, e);
         break;
@@ -2648,7 +2656,8 @@ function onPointerUp(e) {
         updateCursor();
         if (g.actionUndo && !g.start.moved) actionRightClick(); // 选目标时右键轻点
         if (g.toolUndo === 'portal' && !g.start.moved) portalRightTap(g.start); // 🌀：右键轻点传送门 = 菜单，空地 = 撤回刚放的
-        else if (g.toolUndo === 'light' && !g.start.moved) lightRightTap(g.start); // 💡：画范围中回退一个点；点光源 = 菜单；空地 = 撤回刚放的
+        else if (g.toolUndo === 'light' && !g.start.moved) lightRightTap(g.start);
+        else if (g.toolUndo === 'group' && !g.start.moved) groupRightTap(g.start); // 👥：右键轻点棋子 = 从群体里移除 // 💡：画范围中回退一个点；点光源 = 菜单；空地 = 撤回刚放的
         else if (g.toolUndo && !g.start.moved) toolRightUndo(g.toolUndo); // 迷雾 / 绘制：右键轻点撤销上一笔
         if (g.clearSel && !g.start.moved && !e.shiftKey) selectOnly([]); // 点空地：取消选择
         break;
@@ -2732,6 +2741,10 @@ function onPointerUp(e) {
         $('selPanel').dataset.ids = '';
         renderSelPanel();
         updateCursor();
+        break;
+    case 'garea':
+        groupPointerUp(g, w);
+        requestRender();
         break;
     case 'wshape':
         var spts = wallShapePoints(g);
@@ -2860,7 +2873,7 @@ function onKeyDown(e) {
         else if (ck === 'v' && clipItems.length) { e.preventDefault(); pasteItems(); }
         return;
     }
-    var keyTools = { v: 'select', h: 'pan', d: 'draw', m: 'ruler', l: 'select', f: 'fog', w: 'wall', b: 'note', o: 'portal', g: 'light' };
+    var keyTools = { v: 'select', h: 'pan', d: 'draw', m: 'ruler', l: 'select', f: 'fog', w: 'wall', b: 'note', o: 'portal', g: 'light', u: 'group' };
     var k = e.key.toLowerCase();
     if (k === 't') {
         var hov = hitTest(cursorWorld, ['token']);
@@ -4043,7 +4056,7 @@ function logHtml(e) {
     var label = e.act && e.act.caster ? e.act.caster + ' · ' + (e.label || '') : e.label;
     var h = '<div class="log-entry">' + who + (label ? '<span class="label">' + escapeHtml(label) + '</span>' : '') +
         (e.hidden ? '<span class="hidden-tag">暗骰</span>' : '') + time;
-    h += e.act ? actionLogHtml(e) : e.coc ? cocLogHtml(e) : e.roll ? rollHtml(e.roll) : '<div class="tt-hint">' + escapeHtml(e.text || '') + '</div>';
+    h += e.act ? actionLogHtml(e) : e.coc ? cocLogHtml(e) : e.group ? groupLogHtml(e) : e.roll ? rollHtml(e.roll) : '<div class="tt-hint">' + escapeHtml(e.text || '') + '</div>';
     if (e.roll && e.text) h += '<div class="tt-hint">' + escapeHtml(e.text) + '</div>';
     if (e.kind === 'action' && me.gm && e.act && (e.act.targets || []).some(function(t) { return t.amount || t.status || t.note; })) h +=
         '<button class="reroll" data-undo="' + escapeHtml(e.id) + '" title="撤销这次结算：恢复目标的生命值、状态和死亡豁免">↶</button>';
@@ -4242,6 +4255,7 @@ function init() {
     initPrep();
     initPortals();
     initLights();
+    initGroup();
     initDm();
     initFight();
     $('setHpStep').addEventListener('change', function() { setProps({ hpStep: parseFloat(this.value) }); });

@@ -102,6 +102,11 @@ function onSheetPaneClick(e) {
         break;
     case 'xlsx': $('xlsxFile').click(); break;
     case 'lookup': openLookup(''); break;
+    case 'books': openBooks(); break;
+    case 'bkpick': pickBook(b.dataset.src); break;
+    case 'bkrun': runBookImport(); break;
+    case 'bkstop': bookImp.stop = true; break;
+    case 'bklist': if (!bookImp.running) { bookImp.src = ''; renderSheets(); } break;
     case 'spell':
         var own = sh && (sh.spells || []).filter(function(x) { return x.name === b.dataset.name && x.text; })[0];
         if (own) {
@@ -219,6 +224,7 @@ function renderSheets() {
     else if (sheetView.mode === 'preview' && sheetView.tmp) pane.innerHTML = sheetHtml(sheetView.tmp, true);
     else if (sheetView.mode === 'lookup') pane.innerHTML = lookupHtml();
     else if (sheetView.mode === 'newsummon') pane.innerHTML = newSummonHtml();
+    else if (sheetView.mode === 'books' && me.gm) pane.innerHTML = booksHtml();
     else { sheetView.mode = 'list'; pane.innerHTML = listHtml(); scroll = 0; }
     pane.scrollTop = scroll;
     renderCharQuick();
@@ -231,6 +237,7 @@ function listHtml() {
     var h = isCoc() ? cocListButtons() : '<div class="lobby-row" style="gap:6px;">' +
         '<button class="tt-btn primary" data-act="xlsx" title="DND 5E2024 人物卡（.xlsx），或 obr-suite 角色卡的 data.json">导入人物卡 (Excel / JSON)</button>' +
         '<button class="tt-btn" data-act="lookup">📖 不全书图鉴</button>' +
+        (me.gm ? '<button class="tt-btn" data-act="books" title="选一本书或模组（如《凡戴尔之下：破碎方尖碑》），把里面所有怪物和 NPC 一次导成怪物卡（含棋子头像和立绘），不放到地图上">📚 整本导入</button>' : '') +
         (masterChoices().length ? '<button class="tt-btn" data-act="newsummon" title="魔能炮台这类没有独立怪物卡的召唤物：攻击和 DC 跟随主控">＋ 随从</button>' : '') + '</div>';
     groups.forEach(function(g) {
         var list = all.filter(function(sh) { return sh.kind === g[0]; });
@@ -831,6 +838,123 @@ function deployMonster(key, btn) {
     }).catch(apiError).then(function() { if (btn) { btn.disabled = false; btn.textContent = '部署'; } });
 }
 
+// ===== 整本导入（GM）：一本书 / 模组里的全部怪物和 NPC 一次导成怪物卡 =====
+// 书目来自 GET /5e/bestiary?books=1，一本书的怪物来自 ?source=SRC（不按英文名合并，同名的也是这本书的版本）。
+// 逐个调用 /5e/deploy（服务器下载棋子头像、立绘并登记到房间），建成怪物卡但不放到地图上；
+// 房间里已有同一只（sheet.source = 'bestiary/<key>'）的跳过。
+var bookImp = { books: null, loading: false, more: false, filter: '', src: '', list: null, running: false, stop: false, done: 0, total: 0, made: 0, skipped: 0, failed: [], cur: '' };
+
+function openBooks() {
+    sheetView = { mode: 'books', back: sheetView };
+    if (!bookImp.books && !bookImp.loading) {
+        bookImp.loading = true;
+        api('/api/tabletop/5e/bestiary?books=1', 'GET').then(function(d) {
+            bookImp.books = d.books || [];
+            bookImp.more = !!d.loading;
+        }).catch(apiError).then(function() { bookImp.loading = false; renderSheets(); });
+    }
+    renderSheets();
+}
+
+function bookOwnSheet(key) {
+    return Object.keys(sheets).map(function(id) { return sheets[id]; }).filter(function(s) { return s.source === 'bestiary/' + key; })[0];
+}
+// 已有、而且是完整的（有属性）：跳过；旧版导入不全的（没有属性）重新导一次补上
+function bookHave(key) { var o = bookOwnSheet(key); return !!(o && Array.isArray(o.abilities) && o.abilities.length); }
+
+function bookListRows() {
+    var f = bookImp.filter.trim().toLowerCase();
+    var list = (bookImp.books || []).filter(function(b) {
+        return !f || (b.name + ' ' + (b.en || '') + ' ' + b.source).toLowerCase().indexOf(f) >= 0;
+    });
+    if (!list.length) return '<div class="tt-hint">没有找到这本书</div>';
+    return list.slice(0, 60).map(function(b) {
+        return '<div class="sheet-row"><div class="info"><div class="name">' + escapeHtml(b.name) + '</div>' +
+            '<div class="sub">' + escapeHtml([b.en, b.source].filter(Boolean).join(' · ')) + (b.count ? ' · ' + b.count + ' 个怪物' : bookImp.more ? ' · 还在加载' : '') + '</div></div>' +
+            '<button class="tt-btn small" data-act="bkpick" data-src="' + escapeHtml(b.source) + '">选择</button></div>';
+    }).join('') + (list.length > 60 ? '<div class="tt-hint">还有 ' + (list.length - 60) + ' 本，输入书名缩小范围</div>' : '');
+}
+
+function pickBook(src) {
+    if (bookImp.running) return;
+    bookImp.src = src;
+    bookImp.list = null;
+    bookImp.done = bookImp.total = bookImp.made = bookImp.skipped = 0;
+    bookImp.failed = [];
+    renderSheets();
+    api('/api/tabletop/5e/bestiary?source=' + enc(src), 'GET').then(function(d) {
+        if (bookImp.src === src) bookImp.list = d.results || [];
+    }).catch(function(e) { apiError(e); bookImp.src = ''; }).then(renderSheets);
+}
+
+function booksHtml() {
+    var h = '<div class="sheet-head"><button class="tt-btn small" data-act="back">←</button><div class="title"><div class="name">📚 整本导入</div>' +
+        '<div class="sub">把一本书 / 模组里的全部怪物和 NPC 导成怪物卡（带棋子头像和立绘），之后在列表里点「放置」上地图</div></div></div>';
+    if (!bookImp.src) {
+        if (bookImp.loading || !bookImp.books) return h + '<div class="tt-hint">正在读取书目…</div>';
+        h += '<input class="tt-input" id="bkFilter" placeholder="搜书名，如 破碎方尖碑、凡戴尔、施特拉德、PaBTSO" value="' + escapeHtml(bookImp.filter) + '" style="width:100%;margin-bottom:6px;">';
+        if (bookImp.more) h += '<div class="tt-hint">部分书目还在后台加载，怪物数量可能暂时显示不出来；选中后会现读这本书</div>';
+        return h + '<div class="side-section" id="bkList">' + bookListRows() + '</div>';
+    }
+    var book = (bookImp.books || []).filter(function(b) { return b.source === bookImp.src; })[0] || { name: bookImp.src, source: bookImp.src };
+    h += '<div class="side-section"><h5>' + escapeHtml(book.name) + ' <span class="tt-hint">' + escapeHtml(book.source) + '</span></h5>';
+    if (!bookImp.list) return h + '<div class="tt-hint">正在读取这本书的怪物…</div></div>';
+    var list = bookImp.list, have = list.filter(function(m) { return bookHave(m.key); }).length;
+    if (bookImp.running) {
+        h += '<div class="bk-progress"><div class="bar" style="width:' + Math.round(bookImp.done / Math.max(1, bookImp.total) * 100) + '%"></div></div>' +
+            '<div class="tt-hint">正在导入 ' + bookImp.done + ' / ' + bookImp.total + (bookImp.cur ? '：' + escapeHtml(bookImp.cur) : '') + '</div>' +
+            '<button class="tt-btn small danger" data-act="bkstop">停止</button>';
+    } else {
+        if (bookImp.total) h += '<div class="tt-hint" style="margin-bottom:6px;">' + (bookImp.stop ? '已停止。' : '导入完成。') + '新建 ' + bookImp.made + ' 张怪物卡' +
+            (bookImp.skipped ? '，跳过已有的 ' + bookImp.skipped + ' 张' : '') + (bookImp.failed.length ? '，失败 ' + bookImp.failed.length + ' 个：' + escapeHtml(bookImp.failed.join('、')) : '') + '</div>';
+        h += '<div class="lobby-row" style="gap:6px;"><button class="tt-btn primary" data-act="bkrun"' + (have >= list.length ? ' disabled' : '') + '>导入全部（' + (list.length - have) + ' 个）</button>' +
+            '<button class="tt-btn small" data-act="bklist">换一本</button></div>' +
+            '<div class="tt-hint">共 ' + list.length + ' 个' + (have ? '，房间里已有 ' + have + ' 个（会跳过）' : '') + '。导入只建怪物卡，不放到地图上；每个要下载头像和立绘，几十个大约要一两分钟。</div>';
+    }
+    h += '<div class="bk-list">' + list.map(function(m) {
+        var own = bookHave(m.key);
+        return '<div class="bk-item' + (own ? ' have' : '') + '"><span>' + escapeHtml(m.name) + '</span><span class="tt-hint">' + escapeHtml([m.cr ? 'CR ' + m.cr : '', m.type].filter(Boolean).join(' · ')) + (own ? ' · 已有' : '') + '</span></div>';
+    }).join('') + '</div></div>';
+    return h;
+}
+
+function runBookImport() {
+    if (!me.gm || bookImp.running || !bookImp.list) return;
+    var todo = bookImp.list.filter(function(m) { return !bookHave(m.key); });
+    bookImp.running = true; bookImp.stop = false;
+    bookImp.done = 0; bookImp.total = todo.length; bookImp.made = 0; bookImp.failed = [];
+    bookImp.skipped = bookImp.list.length - todo.length;
+    var src = bookImp.src;
+    var next = function(i) {
+        if (i >= todo.length || bookImp.stop || bookImp.src !== src) {
+            bookImp.running = false; bookImp.cur = '';
+            renderSheets();
+            notice('整本导入：新建 ' + bookImp.made + ' 张怪物卡' + (bookImp.failed.length ? '，' + bookImp.failed.length + ' 个失败' : ''), !!bookImp.failed.length, 6000);
+            return;
+        }
+        var m = todo[i];
+        bookImp.cur = m.name;
+        if (sheetView.mode === 'books') renderSheets();
+        if (bookHave(m.key)) { bookImp.skipped++; bookImp.done++; next(i + 1); return; } // 导入途中别人刚建好
+        api('/api/tabletop/5e/deploy?room=' + enc(roomId), 'POST', { key: m.key }).then(function(data) {
+            var sh = data.sheet;
+            if (!sh) throw new Error('没有拿到怪物数据');
+            var old = bookOwnSheet(m.key);
+            sh.id = old ? old.id : genId(); // 导入不全的旧卡：原地补全（已经放上地图的棋子照样关联着）
+            return op({ op: 'sheet', sheet: sh }).then(function(ok) {
+                if (!ok) throw new Error('保存失败');
+                if (!sheets[sh.id] || !(sheets[sh.id].abilities || []).length) sheets[sh.id] = sh;
+                bookImp.made++;
+            });
+        }).catch(function() { bookImp.failed.push(m.name); }).then(function() {
+            bookImp.done++;
+            next(i + 1);
+        });
+    };
+    renderSheets();
+    next(0);
+}
+
 // ===== 法术 =====
 // 不全书里法术按环阶整页存放（<H4>疗伤术｜Cure Wounds</H4>）。规则统一按 2024 版：先查 2024 玩家手册，
 // 2024 版没有收录的法术再查 XGE、TCE；不查 2014 玩家手册
@@ -1148,6 +1272,11 @@ function initSheets() {
     });
     $('sheetPane').addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && e.target.id === 'lkQ') runLookup();
+    });
+    $('sheetPane').addEventListener('input', function(e) { // 整本导入：筛选书目（只刷新列表，不打断输入）
+        if (e.target.id !== 'bkFilter') return;
+        bookImp.filter = e.target.value;
+        if ($('bkList')) $('bkList').innerHTML = bookListRows();
     });
     renderSheets();
 }

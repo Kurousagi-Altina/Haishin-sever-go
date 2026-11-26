@@ -717,3 +717,31 @@ textarea.ask-input { resize: vertical; min-height: 80px; }
 .light-row .tt-input.narrow { width: 48px; padding: 2px 4px; }
 .light-row .tt-select { width: 64px; padding: 2px; }
 .light-list .warn { color: #ffab91; margin-top: 6px; }
+
+/* 整本导入（怪物卡）*/
+.bk-progress { height: 8px; border-radius: 4px; background: #2a2d35; overflow: hidden; margin: 4px 0 6px; }
+.bk-progress .bar { height: 100%; background: #43a047; transition: width 0.2s; }
+.bk-list { margin-top: 8px; display: flex; flex-direction: column; gap: 2px; max-height: 50vh; overflow: auto; }
+.bk-item { display: flex; justify-content: space-between; gap: 8px; padding: 3px 6px; border-radius: 4px; background: #202329; font-size: 12px; }
+.bk-item.have { opacity: 0.55; }
+
+/* 群体区域（👥）*/
+.group-panel { position: absolute; left: 64px; bottom: 64px; z-index: 26; width: min(600px, calc(100% - 80px)); padding: 8px 10px; border-radius: 10px;
+    background: rgba(22, 24, 30, 0.96); border: 1px solid #3a3d46; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); font-size: 12px; }
+.gp-head { display: flex; align-items: center; gap: 8px; cursor: move; margin-bottom: 4px; }
+.gp-head b { font-size: 13px; }
+.gp-head .tt-btn { margin-left: auto; }
+.gp-head label { margin-left: auto; }
+.gp-head label + .tt-btn { margin-left: 4px; }
+.gp-row { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin: 6px 0; }
+.gp-row .tt-select { width: auto; padding: 2px 4px; }
+.gp-units { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; max-height: 120px; overflow: auto; }
+.gp-unit { display: inline-flex; align-items: center; gap: 4px; padding: 2px 4px 2px 8px; border-radius: 6px; background: #2a2d35; border: 1px solid #3a3d46; }
+.gp-unit [data-gp="focus"] { cursor: pointer; }
+.gp-unit i { font-style: normal; cursor: pointer; color: #aaa; padding: 0 4px; border-radius: 4px; }
+.gp-unit i:hover { background: #c62828; color: #fff; }
+.gp-unit.pass { border-color: #43a047; } .gp-unit.pass b { color: #a5d6a7; }
+.gp-unit.fail { border-color: #e53935; } .gp-unit.fail b { color: #ef9a9a; }
+.gp-unit.noab { opacity: 0.6; }
+.gp-log-row { padding: 1px 0; } .gp-log-row .nm { display: inline-block; min-width: 64px; color: #ddd; margin-right: 4px; }
+.gp-log-row b.pass { color: #81c784; } .gp-log-row b.fail { color: #e57373; }

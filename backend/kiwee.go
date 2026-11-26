@@ -75,12 +75,14 @@ type kiweeStore struct {
 	dir string
 
 	mu       sync.Mutex
-	files    map[string]string // source → data file name
+	files    map[string]string // source → data file name (books that are indexed / searchable)
+	allFiles map[string]string // every book, incl. the skipped 2014 ones — only used as the base of another book's _copy
 	list     []kiweeMon
 	loaded   map[string]bool
 	loading  bool
 	started  bool
 	fileLock sync.Mutex
+	loadMu   sync.Mutex // one book at a time (the background loader and 整本导入 may ask for the same book)
 }
 
 var kiwee = &kiweeStore{}
@@ -115,17 +117,20 @@ func kiweeGet(path string, limit int64) ([]byte, error) {
 }
 
 // kiweeData returns a cached data file (data/bestiary/<name>), downloading it when missing or stale.
-func kiweeData(name string) ([]byte, error) {
-	if !kiweeFileRe.MatchString(name) {
+func kiweeData(name string) ([]byte, error) { return kiweeDataFrom("data/bestiary/", name, name) }
+
+// kiweeDataFrom is kiweeData for any data directory; cacheName is the file name under <tabletop_dir>/kiwee/.
+func kiweeDataFrom(dir, name, cacheName string) ([]byte, error) {
+	if !kiweeFileRe.MatchString(name) || !kiweeFileRe.MatchString(cacheName) {
 		return nil, errors.New("bad file name")
 	}
 	kiwee.fileLock.Lock()
 	defer kiwee.fileLock.Unlock()
-	path := filepath.Join(kiwee.dir, name)
+	path := filepath.Join(kiwee.dir, cacheName)
 	if st, err := os.Stat(path); err == nil && time.Since(st.ModTime()) < kiweeTTL {
 		return os.ReadFile(path)
 	}
-	data, err := kiweeGet("data/bestiary/"+name, kiweeMaxFile)
+	data, err := kiweeGet(dir+name, kiweeMaxFile)
 	if err != nil {
 		if old, rerr := os.ReadFile(path); rerr == nil { // offline: keep using the stale copy
 			return old, nil
@@ -187,6 +192,8 @@ func kiweeEntry(m map[string]interface{}, source string) kiweeMon {
 
 // kiweeLoadSource indexes one book's monsters.
 func kiweeLoadSource(source string) error {
+	kiwee.loadMu.Lock()
+	defer kiwee.loadMu.Unlock()
 	kiwee.mu.Lock()
 	file, done := kiwee.files[source], kiwee.loaded[source]
 	kiwee.mu.Unlock()
@@ -247,10 +254,15 @@ func kiweeEnsure() error {
 	}
 	kiwee.started = true
 	kiwee.files = map[string]string{}
+	kiwee.allFiles = map[string]string{}
 	kiwee.loaded = map[string]bool{}
 	var rest []string
 	for src, f := range files {
-		if kiweeSkip[src] || !kiweeSourceRe.MatchString(src) {
+		if !kiweeSourceRe.MatchString(src) {
+			continue
+		}
+		kiwee.allFiles[src] = f
+		if kiweeSkip[src] {
 			continue
 		}
 		kiwee.files[src] = f
@@ -293,9 +305,19 @@ func kiweeEnsure() error {
 	return nil
 }
 
-// GET /api/tabletop/5e/bestiary?q=
+// GET /api/tabletop/5e/bestiary?q=          → search (duplicates by English name collapsed)
+// GET /api/tabletop/5e/bestiary?books=1      → every book with monsters: [{source, name, en, count}]
+// GET /api/tabletop/5e/bestiary?source=SRC   → every monster of one book (整本导入), no collapsing
 func (t *Tabletop) HandleBestiary(w http.ResponseWriter, r *http.Request) {
 	t.kiweeInit()
+	if r.URL.Query().Get("books") != "" {
+		kiweeHandleBooks(w)
+		return
+	}
+	if src := strings.TrimSpace(r.URL.Query().Get("source")); src != "" {
+		kiweeHandleSource(w, src)
+		return
+	}
 	q := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("q")))
 	if q == "" || len([]rune(q)) > 40 {
 		writeJSON(w, http.StatusOK, map[string]interface{}{"results": []kiweeMon{}})
@@ -364,6 +386,9 @@ func kiweeMonster(key string, depth int) (map[string]interface{}, string, error)
 	}
 	kiwee.mu.Lock()
 	file := kiwee.files[src]
+	if file == "" && depth > 0 { // 别的书复制 2014 版怪物图鉴（MM）的怪当底稿：MM 不进索引，但底稿要读得到
+		file = kiwee.allFiles[src]
+	}
 	kiwee.mu.Unlock()
 	if file == "" {
 		return nil, "", errors.New("unknown source")
@@ -649,4 +674,107 @@ func kiweeSameName(en, skipSource string) []kiweeMon {
 		out = out[:3]
 	}
 	return out
+}
+
+// ===== 整本导入：书目列表、一本书的全部怪物 =====
+
+type kiweeBook struct {
+	Source string `json:"source"`
+	Name   string `json:"name"`
+	En     string `json:"en,omitempty"`
+	Count  int    `json:"count"`
+}
+
+var kiweeBookNames struct {
+	mu sync.Mutex
+	m  map[string][2]string // source → {中文名, English}
+}
+
+// kiweeBookTitles reads the book / adventure titles (data/books.json, data/adventures.json) once.
+func kiweeBookTitles() map[string][2]string {
+	kiweeBookNames.mu.Lock()
+	defer kiweeBookNames.mu.Unlock()
+	if kiweeBookNames.m != nil {
+		return kiweeBookNames.m
+	}
+	m := map[string][2]string{}
+	for _, f := range []struct{ file, key string }{{"books.json", "book"}, {"adventures.json", "adventure"}} {
+		data, err := kiweeDataFrom("data/", f.file, "_"+f.file)
+		if err != nil {
+			log.Printf("[KIWEE] failed to load %s: %v", f.file, err)
+			continue
+		}
+		var doc map[string][]map[string]interface{}
+		if json.Unmarshal(data, &doc) != nil {
+			continue
+		}
+		for _, b := range doc[f.key] {
+			id, _ := b["id"].(string)
+			name, _ := b["name"].(string)
+			en, _ := b["ENG_name"].(string)
+			if id != "" && name != "" {
+				m[id] = [2]string{name, en}
+			}
+		}
+	}
+	if len(m) > 0 {
+		kiweeBookNames.m = m
+	}
+	return m
+}
+
+func kiweeHandleBooks(w http.ResponseWriter) {
+	if err := kiweeEnsure(); err != nil {
+		writeJSON(w, http.StatusBadGateway, map[string]interface{}{"error": "怪物图鉴暂时无法访问"})
+		return
+	}
+	titles := kiweeBookTitles()
+	kiwee.mu.Lock()
+	count := map[string]int{}
+	for _, m := range kiwee.list {
+		count[m.Source]++
+	}
+	var out []kiweeBook
+	for src := range kiwee.files {
+		b := kiweeBook{Source: src, Name: src, Count: count[src]}
+		if t, ok := titles[src]; ok {
+			b.Name, b.En = t[0], t[1]
+		}
+		out = append(out, b)
+	}
+	loading := kiwee.loading
+	kiwee.mu.Unlock()
+	sort.Slice(out, func(i, j int) bool { return out[i].Name < out[j].Name })
+	writeJSON(w, http.StatusOK, map[string]interface{}{"books": out, "loading": loading})
+}
+
+func kiweeHandleSource(w http.ResponseWriter, src string) {
+	if err := kiweeEnsure(); err != nil {
+		writeJSON(w, http.StatusBadGateway, map[string]interface{}{"error": "怪物图鉴暂时无法访问"})
+		return
+	}
+	kiwee.mu.Lock()
+	_, known := kiwee.files[src]
+	kiwee.mu.Unlock()
+	if !known || !kiweeSourceRe.MatchString(src) {
+		writeJSON(w, http.StatusNotFound, map[string]interface{}{"error": "没有这本书"})
+		return
+	}
+	if err := kiweeLoadSource(src); err != nil { // 后台还没加载到这本：现在就加载
+		writeJSON(w, http.StatusBadGateway, map[string]interface{}{"error": "这本书的怪物数据暂时无法获取"})
+		return
+	}
+	kiwee.mu.Lock()
+	var out []kiweeMon
+	for _, m := range kiwee.list {
+		if m.Source == src {
+			out = append(out, m)
+		}
+	}
+	kiwee.mu.Unlock()
+	sort.Slice(out, func(i, j int) bool { return out[i].Name < out[j].Name })
+	if out == nil {
+		out = []kiweeMon{}
+	}
+	writeJSON(w, http.StatusOK, map[string]interface{}{"results": out})
 }
