@@ -68,6 +68,8 @@ type TTLogEntry struct {
 	Act *TTActionResult `json:"act,omitempty"`
 	// kind "coc": COC 7 版检定 / 理智检定 / 成长检定的结果（tabletop_coc.go）
 	Coc *TTCocResult `json:"coc,omitempty"`
+	// kind "group": 群体区域同时投的豁免 / 检定（tabletop_group.go）
+	Group *TTGroupResult `json:"group,omitempty"`
 	// only the GM (and the player named in For) receives it, e.g. HP changes of hidden tokens
 	GMOnly bool   `json:"gmOnly,omitempty"`
 	For    string `json:"for,omitempty"`
@@ -164,6 +166,7 @@ type ttOpRequest struct {
 	DC int `json:"dc"`
 	// coc: COC 7 版检定（tabletop_coc.go）
 	Coc *TTCocReq `json:"coc"`
+	Group *TTGroupReq `json:"group"`
 }
 
 type Tabletop struct {
@@ -536,6 +539,7 @@ func (room *TTRoom) sceneView(sc *TTScene, gm bool, name string) map[string]inte
 
 // logEntryFor masks hidden rolls for everyone except GMs and the roller.
 func logEntryFor(sub *ttSub, e TTLogEntry) TTLogEntry {
+	e = ttGroupFor(sub, e) // 群体投掷：隐藏棋子那几行不给玩家
 	if !e.Hidden || sub.gm || sub.name == e.Who {
 		return e
 	}
@@ -1245,6 +1249,11 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 
 	case "coc":
 		if st, msg := room.applyCoc(u, gm, req); st != 0 {
+			return st, msg
+		}
+
+	case "group":
+		if st, msg := room.applyGroup(u, gm, req); st != 0 {
 			return st, msg
 		}
 

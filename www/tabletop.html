@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css?v=2026111366">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026111370">
 </head>
 <body class="tt-body">
 
@@ -96,6 +96,7 @@
                 <button class="tool-btn gm-only" data-tool="note" title="房间笔记 (B)：单击地图放置编号笔记，只有 GM 看得到">📌</button>
                 <button class="tool-btn gm-only" data-tool="portal" title="传送门 (O)：单击地图放置；「连线」模式里先点出发的门再点要去的门（单向，Shift = 双向）；选中传送门在属性里设名字、手动 / 自动、目标">🌀</button>
                 <button class="tool-btn gm-only" data-tool="light" title="光源 (G)：单击地图放环境光源（火把标记默认只有你看得到），或逐点画出光照范围；工具栏「光源列表」统一管理所有角色和环境光源">💡</button>
+                <button class="tool-btn gm-only" data-tool="group" title="群体区域 (U)：圈一批棋子，同时投豁免 / 属性检定，统一加减生命值、生命上限、AC；可以单独移除某个目标">👥</button>
                 <div class="tool-sep"></div>
                 <button class="tool-btn" onclick="fitView()" title="适配视图 (0)">⛶</button>
             </div>
@@ -177,6 +178,14 @@
                     <div class="light-list" id="lightList" style="display:none;"></div>
                 </div>
 
+                <!-- 群体区域选项 -->
+                <div class="tool-opts" id="optsGroup">
+                    <button class="tt-btn small" data-groupshape="circle" title="从圆心拖出半径">◯ 圆形</button>
+                    <button class="tt-btn small" data-groupshape="rect" title="拖出矩形">▭ 矩形</button>
+                    <button class="tt-btn small" data-gpclear="1" title="清空群体">清空</button>
+                    <span class="tt-hint">拖一下圈住棋子（中心在圈里算，Shift = 加选）；单击棋子 = 加入 / 移出；右键轻点棋子 = 移出</span>
+                </div>
+
                 <!-- 墙体选项 -->
                 <div class="tool-opts" id="optsWall">
                     <button class="tt-btn small" data-walltype="wall" title="挡视线、挡移动">墙</button>
@@ -225,6 +234,7 @@
 
                 <!-- 回合 / 目标 -->
                 <div class="combat-hud" id="combatHud" style="display:none;"></div>
+                <div class="group-panel" id="groupPanel" style="display:none;"></div>
                 <div class="boss-bars" id="bossBars" style="display:none;"></div>
                 <div class="action-bar" id="actionBar" style="display:none;"></div>
                 <div class="multi-bar" id="multiBar" style="display:none;"></div>
@@ -630,21 +640,22 @@
     </div>
 
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js?v=2026111366"></script>
-    <script src="js/tabletop-combat.js?v=2026111366"></script>
-    <script src="js/tabletop-status.js?v=2026111366"></script>
-    <script src="js/tabletop-action.js?v=2026111366"></script>
-    <script src="js/tabletop-extra.js?v=2026111366"></script>
-    <script src="js/tabletop-autowall.js?v=2026111366"></script>
-    <script src="js/tabletop-prep.js?v=2026111366"></script>
-    <script src="js/tabletop-maps.js?v=2026111366"></script>
-    <script src="js/tabletop-dm.js?v=2026111366"></script>
-    <script src="js/tabletop-fight.js?v=2026111366"></script>
-    <script src="js/tabletop-summon.js?v=2026111366"></script>
-    <script src="js/tabletop-class.js?v=2026111366"></script>
-    <script src="js/tabletop-portal.js?v=2026111366"></script>
-    <script src="js/tabletop-light.js?v=2026111366"></script>
-    <script src="js/tabletop-coc.js?v=2026111366"></script>
-    <script src="js/tabletop.js?v=2026111366"></script>
+    <script src="js/tabletop-sheets.js?v=2026111370"></script>
+    <script src="js/tabletop-combat.js?v=2026111370"></script>
+    <script src="js/tabletop-status.js?v=2026111370"></script>
+    <script src="js/tabletop-action.js?v=2026111370"></script>
+    <script src="js/tabletop-extra.js?v=2026111370"></script>
+    <script src="js/tabletop-autowall.js?v=2026111370"></script>
+    <script src="js/tabletop-prep.js?v=2026111370"></script>
+    <script src="js/tabletop-maps.js?v=2026111370"></script>
+    <script src="js/tabletop-dm.js?v=2026111370"></script>
+    <script src="js/tabletop-fight.js?v=2026111370"></script>
+    <script src="js/tabletop-summon.js?v=2026111370"></script>
+    <script src="js/tabletop-class.js?v=2026111370"></script>
+    <script src="js/tabletop-portal.js?v=2026111370"></script>
+    <script src="js/tabletop-light.js?v=2026111370"></script>
+    <script src="js/tabletop-group.js?v=2026111370"></script>
+    <script src="js/tabletop-coc.js?v=2026111370"></script>
+    <script src="js/tabletop.js?v=2026111370"></script>
 </body>
 </html>
