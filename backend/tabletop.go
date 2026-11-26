@@ -507,6 +507,32 @@ func (room *TTRoom) meta() map[string]interface{} {
 	}
 }
 
+// standbyFor: the room is on standby (待机画面) and this subscriber is not a GM —
+// they get no room content at all, only the settings (music, the standby flag) and the user list.
+func (room *TTRoom) standbyFor(sub *ttSub) bool {
+	return !sub.gm && room.setting("standby", false)
+}
+
+// standbyMeta: room meta without the scene list and asset library (what players get on standby).
+func (room *TTRoom) standbyMeta() map[string]interface{} {
+	m := room.meta()
+	m["scenes"] = []map[string]interface{}{}
+	m["assets"] = []TTAsset{}
+	return m
+}
+
+// ttStandbyPass: the only message types a player on standby receives. "state" and "room" are
+// built per subscriber (stateMsg / broadcastMeta) and already stripped.
+func ttStandbyPass(msg []byte) bool {
+	var head struct {
+		Type string `json:"type"`
+	}
+	if json.Unmarshal(msg, &head) != nil {
+		return false
+	}
+	return head.Type == "state" || head.Type == "room" || head.Type == "users"
+}
+
 // setting reads a boolean room setting.
 func (room *TTRoom) setting(key string, def bool) bool {
 	if v, ok := room.Settings[key].(bool); ok {
@@ -637,6 +663,20 @@ func (room *TTRoom) userList() []map[string]interface{} {
 }
 
 func (room *TTRoom) stateMsg(sub *ttSub) []byte {
+	if room.standbyFor(sub) { // 待机：玩家只拿到空场景，看不到地图、棋子、记录、角色卡
+		sc := room.activeScene()
+		return ttMsg(map[string]interface{}{
+			"type":     "state",
+			"me":       map[string]interface{}{"name": sub.name, "color": sub.color, "gm": sub.gm},
+			"room":     room.standbyMeta(),
+			"scene":    map[string]interface{}{"id": sc.ID, "name": "", "props": defaultSceneProps(), "items": []interface{}{}},
+			"log":      []TTLogEntry{},
+			"users":    room.userList(),
+			"sheets":   []interface{}{},
+			"handouts": []interface{}{},
+			"tables":   []interface{}{},
+		})
+	}
 	entries := make([]TTLogEntry, 0, len(room.Log))
 	for _, e := range room.Log {
 		if e.GMOnly && !sub.gm && (e.For == "" || e.For != sub.name) {
@@ -663,6 +703,9 @@ func (room *TTRoom) send(sub *ttSub, msg []byte) {
 	if _, ok := room.subs[sub]; !ok {
 		return
 	}
+	if room.standbyFor(sub) && !ttStandbyPass(msg) {
+		return
+	}
 	select {
 	case sub.ch <- msg:
 	default:
@@ -684,7 +727,18 @@ func (room *TTRoom) broadcastState() {
 }
 
 func (room *TTRoom) broadcastMeta() {
-	room.broadcastAll(ttMsg(map[string]interface{}{"type": "room", "room": room.meta()}))
+	full := ttMsg(map[string]interface{}{"type": "room", "room": room.meta()})
+	var bare []byte
+	for sub := range room.subs {
+		if room.standbyFor(sub) {
+			if bare == nil {
+				bare = ttMsg(map[string]interface{}{"type": "room", "room": room.standbyMeta()})
+			}
+			room.send(sub, bare)
+		} else {
+			room.send(sub, full)
+		}
+	}
 }
 
 func (room *TTRoom) broadcastUsers() {
@@ -811,6 +865,9 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 	}
 	if gmOnly[req.Op] && !gm {
 		return http.StatusForbidden, "仅 GM 可执行该操作"
+	}
+	if !gm && room.setting("standby", false) {
+		return http.StatusForbidden, "待机中"
 	}
 	if !gm && room.setting("timeStop", false) {
 		switch req.Op {
@@ -1120,6 +1177,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		room.sceneEnter(u, target) // 场景联动：换音乐、弹讲义
 
 	case "room.settings":
+		_, standby := req.Props["standby"]
 		for k, v := range req.Props {
 			if !ttSettingKeys[k] {
 				continue
@@ -1130,7 +1188,11 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 				room.Settings[k] = v
 			}
 		}
-		room.broadcastMeta()
+		if standby { // 进出待机：玩家的整个视图要清空 / 恢复
+			room.broadcastState()
+		} else {
+			room.broadcastMeta()
+		}
 
 	case "portal":
 		if st, msg := room.applyPortal(u, gm, req); st != 0 {
@@ -1915,6 +1977,8 @@ func ttCleanName(s string, max int, def string) string {
 var ttSettingKeys = map[string]bool{
 	"playerTokens": true, "playerDraw": true, "playerMoveOthers": true, "playerDoors": true,
 	"timeStop": true, "music": true,
+	// 待机画面：玩家只看到待机图片，看不到房间内容也不能操作（standbyFor / ttStandbyPass）
+	"standby": true,
 	// 规则体系："coc" = 克苏鲁的呼唤 7 版人物卡与检定，缺省 = DnD 2024
 	"rules": true,
 	// 战斗提示开关（tabletop_fight.go，默认开）

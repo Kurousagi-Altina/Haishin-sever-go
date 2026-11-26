@@ -2855,6 +2855,7 @@ function onWheel(e) {
 function onKeyDown(e) {
     var tag = (e.target.tagName || '').toLowerCase();
     if (tag === 'input' || tag === 'textarea' || tag === 'select' || $('table').style.display === 'none') return;
+    if (!me.gm && standbyOn()) return; // 待机画面：玩家不能操作
     if (askOpen() || $('rollDialog').style.display !== 'none' || $('actDialog').style.display !== 'none' || $('hoDialog').style.display !== 'none' || $('hoView').style.display !== 'none' || $('tbDialog').style.display !== 'none') return;
     if (lightKey(e)) return; // 💡 画范围：Enter 结束 / Esc 取消 / Backspace 回退
     if (actionMode) {

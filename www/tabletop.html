@@ -6,7 +6,7 @@
     <title>跑团桌面</title>
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/tabletop.css?v=2026111370">
+    <link rel="stylesheet" href="css/tabletop.css?v=2026111382">
 </head>
 <body class="tt-body">
 
@@ -69,6 +69,11 @@
 
     <!-- 桌面 -->
     <div class="tt-table" id="table" style="display:none;">
+        <div class="standby-fx" id="standbyFx" style="display:none;">
+            <div class="sb-bg"></div><div class="sb-img"></div>
+            <button class="sb-leave" onclick="leaveRoom()">← 房间列表</button>
+            <button class="sb-sound" id="standbySound" style="display:none;">🔊 点击开启声音</button>
+        </div>
         <div class="tt-header">
             <button class="tt-btn small" onclick="leaveRoom()">← 房间列表</button>
             <span class="conn-dot" id="connDot" title="连接状态"></span>
@@ -256,6 +261,7 @@
                 </div>
                 <div class="banner-fx" id="bannerFx"></div>
                 <div class="timestop-fx" id="timeStopFx" style="display:none;"><i></i><i></i><span class="ts-text"></span></div>
+                <div class="standby-gm" id="standbyGm" style="display:none;">💤 待机中：玩家只能看到待机画面</div>
                 <div class="music-bar" id="musicBar" style="display:none;">
                     <span id="musicName"></span>
                     <button class="tt-btn small" id="musicUnlock" style="display:none;" title="浏览器需要点一下才允许播放声音">🔊 点击开启声音</button>
@@ -269,6 +275,7 @@
                 <div class="roll-toasts" id="rollToasts"></div>
 
                 <div class="zoom-ctrl">
+                    <button class="tt-btn small gm-only" id="standbyBtn" title="待机画面：玩家只能看到待机图片，看不到房间里的地图、棋子、记录、角色卡，也不能做任何操作；你自己照常准备">💤 待机</button>
                     <button class="tt-btn small gm-only" id="timeStopBtn" title="时间停止：玩家暂时无法操作地图">⏸ 时间停止</button>
                     <button class="tt-btn small gm-only" id="focusAllBtn" title="让所有玩家的镜头移到你现在看的位置">📍 全员看这里</button>
                     <select class="tt-select" id="snapSel" title="棋子松手时的吸附方式（只影响你自己）。拖动时按住 Alt 临时不吸附；Shift+方向键按细分步长微调"></select>
@@ -640,22 +647,22 @@
     </div>
 
     <script src="js/utils.js"></script>
-    <script src="js/tabletop-sheets.js?v=2026111370"></script>
-    <script src="js/tabletop-combat.js?v=2026111370"></script>
-    <script src="js/tabletop-status.js?v=2026111370"></script>
-    <script src="js/tabletop-action.js?v=2026111370"></script>
-    <script src="js/tabletop-extra.js?v=2026111370"></script>
-    <script src="js/tabletop-autowall.js?v=2026111370"></script>
-    <script src="js/tabletop-prep.js?v=2026111370"></script>
-    <script src="js/tabletop-maps.js?v=2026111370"></script>
-    <script src="js/tabletop-dm.js?v=2026111370"></script>
-    <script src="js/tabletop-fight.js?v=2026111370"></script>
-    <script src="js/tabletop-summon.js?v=2026111370"></script>
-    <script src="js/tabletop-class.js?v=2026111370"></script>
-    <script src="js/tabletop-portal.js?v=2026111370"></script>
-    <script src="js/tabletop-light.js?v=2026111370"></script>
-    <script src="js/tabletop-group.js?v=2026111370"></script>
-    <script src="js/tabletop-coc.js?v=2026111370"></script>
-    <script src="js/tabletop.js?v=2026111370"></script>
+    <script src="js/tabletop-sheets.js?v=2026111382"></script>
+    <script src="js/tabletop-combat.js?v=2026111382"></script>
+    <script src="js/tabletop-status.js?v=2026111382"></script>
+    <script src="js/tabletop-action.js?v=2026111382"></script>
+    <script src="js/tabletop-extra.js?v=2026111382"></script>
+    <script src="js/tabletop-autowall.js?v=2026111382"></script>
+    <script src="js/tabletop-prep.js?v=2026111382"></script>
+    <script src="js/tabletop-maps.js?v=2026111382"></script>
+    <script src="js/tabletop-dm.js?v=2026111382"></script>
+    <script src="js/tabletop-fight.js?v=2026111382"></script>
+    <script src="js/tabletop-summon.js?v=2026111382"></script>
+    <script src="js/tabletop-class.js?v=2026111382"></script>
+    <script src="js/tabletop-portal.js?v=2026111382"></script>
+    <script src="js/tabletop-light.js?v=2026111382"></script>
+    <script src="js/tabletop-group.js?v=2026111382"></script>
+    <script src="js/tabletop-coc.js?v=2026111382"></script>
+    <script src="js/tabletop.js?v=2026111382"></script>
 </body>
 </html>

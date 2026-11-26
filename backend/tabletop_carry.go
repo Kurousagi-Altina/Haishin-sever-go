@@ -94,6 +94,10 @@ func (t *Tabletop) HandleCarry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	gm := room.isGM(u)
+	if !gm && room.setting("standby", false) {
+		writeJSON(w, http.StatusOK, empty)
+		return
+	}
 	shOwner, _ := sh["owner"].(string)
 	tokOwner, _ := src["owner"].(string)
 	if !gm && ((shOwner != u.name && tokOwner != u.name) || ttHiddenFrom(src, u.name)) {
