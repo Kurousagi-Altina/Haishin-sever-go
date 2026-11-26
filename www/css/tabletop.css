@@ -745,3 +745,17 @@ textarea.ask-input { resize: vertical; min-height: 80px; }
 .gp-unit.noab { opacity: 0.6; }
 .gp-log-row { padding: 1px 0; } .gp-log-row .nm { display: inline-block; min-width: 64px; color: #ddd; margin-right: 4px; }
 .gp-log-row b.pass { color: #81c784; } .gp-log-row b.fail { color: #e57373; }
+
+/* 待机画面（💤）：玩家整页盖住，每次随机一张；淡入后缓慢放大 */
+.standby-fx { position: fixed; inset: 0; z-index: 10050; background: #0d0e12; overflow: hidden; user-select: none; animation: sbFade 1.2s ease; }
+.standby-fx .sb-bg { position: absolute; inset: -40px; background: center / cover no-repeat; filter: blur(28px) brightness(0.75); }
+.standby-fx .sb-img { position: absolute; inset: 0; background: center / contain no-repeat; animation: sbZoom 16s ease-out forwards; }
+@keyframes sbFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sbZoom { from { transform: scale(1); } to { transform: scale(1.04); } }
+.standby-fx .sb-leave, .standby-fx .sb-sound { position: absolute; top: 12px; padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(20,22,28,0.55); color: #eee; font-size: 13px; cursor: pointer; opacity: 0.55; transition: opacity 0.2s; }
+.standby-fx .sb-leave { left: 12px; }
+.standby-fx .sb-sound { right: 12px; opacity: 0.9; }
+.standby-fx .sb-leave:hover, .standby-fx .sb-sound:hover { opacity: 1; }
+.standby-gm { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 8; pointer-events: none; padding: 4px 14px; border-radius: 14px;
+    background: rgba(63, 81, 181, 0.85); color: #fff; font-size: 13px; letter-spacing: 1px; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }

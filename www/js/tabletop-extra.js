@@ -274,6 +274,31 @@ function setRoomSetting(key, value) {
 
 function timeStopped() { return !!roomSetting('timeStop', false); }
 
+// ===== 待机画面 =====
+// GM 开启后，玩家整个房间被待机图片盖住（服务器也不再发地图、棋子、记录、角色卡，玩家的操作全部拒绝）；
+// 每次进入待机随机挑一张显示，待机期间不换图。GM 自己照常操作，只在地图上方看到「待机中」提示。
+// 转场 CG（www/img/standby/）：骰运祈祷中、先攻判定中、长休中、队伍迷路中、战利品分配中、DM 思考中、大失败之后、冒险者待机中、冒险者行进中
+var STANDBY_IMAGES = ['01', '02', '03', '04', '05', '06', '07', '08', '09'].map(function(n) { return 'img/standby/' + n + '.webp'; });
+
+function standbyOn() { return !!roomSetting('standby', false); }
+
+function applyStandby() {
+    var on = standbyOn(), show = on && !me.gm;
+    var btn = $('standbyBtn');
+    if (btn) { btn.classList.toggle('primary', on); btn.textContent = on ? '▶ 结束待机' : '💤 待机'; }
+    $('standbyGm').style.display = on && me.gm ? '' : 'none';
+    var fx = $('standbyFx');
+    if (show && fx.style.display === 'none') {
+        var url = 'url("' + STANDBY_IMAGES[Math.floor(Math.random() * STANDBY_IMAGES.length)] + '")';
+        fx.querySelector('.sb-bg').style.backgroundImage = url;
+        fx.querySelector('.sb-img').style.backgroundImage = url;
+        fx.style.display = '';
+    } else if (!show && fx.style.display !== 'none') {
+        fx.style.display = 'none';
+    }
+    if (show) $('standbySound').style.display = $('musicUnlock').style.display === 'none' ? 'none' : '';
+}
+
 function applyRoomSettings() {
     var ts = timeStopped();
     $('timeStopFx').style.display = ts ? '' : 'none';
@@ -289,6 +314,7 @@ function applyRoomSettings() {
     applyMusic();
     renderMusicPanel();
     cocApplyRules(); // 右上角 DnD / COC 切换（tabletop-coc.js）
+    applyStandby();
 }
 
 // ===== 传送门 =====
@@ -450,7 +476,7 @@ function applyMusic() {
         bgm.currentTime = 0;
     }
     if (bgm.paused) {
-        bgm.play().then(function() { $('musicUnlock').style.display = 'none'; }).catch(function() { $('musicUnlock').style.display = ''; });
+        bgm.play().then(function() { $('musicUnlock').style.display = 'none'; applyStandby(); }).catch(function() { $('musicUnlock').style.display = ''; applyStandby(); });
     }
 }
 
@@ -832,6 +858,12 @@ function initExtra() {
         $('perm_' + k).addEventListener('change', function() { setRoomSetting(k, this.checked ? null : false); });
     });
     $('timeStopBtn').addEventListener('click', function() { setRoomSetting('timeStop', timeStopped() ? null : true); });
+    $('standbyBtn').addEventListener('click', function() { setRoomSetting('standby', standbyOn() ? null : true); });
+    $('standbySound').addEventListener('click', function(e) { // 待机时也能放 GM 的音乐：浏览器要先点一下才允许出声
+        e.stopPropagation();
+        applyMusic();
+        setTimeout(applyStandby, 300);
+    });
     $('setGridType').addEventListener('change', function() { setProps({ gridType: this.value === 'square' ? null : this.value }); });
     $('setDark').addEventListener('change', function() { setProps({ dark: this.checked || null }); });
 }
