@@ -748,8 +748,11 @@ textarea.ask-input { resize: vertical; min-height: 80px; }
 
 /* 待机画面（💤）：玩家整页盖住，每次随机一张；淡入后缓慢放大 */
 .standby-fx { position: fixed; inset: 0; z-index: 10050; background: #0d0e12; overflow: hidden; user-select: none; animation: sbFade 1.2s ease; }
+.standby-fx .sb-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.6s ease; }
+.standby-fx .sb-slide.on { opacity: 1; }
 .standby-fx .sb-bg { position: absolute; inset: -40px; background: center / cover no-repeat; filter: blur(28px) brightness(0.75); }
-.standby-fx .sb-img { position: absolute; inset: 0; background: center / contain no-repeat; animation: sbZoom 16s ease-out forwards; }
+.standby-fx .sb-img { position: absolute; inset: 0; background: center / contain no-repeat; }
+.standby-fx .sb-slide.on .sb-img { animation: sbZoom 10s ease-out forwards; }
 @keyframes sbFade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes sbZoom { from { transform: scale(1); } to { transform: scale(1.04); } }
 .standby-fx .sb-leave, .standby-fx .sb-sound { position: absolute; top: 12px; padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.25);
@@ -759,3 +762,19 @@ textarea.ask-input { resize: vertical; min-height: 80px; }
 .standby-fx .sb-leave:hover, .standby-fx .sb-sound:hover { opacity: 1; }
 .standby-gm { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 8; pointer-events: none; padding: 4px 14px; border-radius: 14px;
     background: rgba(63, 81, 181, 0.85); color: #fff; font-size: 13px; letter-spacing: 1px; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+
+/* 行动框「选项」行：超魔 / 凶蛮打手 / 元素掌控 */
+.meta-box { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
+.meta-box label { white-space: nowrap; font-size: 13px; }
+/* 角色卡：自动化情况 */
+.auto-status summary { cursor: pointer; }
+.auto-status .tt-hint { margin-top: 4px; line-height: 1.5; }
+/* 头像编辑 */
+.avatar-box { width: min(460px, calc(100vw - 32px)); }
+.avatar-main { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.avatar-main canvas { width: 240px; height: 240px; border-radius: 8px; cursor: grab; touch-action: none; background: #2a2d35; }
+.avatar-side { display: flex; flex-direction: column; gap: 6px; min-width: 150px; }
+.avatar-line { display: flex; align-items: center; gap: 6px; font-size: 13px; margin: 2px 0; }
+.avatar-line input[type=range] { flex: 1; min-width: 90px; }
+.avatar-pick { max-height: 180px; overflow-y: auto; margin: 8px 0; }
+.avatar-pick .asset-card { cursor: pointer; }

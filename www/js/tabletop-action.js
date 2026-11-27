@@ -641,6 +641,7 @@ function openActionDialog(a, caster, sh) {
     featDialogSync(act.a, act.caster, sh); // 巨武器大师（附赠攻击不算攻击动作，默认不勾）
     cxDialogSync(act.a, act.caster, sh); // 元素同调触及 / 真力注拳（tabletop-class.js）
     if (casterDialogSync(act.a, act.caster, sh)) $('acFeatRow').style.display = ''; // 强力施法 / 奥法火器
+    x2DialogSync(act.a, act.caster, sh); // 超魔 / 凶蛮打手 / 元素掌控 / 苦痛魔爆 / 先天术法（tabletop-class2.js）
     $('actDialog').style.display = 'flex';
 }
 
@@ -677,6 +678,7 @@ function readActionDialog() {
     featDialogApply(a);  // 勾了巨武器大师：伤害加熟练加值
     casterDialogApply(a); // 勾了奥法火器：伤害 +1d8
     a.cost = v('acCost') || 'a';
+    x2DialogApply(a); // 勾了超魔 / 凶蛮打手 / 元素掌控（瞬发会把消耗改成附赠）
     a.repeatSave = $('acRepeat').checked;
     a.dot = v('acDot');
     return a;
@@ -1122,7 +1124,7 @@ function confirmActionTargeting() {
     var a = m.act, ids = Object.keys(m.targets).filter(function(id) { return scene.items[id]; });
     if (!ids.length && !a.conc) { notice('还没有选择目标', true); return; }
     var melee = a.kind === 'attack' && !(a.range > 0 && !a.reach); // 近战攻击（防御式决斗、顺势斩）
-    var targets = ids.map(function(id) {
+    var targets = ids.map(function(id, idx) {
         var t = scene.items[id], o = { id: id, cover: 0, mode: '', autoCrit: false };
         if (!m.caster || t.id === m.caster.id || m.zoneId) return o;
         var ci = coverInfo(m.caster, t);
@@ -1151,6 +1153,7 @@ function confirmActionTargeting() {
         } else if (a.kind === 'save' && a.save === 'dex' && (a.area.self || !a.area.shape)) {
             o.cover = ci.level > 0 ? ci.level : 0;
         }
+        x2TargetMods(a, m.caster, t, o, idx === 0); // 咒剑诅咒 / 脆弱诅咒 / 先天术法 / 升阶法术（tabletop-class2.js）
         return o;
     }).filter(Boolean);
     if (ids.length && !targets.length) { notice('目标都处于完全掩护，无法攻击', true); return; }
@@ -1165,7 +1168,9 @@ function confirmActionTargeting() {
         save: a.kind === 'save' ? a.save || '' : '', dc: a.kind === 'save' ? a.dc || 0 : 0, half: !!a.half,
         caster: m.caster && canEdit(m.caster) ? m.caster.id : '', concentration: !!a.conc, targets: targets, spell: !!a.isSpell,
         magic: !!(a.magic || a.isSpell), school: a.school || '', parts: a.parts || [], mastery: a.kind === 'attack' ? a.mastery || '' : '', slotLevel: a.useSlot && a.slotLevel > 0 ? a.slotLevel : 0, melee: melee, onceDice: a.onceDice || '',
-        status: def ? statusWithTurnEffects({ id: def.id, name: def.name, color: def.color, icon: def.icon, rounds: a.rounds || 0 }, a) : null
+        savage: !!a.savage, empower: a.empower || 0, pierce: a.pierce || '',
+        status: def ? statusWithTurnEffects(Object.assign({ id: def.id, name: def.name, color: def.color, icon: def.icon, rounds: a.rounds || 0 }, def.adv ? { adv: def.adv } : {},
+            (def.id === 'hexcurse' || def.id === 'hexed') && m.caster ? { by: m.caster.id } : {}), a) : null // 诅咒记下施加者（只有他的攻击加伤）
     } };
     if (isPathShape(a.area) && !m.locked && m.pts && m.pts.length > 1) finishPathShape();
     if (a.conc && !m.zoneId && m.caster) endOldConcZones(m.caster.id);
@@ -1176,6 +1181,7 @@ function confirmActionTargeting() {
     cancelActionTargeting();
     op(body);
     if (!m.zoneId) { econAfterAction(a, caster); rechargeAfterAction(a, caster); } // 动作经济：记上这次的消耗；充能能力扣掉充能
+    if (!m.zoneId) x2AfterAction(a, caster); // 扣超魔的术法点、记凶蛮打手（tabletop-class2.js）
     masteryAfterAttack(a, caster, targets.map(function(o) { return o.id; })); // 用掉「侵扰」「削弱」
 }
 

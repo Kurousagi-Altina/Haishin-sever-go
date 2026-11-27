@@ -504,3 +504,49 @@ func ttDiceFunc(name string, args []string) (string, error) {
 	}
 	return p.String(), nil
 }
+
+// ttEmpower: 强效法术 — reroll (once) up to n dice that rolled below their average, the lowest first;
+// the new results stand. Terms with keep / drop are skipped. Returns how many dice were rerolled.
+func ttEmpower(r *TTDiceResult, n int) int {
+	if r == nil || n <= 0 {
+		return 0
+	}
+	type ref struct{ t, i int }
+	var cand []ref
+	for ti := range r.Terms {
+		tm := &r.Terms[ti]
+		m := ttDiceTermRe.FindStringSubmatch(tm.Expr)
+		if tm.Sides < 2 || tm.Sign < 0 || m == nil || m[3] != "" {
+			continue
+		}
+		for i, d := range tm.Rolls {
+			if !d.Dropped && float64(d.Value) < float64(tm.Sides+1)/2 {
+				cand = append(cand, ref{ti, i})
+			}
+		}
+	}
+	rel := func(c ref) float64 { return float64(r.Terms[c.t].Rolls[c.i].Value) / float64(r.Terms[c.t].Sides) }
+	sort.SliceStable(cand, func(a, b int) bool { return rel(cand[a]) < rel(cand[b]) })
+	if len(cand) > n {
+		cand = cand[:n]
+	}
+	for _, c := range cand {
+		tm := &r.Terms[c.t]
+		d := &tm.Rolls[c.i]
+		nv := rand.IntN(tm.Sides) + 1
+		if m := ttDiceTermRe.FindStringSubmatch(tm.Expr); m != nil && m[9] != "" { // 元素掌控的 mi2 照样保底
+			if lo, _ := strconv.Atoi(m[9]); nv < lo {
+				nv = lo
+			}
+		}
+		if d.Orig == 0 {
+			d.Orig = d.Value
+		}
+		delta := nv - d.Value
+		d.Value = nv
+		d.Rerolled = true
+		tm.Value += delta
+		r.Total += delta
+	}
+	return len(cand)
+}

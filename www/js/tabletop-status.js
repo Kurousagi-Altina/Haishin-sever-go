@@ -41,6 +41,11 @@ var STATUS_DEFS = [
     { id: 'advantage', name: '优势', icon: '⬆', color: '#ffcc00', desc: '自己的攻击检定具有优势（通用标记）。' },
     { id: 'disadvantage', name: '劣势', icon: '⬇', color: '#3b82f6', desc: '自己的攻击检定具有劣势（通用标记）。' },
     { id: 'hidden', name: '躲藏', icon: '🫥', color: '#607d8b', desc: '躲藏中（隐匿检定成功）：被发现前视为隐形。GM 的单位躲藏时，玩家地图和先攻条上都看不到它。' },
+    { id: 'hexcurse', name: '咒剑诅咒', icon: '☠', color: '#6a1b9a', desc: '被咒剑诅咒：施加者对它的伤害 + 熟练加值，攻击掷出 19–20 就是重击；它死亡时施加者回复生命。' },
+    { id: 'innate', name: '先天术法', icon: '✨', color: '#ba68c8', desc: '术士的先天术法：术士法术豁免 DC +1，术士法术的攻击检定具有优势（1 分钟）。' },
+    { id: 'watchwill', name: '守望者的意志', icon: '🛡', color: '#26a69a', adv: ['int', 'wis', 'cha'], desc: '智力、感知、魅力豁免具有优势（1 分钟；服务器掷豁免时自动生效）。' },
+    { id: 'turned', name: '受驱散', icon: '🏳', color: '#8d6e63', desc: '必须用移动尽量远离驱散者，不能靠近它 30 尺内，不能执行反应；动作只能疾走或挣脱。受到伤害时结束。' },
+    { id: 'heroic', name: '英雄激励', icon: '⭐', color: '#ffca28', desc: '持有英雄激励：可以重掷一次任意 d20（用掉后去掉这个标记）。' },
     { id: 'stable', name: '稳定', icon: '💤', color: '#90a4ae', desc: '0 生命值但伤势稳定，不用再做死亡豁免。' },
     { id: 'dead', name: '死亡', icon: '💀', color: '#424242', desc: '已死亡：先攻里自动跳过。' }
 ];

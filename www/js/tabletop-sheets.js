@@ -380,6 +380,7 @@ function sheetHtml(sh, preview) {
     }
 
     h += modsHtml(sh, edit);
+    if (!preview) h += autoStatusHtml(sh); // 哪些特性已自动化、哪些要手动（tabletop-class2.js）
 
     (sh.sections || []).forEach(function(sec, si) {
         h += '<div class="side-section"><h5>' + escapeHtml(sec.title) + '</h5>' + sec.entries.map(function(en, ei) {
@@ -477,6 +478,7 @@ function placeSheetTokenNow(sh, asset, carry) {
     var it = { id: genId(), kind: 'token', x: pos.x, y: pos.y, w: w, h: w, circle: true, sheet: sh.id, z: nextZ(),
         color: sh.kind === 'pc' ? '#1e88e5' : '#c62828', label: sh.name + (sh.kind !== 'pc' && same ? ' ' + (same + 1) : '') };
     if (asset) { it.asset = asset; it.circle = false; } // 怪物图鉴的头像本身就是圆形棋子图
+    avatarApplySheet(sh, it); // 角色卡上设过头像：用它的裁剪 / 形状 / 边框（tabletop-avatar.js）
     sheetTokenExtras(sh, it);
     if (it.fp) { it.w = it.h = it.fp * g; it.x = pos.x + (w - it.w) / 2; it.y = pos.y + (w - it.h) / 2; }
     var max = sh.hp ? num(sh.hp.max, 0) : 0;
@@ -502,7 +504,7 @@ function placeSheetTokenNow(sh, asset, carry) {
             (extra.length ? '，' + extra.length + ' 个跟随物（光环 / 跟随的棋子）也一起带过来了' : ''), false, 6000);
         return;
     }
-    notice('已放置「' + it.label + '」' + (it.hidden ? '（对玩家隐藏，在属性面板取消勾选「对玩家隐藏」即可公开）' : '') + '，可把资产库里的图片拖到棋子上更换头像', false, 5000);
+    notice('已放置「' + it.label + '」' + (it.hidden ? '（对玩家隐藏，在属性面板取消勾选「对玩家隐藏」即可公开）' : '') + '，可在属性面板「🖼 换头像 / 调整」里换头像', false, 5000);
 }
 
 // ===== Excel 人物卡 =====
@@ -523,13 +525,15 @@ function importXlsx(input) {
         ttAsk({ title: '导入角色卡', text: '已经有角色「' + sh.name + '」了。', cancel: '取消导入',
             choices: [{ label: '用新文件覆盖更新这张卡', value: 'over' }, { label: '另建一张新卡', value: 'new' }] }).then(function(v) {
             if (!v) return;
+            var old = v === 'over' ? JSON.parse(JSON.stringify(existing)) : null;
+            if (old && !sh.subclass && old.subclass) sh.subclass = old.subclass; // 卡上没写子职：保留手动填的
             sh.id = v === 'over' ? existing.id : genId();
-            importSheet(sh);
+            importSheet(sh, old);
         });
     }).catch(apiError);
 }
 
-function importSheet(sh) {
+function importSheet(sh, old) {
     if (!sh) return;
     sh = JSON.parse(JSON.stringify(sh));
     if (!sh.id || !/^[A-Za-z0-9_-]{1,40}$/.test(sh.id)) sh.id = genId();
@@ -537,7 +541,8 @@ function importSheet(sh) {
     op({ op: 'sheet', sheet: sh }).then(function(ok) {
         if (!ok) return;
         if (!sheets[sh.id]) sheets[sh.id] = sh; // 等服务器回显前先显示
-        notice('已导入「' + sh.name + '」');
+        if (old) sheetReimportSync(old, sh); // 覆盖更新：棋子的血量上限 / AC / 资源跟着变，报告新特性（tabletop-class2.js）
+        else notice('已导入「' + sh.name + '」');
         openSheet(sh.id, '');
     });
 }

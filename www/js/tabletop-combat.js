@@ -984,7 +984,8 @@ function combatPanelHtml(it, row) {
     if (!isCoc()) { // COC 房间不显示 DnD 专属的行
         h += unarmedRowHtml(it); // 徒手打击 / 擒抱 / 推撞（tabletop-fight.js）
         h += classRowHtml(it);   // 狂暴 / 回气 / 动作如潮 / 诗人激励
-        h += featRowHtml(it);    // 幸运
+        h += featRowHtml(it);    // 幸运 / 振军战吼
+        h += genericRowHtml(it); // 其他特性：没有专门适配的（tabletop-class2.js）
         h += saveModeRowHtml(it); // 自动掷豁免（tabletop-class.js）
     }
     h += row('阵营', '<select class="tt-select" data-prop="side" title="借机攻击按阵营判断：自动 = 玩家控制的是友方，GM 控制的是敌方">' +

@@ -276,11 +276,40 @@ function timeStopped() { return !!roomSetting('timeStop', false); }
 
 // ===== 待机画面 =====
 // GM 开启后，玩家整个房间被待机图片盖住（服务器也不再发地图、棋子、记录、角色卡，玩家的操作全部拒绝）；
-// 每次进入待机随机挑一张显示，待机期间不换图。GM 自己照常操作，只在地图上方看到「待机中」提示。
+// 每次进入待机把所有图片随机打散成一个不重复的顺序（如 9-2-7-1-8-3-6-5-4），这次待机就按这个顺序每 10 秒换一张（交叉淡入），
+// 放完一轮从头再按同一顺序循环。GM 自己照常操作，只在地图上方看到「待机中」提示。
 // 转场 CG（www/img/standby/）：骰运祈祷中、先攻判定中、长休中、队伍迷路中、战利品分配中、DM 思考中、大失败之后、冒险者待机中、冒险者行进中
 var STANDBY_IMAGES = ['01', '02', '03', '04', '05', '06', '07', '08', '09'].map(function(n) { return 'img/standby/' + n + '.webp'; });
 
+var STANDBY_SECS = 10;
+var standbySeq = [], standbyPos = 0, standbyTimer = null, standbyLayer = 0;
+
 function standbyOn() { return !!roomSetting('standby', false); }
+
+// 不重复的随机顺序（Fisher-Yates 洗牌）
+function standbyShuffle(n) {
+    var a = [];
+    for (var i = 0; i < n; i++) a.push(i);
+    for (var j = n - 1; j > 0; j--) { var k = Math.floor(Math.random() * (j + 1)), t = a[j]; a[j] = a[k]; a[k] = t; }
+    return a;
+}
+
+// 显示顺序里的下一张：两层交替，新的一层淡入，旧的淡出
+function standbyShow() {
+    var slides = $('standbyFx').querySelectorAll('.sb-slide');
+    var url = 'url("' + STANDBY_IMAGES[standbySeq[standbyPos % standbySeq.length]] + '")';
+    standbyPos++;
+    standbyLayer = 1 - standbyLayer;
+    var s = slides[standbyLayer];
+    s.querySelector('.sb-bg').style.backgroundImage = url;
+    s.querySelector('.sb-img').style.backgroundImage = url;
+    s.classList.remove('on');
+    void s.offsetWidth; // 重新开始缓慢放大的动画
+    s.classList.add('on');
+    slides[1 - standbyLayer].classList.remove('on');
+    var next = new Image(); // 预先加载下一张，切换时不闪
+    next.src = STANDBY_IMAGES[standbySeq[standbyPos % standbySeq.length]];
+}
 
 function applyStandby() {
     var on = standbyOn(), show = on && !me.gm;
@@ -289,12 +318,17 @@ function applyStandby() {
     $('standbyGm').style.display = on && me.gm ? '' : 'none';
     var fx = $('standbyFx');
     if (show && fx.style.display === 'none') {
-        var url = 'url("' + STANDBY_IMAGES[Math.floor(Math.random() * STANDBY_IMAGES.length)] + '")';
-        fx.querySelector('.sb-bg').style.backgroundImage = url;
-        fx.querySelector('.sb-img').style.backgroundImage = url;
+        standbySeq = standbyShuffle(STANDBY_IMAGES.length);
+        standbyPos = 0;
         fx.style.display = '';
+        standbyShow();
+        clearInterval(standbyTimer);
+        standbyTimer = setInterval(standbyShow, STANDBY_SECS * 1000);
     } else if (!show && fx.style.display !== 'none') {
         fx.style.display = 'none';
+        clearInterval(standbyTimer);
+        standbyTimer = null;
+        fx.querySelectorAll('.sb-slide').forEach(function(s) { s.classList.remove('on'); });
     }
     if (show) $('standbySound').style.display = $('musicUnlock').style.display === 'none' ? 'none' : '';
 }

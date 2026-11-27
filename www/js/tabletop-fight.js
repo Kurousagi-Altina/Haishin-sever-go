@@ -424,9 +424,12 @@ var AUTO_GROUPS = [
         ['hcDruid', '德鲁伊 / 星辰结社', '荒野变形、荒野伙伴、荒野复苏、原力蛮击；星图、星耀形态（巨龙座专注豁免）、宇宙预兆'],
         ['hcWizard', '法师 / 预言师', '奥术回想、招牌法术；预兆、专业预言、天眼通'],
         ['hcArtificer', '奇械师 / 魔炮师', '灵光一闪；魔能炮台、奥法火器、要塞阵地'],
+        ['hcPaladin', '圣武士 / 征服·守望之誓', '圣疗、至圣斩（含圣武斩免费一次）和斩击法术、神圣感知、信实坐骑；征服威压、神助打击；守望者的意志、驱散异域；守护灵光（队友豁免，服务器）'],
+        ['hcSorcerer', '术士 / 狂野·龙族术法', '术法点、法术位 ↔ 术法点、先天术法（DC +1、法术攻击优势）、超魔（瞬发 / 强效 / 升阶 / 双生 / 远程 …）、术法复苏；狂野魔法浪涌、混乱之潮'],
+        ['hcWarlock', '魔契师 / 咒剑', '咒剑诅咒（伤害 + 熟练、19 重击、击杀回血）、饥渴魔刃、苦痛魔爆、邪魔活力、秘法回流；脆弱诅咒 +1d6'],
         ['hcOther', '野蛮人 / 游荡者 / 吟游诗人', '狂暴（狂暴伤害自动加）、偷袭、诗人激励']] },
     { title: '专长与种族', items: [
-        ['hintFeat', '专长', '巨武器大师 / 巨武器战斗、长柄武器大师、哨兵、神射手 / 强弩专家 / 擒抱者、战地施法者、幸运、防御式决斗、拦截、盾牌大师、徒手战斗 / 酒馆斗殴者'],
+        ['hintFeat', '专长', '巨武器大师 / 巨武器战斗、长柄武器大师、哨兵、神射手 / 强弩专家 / 擒抱者、战地施法者、幸运、防御式决斗、拦截、盾牌大师（介入盾牌、盾击）、徒手战斗 / 酒馆斗殴者、凶蛮打手、双持客 / 双武器战斗、紫龙新兵、元素掌控'],
         ['hintRace', '种族特性', '龙裔吐息武器 / 龙族飞翼、化兽者化兽 / 迅捷']] }
 ];
 var HINT_KEYS = [];
@@ -486,7 +489,7 @@ function weaponMastered(sh, at) {
     if (typeof at.mastered === 'boolean') return at.mastered;
     if (!sh) return false;
     var texts = [];
-    var push = function(e) { if (/武器精通|weaponmastery/i.test(String(e && e.name || '').replace(/\s/g, ''))) texts.push((e.name || '') + ' ' + (e.text || e.desc || '')); };
+    var push = function(e) { if (/武器精通|weaponmastery|武器大师|weaponmaster/i.test(String(e && e.name || '').replace(/\s/g, ''))) texts.push((e.name || '') + ' ' + (e.text || e.desc || '')); };
     (sh.features || []).forEach(push);
     (sh.sections || []).forEach(function(sec) { (sec.entries || []).forEach(push); });
     if (!texts.length) return false;
@@ -1109,10 +1112,12 @@ function warCasterClick(el) {
 // 属性面板「专长」：幸运
 function featRowHtml(it) {
     var sh = it.sheet && sheets[it.sheet];
-    if (!sh || !canEdit(it) || !sheetFeat(sh, 'lucky')) return '';
+    if (!sh || !canEdit(it)) return '';
+    var more = x2FeatBtns(it, sh); // 紫龙新兵·振军战吼（tabletop-class2.js）
+    if (!sheetFeat(sh, 'lucky')) return more.length ? '<div class="prop-row"><label>专长</label><span class="prop-btns" style="margin:0;">' + more.join('') + '</span></div>' : '';
     var pb = sheetProf(sh), b = hasStatus(it, 'lucky') ? '<button class="tt-btn small" disabled title="下一次攻击检定 / 豁免自动取优势">🍀 幸运已备好</button>' :
         '<button class="tt-btn small" data-act="ft-lucky" title="幸运：花一个幸运点，下一次 D20 检定具有优势（攻击、由服务器掷的豁免会自动取优势；属性检定请在掷骰框选优势）。也可以在被攻击时花一点让攻击者劣势（由 GM 处理）">🍀 幸运（' + featLeft(it, '幸运点', pb) + '）</button>';
-    return '<div class="prop-row"><label>专长</label><span class="prop-btns" style="margin:0;">' + b + '</span></div>';
+    return '<div class="prop-row"><label>专长</label><span class="prop-btns" style="margin:0;">' + b + more.join('') + '</span></div>';
 }
 function featSelAct(act0, ids) {
     if (act0 !== 'ft-lucky') return false;

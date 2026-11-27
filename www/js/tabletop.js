@@ -1390,7 +1390,7 @@ function drawToken(it) {
             }
         }
         ctx.clip();
-        if (imgReady(img)) ctx.drawImage(img, -w / 2, -h / 2, w, h);
+        if (imgReady(img)) tokenImgDraw(img, it, w, h); // 头像的缩放 / 位置（tabletop-avatar.js）
         ctx.restore();
         ctx.beginPath();
         ctx.arc(0, 0, r, 0, Math.PI * 2);
@@ -1398,7 +1398,7 @@ function drawToken(it) {
         ctx.strokeStyle = it.circle && it.color ? it.color : 'rgba(255,255,255,0.85)';
         ctx.stroke();
     } else if (imgReady(img)) {
-        ctx.drawImage(img, -w / 2, -h / 2, w, h);
+        tokenImgDraw(img, it, w, h);
     }
     ctx.restore();
 
@@ -3049,6 +3049,7 @@ function renderSelPanel() {
         h += row('颜色', '<input class="tt-input" type="color" data-prop="color" value="' + escapeHtml(it.color || '#607d8b') + '">' +
             '<label><input type="checkbox" data-prop="circle"' + (it.circle ? ' checked' : '') + '> 圆形</label>' +
             '<label><input type="checkbox" data-prop="flipX"' + (it.flipX ? ' checked' : '') + '> 翻转</label>');
+        h += avatarRowHtml(it, row); // 换头像 / 调整（tabletop-avatar.js）
         h += row('旋转', '<input type="range" data-prop="rot" min="0" max="359" step="1" value="' + (it.rot || 0) + '" style="flex:1;"><span class="tt-hint">' + (it.rot || 0) + '°</span>');
         if (!it.locked) h += '<div class="tt-hint" style="margin:-4px 0 8px;">地图上拖四角自由缩放（Shift 吸附半格）、拖顶部圆钮旋转（Alt 不吸附）；也可 Alt+滚轮旋转、Shift+滚轮缩放。缩放只改图片，判定圆按体型</div>';
         h += row('视野', '<input class="tt-input narrow" data-prop="sight" type="number" min="0" step="5" value="' + (it.sight || '') + '" placeholder="不限"> ' +
@@ -3301,6 +3302,7 @@ function onSelPanelClick(e) {
     if (prepSelAct(b.dataset.act, ids)) return; // 墙体编辑 / 笔记（tabletop-prep.js）
     if (typeof tileSelAct === 'function' && tileSelAct(b.dataset.act, ids)) return; // 地形（tabletop-maps.js）
     if (dmSelAct(b.dataset.act, ids)) return; // 遭遇 / 触发区域（tabletop-dm.js）
+    if (b.dataset.act === 'avatar') { openAvatarEditor(scene.items[ids[0]]); return; } // 头像（tabletop-avatar.js）
     if (fightSelAct(b.dataset.act, ids)) return; // 徒手打击 / 擒抱 / 推撞（tabletop-fight.js）
     if (b.dataset.act === 'zoneGo') { zoneRetrigger(scene.items[ids[0]]); return; }
     if (b.dataset.act === 'zoneEnd') { deleteItems(ids.slice(0, 1)); return; }
