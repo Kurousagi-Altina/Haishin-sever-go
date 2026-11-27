@@ -498,11 +498,14 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 	seen := map[string]bool{}
 	for _, t := range a.Targets {
 		it := sc.Items[t.ID]
-		if it == nil || it["kind"] != "token" || seen[t.ID] || (!gm && ttHiddenFrom(it, u.name)) {
+		again := seen[t.ID] && (a.Kind == "attack" || a.Kind == "auto") && len(a.Targets) <= 20 // 光束 / 射线 / 飞弹：同一个目标可以被打多次
+		if it == nil || it["kind"] != "token" || (seen[t.ID] && !again) || (!gm && ttHiddenFrom(it, u.name)) {
 			continue
 		}
+		if !seen[t.ID] { // 撤销快照只记第一次之前的状态
+			undo = append(undo, ttSnapHP(sc, it))
+		}
 		seen[t.ID] = true
-		undo = append(undo, ttSnapHP(sc, it))
 		if ttBool(it["hidden"]) {
 			hidden = true
 		}

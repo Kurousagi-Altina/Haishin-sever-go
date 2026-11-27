@@ -858,6 +858,29 @@ function recomputeAreaTargets() {
     });
 }
 
+// 非范围的攻击 / 伤害（魔能爆的光束、灼热射线、魔法飞弹）：同一个目标可以选多次，每次单独结算
+function multiHit(a) { return !!a && !(a.area && a.area.shape) && (a.kind === 'attack' || a.kind === 'auto') && a.targets > 1; }
+function targetCount(m) { return Object.keys(m.targets).reduce(function(s, id) { return s + (+m.targets[id] || 1); }, 0); }
+// 操作条上改目标数（只限非范围行动）；减到比已选的少时从最后选的开始去掉
+function adjustTargets(dir) {
+    var m = actionMode, a = m.act;
+    a.targets = Math.max(1, Math.min(20, (a.targets || 1) + dir));
+    var ids = Object.keys(m.targets);
+    while (targetCount(m) > a.targets && ids.length) {
+        var id = ids[ids.length - 1];
+        if ((+m.targets[id] || 1) > 1) m.targets[id] = (+m.targets[id] || 1) - 1; else { delete m.targets[id]; ids.pop(); }
+    }
+    renderActionBar();
+    requestRender();
+}
+function removeTargetOnce(id) {
+    var m = actionMode;
+    if (!m || !m.targets[id]) return;
+    if ((+m.targets[id] || 1) > 1) m.targets[id] = (+m.targets[id] || 1) - 1; else delete m.targets[id];
+    renderActionBar();
+    requestRender();
+}
+
 function actionPointerDown(w, e) {
     var m = actionMode, a = m.act;
     var hit = actionHitAt(w);
@@ -899,10 +922,14 @@ function actionPointerDown(w, e) {
         }
     } else if (hit) {
         var zz = m.zoneId && scene.items[m.zoneId];
-        if (m.targets[hit.id]) delete m.targets[hit.id];
+        if (multiHit(a) && !m.zoneId && (m.targets[hit.id] || inActionRange(hit))) { // 光束 / 射线：再点一下 = 再打一次
+            if (e && (e.shiftKey || e.altKey) && m.targets[hit.id]) removeTargetOnce(hit.id);
+            else if (targetCount(m) >= a.targets) notice('已经选满 ' + a.targets + ' 次（操作条上的 ＋ 可以加目标数；右键撤销上一个，Shift+点击减一次）', true);
+            else m.targets[hit.id] = (+m.targets[hit.id] || 0) + 1;
+        } else if (m.targets[hit.id]) delete m.targets[hit.id];
         else if (zz && zoneOnce(zz) && zoneHitsNow(zz)[hit.id]) notice('「' + (hit.label || '') + '」本回合已经结算过「' + (zz.label || '') + '」（每回合限一次，可在区域属性里取消限制）', true);
         else if (!inActionRange(hit)) notice('「' + (hit.label || '') + '」超出射程 / 触及', true);
-        else if (Object.keys(m.targets).length >= a.targets) notice('最多选择 ' + a.targets + ' 个目标', true);
+        else if (Object.keys(m.targets).length >= a.targets) notice('最多选择 ' + a.targets + ' 个目标（操作条上的 ＋ 可以加目标数）', true);
         else m.targets[hit.id] = true;
     }
     renderActionBar();
@@ -944,7 +971,8 @@ function actionRightClick() {
     var ids = Object.keys(m.targets);
     if (ids.length && (!a.area.shape || m.zoneId)) {
         var last = scene.items[ids[ids.length - 1]];
-        delete m.targets[ids[ids.length - 1]];
+        if ((+m.targets[ids[ids.length - 1]] || 1) > 1) { m.targets[ids[ids.length - 1]]--; ids.push(ids[ids.length - 1]); }
+        else delete m.targets[ids[ids.length - 1]];
         renderActionBar();
         requestRender();
         notice('已取消目标「' + ((last && last.label) || '目标') + '」' + (ids.length > 1 ? '' : '（再右键取消这次行动）'));
@@ -1069,6 +1097,17 @@ function drawActionOverlay() {
         ctx.lineWidth = 3 / view.s;
         ctx.strokeStyle = good ? '#66bb6a' : '#ff5252';
         ctx.stroke();
+        if ((+m.targets[id] || 1) > 1) { // 同一个目标选了几次
+            var fs = Math.max(12 / view.s, (bb.x1 - bb.x0) * 0.3);
+            ctx.font = 'bold ' + fs + 'px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.lineWidth = 3 / view.s;
+            ctx.strokeStyle = '#000';
+            ctx.fillStyle = '#ffeb3b';
+            ctx.strokeText('×' + m.targets[id], bb.x1, bb.y0);
+            ctx.fillText('×' + m.targets[id], bb.x1, bb.y0);
+        }
     });
     ctx.restore();
     if (m.caster) drawHitCircle(m.caster, '#64b5f6', false);
@@ -1077,15 +1116,17 @@ function drawActionOverlay() {
 function renderActionBar() {
     var bar = $('actionBar');
     if (!actionMode) { bar.style.display = 'none'; return; }
-    var a = actionMode.act, n = Object.keys(actionMode.targets).length;
+    var a = actionMode.act, n = targetCount(actionMode);
     var ar = a.area, m0 = actionMode, hint;
     if (isPathShape(ar)) {
         var np = (m0.pts || []).length;
         hint = m0.locked ? '已放好：点击生物可排除 / 加入，点空地重新放置' :
             !np ? '点击地图放起点' : ar.shape === 'path' ? '继续点击添加拐点（总长不超过上限），原地再点一下 / Enter 完成，Backspace 撤掉上一点' : '点击确定方向和终点';
     } else hint = ar.shape ? (m0.locked ? '已放置范围：点击生物可排除 / 加入，点空地重新放置' : (ar.self ? '移动鼠标调整方向，点击确定' : '点击地图放置范围中心')) :
-        '点击选择目标（最多 ' + a.targets + ' 个）';
+        (multiHit(a) ? '点击选择目标，同一个可以点多次（共 ' + a.targets + ' 次）；Shift+点击减一次' : '点击选择目标（最多 ' + a.targets + ' 个）');
     var shp0 = ar.shape ? actionShape() : null, sizeTxt = '';
+    if (!ar.shape && !m0.zoneId) sizeTxt = '<span class="ab-size" title="目标数 / 次数（光束、射线、飞弹的数量）可以自己改">目标数 <button class="tt-btn small" data-ab="tg-">−</button> <b>' + (a.targets || 1) +
+        '</b> <button class="tt-btn small" data-ab="tg+">＋</button></span>';
     if (ar.shape) {
         var used = shp0 && shp0.type === 'path' ? ' 已用 ' + fmtDist(Math.round(pxToFt(pathLen(shp0.pts)))) : '';
         sizeTxt = '<span class="ab-size">' + (AREA_SIZE_LABEL[ar.shape] || '大小') + ' <button class="tt-btn small" data-ab="sz-">−</button> <b>' + (ar.size || 0) + '</b> 尺' +
@@ -1097,7 +1138,7 @@ function renderActionBar() {
             ((m0.locked || (m0.pts || []).length) && !m0.zoneId ? '<button class="tt-btn small" data-ab="redraw">重画</button>' : '');
     }
     if (m0.zoneMoved) hint = '「' + a.name + '」已移动：要对现在区域内的生物结算吗？（可点击生物增减）';
-    var names = Object.keys(actionMode.targets).map(function(id) { return scene.items[id] && scene.items[id].label; }).filter(Boolean);
+    var names = Object.keys(actionMode.targets).map(function(id) { var c = +actionMode.targets[id] || 1; return scene.items[id] && scene.items[id].label + (c > 1 ? '×' + c : ''); }).filter(Boolean);
     var zDone = '';
     if (m0.zoneId && scene.items[m0.zoneId]) {
         var zz0 = scene.items[m0.zoneId], hz = zoneHitsNow(zz0);
@@ -1121,7 +1162,8 @@ function confirmActionTargeting() {
     var m = actionMode;
     if (!m) return;
     if (m.caster) m.caster = scene.items[m.caster.id] || null; // 用最新的棋子数据（状态可能变了）
-    var a = m.act, ids = Object.keys(m.targets).filter(function(id) { return scene.items[id]; });
+    var a = m.act, ids = [];
+    Object.keys(m.targets).forEach(function(id) { if (scene.items[id]) for (var k = 0; k < (multiHit(a) ? +m.targets[id] || 1 : 1); k++) ids.push(id); }); // 同一个目标选了几次就结算几次
     if (!ids.length && !a.conc) { notice('还没有选择目标', true); return; }
     var melee = a.kind === 'attack' && !(a.range > 0 && !a.reach); // 近战攻击（防御式决斗、顺势斩）
     var targets = ids.map(function(id, idx) {
@@ -1326,6 +1368,7 @@ function onActionBarClick(e) {
     if (b.dataset.ab === 'go') confirmActionTargeting();
     else if (b.dataset.ab === 'sz-' || b.dataset.ab === 'sz+') adjustArea('size', b.dataset.ab === 'sz+' ? 1 : -1);
     else if (b.dataset.ab === 'w-' || b.dataset.ab === 'w+') adjustArea('width', b.dataset.ab === 'w+' ? 1 : -1);
+    else if (b.dataset.ab === 'tg-' || b.dataset.ab === 'tg+') adjustTargets(b.dataset.ab === 'tg+' ? 1 : -1);
     else if (b.dataset.ab === 'finish') finishPathShape();
     else if (b.dataset.ab === 'undo-pt') undoPathPoint();
     else if (b.dataset.ab === 'redraw') redrawArea();

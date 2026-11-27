@@ -448,6 +448,14 @@ function x2DialogSync(a, caster, sh) {
     if (a.kind === 'attack' && !a.isSpell && hintOn('hintFeat') && sheetHasEntry(s, /凶蛮打手|savageattacker/i))
         box('savage', '凶蛮打手', '每回合一次：武器命中时伤害掷两次取高（服务器自动）', !onceBtnUsed(caster, 'savKey'));
     if (a.isSpell) {
+        // 魔能爆：光束数按角色等级（1 / 5 / 11 / 17 级 1 / 2 / 3 / 4 道），每道单独攻击，可以打同一个目标
+        if (/魔能爆|eldritch\s*blast/i.test(a.name || '') && a.kind === 'attack' && !a.beamsSet) {
+            var lvl = parseInt(s.level, 10) || 1, beams = lvl >= 17 ? 4 : lvl >= 11 ? 3 : lvl >= 5 ? 2 : 1;
+            a.beamsSet = true;
+            if (beams > (a.targets || 1)) { a.targets = beams; $('acTargets').value = beams; }
+            if (a.damage) { a.damage = a.damage.replace(/^\d+d10/, '1d10'); $('acDamage').value = a.damage; } // 戏法强化是加光束，不是加骰子
+            notes.push(beams + ' 道光束：每道单独攻击，可以都打同一个目标（选目标时再点一下）');
+        }
         // 苦痛魔爆：魔能爆每道光束加魅力调整值
         if (clsOn('hcWarlock') && /魔能爆|eldritch\s*blast/i.test(a.name || '') && sheetHasEntry(s, RE_AGONIZING) && !a.agonAdded && a.damage) {
             a.damage = addToDamage(a.damage, signed(x2Cha(s)) || '+0');
