@@ -1986,6 +1986,7 @@ var ttSettingKeys = map[string]bool{
 	// 自动化分类（www/js/tabletop-fight.js AUTO_GROUPS）：判定、种族、分职业
 	"autoTraits": true, "autoCond": true, "autoCover": true, "hintRace": true,
 	"hcFighter": true, "hcMonk": true, "hcCleric": true, "hcDruid": true, "hcWizard": true, "hcArtificer": true, "hcOther": true,
+	"hcPaladin": true, "hcSorcerer": true, "hcWarlock": true,
 }
 
 func ttRequestToken(r *http.Request) string {

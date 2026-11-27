@@ -16,8 +16,11 @@ import (
 type TTActionTarget struct {
 	ID       string `json:"id"`
 	Cover    int    `json:"cover"`    // +2 / +5 to AC (attacks) or to Dex saves
-	Mode     string `json:"mode"`     // attack roll: "" / adv / dis
+	Mode     string `json:"mode"`     // attack roll: "" / adv / dis; save: "dis" = the target saves with disadvantage (升阶法术)
 	AutoCrit bool   `json:"autoCrit"` // paralysed / unconscious target within 5 ft
+	// per-target extra damage on a hit (咒剑诅咒 +熟练加值, 脆弱诅咒 1d6 黯蚀), doubled on a crit; at most 2
+	Bonus  []TTDamagePart `json:"bonus"`
+	CritOn int            `json:"critOn"` // a natural d20 of at least this is a crit (咒剑诅咒: 19)
 	Extra    string `json:"extra"`    // attacker's +1d4 (bless) / -1d4 (bane)
 	Adj      int    `json:"adj"`      // attacker's flat adjustment (exhaustion)
 	Note     string `json:"note"`     // judgement notes from the client (神射手 ignoring cover etc.)
@@ -45,6 +48,9 @@ type TTActionReq struct {
 	SlotLevel     int                    `json:"slotLevel"` // spell slot spent on it (法术反制 gives it back)
 	Melee         bool                   `json:"melee"`     // a melee attack (防御式决斗, 顺势斩)
 	OnceDice      string                 `json:"onceDice"`  // 多目标攻击只加一次的骰子（奥法火器 +1d8）：加在第一个命中的目标上
+	Savage        bool                   `json:"savage"`    // 凶蛮打手：第一个命中的目标，武器伤害掷两次取高
+	Empower       int                    `json:"empower"`   // 强效法术：伤害骰里至多 N 颗低于平均值的重掷一次
+	Pierce        string                 `json:"pierce"`    // 元素掌控：这种伤害类型无视抗性
 	Targets       []TTActionTarget       `json:"targets"`
 	Ref           string                 `json:"-"` // server only: log ref of the resulting entry (手动豁免结算)
 }
@@ -395,7 +401,11 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 			a.OnceDice = ""
 		}
 	}
-	onceUsed := false
+	onceUsed, savageUsed := false, false
+	if a.Empower < 0 || a.Empower > 6 || !a.Spell {
+		a.Empower = 0
+	}
+	a.Pierce = ttCleanName(strings.TrimSuffix(strings.TrimSpace(a.Pierce), "伤害"), 8, "")
 	if a.Kind == "attack" && a.Damage != "" { // a crit doubles the dice: make sure that still rolls
 		if _, err := RollTabletopDice(ttDoubleDice(a.Damage)); err != nil {
 			return http.StatusBadRequest, err.Error()
@@ -442,6 +452,11 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 		}
 		shared = r
 		res.Roll = r
+		if a.Empower > 0 && a.Kind != "heal" && a.Kind != "temp" {
+			if n := ttEmpower(r, a.Empower); n > 0 {
+				res.Note = strings.TrimSpace(res.Note + " 强效法术：重掷了 " + strconv.Itoa(n) + " 颗伤害骰")
+			}
+		}
 	}
 	var status map[string]interface{}
 	if a.Status != nil {
@@ -483,11 +498,14 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 	seen := map[string]bool{}
 	for _, t := range a.Targets {
 		it := sc.Items[t.ID]
-		if it == nil || it["kind"] != "token" || seen[t.ID] || (!gm && ttHiddenFrom(it, u.name)) {
+		again := seen[t.ID] && (a.Kind == "attack" || a.Kind == "auto") && len(a.Targets) <= 20 // 光束 / 射线 / 飞弹：同一个目标可以被打多次
+		if it == nil || it["kind"] != "token" || (seen[t.ID] && !again) || (!gm && ttHiddenFrom(it, u.name)) {
 			continue
 		}
+		if !seen[t.ID] { // 撤销快照只记第一次之前的状态
+			undo = append(undo, ttSnapHP(sc, it))
+		}
 		seen[t.ID] = true
-		undo = append(undo, ttSnapHP(sc, it))
 		if ttBool(it["hidden"]) {
 			hidden = true
 		}
@@ -497,6 +515,11 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 		}
 		crit := false
 		h := &TTActionHit{ID: t.ID, Name: ttCleanName(ttItemLabel(it), 40, "目标")}
+		bonusParts := ttTargetBonus(t.Bonus)
+		ptypes := make([]string, 0, len(parts)+len(bonusParts)) // damage types of the extra amounts, in order
+		for _, p := range parts {
+			ptypes = append(ptypes, p.Type)
+		}
 		res.Targets = append(res.Targets, h)
 		conds := ttStatusIDs(it)
 		tr := room.traitsOf(it)
@@ -556,6 +579,8 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 				h.Hit = "crit"
 			case nat == 1:
 				h.Hit = "fumble"
+			case t.CritOn >= 18 && t.CritOn < 20 && nat >= t.CritOn:
+				h.Hit = "crit"
 			case !hasAC || ac <= 0:
 				h.Hit = "hit"
 				h.Note = "目标没有 AC，按命中处理"
@@ -582,6 +607,20 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 				if err != nil {
 					return http.StatusBadRequest, err.Error()
 				}
+				if a.Savage && !savageUsed { // 凶蛮打手：每回合一次，武器伤害掷两次取高
+					savageUsed = true
+					if d2, err := RollTabletopDice(expr); err == nil {
+						addNote("凶蛮打手：伤害 " + strconv.Itoa(d.Total) + " / " + strconv.Itoa(d2.Total) + "，取高")
+						if d2.Total > d.Total {
+							d = d2
+						}
+					}
+				}
+				if a.Empower > 0 {
+					if n := ttEmpower(d, a.Empower); n > 0 {
+						addNote("强效法术：重掷 " + strconv.Itoa(n) + " 颗")
+					}
+				}
 				h.Damage = d
 				dmg = d.Total
 			}
@@ -597,6 +636,19 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 					}
 					h.Parts = append(h.Parts, d)
 					extra = append(extra, d.Total)
+				}
+				for _, p := range bonusParts { // 这个目标专属的加伤（咒剑诅咒、脆弱诅咒）
+					expr := p.Dice
+					if crit {
+						expr = ttDoubleDice(expr)
+					}
+					d, err := RollTabletopDice(expr)
+					if err != nil {
+						continue
+					}
+					h.Parts = append(h.Parts, d)
+					extra = append(extra, d.Total)
+					ptypes = append(ptypes, p.Type)
 				}
 			}
 
@@ -635,6 +687,10 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 				}
 				adv := ab == "dex" && (conds["hasted"] || conds["dodging"]) || len(advSrc) > 0
 				dis := ab == "dex" && conds["restrained"]
+				if t.Mode == "dis" { // 升阶法术：这个目标的豁免具有劣势
+					dis = true
+					addNote("升阶法术：豁免劣势")
+				}
 				if len(bonusNotes) > 0 {
 					addNote("豁免 " + ttJoinNotes(bonusNotes))
 				}
@@ -721,7 +777,11 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 			types := []string{a.DamageType}
 			amts := []int{dmg}
 			for i, v := range extra {
-				types = append(types, parts[i].Type)
+				ty := ""
+				if i < len(ptypes) {
+					ty = ptypes[i]
+				}
+				types = append(types, ty)
 				amts = append(amts, v)
 			}
 			total, noted := 0, map[string]bool{}
@@ -734,6 +794,14 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 				}
 				f, note := room.damageFactor(it, types[i], magic)
 				f, note = tr.damageMod(f, note, types[i], magic)
+				if a.Pierce != "" && (f == 0.5 || f == -1) && ttHasDamageType(strings.TrimSuffix(types[i], "伤害"), a.Pierce) { // 元素掌控：无视这种伤害的抗性
+					if f == 0.5 {
+						f = 1
+					} else {
+						f = 2
+					}
+					note = "元素掌控：无视" + a.Pierce + "抗性"
+				}
 				if f == -1 {
 					amt = (amt / 2) * 2
 				} else if f != 1 {
@@ -1025,4 +1093,31 @@ func ttCopyStatusExtras(dst, src map[string]interface{}) {
 	if by, _ := src["by"].(string); ttIDRe.MatchString(by) {
 		dst["by"] = by
 	}
+	if list, ok := src["adv"].([]interface{}); ok { // 守望者的意志：这些属性的豁免具有优势
+		var abs []interface{}
+		for _, x := range list {
+			if ab, _ := x.(string); ttAbilityCN[ab] != "" && len(abs) < 6 {
+				abs = append(abs, ab)
+			}
+		}
+		if len(abs) > 0 {
+			dst["adv"] = abs
+		}
+	}
+}
+
+// ttTargetBonus validates a target's own extra damage parts (at most 2, rollable, doubled on a crit).
+func ttTargetBonus(list []TTDamagePart) []TTDamagePart {
+	var out []TTDamagePart
+	for _, p := range list {
+		d := strings.ReplaceAll(strings.TrimSpace(p.Dice), " ", "")
+		if d == "" || len(d) > 20 || len(out) >= 2 {
+			continue
+		}
+		if _, err := RollTabletopDice(ttDoubleDice(d)); err != nil {
+			continue
+		}
+		out = append(out, TTDamagePart{Dice: d, Type: ttCleanName(strings.TrimSuffix(strings.TrimSpace(p.Type), "伤害"), 8, "")})
+	}
+	return out
 }

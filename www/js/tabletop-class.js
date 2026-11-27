@@ -48,7 +48,7 @@ function attacksPerAction(sh) {
     if (f >= 20) return 4;
     if (f >= 11) return 3;
     if (f >= 5) return 2;
-    return sheetHasEntry(sh, /额外攻击|extraattack/i) ? 2 : 1;
+    return sheetHasEntry(sh, /额外攻击|extraattack|饥渴魔刃|thirstingblade/i) ? 2 : 1; // 饥渴魔刃：契约武器攻击两次
 }
 
 // ===== 战士 =====
@@ -102,7 +102,7 @@ function cxPanelBtns(it, sh) {
     }
     if (hintOn('hintRace') && isShifter(sh) && !hasStatus(it, 'shifted'))
         b.push(cxBtn('cx-shift', '🐾 化兽（' + cxLeft(it, RE_SHIFT, '化兽', pb) + '）', '化兽（附赠动作，1 分钟）：获得 ' + (2 * pb) + ' 点临时生命值（2 × 熟练加值）' + (sheetHasEntry(sh, RE_SWIFT) ? '；迅捷：速度 +10 尺，敌人在你 5 尺内结束回合时可以用反应移动至多 10 尺（不引发借机攻击）' : '')));
-    b = b.concat(monkPanelBtns(it, sh), casterPanelBtns(it, sh));
+    b = b.concat(monkPanelBtns(it, sh), casterPanelBtns(it, sh), x2PanelBtns(it, sh)); // 圣武士 / 术士 / 魔契师（tabletop-class2.js）
     return b.filter(Boolean);
 }
 
@@ -112,7 +112,7 @@ function cxSelAct(act0, ids) {
     if (!it || !sh) return true;
     var f = clsLv(sh, '战士'), pb = sheetProf(sh), dc = runeDC(sh), u = runeUses(sh);
     var rune = function(key) { var r = runeRes(it, key); return cxSpend(it, r.re, r.name, u); };
-    if (monkSelAct(act0, it, sh) || casterSelAct(act0, it, sh)) act0 = ''; // 武僧 / 施法职业（下面的 switch 不再处理）
+    if (monkSelAct(act0, it, sh) || casterSelAct(act0, it, sh) || x2SelAct(act0, it, sh)) act0 = ''; // 武僧 / 施法职业 / 圣武士·术士·魔契师（下面的 switch 不再处理）
     switch (act0) {
     case 'cx-tmind':
         if (!cxSpend(it, RE_WIND, '回气', byLevel(CF.windUses, f || 1))) break;
@@ -232,7 +232,7 @@ function cxTargetBtns(e, t, r) {
                 h += btn('cloud', '☁ 云雾符文（' + escapeHtml(chipName(o.label)) + '）', '云雾符文（反应）：你或 30 尺内的生物被攻击命中时，把这次攻击改给你 30 尺内另一个生物（攻击者除外），用同一个命中值', ' data-by="' + escapeHtml(o.id) + '" data-react-ref="' + escapeHtml(e.id + ':' + t.id + ':cr') + '"');
         });
     }
-    return h + monkTargetBtns(e, t, r) + casterTargetBtns(e, t, r);
+    return h + monkTargetBtns(e, t, r) + casterTargetBtns(e, t, r) + x2TargetBtns(e, t, r);
 }
 
 function cxClick(el) {
@@ -240,6 +240,7 @@ function cxClick(el) {
     if (!ent || !ent.act) return true;
     if (/^mk/.test(d.cx)) return monkClick(el, d);
     if (/^cc/.test(d.cx)) return casterClick(el, d);
+    if (/^(pl|ft|wl)/.test(d.cx)) return x2Click(el, d); // 至圣斩 / 斩击法术 / 盾击 / 副手攻击 / 诅咒回复（tabletop-class2.js）
     var r = ent.act, c = r.casterId && scene.items[r.casterId], csh = c && c.sheet && sheets[c.sheet], tgt = scene.items[d.tok];
     switch (d.cx) {
     case 'giant':
@@ -579,7 +580,7 @@ var RE_CD = /引导神力|channel\s*divinity/i, RE_WARPRIEST = /战争祭司|war
 var RE_DIVINT = /神圣干预|divine\s*intervention/i, RE_DSTRIKE = /神圣打击|divine\s*strike/i;
 function clericLv(sh) { return clsLv(sh, '牧师'); }
 function isWarDomain(sh) { return hasSub(sh, RE_WARDOM); }
-function cdMax(sh) { return byLevel(CD_USES, Math.max(2, clericLv(sh))); }
+function cdMax(sh) { return clericLv(sh) < 2 && palLv(sh) >= 3 ? palCdMax(sh) : byLevel(CD_USES, Math.max(2, clericLv(sh))); } // 圣武士：2 次（11 级 3 次）
 function cdHas(it, sh) { return cxHas(it, RE_CD, '引导神力', cdMax(sh)); }
 function divineStrike(sh) { return clericLv(sh) >= 7 && !sheetHasEntry(sh, RE_POTENT) ? (clericLv(sh) >= 14 ? '2d8' : '1d8') : ''; }
 
@@ -852,10 +853,13 @@ function casterTargetBtns(e, t, r) {
     }
     if (clsOn('hcDruid') && r.kind === 'heal' && r.slotLevel > 0 && mine && c && csh && (starryOf(c) || {}).form === 'chalice' && !masteryDone[e.id + ':chalice'])
         h += btn('ccchal', '圣杯：再治疗一人', '星耀·圣杯座：用法术位施放治疗法术后，你或 30 尺内另一个生物恢复 ' + starDie(csh) + ' + 感知调整值 生命值');
-    // 导引打击：失手（不是天然 1），出手的是战争牧师自己或 30 尺内的生物
-    if (clsOn('hcCleric') && r.kind === 'attack' && t.hit === 'miss' && c) sortedItems().forEach(function(o) {
+    // 导引打击：失手（不是天然 1），出手的是战争牧师自己或 30 尺内的生物；征服之誓的神助打击只能给自己用
+    if (r.kind === 'attack' && t.hit === 'miss' && c) sortedItems().forEach(function(o) {
         var osh = o.kind === 'token' && o.sheet && sheets[o.sheet];
-        if (!osh || !mineTok(o) || clericLv(osh) < 3 || !isWarDomain(osh) || !cdHas(o, osh) || cxRefUsed(e.id + ':' + t.id + ':gs')) return;
+        if (!osh || !mineTok(o) || !cdHas(o, osh) || cxRefUsed(e.id + ':' + t.id + ':gs')) return;
+        var war = clsOn('hcCleric') && clericLv(osh) >= 3 && isWarDomain(osh), conq = clsOn('hcPaladin') && palLv(osh) >= 3 && isConquest(osh) && o.id === c.id;
+        if (!war && !conq) return;
+        if (conq && !war) { h += btn('ccguide', '神助打击 +10', '征服之誓·神助打击（1 次引导神力）：这次攻击检定 +10，命中则由服务器结算伤害', ' data-by="' + escapeHtml(o.id) + '" data-react-ref="' + escapeHtml(e.id + ':' + t.id + ':gs') + '"'); return; }
         var self = o.id === c.id;
         if (!self && (!canReact(o) || hostileTo(o, c) || tokenSide(o) !== tokenSide(c) || creatureDist(o, c) > 30)) return;
         h += btn('ccguide', '导引打击 +10' + (self ? '' : '（' + escapeHtml(chipName(o.label)) + '）'), '导引打击（1 次引导神力' + (self ? '' : '，用反应') + '）：这次攻击检定 +10，命中则由服务器结算伤害', ' data-by="' + escapeHtml(o.id) + '" data-react-ref="' + escapeHtml(e.id + ':' + t.id + ':gs') + '"');
@@ -958,6 +962,7 @@ function casterDialogApply(a) {
 
 // 专业预言（预言师 6 级）：用二环以上法术位施放预言法术后，恢复一个更低环（≤ 五环）的已用法术位
 function cxAfterSlot(a, sh) {
+    sorAfterSlot(a, sh); // 狂野魔法浪涌 / 混乱之潮（tabletop-class2.js）
     if (!sh || wizLv(sh) < 6 || !isDiviner(sh) || a.school !== '预言' || !(a.slotLevel >= 2) || !clsOn('hcWizard')) return;
     for (var lv = Math.min(5, a.slotLevel - 1); lv >= 1; lv--) {
         var s = slotOf(sh, lv);

@@ -641,6 +641,7 @@ function openActionDialog(a, caster, sh) {
     featDialogSync(act.a, act.caster, sh); // 巨武器大师（附赠攻击不算攻击动作，默认不勾）
     cxDialogSync(act.a, act.caster, sh); // 元素同调触及 / 真力注拳（tabletop-class.js）
     if (casterDialogSync(act.a, act.caster, sh)) $('acFeatRow').style.display = ''; // 强力施法 / 奥法火器
+    x2DialogSync(act.a, act.caster, sh); // 超魔 / 凶蛮打手 / 元素掌控 / 苦痛魔爆 / 先天术法（tabletop-class2.js）
     $('actDialog').style.display = 'flex';
 }
 
@@ -677,6 +678,7 @@ function readActionDialog() {
     featDialogApply(a);  // 勾了巨武器大师：伤害加熟练加值
     casterDialogApply(a); // 勾了奥法火器：伤害 +1d8
     a.cost = v('acCost') || 'a';
+    x2DialogApply(a); // 勾了超魔 / 凶蛮打手 / 元素掌控（瞬发会把消耗改成附赠）
     a.repeatSave = $('acRepeat').checked;
     a.dot = v('acDot');
     return a;
@@ -856,6 +858,29 @@ function recomputeAreaTargets() {
     });
 }
 
+// 非范围的攻击 / 伤害（魔能爆的光束、灼热射线、魔法飞弹）：同一个目标可以选多次，每次单独结算
+function multiHit(a) { return !!a && !(a.area && a.area.shape) && (a.kind === 'attack' || a.kind === 'auto') && a.targets > 1; }
+function targetCount(m) { return Object.keys(m.targets).reduce(function(s, id) { return s + (+m.targets[id] || 1); }, 0); }
+// 操作条上改目标数（只限非范围行动）；减到比已选的少时从最后选的开始去掉
+function adjustTargets(dir) {
+    var m = actionMode, a = m.act;
+    a.targets = Math.max(1, Math.min(20, (a.targets || 1) + dir));
+    var ids = Object.keys(m.targets);
+    while (targetCount(m) > a.targets && ids.length) {
+        var id = ids[ids.length - 1];
+        if ((+m.targets[id] || 1) > 1) m.targets[id] = (+m.targets[id] || 1) - 1; else { delete m.targets[id]; ids.pop(); }
+    }
+    renderActionBar();
+    requestRender();
+}
+function removeTargetOnce(id) {
+    var m = actionMode;
+    if (!m || !m.targets[id]) return;
+    if ((+m.targets[id] || 1) > 1) m.targets[id] = (+m.targets[id] || 1) - 1; else delete m.targets[id];
+    renderActionBar();
+    requestRender();
+}
+
 function actionPointerDown(w, e) {
     var m = actionMode, a = m.act;
     var hit = actionHitAt(w);
@@ -897,10 +922,14 @@ function actionPointerDown(w, e) {
         }
     } else if (hit) {
         var zz = m.zoneId && scene.items[m.zoneId];
-        if (m.targets[hit.id]) delete m.targets[hit.id];
+        if (multiHit(a) && !m.zoneId && (m.targets[hit.id] || inActionRange(hit))) { // 光束 / 射线：再点一下 = 再打一次
+            if (e && (e.shiftKey || e.altKey) && m.targets[hit.id]) removeTargetOnce(hit.id);
+            else if (targetCount(m) >= a.targets) notice('已经选满 ' + a.targets + ' 次（操作条上的 ＋ 可以加目标数；右键撤销上一个，Shift+点击减一次）', true);
+            else m.targets[hit.id] = (+m.targets[hit.id] || 0) + 1;
+        } else if (m.targets[hit.id]) delete m.targets[hit.id];
         else if (zz && zoneOnce(zz) && zoneHitsNow(zz)[hit.id]) notice('「' + (hit.label || '') + '」本回合已经结算过「' + (zz.label || '') + '」（每回合限一次，可在区域属性里取消限制）', true);
         else if (!inActionRange(hit)) notice('「' + (hit.label || '') + '」超出射程 / 触及', true);
-        else if (Object.keys(m.targets).length >= a.targets) notice('最多选择 ' + a.targets + ' 个目标', true);
+        else if (Object.keys(m.targets).length >= a.targets) notice('最多选择 ' + a.targets + ' 个目标（操作条上的 ＋ 可以加目标数）', true);
         else m.targets[hit.id] = true;
     }
     renderActionBar();
@@ -942,7 +971,8 @@ function actionRightClick() {
     var ids = Object.keys(m.targets);
     if (ids.length && (!a.area.shape || m.zoneId)) {
         var last = scene.items[ids[ids.length - 1]];
-        delete m.targets[ids[ids.length - 1]];
+        if ((+m.targets[ids[ids.length - 1]] || 1) > 1) { m.targets[ids[ids.length - 1]]--; ids.push(ids[ids.length - 1]); }
+        else delete m.targets[ids[ids.length - 1]];
         renderActionBar();
         requestRender();
         notice('已取消目标「' + ((last && last.label) || '目标') + '」' + (ids.length > 1 ? '' : '（再右键取消这次行动）'));
@@ -1067,6 +1097,17 @@ function drawActionOverlay() {
         ctx.lineWidth = 3 / view.s;
         ctx.strokeStyle = good ? '#66bb6a' : '#ff5252';
         ctx.stroke();
+        if ((+m.targets[id] || 1) > 1) { // 同一个目标选了几次
+            var fs = Math.max(12 / view.s, (bb.x1 - bb.x0) * 0.3);
+            ctx.font = 'bold ' + fs + 'px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.lineWidth = 3 / view.s;
+            ctx.strokeStyle = '#000';
+            ctx.fillStyle = '#ffeb3b';
+            ctx.strokeText('×' + m.targets[id], bb.x1, bb.y0);
+            ctx.fillText('×' + m.targets[id], bb.x1, bb.y0);
+        }
     });
     ctx.restore();
     if (m.caster) drawHitCircle(m.caster, '#64b5f6', false);
@@ -1074,16 +1115,19 @@ function drawActionOverlay() {
 
 function renderActionBar() {
     var bar = $('actionBar');
+    aimBroadcast(); // 选目标的虚线箭头：让其他人看到（tabletop-action.js 末尾）
     if (!actionMode) { bar.style.display = 'none'; return; }
-    var a = actionMode.act, n = Object.keys(actionMode.targets).length;
+    var a = actionMode.act, n = targetCount(actionMode);
     var ar = a.area, m0 = actionMode, hint;
     if (isPathShape(ar)) {
         var np = (m0.pts || []).length;
         hint = m0.locked ? '已放好：点击生物可排除 / 加入，点空地重新放置' :
             !np ? '点击地图放起点' : ar.shape === 'path' ? '继续点击添加拐点（总长不超过上限），原地再点一下 / Enter 完成，Backspace 撤掉上一点' : '点击确定方向和终点';
     } else hint = ar.shape ? (m0.locked ? '已放置范围：点击生物可排除 / 加入，点空地重新放置' : (ar.self ? '移动鼠标调整方向，点击确定' : '点击地图放置范围中心')) :
-        '点击选择目标（最多 ' + a.targets + ' 个）';
+        (multiHit(a) ? '点击选择目标，同一个可以点多次（共 ' + a.targets + ' 次）；Shift+点击减一次' : '点击选择目标（最多 ' + a.targets + ' 个）');
     var shp0 = ar.shape ? actionShape() : null, sizeTxt = '';
+    if (!ar.shape && !m0.zoneId) sizeTxt = '<span class="ab-size" title="目标数 / 次数（光束、射线、飞弹的数量）可以自己改">目标数 <button class="tt-btn small" data-ab="tg-">−</button> <b>' + (a.targets || 1) +
+        '</b> <button class="tt-btn small" data-ab="tg+">＋</button></span>';
     if (ar.shape) {
         var used = shp0 && shp0.type === 'path' ? ' 已用 ' + fmtDist(Math.round(pxToFt(pathLen(shp0.pts)))) : '';
         sizeTxt = '<span class="ab-size">' + (AREA_SIZE_LABEL[ar.shape] || '大小') + ' <button class="tt-btn small" data-ab="sz-">−</button> <b>' + (ar.size || 0) + '</b> 尺' +
@@ -1095,7 +1139,7 @@ function renderActionBar() {
             ((m0.locked || (m0.pts || []).length) && !m0.zoneId ? '<button class="tt-btn small" data-ab="redraw">重画</button>' : '');
     }
     if (m0.zoneMoved) hint = '「' + a.name + '」已移动：要对现在区域内的生物结算吗？（可点击生物增减）';
-    var names = Object.keys(actionMode.targets).map(function(id) { return scene.items[id] && scene.items[id].label; }).filter(Boolean);
+    var names = Object.keys(actionMode.targets).map(function(id) { var c = +actionMode.targets[id] || 1; return scene.items[id] && scene.items[id].label + (c > 1 ? '×' + c : ''); }).filter(Boolean);
     var zDone = '';
     if (m0.zoneId && scene.items[m0.zoneId]) {
         var zz0 = scene.items[m0.zoneId], hz = zoneHitsNow(zz0);
@@ -1119,10 +1163,11 @@ function confirmActionTargeting() {
     var m = actionMode;
     if (!m) return;
     if (m.caster) m.caster = scene.items[m.caster.id] || null; // 用最新的棋子数据（状态可能变了）
-    var a = m.act, ids = Object.keys(m.targets).filter(function(id) { return scene.items[id]; });
+    var a = m.act, ids = [];
+    Object.keys(m.targets).forEach(function(id) { if (scene.items[id]) for (var k = 0; k < (multiHit(a) ? +m.targets[id] || 1 : 1); k++) ids.push(id); }); // 同一个目标选了几次就结算几次
     if (!ids.length && !a.conc) { notice('还没有选择目标', true); return; }
     var melee = a.kind === 'attack' && !(a.range > 0 && !a.reach); // 近战攻击（防御式决斗、顺势斩）
-    var targets = ids.map(function(id) {
+    var targets = ids.map(function(id, idx) {
         var t = scene.items[id], o = { id: id, cover: 0, mode: '', autoCrit: false };
         if (!m.caster || t.id === m.caster.id || m.zoneId) return o;
         var ci = coverInfo(m.caster, t);
@@ -1151,6 +1196,7 @@ function confirmActionTargeting() {
         } else if (a.kind === 'save' && a.save === 'dex' && (a.area.self || !a.area.shape)) {
             o.cover = ci.level > 0 ? ci.level : 0;
         }
+        x2TargetMods(a, m.caster, t, o, idx === 0); // 咒剑诅咒 / 脆弱诅咒 / 先天术法 / 升阶法术（tabletop-class2.js）
         return o;
     }).filter(Boolean);
     if (ids.length && !targets.length) { notice('目标都处于完全掩护，无法攻击', true); return; }
@@ -1165,7 +1211,9 @@ function confirmActionTargeting() {
         save: a.kind === 'save' ? a.save || '' : '', dc: a.kind === 'save' ? a.dc || 0 : 0, half: !!a.half,
         caster: m.caster && canEdit(m.caster) ? m.caster.id : '', concentration: !!a.conc, targets: targets, spell: !!a.isSpell,
         magic: !!(a.magic || a.isSpell), school: a.school || '', parts: a.parts || [], mastery: a.kind === 'attack' ? a.mastery || '' : '', slotLevel: a.useSlot && a.slotLevel > 0 ? a.slotLevel : 0, melee: melee, onceDice: a.onceDice || '',
-        status: def ? statusWithTurnEffects({ id: def.id, name: def.name, color: def.color, icon: def.icon, rounds: a.rounds || 0 }, a) : null
+        savage: !!a.savage, empower: a.empower || 0, pierce: a.pierce || '',
+        status: def ? statusWithTurnEffects(Object.assign({ id: def.id, name: def.name, color: def.color, icon: def.icon, rounds: a.rounds || 0 }, def.adv ? { adv: def.adv } : {},
+            (def.id === 'hexcurse' || def.id === 'hexed') && m.caster ? { by: m.caster.id } : {}), a) : null // 诅咒记下施加者（只有他的攻击加伤）
     } };
     if (isPathShape(a.area) && !m.locked && m.pts && m.pts.length > 1) finishPathShape();
     if (a.conc && !m.zoneId && m.caster) endOldConcZones(m.caster.id);
@@ -1176,6 +1224,7 @@ function confirmActionTargeting() {
     cancelActionTargeting();
     op(body);
     if (!m.zoneId) { econAfterAction(a, caster); rechargeAfterAction(a, caster); } // 动作经济：记上这次的消耗；充能能力扣掉充能
+    if (!m.zoneId) x2AfterAction(a, caster); // 扣超魔的术法点、记凶蛮打手（tabletop-class2.js）
     masteryAfterAttack(a, caster, targets.map(function(o) { return o.id; })); // 用掉「侵扰」「削弱」
 }
 
@@ -1320,6 +1369,7 @@ function onActionBarClick(e) {
     if (b.dataset.ab === 'go') confirmActionTargeting();
     else if (b.dataset.ab === 'sz-' || b.dataset.ab === 'sz+') adjustArea('size', b.dataset.ab === 'sz+' ? 1 : -1);
     else if (b.dataset.ab === 'w-' || b.dataset.ab === 'w+') adjustArea('width', b.dataset.ab === 'w+' ? 1 : -1);
+    else if (b.dataset.ab === 'tg-' || b.dataset.ab === 'tg+') adjustTargets(b.dataset.ab === 'tg+' ? 1 : -1);
     else if (b.dataset.ab === 'finish') finishPathShape();
     else if (b.dataset.ab === 'undo-pt') undoPathPoint();
     else if (b.dataset.ab === 'redraw') redrawArea();
@@ -1442,4 +1492,110 @@ function initAction() {
         notice(owner ? '已把角色卡和 ' + toks.length + ' 个棋子分配给 ' + owner : '已取消分配');
     });
     $('actionBar').addEventListener('pointerdown', function(e) { e.stopPropagation(); });
+}
+
+// ===== 选目标时的虚线箭头：其他人也能看到谁要对谁出手 =====
+// 发送：选目标期间（改目标 / 移动范围时，外加每 2.5 秒心跳）发 fx「aim」{c 施放者, ids 目标, x/y 范围中心, n 行动名}，结束发「aim-end」。
+// 暗骰（行动框勾了「暗骰」）和没有施放者的不发。接收方 6 秒没有更新就自动消失。
+// 显示：施放者不在自己视野里（迷雾、动态视野、隐藏的怪）整组都不画；看不见的目标、看不见的范围中心也不画（GM 全都看得见）。
+var aimSent = null, aimTimer = null, aimLast = 0;
+function aimPayload() {
+    var m = actionMode;
+    if (!m || !m.caster || m.act.hidden || !scene.items[m.caster.id]) return null;
+    var p = { t: 'aim', c: m.caster.id, ids: Object.keys(m.targets).filter(function(id) { return scene.items[id] && id !== m.caster.id; }).slice(0, 20), n: String(m.act.name || '').slice(0, 20) };
+    var shp = m.act.area && m.act.area.shape && (m.locked || m.aim) ? actionShape() : null;
+    if (shp && shp.type === 'circle') { p.x = r1(shp.x); p.y = r1(shp.y); }
+    else if (m.aim && m.act.area && m.act.area.shape && !m.act.area.self) { p.x = r1(m.aim.x); p.y = r1(m.aim.y); }
+    return p;
+}
+function aimBroadcast(force) {
+    var p = aimPayload();
+    if (!p) {
+        if (aimSent) { sendFx({ t: 'aim-end' }); aimSent = null; }
+        clearInterval(aimTimer); aimTimer = null;
+        return;
+    }
+    var key = JSON.stringify(p), now = Date.now();
+    if (!force && key === aimSent && now - aimLast < 2500) return;
+    if (!force && key !== aimSent && now - aimLast < 120) { // 移动范围时限流
+        clearTimeout(aimBroadcast.t);
+        aimBroadcast.t = setTimeout(function() { aimBroadcast(true); }, 130);
+        return;
+    }
+    aimSent = key;
+    aimLast = now;
+    sendFx(p);
+    if (!aimTimer) aimTimer = setInterval(function() { aimBroadcast(true); }, 2500);
+}
+
+// 这个点我看不看得见（GM 都看得见；玩家：动态视野内且没被迷雾盖住）
+function pointSeen(x, y) {
+    if (me.gm) return true;
+    if (visionActive() && !pointVisible(x, y, computeVision())) return false;
+    return !fogCovers(x, y);
+}
+
+function drawAimArrow(from, to, rFrom, rTo, color, now) {
+    var dx = to.x - from.x, dy = to.y - from.y, d = Math.hypot(dx, dy);
+    if (d < rFrom + rTo + 4 / view.s) return;
+    var ux = dx / d, uy = dy / d, sx = from.x + ux * rFrom, sy = from.y + uy * rFrom, ex = to.x - ux * rTo, ey = to.y - uy * rTo;
+    var head = Math.max(10 / view.s, gridSize() * 0.18);
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = Math.max(2 / view.s, gridSize() * 0.035);
+    ctx.setLineDash([10 / view.s, 7 / view.s]);
+    ctx.lineDashOffset = -(now / 40) / view.s; // 虚线朝目标流动
+    ctx.shadowColor = 'rgba(0,0,0,0.6)';
+    ctx.shadowBlur = 4;
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    ctx.lineTo(ex - ux * head * 0.8, ey - uy * head * 0.8);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(ex, ey);
+    ctx.lineTo(ex - ux * head - uy * head * 0.55, ey - uy * head + ux * head * 0.55);
+    ctx.lineTo(ex - ux * head + uy * head * 0.55, ey - uy * head - ux * head * 0.55);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+}
+
+function aimRadius(t) { return Math.min(t.w || gridSize(), t.h || gridSize()) / 2; }
+
+// 画一组箭头：施放者 → 每个目标（和范围中心）
+function drawAimSet(aim, color, label, now) {
+    var c = scene.items[aim.c];
+    if (!c || !seeable(c)) return; // 施放者在视野外：整组不显示
+    var from = tokenCenter(c), rc = aimRadius(c), n = 0;
+    (aim.ids || []).forEach(function(id) {
+        var t = scene.items[id];
+        if (!t || !seeable(t)) return;
+        drawAimArrow(from, tokenCenter(t), rc, aimRadius(t) + 2 / view.s, color, now);
+        n++;
+    });
+    if (isFinite(aim.x) && isFinite(aim.y) && pointSeen(aim.x, aim.y)) {
+        drawAimArrow(from, { x: aim.x, y: aim.y }, rc, 6 / view.s, color, now);
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(aim.x, aim.y, 6 / view.s, 0, Math.PI * 2);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2 / view.s;
+        ctx.stroke();
+        ctx.restore();
+        n++;
+    }
+    if (label && n) drawLabel(label, from.x, from.y - (c.h || gridSize()) / 2 - 14 / view.s, color, true);
+}
+
+// 渲染时调用：别人的（remote.aims）+ 自己正在选的
+function drawAims(now) {
+    for (var name in remote.aims) {
+        var a = remote.aims[name];
+        if (now - a.at > 6000) { delete remote.aims[name]; continue; }
+        drawAimSet(a, a.color, '🎯 ' + name + (a.n ? '：' + a.n : ''), now);
+    }
+    var mine = aimPayload();
+    if (mine) drawAimSet(mine, me.color || '#ffca28', '', now);
 }

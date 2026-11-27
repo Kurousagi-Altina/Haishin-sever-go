@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -368,6 +369,22 @@ func (room *TTRoom) traitsOf(it map[string]interface{}) *ttTraits {
 		}
 		t.saveAdv = append(t.saveAdv, ttSaveAdv{ab: "all", vs: "poisoned", src: "构装坚韧"})
 	}
+	if race, _ := sh["race"].(string); autoTr && sh != nil && strings.Contains(race, "提夫林") {
+		if dt := ttFiendLegacy(race); dt != "" { // 提夫林·邪魔遗赠：炼狱 火焰 / 深渊 毒素 / 冥界 黯蚀
+			if _, ok := t.resist[dt]; !ok {
+				t.resist[dt] = "邪魔遗赠"
+			}
+		}
+	}
+	if autoTr && sh != nil { // 特性名就是「寒冷抗性」「火焰抗性」这类：对这种伤害有抗性（霜身等种族）
+		for _, e := range ttSheetEntries(sh) {
+			if dt := ttResistFeature(e[0]); dt != "" {
+				if _, ok := t.resist[dt]; !ok {
+					t.resist[dt] = strings.TrimSpace(e[0])
+				}
+			}
+		}
+	}
 	if race, _ := sh["race"].(string); autoTr && sh != nil && (strings.Contains(race, "龙裔") || strings.Contains(strings.ToLower(race), "dragonborn")) {
 		if dt := ttDragonAncestry(race); dt != "" { // 龙裔·伤害抗性：对血统的伤害类型有抗性
 			if _, ok := t.resist[dt]; !ok {
@@ -381,6 +398,19 @@ func (room *TTRoom) traitsOf(it map[string]interface{}) *ttTraits {
 	if conds["frostrune"] { // 符文骑士·寒霜符文：力量 / 体质豁免 +2
 		t.addSaveBonus("str", 2, "寒霜符文")
 		t.addSaveBonus("con", 2, "寒霜符文")
+	}
+	for _, st := range ttStatusMaps(it) { // 状态带的豁免优势（守望者的意志：智力 / 感知 / 魅力）
+		if list, ok := st["adv"].([]interface{}); ok {
+			name, _ := st["name"].(string)
+			for _, x := range list {
+				if ab, _ := x.(string); ttAbilityCN[ab] != "" {
+					t.saveAdv = append(t.saveAdv, ttSaveAdv{ab: ab, src: ttFirst(name, "豁免优势")})
+				}
+			}
+		}
+	}
+	if autoTr {
+		room.auraOfProtection(it, t)
 	}
 	for _, st := range ttStatusMaps(it) { // 状态带的临时抗性（吸收元素等）
 		if list, ok := st["resist"].([]interface{}); ok {
@@ -931,8 +961,8 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactor
 		name = "云雾符文"
 		note = ttItemLabel(rx) + " 的云雾符文：这次攻击改为指向 " + ttItemLabel(redirect)
 	case "guided": // 战争领域·导引打击：你或 30 尺内的生物攻击失手时，花引导神力让这次攻击检定 +10（替别人用要花反应）
-		if !ttSheetHas(room.tokenSheet(rx), "导引打击", "guidedstrike") {
-			return http.StatusBadRequest, "角色卡上没有「导引打击」"
+		if !ttSheetHas(room.tokenSheet(rx), "导引打击", "guidedstrike", "神助打击", "引导神力-征服", "征服") {
+			return http.StatusBadRequest, "角色卡上没有「导引打击 / 神助打击」"
 		}
 		if h.Hit != "miss" || h.Attack == nil {
 			return http.StatusBadRequest, "只有攻击失手（不是天然 1）时才能用导引打击"
@@ -1347,4 +1377,96 @@ func ttDragonAncestry(race string) string {
 		}
 	}
 	return ""
+}
+
+// ttFiendLegacy: 提夫林的邪魔遗赠给的伤害抗性。
+func ttFiendLegacy(race string) string {
+	switch {
+	case strings.Contains(race, "炼狱"):
+		return "火焰"
+	case strings.Contains(race, "深渊"):
+		return "毒素"
+	case strings.Contains(race, "冥界") || strings.Contains(race, "幽冥"):
+		return "黯蚀"
+	}
+	return ""
+}
+
+var ttResistFeatureRe = regexp.MustCompile(`^(强酸|钝击|寒冷|火焰|力场|闪电|黯蚀|暗蚀|死灵|穿刺|毒素|心灵|光耀|挥砍|雷鸣)(?:伤害)?抗性$`)
+
+// ttResistFeature: a feature named after one damage resistance (「寒冷抗性」) → that type.
+func ttResistFeature(name string) string {
+	m := ttResistFeatureRe.FindStringSubmatch(ttTraitKey(name))
+	if m == nil {
+		return ""
+	}
+	if m[1] == "暗蚀" || m[1] == "死灵" {
+		return "黯蚀"
+	}
+	return m[1]
+}
+
+// ttSideOf: ally / enemy / neutral (token side override, else a player's token or the party's sheet = ally).
+func (room *TTRoom) ttSideOf(it map[string]interface{}) string {
+	if s, _ := it["side"].(string); s == "ally" || s == "enemy" || s == "neutral" {
+		return s
+	}
+	if owner, _ := it["owner"].(string); owner != "" || room.partyToken(it) {
+		return "ally"
+	}
+	return "enemy"
+}
+
+// auraOfProtection: 守护灵光（圣武士 6 级）— 10 尺内同一阵营、没有失能的圣武士给豁免加它的魅力调整值（至少 +1），
+// 只取最高的一个。圣武士自己的那份已经按特性名加过（ttAutoTraits），这里只管别人。
+func (room *TTRoom) auraOfProtection(it map[string]interface{}, t *ttTraits) {
+	id, _ := it["id"].(string)
+	sc := room.activeScene()
+	if id == "" || sc == nil || sc.Items[id] == nil || it["kind"] != "token" {
+		return
+	}
+	side := room.ttSideOf(it)
+	if side == "neutral" {
+		return
+	}
+	g, _ := ttNum(sc.Props["gridSize"])
+	if g <= 0 {
+		g = 70
+	}
+	scale, _ := ttNum(sc.Props["gridScale"])
+	if scale <= 0 {
+		scale = 5
+	}
+	cx, cy := ttItemCenter(it)
+	w, _ := ttNum(it["w"])
+	best, src := 0, ""
+	for oid, o := range sc.Items {
+		if oid == id || o["kind"] != "token" || ttBool(o["hidden"]) && !ttBool(it["hidden"]) {
+			continue
+		}
+		osh := room.tokenSheet(o)
+		if osh == nil || !ttSheetHas(osh, "守护灵光", "守护光环", "auraofprotection") || room.ttSideOf(o) != side {
+			continue
+		}
+		conds := ttStatusIDs(o)
+		if ttIncapacitated(conds) || conds["dead"] {
+			continue
+		}
+		ox, oy := ttItemCenter(o)
+		ow, _ := ttNum(o["w"])
+		ft := math.Hypot(cx-ox, cy-oy) / g * scale
+		if ft > 10+(w+ow)/2/g*scale+0.5 { // 10 尺内（中心距离减去两边各自的半个身位）
+			continue
+		}
+		v := ttSheetAbilityMod(osh, "cha")
+		if v < 1 {
+			v = 1
+		}
+		if v > best {
+			best, src = v, "守护灵光·"+ttCleanName(ttItemLabel(o), 12, "圣武士")
+		}
+	}
+	if best > 0 {
+		t.addSaveBonus("all", best, src)
+	}
 }
