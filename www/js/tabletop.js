@@ -32,7 +32,7 @@ var cursorAlt = false; // 最近一次指针移动时是否按着 Alt（画墙�
 var cursorShift = false; // 是否按着 Shift（画墙：锁定水平 / 竖直 / 45°）
 var spaceDown = false;
 var assetFilter = 'all';
-var remote = { pointers: {}, rulers: {}, pings: [] };
+var remote = { pointers: {}, rulers: {}, pings: [], aims: {} }; // aims：别人选目标时的虚线箭头（tabletop-action.js）
 var imgCache = {};
 var canvas, ctx, fogCanvas, fctx, visCanvas, vctx, exCanvas, exCtx, dpr = 1;
 var renderPending = false;
@@ -580,6 +580,11 @@ function handleFx(m) {
         }
     } else if (fx.t === 'ruler-end') {
         delete remote.rulers[m.from];
+    } else if (fx.t === 'aim') { // 施法 / 攻击选目标：虚线箭头
+        remote.aims[m.from] = { c: String(fx.c || ''), ids: Array.isArray(fx.ids) ? fx.ids.slice(0, 20).map(String) : [], x: +fx.x, y: +fx.y,
+            n: String(fx.n || '').slice(0, 20), color: m.color, at: now };
+    } else if (fx.t === 'aim-end') {
+        delete remote.aims[m.from];
     }
     requestRender();
 }
@@ -1259,7 +1264,7 @@ function render() {
     if (typeof drawTileOutlines === 'function') { drawTileOutlines(); drawMapBox(); }
     drawOverlays();
 
-    var animating = remote.pings.length || Object.keys(remote.pointers).length || Object.keys(remote.rulers).length;
+    var animating = remote.pings.length || Object.keys(remote.pointers).length || Object.keys(remote.rulers).length || Object.keys(remote.aims).length || (actionMode && actionMode.caster);
     if (animating) requestRender();
 }
 
@@ -1682,6 +1687,7 @@ function drawOverlays() {
         var last = pt.trail[pt.trail.length - 1];
         drawLabel(pn, last.x, last.y, pt.color);
     }
+    drawAims(now); // 选目标的虚线箭头（看不见的不画）
     remote.pings = remote.pings.filter(function(pg) { return now - pg.at < 1500; });
     remote.pings.forEach(function(pg) {
         var t = (now - pg.at) / 1500;

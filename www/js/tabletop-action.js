@@ -1115,6 +1115,7 @@ function drawActionOverlay() {
 
 function renderActionBar() {
     var bar = $('actionBar');
+    aimBroadcast(); // 选目标的虚线箭头：让其他人看到（tabletop-action.js 末尾）
     if (!actionMode) { bar.style.display = 'none'; return; }
     var a = actionMode.act, n = targetCount(actionMode);
     var ar = a.area, m0 = actionMode, hint;
@@ -1491,4 +1492,110 @@ function initAction() {
         notice(owner ? '已把角色卡和 ' + toks.length + ' 个棋子分配给 ' + owner : '已取消分配');
     });
     $('actionBar').addEventListener('pointerdown', function(e) { e.stopPropagation(); });
+}
+
+// ===== 选目标时的虚线箭头：其他人也能看到谁要对谁出手 =====
+// 发送：选目标期间（改目标 / 移动范围时，外加每 2.5 秒心跳）发 fx「aim」{c 施放者, ids 目标, x/y 范围中心, n 行动名}，结束发「aim-end」。
+// 暗骰（行动框勾了「暗骰」）和没有施放者的不发。接收方 6 秒没有更新就自动消失。
+// 显示：施放者不在自己视野里（迷雾、动态视野、隐藏的怪）整组都不画；看不见的目标、看不见的范围中心也不画（GM 全都看得见）。
+var aimSent = null, aimTimer = null, aimLast = 0;
+function aimPayload() {
+    var m = actionMode;
+    if (!m || !m.caster || m.act.hidden || !scene.items[m.caster.id]) return null;
+    var p = { t: 'aim', c: m.caster.id, ids: Object.keys(m.targets).filter(function(id) { return scene.items[id] && id !== m.caster.id; }).slice(0, 20), n: String(m.act.name || '').slice(0, 20) };
+    var shp = m.act.area && m.act.area.shape && (m.locked || m.aim) ? actionShape() : null;
+    if (shp && shp.type === 'circle') { p.x = r1(shp.x); p.y = r1(shp.y); }
+    else if (m.aim && m.act.area && m.act.area.shape && !m.act.area.self) { p.x = r1(m.aim.x); p.y = r1(m.aim.y); }
+    return p;
+}
+function aimBroadcast(force) {
+    var p = aimPayload();
+    if (!p) {
+        if (aimSent) { sendFx({ t: 'aim-end' }); aimSent = null; }
+        clearInterval(aimTimer); aimTimer = null;
+        return;
+    }
+    var key = JSON.stringify(p), now = Date.now();
+    if (!force && key === aimSent && now - aimLast < 2500) return;
+    if (!force && key !== aimSent && now - aimLast < 120) { // 移动范围时限流
+        clearTimeout(aimBroadcast.t);
+        aimBroadcast.t = setTimeout(function() { aimBroadcast(true); }, 130);
+        return;
+    }
+    aimSent = key;
+    aimLast = now;
+    sendFx(p);
+    if (!aimTimer) aimTimer = setInterval(function() { aimBroadcast(true); }, 2500);
+}
+
+// 这个点我看不看得见（GM 都看得见；玩家：动态视野内且没被迷雾盖住）
+function pointSeen(x, y) {
+    if (me.gm) return true;
+    if (visionActive() && !pointVisible(x, y, computeVision())) return false;
+    return !fogCovers(x, y);
+}
+
+function drawAimArrow(from, to, rFrom, rTo, color, now) {
+    var dx = to.x - from.x, dy = to.y - from.y, d = Math.hypot(dx, dy);
+    if (d < rFrom + rTo + 4 / view.s) return;
+    var ux = dx / d, uy = dy / d, sx = from.x + ux * rFrom, sy = from.y + uy * rFrom, ex = to.x - ux * rTo, ey = to.y - uy * rTo;
+    var head = Math.max(10 / view.s, gridSize() * 0.18);
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = Math.max(2 / view.s, gridSize() * 0.035);
+    ctx.setLineDash([10 / view.s, 7 / view.s]);
+    ctx.lineDashOffset = -(now / 40) / view.s; // 虚线朝目标流动
+    ctx.shadowColor = 'rgba(0,0,0,0.6)';
+    ctx.shadowBlur = 4;
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    ctx.lineTo(ex - ux * head * 0.8, ey - uy * head * 0.8);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(ex, ey);
+    ctx.lineTo(ex - ux * head - uy * head * 0.55, ey - uy * head + ux * head * 0.55);
+    ctx.lineTo(ex - ux * head + uy * head * 0.55, ey - uy * head - ux * head * 0.55);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+}
+
+function aimRadius(t) { return Math.min(t.w || gridSize(), t.h || gridSize()) / 2; }
+
+// 画一组箭头：施放者 → 每个目标（和范围中心）
+function drawAimSet(aim, color, label, now) {
+    var c = scene.items[aim.c];
+    if (!c || !seeable(c)) return; // 施放者在视野外：整组不显示
+    var from = tokenCenter(c), rc = aimRadius(c), n = 0;
+    (aim.ids || []).forEach(function(id) {
+        var t = scene.items[id];
+        if (!t || !seeable(t)) return;
+        drawAimArrow(from, tokenCenter(t), rc, aimRadius(t) + 2 / view.s, color, now);
+        n++;
+    });
+    if (isFinite(aim.x) && isFinite(aim.y) && pointSeen(aim.x, aim.y)) {
+        drawAimArrow(from, { x: aim.x, y: aim.y }, rc, 6 / view.s, color, now);
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(aim.x, aim.y, 6 / view.s, 0, Math.PI * 2);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2 / view.s;
+        ctx.stroke();
+        ctx.restore();
+        n++;
+    }
+    if (label && n) drawLabel(label, from.x, from.y - (c.h || gridSize()) / 2 - 14 / view.s, color, true);
+}
+
+// 渲染时调用：别人的（remote.aims）+ 自己正在选的
+function drawAims(now) {
+    for (var name in remote.aims) {
+        var a = remote.aims[name];
+        if (now - a.at > 6000) { delete remote.aims[name]; continue; }
+        drawAimSet(a, a.color, '🎯 ' + name + (a.n ? '：' + a.n : ''), now);
+    }
+    var mine = aimPayload();
+    if (mine) drawAimSet(mine, me.color || '#ffca28', '', now);
 }
