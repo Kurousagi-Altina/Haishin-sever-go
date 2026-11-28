@@ -161,7 +161,7 @@ function oaCheckMove(id, orig, trail) {
     sortedItems().forEach(function(en) {
         if (en.kind !== 'token' || en.id === t.id || !isCreatureToken(en) || !canReact(en) || invisible) return;
         var es = tokenSide(en);
-        if (es === 'neutral' || es === side) return;
+        if (!hostileTo(en, t)) return; // 同阵营（不同友方队伍也算同阵营）、中立不借机
         var sent = dis && tokenFeat(en, 'sentinel'), canOA = !flyby && (!dis || sent), pam = tokenFeat(en, 'pam') && polearmHeld(en);
         if (!canOA && !pam) return;
         var reach = meleeReach(en), inside = false, left = false, out = false, entered = false;
@@ -414,7 +414,7 @@ function onMultiBarClick(e) {
 // 自动化分类（都默认开，关掉的写 false 存进房间设置）；规则和完整清单见 docs/战斗规则.md 第 13 节
 var AUTO_GROUPS = [
     { title: '判定与结算', items: [
-        ['autoTraits', '按特性名自动识别判定修正', '角色卡上的特性名自动生效：反射闪避、魔法抗性、矮人体魄、守护灵光、战俑构装坚韧、龙裔血统抗性、战争化身等。关掉后只用卡上手动加的「判定修正」'],
+        ['autoTraits', '按特性名自动识别判定修正', '角色卡上的特性名自动生效：反射闪避、魔法抗性、矮人体魄、守护灵光（自己和 10 尺内同队友方）、战俑构装坚韧、龙裔血统抗性、提夫林遗赠、「X抗性」种族特性、战争化身等。关掉后只用卡上手动加的「判定修正」'],
         ['autoCond', '状态对攻击的影响', '攻击时按双方状态自动给优势 / 劣势 / 近身自动重击，以及祝福 / 灾祸 / 力竭的加减值'],
         ['autoCover', '自动掩护', '确认目标时按墙、门窗和挡路的生物自动算半身 / 四分之三 / 完全掩护']] },
     { title: '回合流程', items: [
@@ -432,7 +432,7 @@ var AUTO_GROUPS = [
         ['hcDruid', '德鲁伊 / 星辰结社', '荒野变形、荒野伙伴、荒野复苏、原力蛮击；星图、星耀形态（巨龙座专注豁免）、宇宙预兆'],
         ['hcWizard', '法师 / 预言师', '奥术回想、招牌法术；预兆、专业预言、天眼通'],
         ['hcArtificer', '奇械师 / 魔炮师', '灵光一闪；魔能炮台、奥法火器、要塞阵地'],
-        ['hcPaladin', '圣武士 / 征服·守望之誓', '圣疗、至圣斩（含圣武斩免费一次）和斩击法术、神圣感知、信实坐骑；征服威压、神助打击；守望者的意志、驱散异域；守护灵光（队友豁免，服务器）'],
+        ['hcPaladin', '圣武士 / 征服·守望之誓', '圣疗、至圣斩（含圣武斩免费一次）和斩击法术、神圣感知、信实坐骑；征服威压、神助打击；守望者的意志、驱散异域（守护灵光属于上面的「按特性名自动识别判定修正」）'],
         ['hcSorcerer', '术士 / 狂野·龙族术法', '术法点、法术位 ↔ 术法点、先天术法（DC +1、法术攻击优势）、超魔（瞬发 / 强效 / 升阶 / 双生 / 远程 …）、术法复苏；狂野魔法浪涌、混乱之潮'],
         ['hcWarlock', '魔契师 / 咒剑', '咒剑诅咒（伤害 + 熟练、19 重击、击杀回血）、饥渴魔刃、苦痛魔爆、邪魔活力、秘法回流；脆弱诅咒 +1d6'],
         ['hcOther', '野蛮人 / 游荡者 / 吟游诗人', '狂暴（狂暴伤害自动加）、偷袭、诗人激励']] },
@@ -867,7 +867,7 @@ function counterBtns(e, r) {
     var caster = r.casterId && scene.items[r.casterId];
     var list = sortedItems().filter(function(t) {
         return t.kind === 'token' && t.id !== r.casterId && (me.gm || (t.owner && t.owner === me.name)) && isCreatureToken(t) &&
-            canReact(t) && mineTok(t) && tokenHasSpell(t, '法术反制') && (!caster || (hostileTo(t, caster) && creatureDist(t, caster) <= 60));
+            canReact(t) && mineTok(t) && tokenHasSpell(t, '法术反制') && !!caster && hostileTo(t, caster) && creatureDist(t, caster) <= 60; // 施法者得在这张地图上（看得见才能反制）
     });
     if (!list.length) return '';
     return '<div class="act-target">⛔ ' + list.map(function(t) {
@@ -1009,8 +1009,7 @@ function featActBtns(e, r) {
         h += '<button class="tt-btn small react-btn" data-ft="pam" data-log="' + escapeHtml(e.id) + '" title="长柄武器大师：攻击动作用长柄武器攻击后，附赠动作用另一端再攻击一次，伤害 1d4 钝击">长柄打击（附赠）</button>';
     if (hitIds.length) sortedItems().forEach(function(t) {
         if (t.kind !== 'token' || t.id === c.id || !mineTok(t) || !isCreatureToken(t) || !canReact(t) || hitIds.every(function(id) { return id === t.id; })) return;
-        var side = tokenSide(t);
-        if (side === 'neutral' || side === tokenSide(c) || creatureDist(t, c) > 5 || !tokenFeat(t, 'sentinel') || masteryDone[e.id + ':guard:' + t.id]) return;
+        if (!hostileTo(t, c) || creatureDist(t, c) > 5 || !tokenFeat(t, 'sentinel') || masteryDone[e.id + ':guard:' + t.id]) return;
         h += '<button class="tt-btn small react-btn" data-ft="guard" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) + '" title="哨兵·守护者：5 尺内的生物攻击命中了你以外的目标，你可以用反应对它借机攻击">哨兵：借机（' + escapeHtml(chipName(t.label)) + '）</button>';
     });
     return h ? '<div class="act-target">🛡 ' + h + '</div>' : '';

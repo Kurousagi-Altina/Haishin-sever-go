@@ -487,6 +487,7 @@ function handleMsg(m) {
         onTrigLog(m.entry);
         pendingSaveNotice(m.entry); // 手动豁免：提醒自己的角色要掷
         fightNotice(m.entry);       // 借机攻击 / 专注豁免：提醒控制它的玩家
+        x2OnLog(m.entry);           // 凶蛮打手真的用上了：记本回合已用（tabletop-class2.js）
         groupOnLog(m.entry);        // 群体投掷：结果挂到面板和地图上
         break;
     case 'users':

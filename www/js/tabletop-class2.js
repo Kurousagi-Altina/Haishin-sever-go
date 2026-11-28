@@ -170,6 +170,7 @@ function sorSelAct(act0, it, sh) {
         cxDropStatus(it, 'innate');
         break;
     case 'cx-so-slot2sp':
+        if (cxCur(it, RE_SP, '术法点', max) >= max) { notice('术法点已经满了（' + max + '），不用再换', true); break; }
         var have = (sh.slots || []).filter(function(s) { return num(s.cur, 0) > 0 && parseInt(s.level, 10) > 0; });
         if (!have.length) { notice('角色卡上没有剩余的法术位', true); break; }
         ttAsk({ title: '法术位 → 术法点', text: '术法点现在 ' + cxLeft(it, RE_SP, '术法点', max) + '。花哪一环？', choices: have.map(function(s) {
@@ -238,7 +239,7 @@ function wlPanelBtns(it, sh) {
     var b = [], lv = wlLv(sh);
     if (!lv || !clsOn('hcWarlock')) return b;
     if (sheetHasEntry(sh, RE_HEXCURSE))
-        b.push(cxBtn('cx-wl-curse', '☠ 咒剑诅咒（' + cxLeft(it, RE_HEXCURSE, '咒剑诅咒', 1) + '）', '咒剑诅咒（附赠动作，30 尺内一个生物，1 分钟；短休或长休恢复）：对它的伤害 +' + sheetProf(sh) + '（熟练加值），攻击掷出 19–20 就是重击，它死亡时你恢复 ' + (lv + Math.max(1, x2Cha(sh))) + ' 生命值。都自动处理'));
+        b.push(cxBtn('cx-wl-curse', '☠ 咒剑诅咒（' + cxLeft(it, RE_HEXCURSE, '咒剑诅咒', 1) + '）', '咒剑诅咒（附赠动作，30 尺内一个生物，1 分钟；短休或长休恢复）：对它的伤害 +' + sheetProf(sh) + '（熟练加值），攻击掷出 19–20 就是重击，它死亡时你恢复 ' + (lv + Math.max(1, x2Cha(sh))) + ' 生命值。加伤和重击自动；目标死亡后在记录里点「☠ 诅咒回复」'));
     if (sheetHasEntry(sh, RE_PACTBLADE))
         b.push(cxBtn('cx-wl-blade', '🗡 召唤契约武器', '刃之魔契（附赠动作）：在手中召唤契约武器，用魅力攻击和伤害，伤害类型可以改为黯蚀 / 心灵 / 光耀'));
     if (sheetHasEntry(sh, RE_VIGOR))
@@ -312,10 +313,18 @@ function x2SelAct(act0, it, sh) {
 function x2TargetBtns(e, t, r) {
     var h = '', tok = scene.items[t.id], c = r.casterId && scene.items[r.casterId], csh = c && c.sheet && sheets[c.sheet];
     var hit = t.hit === 'hit' || t.hit === 'crit', mine = me.gm || e.who === me.name;
-    if (!c || !csh || !mine || !tok) return '';
-    var btn = function(kind, label, title) {
-        return '<button class="tt-btn small react-btn" data-cx="' + kind + '" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) + '" title="' + escapeHtml(title) + '">' + label + '</button>';
+    var btn = function(kind, label, title, attrs) {
+        return '<button class="tt-btn small react-btn" data-cx="' + kind + '" data-log="' + escapeHtml(e.id) + '" data-tok="' + escapeHtml(t.id) + '"' + (attrs || '') + ' title="' + escapeHtml(title) + '">' + label + '</button>';
     };
+    // 咒剑诅咒：被诅咒的目标死亡（不管是谁打死的）→ 施加诅咒的魔契师回复生命（按钮给魔契师的主人）
+    if (tok && t.amount < 0 && clsOn('hcWarlock') && (isDeadToken(tok) || (tok.hpMax > 0 && num(tok.hp, tok.hpMax) <= 0))) {
+        statusList(tok).filter(function(s) { return s.id === 'hexcurse' && s.by; }).forEach(function(s) {
+            var w = scene.items[s.by], wsh = w && w.sheet && sheets[w.sheet];
+            if (!w || !wsh || !mineTok(w) || masteryDone[e.id + ':' + t.id + ':hexheal']) return;
+            h += btn('wlheal', '☠ 诅咒回复 ' + (wlLv(wsh) + Math.max(1, x2Cha(wsh))) + '（' + escapeHtml(chipName(w.label)) + '）', '咒剑诅咒：被诅咒的目标死亡，施加者恢复 魔契师等级 + 魅力调整值 生命值', ' data-by="' + escapeHtml(w.id) + '"');
+        });
+    }
+    if (!c || !csh || !mine || !tok) return h;
     var weaponHit = r.kind === 'attack' && hit && !r.spell && !/法术|戏法/.test(r.name || '');
     // 至圣斩 / 其他斩击法术：近战武器（或徒手）命中后，附赠动作
     if (weaponHit && r.melee && clsOn('hcPaladin') && !isDeadToken(tok)) {
@@ -330,10 +339,6 @@ function x2TargetBtns(e, t, r) {
     // 双持：攻击动作用轻型武器攻击后，附赠动作用另一把武器追加攻击
     if (r.kind === 'attack' && !r.spell && r.melee && hintOn('hintFeat') && !masteryDone[e.id + ':dual'] && !onceBtnUsed(c, 'dwKey') && dualOffhands(csh, r.name).length && (lightWeapon(csh, r.name) || sheetHasEntry(csh, /双持客|dualwielder/i)))
         h += btn('ftdual', '🗡 副手攻击（附赠）', '用另一把武器追加一次攻击（附赠动作）。' + (sheetHasEntry(csh, /双武器战斗|two-?weaponfighting/i) ? '双武器战斗：伤害照常加属性调整值' : '伤害不加属性调整值（为负时照加）'));
-    // 咒剑诅咒：被诅咒的目标死亡 → 回复生命
-    var cursed = statusList(tok).filter(function(s) { return s.id === 'hexcurse' && s.by === c.id; })[0];
-    if (cursed && t.amount < 0 && (isDeadToken(tok) || (tok.hpMax > 0 && num(tok.hp, tok.hpMax) <= 0)) && !masteryDone[e.id + ':' + t.id + ':hexheal'] && clsOn('hcWarlock'))
-        h += btn('wlheal', '☠ 诅咒回复 ' + (wlLv(csh) + Math.max(1, x2Cha(csh))), '咒剑诅咒：被诅咒的目标死亡，你恢复 魔契师等级 + 魅力调整值 生命值');
     return h;
 }
 
@@ -341,6 +346,7 @@ function x2Click(el, d) {
     var ent = logEntries.filter(function(x) { return x.id === d.log; })[0];
     if (!ent || !ent.act) return true;
     var r = ent.act, c = r.casterId && scene.items[r.casterId], csh = c && c.sheet && sheets[c.sheet], tgt = scene.items[d.tok];
+    if (d.cx === 'wlheal' && d.by && scene.items[d.by]) { c = scene.items[d.by]; csh = c.sheet && sheets[c.sheet]; } // 诅咒回复：回复的是施加诅咒的魔契师
     if (!c || !csh || !tgt) { notice('出手的棋子或目标不在当前场景', true); return true; }
     var t = (r.targets || []).filter(function(x) { return x.id === d.tok; })[0] || {}, crit = t.hit === 'crit';
     switch (d.cx) {
@@ -354,13 +360,10 @@ function x2Click(el, d) {
         if (!opts.length) { notice('没有剩余的法术位，圣武斩的免费次数也用过了', true); return true; }
         ttAsk({ title: '✨ 至圣斩' + (crit ? '（重击，骰子翻倍）' : ''), text: '用哪个法术位？对邪魔 / 亡灵在行动框里再加 1d8' + (crit ? '（重击 2d8）' : '') + '。', choices: opts }).then(function(v) {
             if (!v) return;
-            var L = 1;
-            if (v === 'free') cxSpend(c, RE_SMITE_FREE, '免费至圣斩', 1);
-            else { L = parseInt(v, 10); var s = slotOf(csh, L); if (s) changeSlot(csh, s.idx, -1); }
-            masteryDone[d.log + ':' + d.tok + ':smite'] = true;
-            el.remove();
+            var L = v === 'free' ? 1 : parseInt(v, 10);
             openActionDialog(cxBase({ name: '至圣斩（' + (v === 'free' ? '免费' : L + ' 环') + '）', kind: 'auto', damage: ((1 + L) * (crit ? 2 : 1)) + 'd8', dtype: '光耀', cost: 'b', magic: true,
-                scaleNote: '至圣斩：' + (crit ? '重击已翻倍；' : '') + '目标是邪魔或亡灵时把伤害改成多 ' + (crit ? 2 : 1) + 'd8' }), c, csh);
+                smite: { free: v === 'free', lv: L, key: d.log + ':' + d.tok + ':smite' },
+                scaleNote: '至圣斩：' + (crit ? '重击已翻倍；' : '') + '目标是邪魔或亡灵时把伤害改成多 ' + (crit ? 2 : 1) + 'd8。结算时才扣法术位 / 免费次数' }), c, csh);
             act.presetTargets = [tgt.id];
         });
         break;
@@ -513,8 +516,13 @@ function x2DialogApply(a) {
         a.pierce = ad;
         a.adeptAdded = true;
     }
-    METAMAGIC.forEach(function(m) {
-        if (!on('mm-' + m.key)) return;
+    var chosen = METAMAGIC.filter(function(m) { return on('mm-' + m.key); });
+    var need = chosen.reduce(function(n, m) { return n + m.cost; }, 0);
+    if (need && act && act.caster && s) { // 点数不够：一个超魔都不生效（先查再改，不留半截效果）
+        var have = cxCur(act.caster.sheet === s.id ? act.caster : x2Tok(s) || act.caster, RE_SP, '术法点', spMax(s));
+        if (have < need) { notice('术法点不够（需要 ' + need + '，剩 ' + have + '），超魔没有生效', true, 5000); chosen = []; }
+    }
+    chosen.forEach(function(m) {
         a.meta.push(m.name);
         a.metaCost += m.cost;
         if (m.key === 'quick') a.cost = 'b';
@@ -523,13 +531,6 @@ function x2DialogApply(a) {
         if (m.key === 'twin' && !a.twinAdded) { a.targets = (a.targets || 1) + 1; a.twinAdded = true; }
         if (m.key === 'distant' && !a.distAdded) { if (a.range > 0) a.range *= 2; else if (a.reach) { a.range = 30; a.reach = 0; a.meleeOnly = false; } a.distAdded = true; }
     });
-    if (a.metaCost && act && act.caster && s) {
-        var pts = cxCur(act.caster.sheet === s.id ? act.caster : x2Tok(s) || act.caster, RE_SP, '术法点', spMax(s));
-        if (pts < a.metaCost) {
-            notice('术法点不够（需要 ' + a.metaCost + '，剩 ' + pts + '），超魔没有生效', true, 5000);
-            a.meta = []; a.metaCost = 0; a.empower = 0; a.heighten = false;
-        }
-    }
     if (!a.meta.length) a.empower = 0;
 }
 
@@ -553,7 +554,7 @@ function x2TargetMods(a, caster, tgt, o, first) {
             notes.push('先天术法：法术攻击优势');
         }
     }
-    if (a.kind === 'save' && a.heighten && first) o.mode = 'dis';
+    if (a.kind === 'save' && a.heighten && !a._hUsed) { o.mode = 'dis'; a._hUsed = true; } // 升阶：第一个（不是施法者自己的）目标
     o.note = notes.join('；');
 }
 
@@ -565,7 +566,25 @@ function x2AfterAction(a, caster) {
         cxSpendN(caster, RE_SP, '术法点', spMax(s), a.metaCost);
         notice('超魔：' + a.meta.join('、') + '（花 ' + a.metaCost + ' 点术法点）', false, 4000);
     }
-    if (a.savage) markOnce(caster, 'savKey');
+    if (a.smite) { // 至圣斩：确认结算时才扣法术位 / 免费次数（行动框取消就不扣）
+        var csh2 = caster.sheet && sheets[caster.sheet];
+        if (a.smite.free) cxSpend(caster, RE_SMITE_FREE, '免费至圣斩', 1);
+        else { var sl = csh2 && slotOf(csh2, a.smite.lv); if (sl) changeSlot(csh2, sl.idx, -1); }
+        if (a.smite.key) {
+            masteryDone[a.smite.key] = true;
+            var kp = a.smite.key.split(':'); // 记录里的「至圣斩」按钮去掉
+            document.querySelectorAll('[data-cx="pldsm"][data-log="' + kp[0] + '"][data-tok="' + kp[1] + '"]').forEach(function(x) { x.remove(); });
+        }
+    }
+}
+
+// 记录到达时：自己出手的攻击里服务器用了凶蛮打手（真的命中了）→ 记下本回合已用
+function x2OnLog(entry) {
+    var r = entry && entry.act;
+    if (!r || r.kind !== 'attack' || !r.casterId || entry.who !== me.name) return;
+    if (!(r.targets || []).some(function(t) { return /凶蛮打手/.test(t.note || ''); })) return;
+    var c = scene.items[r.casterId];
+    if (c && canEdit(c) && !onceBtnUsed(c, 'savKey')) markOnce(c, 'savKey');
 }
 
 // ===== 通用特性：没有专门适配的特性也能「用一次」 =====

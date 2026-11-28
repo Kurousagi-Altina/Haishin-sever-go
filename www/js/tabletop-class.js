@@ -227,7 +227,7 @@ function cxTargetBtns(e, t, r) {
             var osh = o.kind === 'token' && o.sheet && sheets[o.sheet];
             if (!clsOn('hcFighter') || !osh || !mineTok(o) || !isCreatureToken(o) || !canReact(o) || o.id === r.casterId || !isRuneKnight(osh)) return;
             var atk = r.casterId && scene.items[r.casterId];
-            if (atk && !hostileTo(o, atk)) return; // 队友的攻击不用改
+            if (!atk || !hostileTo(o, atk)) return; // 攻击者得在这张地图上，而且是敌人（队友的攻击不用改）
             var d = o.id === tok.id ? 0 : creatureDist(o, tok);
             if (o.id !== tok.id && clsLv(osh, '战士') >= 7 && d <= 60 && !cxRefUsed(e.id + ':' + t.id + ':rs') && cxHas(o, RE_RSHIELD, '符文之盾', sheetProf(osh)))
                 h += btn('rshield', '符文之盾（' + escapeHtml(chipName(o.label)) + '）', '符文之盾（反应）：让攻击者重掷 d20 并采用新结果；不再命中则这次伤害和状态作废', ' data-by="' + escapeHtml(o.id) + '" data-react-ref="' + escapeHtml(e.id + ':' + t.id + ':rs') + '"');
