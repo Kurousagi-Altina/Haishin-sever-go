@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -136,7 +137,14 @@ func main() {
 
 	// Static files (frontend)
 	fs := http.FileServer(http.Dir(cfg.StaticDir))
-	mux.Handle("/", fs)
+	ttStaticDir = cfg.StaticDir
+	// 页面（.html / 目录）不让浏览器缓存：部署后打开就是新版本；JS / CSS 靠 ?v= 换版本
+	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if p := r.URL.Path; strings.HasSuffix(p, ".html") || strings.HasSuffix(p, "/") {
+			w.Header().Set("Cache-Control", "no-cache")
+		}
+		fs.ServeHTTP(w, r)
+	}))
 
 	// Apply global middleware
 	var app http.Handler = mux

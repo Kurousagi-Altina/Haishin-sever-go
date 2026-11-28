@@ -572,6 +572,7 @@ function renderNotesPane() {
                 return '<li data-hoview="' + x.id + '">' + (x.img ? '<img src="' + escapeHtml(assetURL(x.img)) + '" alt="">' : '<span class="ho-icon">📜</span>') +
                     '<div class="ho-main"><div>' + escapeHtml(x.title) + '</div><div class="tt-hint">' + escapeHtml(hoToText(x)) + ' · ' + (x.shown ? '已展示' : '未展示') + '</div></div>' +
                     '<span class="ho-btns"><button class="tt-btn small" data-hoshow="' + x.id + '" title="弹到玩家屏幕上">展示</button>' +
+                    (x.shown ? '<button class="tt-btn small" data-hohide="' + x.id + '" title="从玩家的「线索」里收回（之后可以再展示）">收回</button>' : '') +
                     '<button class="tt-btn small" data-hoedit="' + x.id + '">编辑</button>' +
                     '<button class="tt-btn small danger" data-hodel="' + x.id + '">✕</button></span></li>';
             }).join('') + '</ul>';
@@ -614,6 +615,7 @@ function onNotesPaneClick(e) {
     if (el.dataset.np === 'newho') { openHandoutEditor(null); return; }
     if (el.dataset.note) { focusNote(el.dataset.note); return; }
     if (el.dataset.hoshow) { op({ op: 'handout.show', text: el.dataset.hoshow }).then(function(r) { if (r) notice('已展示给玩家'); }); return; }
+    if (el.dataset.hohide) { op({ op: 'handout.hide', text: el.dataset.hohide }).then(function(r) { if (r) notice('已从玩家那里收回'); }); return; }
     if (el.dataset.hoedit) { openHandoutEditor(handouts.find(function(h) { return h.id === el.dataset.hoedit; })); return; }
     if (el.dataset.hodel) {
         var hd = handouts.find(function(h) { return h.id === el.dataset.hodel; });

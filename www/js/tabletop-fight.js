@@ -43,12 +43,16 @@ function econAfterAction(a, caster) {
     if (!hintOn('hintEcon') || !caster || !canEdit(caster) || !combatState() || !inInit(caster)) return;
     var cost = a.cost || 'a';
     var e = JSON.parse(JSON.stringify(caster.econ || {}));
-    var csh = caster.sheet && sheets[caster.sheet], per = a.kind === 'attack' && cost === 'a' && !a.isSpell ? attacksPerAction(csh) : 1;
+    var csh = caster.sheet && sheets[caster.sheet], per = a.kind === 'attack' && cost === 'a' && !a.isSpell && !hasStatus(caster, 'slowspell') ? attacksPerAction(csh) : 1; // 缓慢术：攻击动作只能攻击一次
     if (per > 1 && !e.a) { // 额外攻击：攻击动作打满 per 下才算用掉动作
         e.atk = (e.atk || 0) + 1;
         if (e.atk < per) notice('额外攻击：攻击动作第 ' + e.atk + '/' + per + ' 击，还可以再攻击 ' + (per - e.atk) + ' 次', false, 3500);
         else { e.a = true; delete e.atk; }
     } else if (cost !== 'n') e[cost] = true;
+    if (hasStatus(caster, 'slowspell') && (e.a || e.b) && (cost === 'a' || cost === 'b')) { // 缓慢术：动作和附赠动作只能二选一
+        if (!(e.a && e.b)) notice('缓慢术：这回合只能执行一个动作或一个附赠动作，另一个已经用不了了', false, 4000);
+        e.a = true; e.b = true;
+    }
     if (a.useSlot && a.slotLevel > 0) {
         if (e.slot) notice('2024 规则：一回合只能用法术位施放一个法术（戏法不受限）。这次照样结算了，请 GM 斟酌', true, 6000);
         e.slot = true;
@@ -110,12 +114,15 @@ function tokenSide(t) {
     var sh = t.sheet && sheets[t.sheet], m = sh && sh.kind === 'summon' && sh.master && sheets[sh.master];
     return m && m.kind === 'pc' ? 'ally' : 'enemy';
 }
-function hostileTo(a, b) { var sa = tokenSide(a), sb = tokenSide(b); return sa !== sb && sa !== 'neutral' && sb !== 'neutral'; }
+// 分队：ally / ally2 / ally3 / ally4 都是友方阵营，彼此不算敌人；但互助类（拦截、导引打击、云雾符文……）要求 tokenSide 完全相同 = 同一队
+function sideCamp(s) { return /^ally/.test(s || '') ? 'ally' : s; }
+function hostileTo(a, b) { var sa = sideCamp(tokenSide(a)), sb = sideCamp(tokenSide(b)); return sa !== sb && sa !== 'neutral' && sb !== 'neutral'; }
 // 已经死了（玩家角色倒地只是昏迷，不算）：不再是攻击 / 范围 / 后续效果的目标
 function isDeadToken(t) { return !!t && (hasStatus(t, 'dead') || (!isPC(t) && t.hpMax > 0 && num(t.hp, t.hpMax) <= 0)); }
 
 function canReact(t) {
     if (hasStatus(t, 'dead') || (t.hpMax > 0 && num(t.hp, t.hpMax) <= 0)) return false;
+    if (hasStatus(t, 'slowspell')) return false; // 缓慢术：不能执行反应
     if (['incapacitated', 'paralyzed', 'stunned', 'unconscious', 'petrified'].some(function(id) { return hasStatus(t, id); })) return false;
     return !(t.econ && t.econ.r);
 }
@@ -232,6 +239,7 @@ function fightTargetBtns(e, t, r) {
     var tok = scene.items[t.id], ic = interceptBtns(e, t, r) + cxTargetBtns(e, t, r); // 拦截、职业特性（各自判断谁看得到）
     var ps = pendingSaveHtml(e, t, r); // 手动豁免：提示要掷什么（tabletop-class.js）
     if (!tok || !(me.gm || (tok.owner && tok.owner === me.name))) return ps + mb + ic;
+    if (!mineTok(tok)) return ps + mb + ic; // 玩家在线：它的反应 / 专注豁免按钮只给玩家看
     var h = '', m = String(t.note || '').match(/(?:需专注豁免|专注豁免改为) DC (\d+)/);
     if (m && hasStatus(tok, 'concentration') && !logEntries.some(function(x) { return x.ref === 'conc:' + e.id + ':' + t.id; }))
         h += '<button class="tt-btn small react-btn" data-concsave="' + escapeHtml(t.id) + '" data-dc="' + m[1] + '" data-log="' + escapeHtml(e.id) + '" title="由服务器掷体质豁免，失败自动结束专注">🎲 专注豁免</button>';
@@ -859,7 +867,7 @@ function counterBtns(e, r) {
     var caster = r.casterId && scene.items[r.casterId];
     var list = sortedItems().filter(function(t) {
         return t.kind === 'token' && t.id !== r.casterId && (me.gm || (t.owner && t.owner === me.name)) && isCreatureToken(t) &&
-            canReact(t) && tokenHasSpell(t, '法术反制') && (!caster || (hostileTo(t, caster) && creatureDist(t, caster) <= 60));
+            canReact(t) && mineTok(t) && tokenHasSpell(t, '法术反制') && (!caster || (hostileTo(t, caster) && creatureDist(t, caster) <= 60));
     });
     if (!list.length) return '';
     return '<div class="act-target">⛔ ' + list.map(function(t) {
@@ -944,7 +952,8 @@ function tokenFeat(t, key) {
     return !!sh && hintOn('hintFeat') && sheetHasEntry(sh, FEAT[key]);
 }
 function sheetFeat(sh, key) { return !!sh && hintOn('hintFeat') && sheetHasEntry(sh, FEAT[key]); }
-function mineTok(t) { return t && (me.gm || (t.owner && t.owner === me.name)); }
+// 反应 / 互助按钮给谁看：玩家的棋子只给它的玩家（玩家不在线时 GM 代看），GM 的棋子给 GM——免得 GM 屏幕上挂满所有人的反应
+function mineTok(t) { return !!t && (t.owner ? t.owner === me.name || (me.gm && !users.some(function(u) { return u.name === t.owner; })) : me.gm); }
 function polearmHeld(t) {
     var sh = t && t.sheet && sheets[t.sheet];
     return !!sh && (sh.attacks || []).some(function(at) { return POLEARM.test(at.name || ''); });

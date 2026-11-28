@@ -684,3 +684,14 @@ function sheetReimportSync(old, sh) {
         (added.length ? '；新增特性 ' + added.length + ' 个' + (manual.length ? '，其中需要手动处理：' + manual.join('、') : '（都已自动化或是被动）') : '');
     notice(msg, false, 9000);
 }
+
+// 角色卡上点这些特性的 ⚡：交给职业按钮处理（直接解析说明文字会把「陷入失能时结束」之类误当成效果）
+var FEAT_ROUTES = [[/咒剑诅咒|hexblade'?s\s*curse/i, 'cx-wl-curse'], [/^圣疗$|lay\s*on\s*hands/i, 'cx-pl-loh'], [/^先天术法$|innate\s*sorcery/i, 'cx-so-innate'],
+    [/^紫龙新兵$|振军战吼/i, 'cx-ft-rally'], [/^引导神力-征服$/, 'cx-pl-conq'], [/^引导神力-守望$/, 'cx-pl-will'], [/^混乱之潮$/, 'cx-so-tides'], [/^邪魔活力$/, 'cx-wl-vigor'], [/^秘法回流$/, 'cx-wl-cunning']];
+function featRoute(sh, name, caster) {
+    var n = String(name || '').replace(/\s|。$/g, '');
+    var r = FEAT_ROUTES.filter(function(x) { return x[0].test(n); })[0];
+    if (!r || !caster || !canEdit(caster)) return false;
+    x2SelAct(r[1], caster, sh);
+    return true;
+}

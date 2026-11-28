@@ -151,6 +151,15 @@ func (room *TTRoom) applyHandout(u ttUser, req *ttOpRequest) (int, string) {
 		room.broadcastHandout(h, true)
 		room.logHandout(u, h)
 
+	case "handout.hide": // 收回：玩家那边不再显示（「线索」里也没有），之后可以再展示
+		idx := room.handoutIndex(req.Text)
+		if idx < 0 {
+			return http.StatusNotFound, "讲义不存在"
+		}
+		h := &room.Handouts[idx]
+		h.Shown = false
+		room.broadcastHandout(h, false)
+
 	case "handout.delete":
 		var ids []string
 		for _, id := range req.IDs {
