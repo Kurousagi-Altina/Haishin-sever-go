@@ -40,6 +40,7 @@ type ttTraits struct {
 	ac         int
 	acSrc      []string
 	legendary  bool
+	ownAura    string // 自己有守护灵光（auraOfProtection 用）
 }
 
 func newTTTraits() *ttTraits {
@@ -141,11 +142,7 @@ var ttAutoTraits = []struct {
 	}},
 	{[]string{"勇气灵光", "勇气光环", "auraofcourage"}, false, nil, func(t *ttTraits, src, _ string, _ map[string]interface{}) { t.condImmune["frightened"] = src }},
 	{[]string{"守护灵光", "守护光环", "auraofprotection"}, false, nil, func(t *ttTraits, src, _ string, sh map[string]interface{}) {
-		v := ttSheetAbilityMod(sh, "cha")
-		if v < 1 {
-			v = 1
-		}
-		t.addSaveBonus("all", v, src)
+		t.ownAura = src // 加值在 auraOfProtection 里统一算：和别人的灵光取最高、失能时无效
 	}},
 	{[]string{"传奇抗性", "legendaryresistance"}, false, nil, func(t *ttTraits, _, _ string, _ map[string]interface{}) { t.legendary = true }},
 }
@@ -660,6 +657,9 @@ func (room *TTRoom) reactAction(u ttUser, gm bool, logID, tokenID, mode, reactor
 		if room.Log[i].ID == logID {
 			e = &room.Log[i]
 		}
+	}
+	if e != nil && e.Scene != "" && e.Scene != room.activeScene().ID {
+		return http.StatusBadRequest, "这次结算是在别的场景发生的"
 	}
 	if e == nil || e.Act == nil || (e.Act.Kind != "attack" && !((mode == "legendary" || mode == "interpose" || mode == "indomitable" || mode == "disciplined" || mode == "flash" || mode == "portent") && e.Act.Kind == "save") && mode != "absorb") {
 		return http.StatusBadRequest, "找不到这次结算（太久远的记录不能再反应）"
@@ -1234,7 +1234,7 @@ func (room *TTRoom) resolveManualSave(u ttUser, gm bool, logID, tokenID, mode st
 	why := map[string]string{"roll": "补掷豁免", "yes": "自己掷：成功", "no": "自己掷：失败"}[mode]
 	req := &ttOpRequest{Op: "action", Hidden: e.Hidden, Act: &TTActionReq{Name: e.Act.Name + "（" + why + "）", Kind: "save", Damage: dmg, DamageType: e.Act.DamageType,
 		Save: e.Act.Save, DC: e.Act.DC, Half: e.Act.Half, Status: e.Act.StatusDef, Caster: e.Act.CasterID, Magic: e.Act.Magic, Spell: e.Act.Spell, Parts: parts,
-		Targets: []TTActionTarget{{ID: tokenID, Forced: mode}}, Ref: ref}}
+		School: e.Act.School, Targets: []TTActionTarget{{ID: tokenID, Forced: mode, Cover: h.Cover, Mode: h.SMode}}, Ref: ref}}
 	return room.applyAction(u, true, req)
 }
 
@@ -1444,7 +1444,7 @@ func (room *TTRoom) auraOfProtection(it map[string]interface{}, t *ttTraits) {
 	w, _ := ttNum(it["w"])
 	best, src := 0, ""
 	for oid, o := range sc.Items {
-		if oid == id || o["kind"] != "token" || ttBool(o["hidden"]) && !ttBool(it["hidden"]) {
+		if o["kind"] != "token" || oid != id && ttBool(o["hidden"]) && !ttBool(it["hidden"]) { // 自己的灵光也在这里算（取最高，不叠加）
 			continue
 		}
 		osh := room.tokenSheet(o)

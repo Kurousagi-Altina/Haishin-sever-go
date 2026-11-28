@@ -928,7 +928,7 @@ function actionPointerDown(w, e) {
         if (multiHit(a) && !m.zoneId && (m.targets[hit.id] || inActionRange(hit))) { // 光束 / 射线：再点一下 = 再打一次
             if (e && (e.shiftKey || e.altKey) && m.targets[hit.id]) removeTargetOnce(hit.id);
             else if (targetCount(m) >= a.targets) notice('已经选满 ' + a.targets + ' 次（操作条上的 ＋ 可以加目标数；右键撤销上一个，Shift+点击减一次）', true);
-            else m.targets[hit.id] = (+m.targets[hit.id] || 0) + 1;
+            else { m.targets[hit.id] = (+m.targets[hit.id] || 0) + 1; (m.clicks || (m.clicks = [])).push(hit.id); }
         } else if (m.targets[hit.id]) delete m.targets[hit.id];
         else if (zz && zoneOnce(zz) && zoneHitsNow(zz)[hit.id]) notice('「' + (hit.label || '') + '」本回合已经结算过「' + (zz.label || '') + '」（每回合限一次，可在区域属性里取消限制）', true);
         else if (!inActionRange(hit)) notice('「' + (hit.label || '') + '」超出射程 / 触及', true);
@@ -972,6 +972,8 @@ function actionRightClick() {
         return;
     }
     var ids = Object.keys(m.targets);
+    while (m.clicks && m.clicks.length && !m.targets[m.clicks[m.clicks.length - 1]]) m.clicks.pop(); // 已经减掉的
+    if (m.clicks && m.clicks.length) { var lc = m.clicks.pop(); ids = ids.filter(function(x) { return x !== lc; }).concat([lc]); } // 光束：撤销最后一次点击
     if (ids.length && (!a.area.shape || m.zoneId)) {
         var last = scene.items[ids[ids.length - 1]];
         if ((+m.targets[ids[ids.length - 1]] || 1) > 1) { m.targets[ids[ids.length - 1]]--; ids.push(ids[ids.length - 1]); }
@@ -1170,6 +1172,7 @@ function confirmActionTargeting() {
     Object.keys(m.targets).forEach(function(id) { if (scene.items[id]) for (var k = 0; k < (multiHit(a) ? +m.targets[id] || 1 : 1); k++) ids.push(id); }); // 同一个目标选了几次就结算几次
     if (!ids.length && !a.conc) { notice('还没有选择目标', true); return; }
     var melee = a.kind === 'attack' && !(a.range > 0 && !a.reach); // 近战攻击（防御式决斗、顺势斩）
+    a._hUsed = false; // 升阶法术：给第一个不是施法者的目标
     var targets = ids.map(function(id, idx) {
         var t = scene.items[id], o = { id: id, cover: 0, mode: '', autoCrit: false };
         if (!m.caster || t.id === m.caster.id || m.zoneId) return o;
@@ -1388,6 +1391,7 @@ function onActionBarClick(e) {
 // ===== 记录 =====
 function actionLogHtml(e) {
     var r = e.act, h = '<div class="act-log">';
+    var here = !e.scene || e.scene === scene.id; // 别的场景（含复制出来的同 id 棋子）结算的：不出反应 / 后续按钮
     var KIND = { attack: '攻击', save: '豁免', auto: '伤害', heal: '治疗', temp: '临时生命', effect: '效果', react: '反应' };
     var strip = function(x) { return rollHtml(x).replace(/^<div class="log-roll">|<\/div>$/g, ''); };
     if (r.roll) h += '<div class="act-roll">' + (KIND[r.kind] || '') + (r.damageType ? '（' + escapeHtml(r.damageType) + '）' : '') + strip(r.roll) + '</div>';
@@ -1409,11 +1413,12 @@ function actionLogHtml(e) {
         else if (t.amount) parts.push('<b class="' + (t.amount < 0 ? 'amt-dmg' : 'amt-heal') + '">' + (t.amount < 0 ? t.amount : '+' + t.amount) + (r.kind === 'temp' ? ' 临时' : '') + '</b>');
         if (t.status) parts.push('<span class="hit-tag crit">' + escapeHtml(t.status) + '</span>');
         if (t.note) parts.push('<span class="tt-hint">' + escapeHtml(t.note) + '</span>');
-        if (r.kind === 'attack' && e.id) parts.push(reactButtons(e, t));
-        parts.push(fightTargetBtns(e, t, r)); // 专注豁免 / 传奇抗性（tabletop-fight.js）
+        if (here && r.kind === 'attack' && e.id) parts.push(reactButtons(e, t));
+        if (here) parts.push(fightTargetBtns(e, t, r)); // 专注豁免 / 传奇抗性（tabletop-fight.js）
         h += '<div class="act-target">' + (r.kind === 'react' ? '🛡 ' : '🎯 ') + escapeHtml(t.name) + ' ' + parts.join(' ') + '</div>';
     });
-    h += counterBtns(e, r) + featActBtns(e, r); // 法术反制 / 长柄打击 / 哨兵（tabletop-fight.js）
+    if (here) h += counterBtns(e, r) + featActBtns(e, r); // 法术反制 / 长柄打击 / 哨兵（tabletop-fight.js）
+    else if (e.scene) h += '<div class="tt-hint">（在别的场景结算的，这里不再给后续按钮）</div>';
     if (r.note) h += '<div class="tt-hint">' + escapeHtml(r.note) + '</div>';
     return h + '</div>';
 }
@@ -1434,7 +1439,7 @@ function reactOptions(tok, t) {
 function reactButtons(e, t) {
     if (!t.id) return '';
     var tok = scene.items[t.id];
-    if (!tok || !(me.gm || (tok.owner && tok.owner === me.name))) return '';
+    if (!tok || !mineTok(tok) || !canReact(tok)) return ''; // 只给能用反应的人看；缓慢术 / 反应已用 / 失能时不出
     var ref = e.id + ':' + t.id;
     if (logEntries.some(function(x) { return x.ref === ref; })) return '';
     return reactOptions(tok, t).map(function(o) {

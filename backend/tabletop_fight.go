@@ -378,6 +378,10 @@ func (room *TTRoom) rollTokenSave(it map[string]interface{}, ab string, adv, dis
 	sb := room.saveBonus(it, ab)
 	more, bonusNotes, advSrc := tr.saveMods(ab, false, false, "", "", conds)
 	sb += more
+	if ab == "dex" && conds["slowspell"] { // 缓慢术：敏捷豁免 −2
+		sb -= 2
+		bonusNotes = append(bonusNotes, "缓慢术-2")
+	}
 	advSrc = append(advSrc, adv...)
 	if conds["lucky"] { // 幸运：用掉一个幸运点换来的优势
 		advSrc = append(advSrc, "幸运")
@@ -644,6 +648,9 @@ func (room *TTRoom) applyFight(u ttUser, gm bool, req *ttOpRequest) (int, string
 		}
 		if e == nil || e.Act == nil || !e.Act.Spell {
 			return http.StatusBadRequest, "找不到这次施法（太久远的记录不能再反制）"
+		}
+		if e.Scene != "" && e.Scene != room.activeScene().ID {
+			return http.StatusBadRequest, "这次施法是在别的场景"
 		}
 		ref := "cs:" + req.Text
 		for _, x := range room.Log {

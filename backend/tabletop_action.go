@@ -82,6 +82,7 @@ type TTActionHit struct {
 	Note   string          `json:"note,omitempty"`
 	Status string          `json:"status,omitempty"`
 	Types  map[string]int  `json:"types,omitempty"` // damage dealt per type after resistances (吸收元素)
+	SMode  string          `json:"smode,omitempty"` // pending manual save: the save's mode ("dis" = 升阶法术)
 }
 
 type TTActionResult struct {
@@ -98,6 +99,7 @@ type TTActionResult struct {
 	Mastery    string        `json:"mastery,omitempty"`   // weapon mastery of the attack (the client offers its follow-up)
 	CasterID   string        `json:"casterId,omitempty"`  // acting token id (push direction, Vex)
 	Spell      bool          `json:"spell,omitempty"`     // a spell (法术反制 can answer it)
+	School     string        `json:"school,omitempty"`    // spell school (manual saves re-resolve with it)
 	SlotLevel  int           `json:"slotLevel,omitempty"` // slot level spent on the spell
 	Melee      bool          `json:"melee,omitempty"`     // a melee attack
 	// the attack / save's damage dice, extra parts and condition (导引打击 / 预兆 re-apply a miss or a failed save)
@@ -372,7 +374,7 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 	}
 	sc := room.activeScene()
 	res := &TTActionResult{Name: ttCleanName(a.Name, 40, "行动"), Kind: a.Kind, DamageType: ttCleanName(a.DamageType, 8, ""), Save: a.Save, DC: a.DC, Half: a.Half,
-		Mastery: ttCleanName(a.Mastery, 8, ""), Spell: a.Spell, Melee: a.Kind == "attack" && a.Melee}
+		Mastery: ttCleanName(a.Mastery, 8, ""), Spell: a.Spell, Melee: a.Kind == "attack" && a.Melee, School: ttCleanName(a.School, 4, "")}
 	if a.Spell && a.SlotLevel >= 1 && a.SlotLevel <= 9 {
 		res.SlotLevel = a.SlotLevel
 	}
@@ -659,6 +661,7 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 		case "save":
 			if t.Forced == "" && ttBool(it["manualSave"]) { // 这个角色自己掷豁免：先不结算，记录里提示
 				h.Saved = "pending"
+				h.Cover, h.SMode = t.Cover, t.Mode // 补掷时照样算掩护 / 升阶的劣势
 				addNote("等玩家自己掷豁免")
 				continue
 			}
@@ -939,6 +942,7 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 	e.Act = res
 	e.Hidden = hidden
 	e.Ref = a.Ref
+	e.Scene = sc.ID
 	room.addLog(e)
 	if len(changed) > 0 {
 		room.rememberUndo(e.ID, undo)

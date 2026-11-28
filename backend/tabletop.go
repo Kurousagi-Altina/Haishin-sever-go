@@ -60,6 +60,7 @@ type TTLogEntry struct {
 	Roll   *TTDiceResult `json:"roll,omitempty"`
 	Hidden bool          `json:"hidden,omitempty"`
 	Ref    string        `json:"ref,omitempty"` // reaction entries: "<action log id>:<token id>" they answer
+	Scene  string        `json:"scene,omitempty"` // kind "action": the scene it was resolved on (reactions only work there)
 	// attack rolls aimed at a token: target name, result vs its AC (hit/miss/crit/fumble), cover
 	Target string `json:"target,omitempty"`
 	Hit    string `json:"hit,omitempty"`
@@ -860,7 +861,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 		"props": true, "map.set": true, "scene.add": true, "scene.duplicate": true, "scene.rename": true, "scene.move": true,
 		"scene.delete": true, "scene.activate": true, "room.rename": true, "room.settings": true,
 		"asset.delete": true, "asset.kind": true, "log.clear": true, "action.undo": true,
-		"handout": true, "handout.show": true, "handout.delete": true,
+		"handout": true, "handout.show": true, "handout.hide": true, "handout.delete": true,
 		"table": true, "table.delete": true, "table.roll": true,
 	}
 	if gmOnly[req.Op] && !gm {
