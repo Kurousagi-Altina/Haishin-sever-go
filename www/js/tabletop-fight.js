@@ -116,13 +116,14 @@ function tokenSide(t) {
 }
 // 分队：ally / ally2 / ally3 / ally4 都是友方阵营，彼此不算敌人；但互助类（拦截、导引打击、云雾符文……）要求 tokenSide 完全相同 = 同一队
 function sideCamp(s) { return /^ally/.test(s || '') ? 'ally' : s; }
-function hostileTo(a, b) { var sa = sideCamp(tokenSide(a)), sb = sideCamp(tokenSide(b)); return sa !== sb && sa !== 'neutral' && sb !== 'neutral'; }
+function hostileTo(a, b) { var sa = sideCamp(tokenSide(a)), sb = sideCamp(tokenSide(b)); return sa !== sb && sa !== 'neutral' && sb !== 'neutral' && sa !== 'out' && sb !== 'out'; }
 // 已经死了（玩家角色倒地只是昏迷，不算）：不再是攻击 / 范围 / 后续效果的目标
 function isDeadToken(t) { return !!t && (hasStatus(t, 'dead') || (!isPC(t) && t.hpMax > 0 && num(t.hp, t.hpMax) <= 0)); }
 
 function canReact(t) {
     if (hasStatus(t, 'dead') || (t.hpMax > 0 && num(t.hp, t.hpMax) <= 0)) return false;
     if (hasStatus(t, 'slowspell')) return false; // 缓慢术：不能执行反应
+    if (offField(t)) return false; // 不在场
     if (['incapacitated', 'paralyzed', 'stunned', 'unconscious', 'petrified'].some(function(id) { return hasStatus(t, id); })) return false;
     return !(t.econ && t.econ.r);
 }
@@ -150,7 +151,7 @@ function meleeReach(t) {
 function oaCheckMove(id, orig, trail) {
     if (!hintOn('hintOA') || !combatState()) return;
     var t = scene.items[id];
-    if (!t || t.kind !== 'token' || !isCreatureToken(t) || tokenSide(t) === 'neutral') return;
+    if (!t || t.kind !== 'token' || !isCreatureToken(t) || tokenSide(t) === 'neutral' || offField(t)) return;
     var tsh = t.sheet && sheets[t.sheet], flyby = !!(tsh && sheetHasEntry(tsh, /飞掠|flyby/i)), dis = hasStatus(t, 'disengaged');
     var g = gridSize(), hw = (t.w || g) / 2, hh = (t.h || g) / 2;
     var pts = [{ x: orig.x + hw, y: orig.y + hh }];

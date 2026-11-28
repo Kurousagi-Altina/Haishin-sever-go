@@ -29,7 +29,7 @@ function nextLightName() {
 // 「玩家角色」：有控制者的棋子，或关联了玩家角色卡的棋子（不算对玩家隐藏的）
 function partyLightTokens() {
     return sortedItems().filter(function(t) {
-        return t.kind === 'token' && !t.hidden && (t.owner || (t.sheet && sheets[t.sheet] && sheets[t.sheet].kind === 'pc'));
+        return t.kind === 'token' && !t.hidden && !offField(t) && (t.owner || (t.sheet && sheets[t.sheet] && sheets[t.sheet].kind === 'pc'));
     });
 }
 

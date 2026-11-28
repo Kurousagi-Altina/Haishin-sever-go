@@ -52,7 +52,7 @@ func (room *TTRoom) checkTriggers(sc *TTScene, moved []ttMove) {
 			continue
 		}
 		owner, _ := tok["owner"].(string)
-		if owner == "" {
+		if owner == "" || tok["side"] == "out" { // 不在场的棋子不触发
 			continue
 		}
 		x, _ := ttNum(tok["x"])

@@ -389,6 +389,7 @@ function isCreatureToken(t) { return t.hpMax > 0 || !!t.sheet || inInit(t) || !!
 
 // 能提供掩护的生物：没有倒下的生物
 function isCreature(t) {
+    if (offField(t)) return false; // 不在场：不提供掩护、不算「身边的敌人 / 盟友」
     if (t.hpMax > 0 && num(t.hp, t.hpMax) <= 0) return false;
     return isCreatureToken(t);
 }
@@ -1091,7 +1092,9 @@ function initCombat() {
 }
 
 // ===== 阵营 / 分队 =====
-var SIDE_OPTS = [['', '自动'], ['ally', '友方·第1队'], ['ally2', '友方·第2队'], ['ally3', '友方·第3队'], ['ally4', '友方·第4队'], ['enemy', '敌方'], ['neutral', '中立']];
+var SIDE_OPTS = [['', '自动'], ['ally', '友方·第1队'], ['ally2', '友方·第2队'], ['ally3', '友方·第3队'], ['ally4', '友方·第4队'], ['enemy', '敌方'], ['neutral', '中立'], ['out', '不在场']];
+// 不在场：棋子留在地图上但不参与任何自动判断——不能被选为目标、不进范围、不挡掩护、不触发借机 / 反应 / 灵光 / 光源 / 触发区域，先攻轮到时跳过
+function offField(t) { return !!t && t.side === 'out'; }
 function sideName(s) { var o = SIDE_OPTS.filter(function(x) { return x[0] === s; })[0]; return o ? o[1] : s === 'ally' ? '友方·第1队' : s; }
 
 // ===== 属性面板「检定」：属性检定 / 豁免 / 技能一键掷（怪物卡、角色卡都行；弹出普通 / 优势 / 劣势确认框，Shift 直接掷）=====

@@ -1411,7 +1411,7 @@ func ttResistFeature(name string) string {
 
 // ttSideOf: ally / enemy / neutral (token side override, else a player's token or the party's sheet = ally).
 func (room *TTRoom) ttSideOf(it map[string]interface{}) string {
-	if s, _ := it["side"].(string); s == "ally" || s == "ally2" || s == "ally3" || s == "ally4" || s == "enemy" || s == "neutral" {
+	if s, _ := it["side"].(string); s == "ally" || s == "ally2" || s == "ally3" || s == "ally4" || s == "enemy" || s == "neutral" || s == "out" {
 		return s
 	}
 	if owner, _ := it["owner"].(string); owner != "" || room.partyToken(it) {
@@ -1429,7 +1429,7 @@ func (room *TTRoom) auraOfProtection(it map[string]interface{}, t *ttTraits) {
 		return
 	}
 	side := room.ttSideOf(it)
-	if side == "neutral" {
+	if side == "neutral" || side == "out" { // 不在场：不参与灵光
 		return
 	}
 	g, _ := ttNum(sc.Props["gridSize"])

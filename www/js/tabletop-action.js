@@ -834,11 +834,11 @@ function tokenInShape(t, sh) {
 }
 
 function actionCandidates() {
-    return sortedItems().filter(function(t) { return t.kind === 'token' && isCreatureToken(t) && (!t.hidden || me.gm) && visibleToMe(t); });
+    return sortedItems().filter(function(t) { return t.kind === 'token' && isCreatureToken(t) && !offField(t) && (!t.hidden || me.gm) && visibleToMe(t); });
 }
 // 点选目标：同一位置叠着尸体和活着的生物时，优先活着的
 function actionHitAt(w) {
-    var list = sortedItems().reverse().filter(function(t) { return t.kind === 'token' && hitItem(t, w) && seeable(t) && isCreatureToken(t) && visibleToMe(t); });
+    var list = sortedItems().reverse().filter(function(t) { return t.kind === 'token' && hitItem(t, w) && seeable(t) && isCreatureToken(t) && !offField(t) && visibleToMe(t); });
     return list.filter(function(t) { return !isDeadToken(t); })[0] || list[0] || null;
 }
 

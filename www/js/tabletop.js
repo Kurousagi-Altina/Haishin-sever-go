@@ -1376,6 +1376,7 @@ function drawToken(it) {
     var img = it.asset ? getImg(it.asset) : null;
     ctx.save();
     if (it.hidden) ctx.globalAlpha = 0.45;
+    if (it.side === 'out') ctx.globalAlpha *= 0.4; // 不在场：淡化显示
     ctx.translate((it.x || 0) + w / 2, (it.y || 0) + h / 2);
     if (it.rot) ctx.rotate(it.rot * Math.PI / 180);
     if (it.flipX) ctx.scale(-1, 1);
@@ -1407,6 +1408,7 @@ function drawToken(it) {
         tokenImgDraw(img, it, w, h);
     }
     ctx.restore();
+    if (it.side === 'out') drawLabel('不在场', (it.x || 0) + w / 2, (it.y || 0) + h / 2, '#b0bec5', true);
 
     var x = it.x || 0, y = it.y || 0;
     if (it.hpMax > 0) {

@@ -411,7 +411,7 @@ func (room *TTRoom) applyCombat(u ttUser, gm bool, req *ttOpRequest) (int, strin
 					round++
 					sys("第 " + strconv.Itoa(round) + " 轮")
 				}
-				if !ttStatusIDs(order[idx])["dead"] {
+				if !ttStatusIDs(order[idx])["dead"] && order[idx]["side"] != "out" { // 死亡 / 不在场的跳过
 					break
 				}
 			}
@@ -431,7 +431,7 @@ func (room *TTRoom) applyCombat(u ttUser, gm bool, req *ttOpRequest) (int, strin
 					}
 					idx = len(order) - 1
 				}
-				if !ttStatusIDs(order[idx])["dead"] {
+				if !ttStatusIDs(order[idx])["dead"] && order[idx]["side"] != "out" {
 					break
 				}
 			}
