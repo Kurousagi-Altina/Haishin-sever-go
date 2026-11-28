@@ -405,6 +405,7 @@ function handleMsg(m) {
     switch (m.type) {
     case 'state':
         me = m.me;
+        if (webOutdated(m.me && m.me.web)) return; // 服务器上部署了新网页：自动刷新到新版本
         var newScene = m.scene.id !== scene.id, oldMap = scene.props && scene.props.mapAsset;
         setRoomMeta(m.room);
         scene = { id: m.scene.id, name: m.scene.name, props: m.scene.props || {}, items: {}, stash: m.scene.stash || {} };
@@ -3235,6 +3236,7 @@ function zeroHpStatus(it, hp, patch) {
 
 function onSelPanelChange(e) {
     var el = e.target, prop = el.dataset.prop;
+    if (el.dataset.qcheck !== undefined) { var qi = scene.items[selectedIds()[0]]; quickCheckRoll(qi, el.value); el.value = ''; return; } // 检定快捷掷骰（tabletop-combat.js）
     if (portalSelChange(el)) return; // 传送门设置（tabletop-portal.js）
     if (lightSelChange(el)) return; // 环境光源（tabletop-light.js）
     var ids = selectedIds();
@@ -4286,3 +4288,14 @@ function init() {
 }
 
 init();
+
+// 部署后自动刷新：服务器在 state 里带上当前 tabletop.js 的版本号，和这个页面载入的不一样就刷新一次（同一版本只刷一次，避免来回刷）
+function webOutdated(ver) {
+    var el = document.querySelector('script[src*="tabletop.js?v="]'), mine = el && (el.getAttribute('src').match(/\?v=([^&]+)/) || [])[1];
+    if (!ver || !mine || ver === mine) return false;
+    var key = 'ttReloadFor';
+    try { if (sessionStorage.getItem(key) === ver) return false; sessionStorage.setItem(key, ver); } catch (e) { return false; }
+    notice('网页已更新到新版本，正在刷新…', false, 3000);
+    setTimeout(function() { location.reload(); }, 600);
+    return true;
+}

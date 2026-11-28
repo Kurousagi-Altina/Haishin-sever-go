@@ -9,7 +9,7 @@
 var ABIL_KEY = { '力量': 'str', '敏捷': 'dex', '体质': 'con', '智力': 'int', '感知': 'wis', '魅力': 'cha' };
 var CN_NUM = { '一': 1, '二': 2, '两': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10 };
 var DMG_TYPES = '强酸|钝击|寒冷|火焰|力场|闪电|黯蚀|暗蚀|死灵|穿刺|毒素|心灵|光耀|挥砍|雷鸣';
-var SPELL_BUFFS = { '祝福术': 'blessed', '灾祸术': 'baned', '加速术': 'hasted', '侵扰术': 'hexed', '神导术': 'guidance', '隐形术': 'invisible' };
+var SPELL_BUFFS = { '祝福术': 'blessed', '灾祸术': 'baned', '加速术': 'hasted', '侵扰术': 'hexed', '脆弱诅咒': 'hexed', '神导术': 'guidance', '隐形术': 'invisible', '缓慢术': 'slowspell' };
 var ACT_KINDS = [['attack', '攻击检定'], ['save', '豁免'], ['auto', '自动命中伤害'], ['heal', '治疗'], ['temp', '临时生命'], ['effect', '仅附加状态']];
 var AREA_SHAPES = [['', '无（点选目标）'], ['circle', '球形 / 圆形（半径）'], ['cone', '锥形（长度）'], ['line', '直线（长度）'], ['cube', '立方（边长）'],
     ['wall', '直墙（点两下定起点和方向）'], ['path', '自由形状墙（连续路径）'], ['ring', '环形墙（直径）']];
@@ -126,6 +126,8 @@ function parseActionText(name, text, meta) {
                     // 只看紧挨着的前几个字：「免疫力竭状态」「无法受益于隐形状态」「结束其束缚状态」算否定，「回合结束陷入失能状态」不算
                     var before = t.slice(Math.max(0, i - 8), i);
                     if (/(?:免疫|无法受益于?|不受|不会|结束|解除|移除|终止|摆脱|不再)(?:其|该|此|所有|此类)?(?:的)?$/.test(before)) continue;
+                    // 「你陷入失能时提前结束」「当它陷入恐慌时」是条件，不是效果
+                    if (/^(?:状态)?(?:时|期间|之时|的时候)/.test(t.slice(i + w.length, i + w.length + 4))) continue;
                     if (best < 0 || i < best) { best = i; a.status = d.id; }
                     break;
                 }
@@ -444,6 +446,7 @@ function castFromSheet(sh, ds) {
     }
     var en = ds.kind === 'entry' ? sh.sections[+ds.sec].entries[+ds.idx] : sh.features[+ds.idx];
     var name = (en.name || '').replace(/。$/, '');
+    if (featRoute(sh, name, caster)) return; // 已经有职业按钮的特性（咒剑诅咒、圣疗……）：走按钮的流程（tabletop-class2.js）
     var ea = finishAction(parseActionText(name, en.text, ''), sh);
     if (ea.kind === 'attack' && sheetHasEntry(sh, /魔法武器|magicweapons/i)) ea.magic = true;
     openActionDialog(ea, caster, sh);
@@ -1395,13 +1398,13 @@ function actionLogHtml(e) {
         var parts = [];
         if (t.attack) {
             var HIT = { hit: ['命中', 'hit'], miss: ['未命中', 'miss'], crit: ['重击！', 'crit'], fumble: ['大失败', 'miss'] }[t.hit] || ['', ''];
-            parts.push('<span class="tt-hint">' + escapeHtml(t.attack.expr) + '</span> <b>' + t.attack.total + '</b> <span class="hit-tag ' + HIT[1] + '">' + HIT[0] + '</span>');
+            parts.push(rollBreak(t.attack) + ' <span class="hit-tag ' + HIT[1] + '">' + HIT[0] + '</span>');
         }
         if (t.saved === 'pending') parts.push('<span class="hit-tag">待掷豁免</span>'); // 手动豁免：等玩家掷
         else if (t.saved) parts.push(t.saved === 'auto' ? '<span class="hit-tag hit">豁免自动失败</span>' :
-            '<span class="tt-hint">豁免</span> <b>' + (t.save ? t.save.total : '') + '</b> <span class="hit-tag ' + (t.saved === 'yes' ? 'miss">成功' : 'hit">失败') + '</span>');
-        if (t.damage) parts.push('<span class="tt-hint">伤害 ' + escapeHtml(t.damage.expr) + '</span>');
-        (t.parts || []).forEach(function(p) { parts.push('<span class="tt-hint">＋ ' + escapeHtml(p.expr) + '</span>'); });
+            '<span class="tt-hint">豁免</span> ' + (t.save ? rollBreak(t.save) : '') + ' <span class="hit-tag ' + (t.saved === 'yes' ? 'miss">成功' : 'hit">失败') + '</span>');
+        if (t.damage) parts.push('<span class="tt-hint">伤害</span> ' + rollBreak(t.damage));
+        (t.parts || []).forEach(function(p) { parts.push('<span class="tt-hint">＋</span> ' + rollBreak(p)); });
         if (t.amount && r.kind === 'react') parts.push('<b class="amt-heal">减免 ' + t.amount + '</b>');
         else if (t.amount) parts.push('<b class="' + (t.amount < 0 ? 'amt-dmg' : 'amt-heal') + '">' + (t.amount < 0 ? t.amount : '+' + t.amount) + (r.kind === 'temp' ? ' 临时' : '') + '</b>');
         if (t.status) parts.push('<span class="hit-tag crit">' + escapeHtml(t.status) + '</span>');
@@ -1598,4 +1601,12 @@ function drawAims(now) {
     }
     var mine = aimPayload();
     if (mine) drawAimSet(mine, me.color || '#ffca28', '', now);
+}
+
+// 记录里的一次掷骰：骰面 + 调整值 = 总数（如「[16] + 5 = 21」），鼠标停留看原表达式
+function rollBreak(r) {
+    if (!r) return '';
+    if (!(r.terms || []).length) return '<b>' + r.total + '</b>';
+    var d = rollDetail(r);
+    return '<span class="roll-break" title="' + escapeHtml(r.expr || '') + '">' + d.html + ' = <b class="' + d.cls + '">' + r.total + '</b></span>';
 }

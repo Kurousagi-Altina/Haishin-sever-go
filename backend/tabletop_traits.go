@@ -1287,6 +1287,9 @@ func (room *TTRoom) ttTargetAC(it map[string]interface{}) (float64, bool) {
 	if ttStatusIDs(it)["hasted"] {
 		ac += 2
 	}
+	if ttStatusIDs(it)["slowspell"] {
+		ac -= 2
+	}
 	return ac + float64(room.traitsOf(it).ac), true
 }
 
@@ -1408,7 +1411,7 @@ func ttResistFeature(name string) string {
 
 // ttSideOf: ally / enemy / neutral (token side override, else a player's token or the party's sheet = ally).
 func (room *TTRoom) ttSideOf(it map[string]interface{}) string {
-	if s, _ := it["side"].(string); s == "ally" || s == "enemy" || s == "neutral" {
+	if s, _ := it["side"].(string); s == "ally" || s == "ally2" || s == "ally3" || s == "ally4" || s == "enemy" || s == "neutral" {
 		return s
 	}
 	if owner, _ := it["owner"].(string); owner != "" || room.partyToken(it) {

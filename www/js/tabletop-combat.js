@@ -222,7 +222,7 @@ function tokenSpeed(it) {
     if (hasStatus(it, 'halted')) return 0; // 哨兵「阻拦」
     var slow = hasStatus(it, 'slowed') ? 10 : 0; // 武器精通「缓速」
     if (statusList(it).some(function(s) { return s.id === 'shifted' && s.swift; })) slow -= 10; // 化兽者·迅捷：化兽时速度 +10
-    var dash = hasStatus(it, 'dashed') ? 2 : 1; // 疾走：本回合速度翻倍
+    var dash = (hasStatus(it, 'dashed') ? 2 : 1) * (hasStatus(it, 'slowspell') ? 0.5 : 1); // 疾走：本回合速度翻倍；缓慢术：速度减半
     if (num(it.speed, 0) > 0) return Math.max(0, num(it.speed, 0) - slow) * dash;
     var sh = it.sheet && sheets[it.sheet];
     var m = sh && String(sh.speed || '').match(/\d+/);
@@ -818,6 +818,8 @@ function renderCombatHud() {
             (curShown && (me.gm || cur.owner === me.name) && isPC(cur) && cur.hpMax > 0 && num(cur.hp, cur.hpMax) <= 0 && !hasStatus(cur, 'dead') && !hasStatus(cur, 'stable') ?
                 '<button class="tt-btn small" data-cact="death" title="0 生命值：掷死亡豁免">💀 死亡豁免</button>' : '') +
             (c && (me.gm || (mine && curShown)) ? '<button class="tt-btn small primary" data-cact="next" title="快捷键 N">' + (me.gm ? '下一位' : '结束回合') + '</button>' : '') +
+            (c && me.gm ? '<button class="tt-btn small danger" data-cact="end" title="结束战斗（先攻列表保留）">结束战斗</button>' : '') +
+            (!c && me.gm && order.length ? '<button class="tt-btn small primary" data-cact="start" title="开始战斗">开始战斗</button>' : '') +
             (c ? '<i class="hud-follow' + (gmPref('ttFollowTurn', true) ? ' on' : '') + '" data-cact="follow" title="镜头跟随当前行动者（点击开关）">🎥</i>' : '') +
             '<i class="hud-follow on" data-cact="initview" title="' + (portrait ? '切换到简化先攻条' : '切换到带立绘的先攻条') + '">' + (portrait ? '≡' : '🖼') + '</i></div>');
     }
@@ -974,7 +976,9 @@ function combatPanelHtml(it, row) {
         return '<option value="' + o[0] + '"' + (String(cells || '') === o[0] ? ' selected' : '') + '>' + o[1] + (o[0] ? '（' + o[0] + ' 格）' : '（' + tokenCells(it) + ' 格）') + '</option>';
     }).join('') + '</select><button class="tt-btn small" data-act="fitsize" title="把图片缩放到占格大小">贴合</button>');
     h += row('判定圈', '<input class="tt-input narrow" data-prop="hitR" type="number" min="0.25" step="0.25" value="' + (it.hitR > 0 ? it.hitR : '') +
-        '" placeholder="' + defaultHitFt(it) + '"> 尺半径<span class="tt-hint">（距离、触及、范围按它算）</span>');
+        '" placeholder="' + defaultHitFt(it) + '"> 尺半径<span class="tt-hint">（身体大小：距离从它的边缘量起）</span>');
+    h += row('触及', '<input class="tt-input narrow" data-prop="reach" type="number" min="0" step="5" value="' + (it.reach > 0 ? it.reach : '') + '" placeholder="' + meleeReach(it) +
+        '"> 尺<span class="tt-hint">（近战够得着多远：从判定圈边缘再往外量；空着按卡上的武器，默认 5 尺）</span>');
     var others = sortedItems().filter(function(t) { return t.kind === 'token' && t.id !== it.id && (t.label || '').trim(); });
     h += row('跟随', '<select class="tt-select" data-prop="follow" style="flex:1;min-width:0;"><option value="">（不跟随）</option>' + others.map(function(t) {
         return '<option value="' + escapeHtml(t.id) + '"' + (it.follow === t.id ? ' selected' : '') + '>' + escapeHtml(t.label) + '</option>';
@@ -988,9 +992,10 @@ function combatPanelHtml(it, row) {
         h += genericRowHtml(it); // 其他特性：没有专门适配的（tabletop-class2.js）
         h += saveModeRowHtml(it); // 自动掷豁免（tabletop-class.js）
     }
-    h += row('阵营', '<select class="tt-select" data-prop="side" title="借机攻击按阵营判断：自动 = 玩家控制的是友方，GM 控制的是敌方">' +
-        [['', '自动'], ['ally', '友方'], ['enemy', '敌方'], ['neutral', '中立']].map(function(o) { return '<option value="' + o[0] + '"' + ((it.side || '') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') +
-        '</select><span class="tt-hint">触及</span><input class="tt-input narrow" data-prop="reach" type="number" min="0" step="5" value="' + (it.reach > 0 ? it.reach : '') + '" placeholder="' + meleeReach(it) + '"> 尺');
+    h += row('阵营', '<select class="tt-select" data-prop="side" title="自动 = 玩家控制 / 玩家角色卡的是友方（第 1 队），GM 控制的是敌方。分队后，拦截、云雾符文、导引打击、守护灵光等互助只在同一队里生效；不同的友方队伍之间不算敌人">' +
+        SIDE_OPTS.map(function(o) { return '<option value="' + o[0] + '"' + ((it.side || '') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') +
+        '</select><span class="tt-hint">当前：' + escapeHtml(sideName(tokenSide(it))) + '</span>');
+    h += quickCheckRowHtml(it, row); // 检定 / 豁免 / 技能快捷掷骰
     h += row('AC', '<input class="tt-input narrow" data-prop="ac" type="number" min="0" value="' + (it.ac != null ? escapeHtml(String(it.ac)) : '') + '" placeholder="—">' +
         '<span class="tt-hint">' + (it.owner ? '' : '玩家看不到') + '</span>');
     if (inInit(it)) {
@@ -1083,4 +1088,33 @@ function initCombat() {
     $('combatPane').addEventListener('change', onCombatPaneChange);
     $('combatHud').addEventListener('click', onCombatHudClick);
     $('combatHud').addEventListener('dblclick', onCombatHudDblClick);
+}
+
+// ===== 阵营 / 分队 =====
+var SIDE_OPTS = [['', '自动'], ['ally', '友方·第1队'], ['ally2', '友方·第2队'], ['ally3', '友方·第3队'], ['ally4', '友方·第4队'], ['enemy', '敌方'], ['neutral', '中立']];
+function sideName(s) { var o = SIDE_OPTS.filter(function(x) { return x[0] === s; })[0]; return o ? o[1] : s === 'ally' ? '友方·第1队' : s; }
+
+// ===== 属性面板「检定」：属性检定 / 豁免 / 技能一键掷（怪物卡、角色卡都行；弹出普通 / 优势 / 劣势确认框，Shift 直接掷）=====
+function quickCheckRowHtml(it, row) {
+    var sh = it.sheet && sheets[it.sheet];
+    if (!sh || !canEdit(it) || !(sh.abilities || []).length || isCoc()) return '';
+    var o = '<option value="">选择…</option><optgroup label="豁免">' + sh.abilities.map(function(a, i) {
+        return '<option value="s' + i + '">' + escapeHtml((a.name || ABILITY_NAMES[a.key] || a.key) + '豁免 ' + (normBonus(a.save || a.mod) || '+0')) + '</option>';
+    }).join('') + '</optgroup><optgroup label="属性检定">' + sh.abilities.map(function(a, i) {
+        return '<option value="a' + i + '">' + escapeHtml((a.name || ABILITY_NAMES[a.key] || a.key) + ' ' + (normBonus(a.mod) || '+0')) + '</option>';
+    }).join('') + '</optgroup>' + ((sh.skills || []).length ? '<optgroup label="技能">' + sh.skills.map(function(s, i) {
+        return '<option value="k' + i + '">' + escapeHtml(s.name + ' ' + (normBonus(s.bonus) || '+0')) + '</option>';
+    }).join('') + '</optgroup>' : '');
+    return row('检定', '<select class="tt-select" data-qcheck style="flex:1;min-width:0;" title="选一项就弹出掷骰框（普通 / 优势 / 劣势、调整值、暗骰）">' + o + '</select>');
+}
+function quickCheckRoll(it, v) {
+    var sh = it && it.sheet && sheets[it.sheet];
+    if (!sh || !v) return;
+    var i = parseInt(v.slice(1), 10), req = null;
+    if (v[0] === 's' && sh.abilities[i]) { var a = sh.abilities[i]; req = { label: (a.name || ABILITY_NAMES[a.key]) + '豁免', bonus: a.save || a.mod || '+0' }; }
+    else if (v[0] === 'a' && sh.abilities[i]) { var b = sh.abilities[i]; req = { label: (b.name || ABILITY_NAMES[b.key]) + '检定', bonus: b.mod || '+0' }; }
+    else if (v[0] === 'k' && sh.skills && sh.skills[i]) req = { label: sh.skills[i].name, bonus: sh.skills[i].bonus || '+0' };
+    if (!req) return;
+    req.who = it.label || sh.name;
+    openRollDialog(req);
 }

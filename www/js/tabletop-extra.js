@@ -766,6 +766,11 @@ function openItemsMenu(ids, sx, sy) {
         h += '<button data-tm="bhide">' + (anyShown ? '🙈 全部对玩家隐藏' : '👁 全部对玩家显示') + '</button>' +
             '<button data-tm="block">' + (anyFree ? '🔒 全部锁定' : '🔓 全部解锁') + '</button>';
     }
+    var toks = edit.filter(function(it) { return it.kind === 'token' && isCreatureToken(it); });
+    if (toks.some(function(it) { return !inInit(it); })) h += '<button data-tm="binit">⚔ 全部加入先攻并掷骰</button>';
+    if (toks.some(function(it) { return inInit(it); })) h += '<button data-tm="bleave">🚪 全部移出先攻</button>';
+    if (me.gm && toks.length) h += '<div class="tm-row"><select class="tt-select" data-tm-side><option value="">设阵营 / 分队…</option>' +
+        SIDE_OPTS.map(function(o) { return '<option value="' + (o[0] || 'auto') + '">' + o[1] + '</option>'; }).join('') + '</select></div>';
     h += '<button data-tm="bnone">✖ 取消选择</button>';
     showItemMenu(h, sx, sy, { ids: items.map(function(it) { return it.id; }).join(',') });
 }
@@ -797,6 +802,7 @@ function openTokenMenu(it, sx, sy) {
         STATUS_DEFS.map(function(d) { return '<option value="' + d.id + '">' + d.icon + ' ' + d.name + '</option>'; }).join('') + '</select></div>';
     h += '<button data-tm="target">' + (target.id === it.id ? '✖ 取消目标' : '🎯 设为目标') + '</button>';
     if (edit && isCreatureToken(it)) h += '<button data-tm="init">' + (inInit(it) ? '🎲 重掷先攻' : '⚔ 加入先攻并掷骰') + '</button>';
+    if (edit && inInit(it)) h += '<button data-tm="leave">🚪 移出先攻</button>';
     if (edit) h += '<button data-tm="act">⚡ 以它行动…</button>';
     if (it.sheet && sheets[it.sheet]) h += '<button data-tm="sheet">📜 查看角色卡</button>';
     if (me.gm) h += '<button data-tm="hide">' + (it.hidden ? '👁 对玩家显示' : '🙈 对玩家隐藏') + '</button>' +
@@ -823,9 +829,19 @@ function e2IsMouse() { return !window.matchMedia || !window.matchMedia('(pointer
 
 function onTokenMenu(e) {
     if (tokMenuEl && tokMenuEl.dataset.ids) { // 批量菜单
+        var ids0 = tokMenuEl.dataset.ids.split(',').filter(function(id) { return scene.items[id] && canEdit(scene.items[id]); });
+        if (e.type === 'change' && e.target.dataset.tmSide !== undefined && e.target.value) { // 批量设阵营 / 分队
+            var sv = e.target.value === 'auto' ? null : e.target.value;
+            patchItems(ids0.filter(function(id) { return scene.items[id].kind === 'token'; }).map(function(id) { return { id: id, side: sv }; }));
+            notice('已把 ' + ids0.length + ' 个棋子设为「' + sideName(sv || '') + '」');
+            closeTokenMenu();
+            return;
+        }
         var bb = e.type === 'click' && e.target.closest('[data-tm]');
         if (!bb) return;
         var ids = tokMenuEl.dataset.ids.split(',').filter(function(id) { return scene.items[id]; }), bk = bb.dataset.tm;
+        if (bk === 'binit') rollInit(ids0.filter(function(id) { return isCreatureToken(scene.items[id]) && !inInit(scene.items[id]); }));
+        if (bk === 'bleave') { patchItems(ids0.filter(function(id) { return inInit(scene.items[id]); }).map(function(id) { return { id: id, init: null, initRolled: null, initHidden: null }; })); renderCombat(); }
         if (bk === 'bdel' && !menuBatchDelete(bb, ids)) return;
         if (bk === 'bhide') {
             var hideAll = ids.some(function(id) { return !scene.items[id].hidden; });
@@ -856,6 +872,7 @@ function onTokenMenu(e) {
         patchItems([tokenHpPatch(it, act2 === 'dmg' ? -n : n)]);
     } else if (act2 === 'target') setTarget(target.id === it.id ? '' : it.id);
     else if (act2 === 'init') rollInit([it.id]);
+    else if (act2 === 'leave') leaveInit(it.id);
     else if (act2 === 'act') { selectOnly([it.id]); openActionDialog(null, it, it.sheet && sheets[it.sheet] || null); }
     else if (act2 === 'sheet') openSheet(it.sheet, it.id);
     else if (act2 === 'hide') patchItems([{ id: it.id, hidden: !it.hidden || null }]);

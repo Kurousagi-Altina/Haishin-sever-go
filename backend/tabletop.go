@@ -686,7 +686,7 @@ func (room *TTRoom) stateMsg(sub *ttSub) []byte {
 	}
 	return ttMsg(map[string]interface{}{
 		"type":     "state",
-		"me":       map[string]interface{}{"name": sub.name, "color": sub.color, "gm": sub.gm},
+		"me":       map[string]interface{}{"name": sub.name, "color": sub.color, "gm": sub.gm, "web": ttWebVer()},
 		"room":     room.meta(),
 		"scene":    room.sceneView(room.activeScene(), sub.gm, sub.name),
 		"log":      entries,
@@ -985,7 +985,7 @@ func (room *TTRoom) apply(u ttUser, gm bool, req *ttOpRequest) (int, string) {
 			return st, msg
 		}
 
-	case "handout", "handout.show", "handout.delete":
+	case "handout", "handout.show", "handout.hide", "handout.delete":
 		if st, msg := room.applyHandout(u, req); st != 0 {
 			return st, msg
 		}
@@ -2023,4 +2023,40 @@ func (t *Tabletop) guestUser(info TokenInfo, token, nick string) (ttUser, error)
 	t.guestByToken[token] = u.name
 	t.guestByNick[u.name] = token
 	return u, nil
+}
+
+// ===== 网页版本：部署了新的网页后，已打开的页面重连时自己刷新 =====
+var (
+	ttStaticDir  string
+	ttWebVerMu   sync.Mutex
+	ttWebVerVal  string
+	ttWebVerTime time.Time
+	ttWebVerRe   = regexp.MustCompile(`tabletop\.js\?v=([0-9A-Za-z._-]+)`)
+)
+
+// ttWebVer: the ?v= of tabletop.js in the deployed tabletop.html (re-read when the file changes).
+func ttWebVer() string {
+	if ttStaticDir == "" {
+		return ""
+	}
+	p := filepath.Join(ttStaticDir, "tabletop.html")
+	st, err := os.Stat(p)
+	if err != nil {
+		return ""
+	}
+	ttWebVerMu.Lock()
+	defer ttWebVerMu.Unlock()
+	if st.ModTime().Equal(ttWebVerTime) {
+		return ttWebVerVal
+	}
+	b, err := os.ReadFile(p)
+	if err != nil {
+		return ""
+	}
+	ttWebVerTime = st.ModTime()
+	ttWebVerVal = ""
+	if m := ttWebVerRe.FindSubmatch(b); m != nil {
+		ttWebVerVal = string(m[1])
+	}
+	return ttWebVerVal
 }

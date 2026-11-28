@@ -95,11 +95,12 @@ function cxPanelBtns(it, sh) {
             cxBtn('cx-giant', '🗿 巨人之力（' + cxLeft(it, RE_GIANT, '巨人之力', pb) + '）', '巨人之力（附赠动作，1 分钟）：体型变为大型，力量检定和力量豁免优势，每回合一次武器或徒手命中额外 ' + giantDie(sh) + '（命中后在记录里点按钮）'));
         if (!gm && it.gmSize) b.push(cxBtn('cx-giantsize', '恢复原体型', '巨人之力已经结束：把棋子缩回原来的大小'));
         var u = runeUses(sh), dc = runeDC(sh);
-        if (knownRune(sh, 'frost')) b.push(hasStatus(it, 'frostrune') ? '' : cxBtn('cx-rune-frost', '❄ 寒霜符文（' + cxLeft(it, runeRes(it, 'frost').re, '寒霜符文', u) + '）', '寒霜符文（附赠动作，10 分钟）：力量和体质的检定与豁免 +2（豁免由服务器自动加）'));
+        if (knownRune(sh, 'frost')) b.push(hasStatus(it, 'frostrune') ? cxBtn('cx-end-frostrune', '结束寒霜符文', '结束寒霜符文') : cxBtn('cx-rune-frost', '❄ 寒霜符文（' + cxLeft(it, runeRes(it, 'frost').re, '寒霜符文', u) + '）', '寒霜符文（附赠动作，10 分钟）：力量和体质的检定与豁免 +2（豁免由服务器自动加）'));
         if (knownRune(sh, 'stone')) b.push(cxBtn('cx-rune-stone', '🪨 岩石符文（' + cxLeft(it, runeRes(it, 'stone').re, '岩石符文', u) + '）', '岩石符文（反应）：30 尺内你看得见的生物结束回合时，令它感知豁免（DC ' + dc + '），失败则被你魅惑 1 分钟（失能、速度 0），每回合结束重复豁免'));
-        if (knownRune(sh, 'hill')) b.push(hasStatus(it, 'hillrune') ? '' : cxBtn('cx-rune-hill', '⛰ 山丘符文（' + cxLeft(it, runeRes(it, 'hill').re, '山丘符文', u) + '）', '山丘符文（附赠动作，1 分钟）：钝击、穿刺、挥砍伤害抗性'));
-        if (knownRune(sh, 'storm')) b.push(hasStatus(it, 'stormrune') ? '' : cxBtn('cx-rune-storm', '🌩 风暴符文（' + cxLeft(it, runeRes(it, 'storm').re, '风暴符文', u) + '）', '风暴符文（附赠动作，1 分钟）：先知状态，60 尺内你看得见的生物做攻击、检定或豁免时，可以用反应让它具有优势或劣势（由 GM 结算）'));
+        if (knownRune(sh, 'hill')) b.push(hasStatus(it, 'hillrune') ? cxBtn('cx-end-hillrune', '结束山丘符文', '结束山丘符文') : cxBtn('cx-rune-hill', '⛰ 山丘符文（' + cxLeft(it, runeRes(it, 'hill').re, '山丘符文', u) + '）', '山丘符文（附赠动作，1 分钟）：钝击、穿刺、挥砍伤害抗性'));
+        if (knownRune(sh, 'storm')) b.push(hasStatus(it, 'stormrune') ? cxBtn('cx-end-stormrune', '结束风暴符文', '结束风暴符文') : cxBtn('cx-rune-storm', '🌩 风暴符文（' + cxLeft(it, runeRes(it, 'storm').re, '风暴符文', u) + '）', '风暴符文（附赠动作，1 分钟）：先知状态，60 尺内你看得见的生物做攻击、检定或豁免时，可以用反应让它具有优势或劣势（由 GM 结算）'));
     }
+    if (hintOn('hintRace') && isShifter(sh) && hasStatus(it, 'shifted')) b.push(cxBtn('cx-end-shifted', '结束化兽', '结束化兽（临时生命值不会自动去掉）'));
     if (hintOn('hintRace') && isShifter(sh) && !hasStatus(it, 'shifted'))
         b.push(cxBtn('cx-shift', '🐾 化兽（' + cxLeft(it, RE_SHIFT, '化兽', pb) + '）', '化兽（附赠动作，1 分钟）：获得 ' + (2 * pb) + ' 点临时生命值（2 × 熟练加值）' + (sheetHasEntry(sh, RE_SWIFT) ? '；迅捷：速度 +10 尺，敌人在你 5 尺内结束回合时可以用反应移动至多 10 尺（不引发借机攻击）' : '')));
     b = b.concat(monkPanelBtns(it, sh), casterPanelBtns(it, sh), x2PanelBtns(it, sh)); // 圣武士 / 术士 / 魔契师（tabletop-class2.js）
@@ -112,6 +113,8 @@ function cxSelAct(act0, ids) {
     if (!it || !sh) return true;
     var f = clsLv(sh, '战士'), pb = sheetProf(sh), dc = runeDC(sh), u = runeUses(sh);
     var rune = function(key) { var r = runeRes(it, key); return cxSpend(it, r.re, r.name, u); };
+    var endM = act0.match(/^cx-end-(\w+)$/); // 「结束 X」：去掉自己身上的这个状态
+    if (endM) { cxDropStatus(it, endM[1]); if (endM[1] === 'dflight' || endM[1] === 'thirdeye') notice('已结束'); act0 = ''; }
     if (monkSelAct(act0, it, sh) || casterSelAct(act0, it, sh) || x2SelAct(act0, it, sh)) act0 = ''; // 武僧 / 施法职业 / 圣武士·术士·魔契师（下面的 switch 不再处理）
     switch (act0) {
     case 'cx-tmind':
@@ -379,6 +382,7 @@ function monkPanelBtns(it, sh) {
         if (metaOk) b.push(cxBtn('cx-mk-meta', '☯ 运转周天（' + cxLeft(it, RE_META, '运转周天', 1) + '）', '运转周天（投先攻时，每长休一次）：功力全部恢复，并恢复 ' + maDie(sh) + ' + 武僧等级 ' + lv + ' 点生命值'));
         else if (lv >= 15) b.push(cxBtn('cx-mk-perfect', '明镜止水', '明镜止水（15 级）：投先攻且没有用运转周天时，功力不超过 3 点就恢复到 4 点'));
     }
+    if (lv >= 18 && hasStatus(it, 'superior')) b.push(cxBtn('cx-end-superior', '结束无懈可击', '结束无懈可击'));
     if (lv >= 18 && !hasStatus(it, 'superior')) b.push(cxBtn('cx-mk-superior', '无懈可击（3 功力）', '无懈可击（18 级，回合开始时）：1 分钟内对力场以外的所有伤害具有抗性（失能时结束）'));
     if (isWoE(sh) && lv >= 3) {
         b.push(hasStatus(it, 'attuned') ? cxBtn('cx-mk-attuneend', '结束元素同调', '结束元素同调') :
@@ -637,6 +641,7 @@ function casterPanelBtns(it, sh) {
     // 龙裔
     if (RACE && isDragonborn(sh)) {
         b.push(cxBtn('cx-db-breath', '🐉 吐息武器（' + cxLeft(it, RE_BREATH, '吐息武器', pb) + '）', '吐息武器（代替攻击动作中的一次攻击）：15 尺锥形或 30 尺长 5 尺宽的直线，敏捷豁免（DC ' + (8 + abilMod(sh, 'con') + pb) + '），失败受到 ' + breathDice(sh) + ' ' + breathType(sh) + '伤害，成功减半'));
+        if ((parseInt(sh.level, 10) || 1) >= 5 && hasStatus(it, 'dflight')) b.push(cxBtn('cx-end-dflight', '收起龙翼', '结束龙族飞翼'));
         if ((parseInt(sh.level, 10) || 1) >= 5 && !hasStatus(it, 'dflight')) b.push(cxBtn('cx-db-flight', '龙族飞翼（' + cxLeft(it, RE_DFLIGHT, '龙族飞翼', 1) + '）', '龙族飞翼（附赠动作，10 分钟，每长休一次）：长出翅膀，获得等同步行速度的飞行速度'));
     }
     // 德鲁伊
@@ -681,6 +686,7 @@ function casterPanelBtns(it, sh) {
             pv.forEach(function(v, i) { b.push(cxBtn('cx-wz-use-' + i, '用 ' + v, '把这个预兆用在一次自己掷的检定上（从预兆里去掉，并在记录里写一句）')); });
         }
         b.push(cxBtn('cx-wz-portent', pv.length ? '重掷预兆' : '🔮 掷预兆', '预兆（长休后）：掷 ' + (wl >= 14 ? 3 : 2) + ' 枚 d20 记下来，由服务器掷'));
+        if (wl >= 10 && hasStatus(it, 'thirdeye')) b.push(cxBtn('cx-end-thirdeye', '结束天眼通', '结束天眼通'));
         if (wl >= 10 && !hasStatus(it, 'thirdeye')) b.push(cxBtn('cx-wz-eye', '天眼通（' + cxLeft(it, RE_EYE, '天眼通', 1) + '）', '天眼通（附赠动作，直到休息）：120 尺黑暗视觉 / 读懂任何语言 / 看见隐形，三选一'));
     }
     if (WZ && wl >= 20) b.push(cxBtn('cx-wz-sig', '招牌法术（' + cxLeft(it, RE_SIG, '招牌法术', 2) + '）', '招牌法术：两道三环法术各可免费以三环施放一次（短休恢复）。点了打开角色卡，下一次施法不扣法术位'));

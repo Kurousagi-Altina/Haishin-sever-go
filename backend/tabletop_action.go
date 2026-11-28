@@ -565,6 +565,10 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 			if hasAC && conds["hasted"] {
 				ac += 2
 			}
+			if hasAC && conds["slowspell"] { // 缓慢术：AC −2
+				ac -= 2
+				addNote("缓慢术 AC −2")
+			}
 			if hasAC && tr.ac != 0 {
 				ac += float64(tr.ac)
 				addNote("AC " + ttJoinNotes(tr.acSrc))
@@ -669,6 +673,10 @@ func (room *TTRoom) applyAction(u ttUser, gm bool, req *ttOpRequest) (int, strin
 			sb := room.saveBonus(it, ab)
 			if ab == "dex" && (t.Cover == 2 || t.Cover == 5) {
 				sb += t.Cover
+			}
+			if ab == "dex" && conds["slowspell"] { // 缓慢术：敏捷豁免 −2
+				sb -= 2
+				addNote("缓慢术 敏捷豁免 −2")
 			}
 			autoFail := (ab == "str" || ab == "dex") && (conds["paralyzed"] || conds["stunned"] || conds["unconscious"] || conds["petrified"])
 			if t.Forced == "yes" || t.Forced == "no" { // 玩家用自己的骰子掷的结果
